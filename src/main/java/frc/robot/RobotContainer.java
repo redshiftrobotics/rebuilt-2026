@@ -155,9 +155,9 @@ public class RobotContainer {
         (estimate) -> {
           if (estimate.status().isSuccess() && Constants.getMode() != Mode.SIM) {
             drive.addVisionMeasurement(
-                estimate.robotPose().toPose2d(),
-                estimate.timestampSeconds(),
-                estimate.standardDeviations());
+                estimate.estimatedRobotPose().toPose2d(),
+                estimate.timestampSecondFPGA(),
+                estimate.standardDeviation());
           }
         });
 
@@ -203,8 +203,8 @@ public class RobotContainer {
     DriverDashboard.poseSupplier = drive::getRobotPose;
     DriverDashboard.speedsSupplier = drive::getRobotSpeeds;
     DriverDashboard.wheelStatesSupplier = drive::getWheelSpeeds;
+    DriverDashboard.hasVisionEstimate = vision::hasSuccessfulEstimate;
 
-    DriverDashboard.hasVisionEstimate = vision::hasVisionEstimate;
     DriverDashboard.currentDriveModeName =
         () -> drive.getCurrentCommand() == null ? "Idle" : drive.getCurrentCommand().getName();
 

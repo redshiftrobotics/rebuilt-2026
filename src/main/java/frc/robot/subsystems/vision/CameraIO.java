@@ -2,19 +2,15 @@ package frc.robot.subsystems.vision;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose3d;
+import frc.robot.subsystems.vision.VisionConstants.CameraPosition;
 import org.littletonrobotics.junction.AutoLog;
+import org.photonvision.EstimatedRobotPose;
 
 /** IO layer interface for april tag detection systems */
 public interface CameraIO {
   @AutoLog
   public static class CameraIOInputs {
-    int updatesReceived;
-
-    boolean[] hasNewData;
-    Pose3d[] estimatedRobotPose;
-    double[] timestampSecondFPGA;
-    int[][] tagsUsed;
-
+    EstimatedRobotPose[] poseEstimates;
     boolean connected = false;
   }
 
@@ -26,8 +22,8 @@ public interface CameraIO {
     return "Camera";
   }
 
-  default String getCameraPosition() {
-    return getCameraName();
+  default CameraPosition getCameraPosition() {
+    return CameraPosition.UNKNOWN;
   }
 
   /** Set april tag field layout to use */

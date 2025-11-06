@@ -44,20 +44,24 @@ public class Camera {
 
   private Set<Integer> tagsIdsOnField;
 
-  private VisionResult[] results = new VisionResult[0];
+  private VisionPoseEstimation[] results = new VisionPoseEstimation[0];
 
   private Supplier<Pose2d> lastRobotPoseSupplier;
 
   private final Alert missingCameraAlert;
 
-  public static record VisionResult(
+  public static record VisionPoseEstimation(
       boolean hasNewData,
       Pose3d estimatedRobotPose,
       double timestampSecondFPGA,
       int[] tagsUsed,
       Pose3d[] tagPositionsOnField,
-      Matrix<N3, N1> standardDeviation,
-      VisionResultStatus status) {}
+      VisionResultStatus status,
+      Matrix<N3, N1> standardDeviations) {
+    public boolean isSuccess() {
+      return status.isSuccess();
+    }
+  }
 
   /**
    * Create a new robot camera with IO layer
@@ -86,19 +90,17 @@ public class Camera {
     io.updateInputs(inputs);
     missingCameraAlert.set(!inputs.connected);
 
-    results = new VisionResult[inputs.updatesReceived];
+    results = new VisionPoseEstimation[inputs.updatesReceived];
     for (int i = 0; i < inputs.updatesReceived; i++) {
       Pose3d[] tagPositionsOnField = getTagPositionsOnField(inputs.tagsUsed[i]);
 
       results[i] =
-          new VisionResult(
+          new VisionPoseEstimation(
               inputs.hasNewData[i],
               inputs.estimatedRobotPose[i],
               inputs.timestampSecondFPGA[i],
               inputs.tagsUsed[i],
               tagPositionsOnField,
-              getStandardDeviations(tagPositionsOnField, inputs.estimatedRobotPose[i]),
-              getStatus(inputs.estimatedRobotPose[i], inputs.tagsUsed[i]));
     }
   }
 
@@ -106,7 +108,7 @@ public class Camera {
     this.lastRobotPoseSupplier = lastRobotPose;
   }
 
-  public VisionResult[] getResults() {
+  public VisionPoseEstimation[] getResults() {
     return results;
   }
 
@@ -150,38 +152,46 @@ public class Camera {
     return VecBuilder.fill(xyStandardDeviation, xyStandardDeviation, thetaStandardDeviation);
   }
 
-  private VisionResultStatus getStatus(Pose3d estimatedRobotPose, int[] tagsUsed) {
+  private VisionResultStatus getStatus(VisionPoseEstimation estimation) {
 
-    if (tagsUsed.length == 0) {
+    if (!estimation.hasNewData) {
+      return VisionResultStatus.NO_DATA;
+    }
+
+    if (estimation.tagsUsed.length == 0) {
       return VisionResultStatus.NO_TARGETS_VISIBLE;
     }
 
-    if (!Arrays.stream(tagsUsed).allMatch(tagsIdsOnField::contains)) {
+    if (!Arrays.stream(estimation.tagsUsed).allMatch(tagsIdsOnField::contains)) {
       return VisionResultStatus.INVALID_TAG;
     }
 
-    if (estimatedRobotPose.getX() < 0
-        || estimatedRobotPose.getY() < 0
-        || estimatedRobotPose.getX() > VisionConstants.FIELD.getFieldLength()
-        || estimatedRobotPose.getY() > VisionConstants.FIELD.getFieldWidth()) {
+    if (estimation.estimatedRobotPose.getX() < 0
+        || estimation.estimatedRobotPose.getY() < 0
+        || estimation.estimatedRobotPose.getX() > VisionConstants.FIELD.getFieldLength()
+        || estimation.estimatedRobotPose.getY() > VisionConstants.FIELD.getFieldWidth()) {
       return VisionResultStatus.INVALID_POSE_OUTSIDE_FIELD;
     }
 
-    if (!MathUtil.isNear(0, estimatedRobotPose.getZ(), zHeightToleranceMeters.get())) {
+    if (!MathUtil.isNear(0, estimation.estimatedRobotPose.getZ(), zHeightToleranceMeters.get())) {
       return VisionResultStatus.Z_HEIGHT_BAD;
     }
 
     double pitchAndRollToleranceValueRadians =
         Units.degreesToRadians(pitchAndRollToleranceDegrees.get());
     if (!MathUtil.isNear(
-            0, estimatedRobotPose.getRotation().getX(), pitchAndRollToleranceValueRadians)
+            0,
+            estimation.estimatedRobotPose.getRotation().getX(),
+            pitchAndRollToleranceValueRadians)
         && !MathUtil.isNear(
-            0, estimatedRobotPose.getRotation().getY(), pitchAndRollToleranceValueRadians)) {
+            0,
+            estimation.estimatedRobotPose.getRotation().getY(),
+            pitchAndRollToleranceValueRadians)) {
       return VisionResultStatus.PITCH_OR_ROLL_BAD;
     }
 
     if (lastRobotPoseSupplier != null) {
-      Pose2d estimatedRobotPose2d = estimatedRobotPose.toPose2d();
+      Pose2d estimatedRobotPose2d = estimation.estimatedRobotPose.toPose2d();
       Pose2d lastRobotPose = lastRobotPoseSupplier.get();
 
       if (!MathUtil.isNear(
