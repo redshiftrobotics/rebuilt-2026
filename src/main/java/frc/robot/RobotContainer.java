@@ -43,6 +43,7 @@ import frc.robot.subsystems.vision.CameraIOSim;
 import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.utility.Elastic;
 import frc.robot.utility.Elastic.Notification.NotificationLevel;
+import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -248,8 +249,6 @@ public class RobotContainer {
                 .rotationStick(() -> -xbox.getRightX())
                 .fieldRelativeEnabled());
 
-    final DrivePoseController poseController = new DrivePoseController(drive);
-
     // Default command, normal joystick drive
     drive.setDefaultCommand(
         drive
@@ -284,13 +283,6 @@ public class RobotContainer {
                     input
                         .headingStick(() -> -xbox.getRightY(), () -> -xbox.getRightX())
                         .addLabel("Heading Controlled")));
-
-    // Face zero point of the field (testing)
-    xbox.a()
-        .whileTrue(
-            pipeline.activateLayer(
-                input -> input.facingPoint(() -> poseController.getNextSetpoint().map(Pose2d::getTranslation).orElse(null)).addLabel("Face Point")).onlyIf(
-                () -> poseController.getNextSetpoint().isPresent()));
 
     // Slow mode, reduce translation and rotation speeds for fine control
     xbox.leftBumper()
@@ -348,8 +340,39 @@ public class RobotContainer {
     }
 
     if (Constants.isDemoMode()) {
+
+      final DrivePoseController poseController = new DrivePoseController(drive);
+
+      Translation2d centerField = FieldConstants.FIELD_CORNER_TO_CORNER.div(2);
+      Translation2d allowedAreaSize = new Translation2d(6, 4); // 6m x 4m area in center of field
+
+      // toggle safety box
+      xbox.back()
+          .debounce(0.5)
+          .toggleOnTrue(
+              pipeline.activateLayer(
+                  input ->
+                      input
+                          .enforceSafetyBox(
+                              centerField.minus(allowedAreaSize.div(2)),
+                              centerField.plus(allowedAreaSize.div(2)))
+                          .addLabel("Safety Box")));
+
+      // Face setpoint
+      Supplier<Translation2d> translationSetpoint =
+          () -> poseController.getNextSetpoint().map(Pose2d::getTranslation).orElse(null);
+      xbox.a()
+          .whileTrue(
+              pipeline
+                  .activateLayer(
+                      input -> input.facingPoint(translationSetpoint::get).addLabel("Face Setpoint"))
+                  .onlyIf(() -> poseController.getNextSetpoint().isPresent()));
+
+      // Drive to pose setpoint reset
       RobotModeTriggers.disabled()
           .onTrue(Commands.runOnce(poseController::reset).withName("Reset Pose Controller"));
+
+      // Save current pose as setpoint
       xbox.leftTrigger()
           .onTrue(rumbleController(xbox, 0.4).withTimeout(0.1))
           .onTrue(
@@ -359,8 +382,9 @@ public class RobotContainer {
                         poseController.setSetpoint(setpoint);
                         Logger.recordOutput("Teleop/PoseGoal", setpoint);
                       })
-                  .withName("Save Pose Goal"));
+                  .withName("Save Setpoint"));
 
+      // Drive to pose setpoint
       xbox.rightTrigger()
           .whileTrue(
               drive
@@ -371,7 +395,7 @@ public class RobotContainer {
                   .until(poseController::atSetpoint)
                   .andThen(rumbleController(xbox, 1, RumbleType.kRightRumble).withTimeout(0.2))
                   .onlyIf(() -> poseController.getNextSetpoint().isPresent())
-                  .withName("Drive to Pose Goal"));
+                  .withName("Drive to Setpoint"));
     }
   }
 
