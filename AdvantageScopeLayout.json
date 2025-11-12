@@ -38,16 +38,6 @@
                     }
                   },
                   {
-                    "type": "vision",
-                    "logKey": "/RealOutputs/Vision/tagPoses",
-                    "logType": "Pose3d[]",
-                    "visible": false,
-                    "options": {
-                      "color": "#00ff00",
-                      "size": "normal"
-                    }
-                  },
-                  {
                     "type": "swerveStates",
                     "logKey": "/RealOutputs/SwerveStates/MeasuredWheelSpeeds",
                     "logType": "SwerveModuleState[]",
@@ -55,6 +45,16 @@
                     "options": {
                       "color": "#ff0000",
                       "arrangement": "0,1,2,3"
+                    }
+                  },
+                  {
+                    "type": "vision",
+                    "logKey": "/RealOutputs/Vision/seenTagPoses",
+                    "logType": "Pose3d[]",
+                    "visible": false,
+                    "options": {
+                      "color": "#00ff00",
+                      "size": "normal"
                     }
                   },
                   {
@@ -79,7 +79,7 @@
                   },
                   {
                     "type": "axes",
-                    "logKey": "/RealOutputs/Vision/tagPoses",
+                    "logKey": "/RealOutputs/Vision/seenTagPoses",
                     "logType": "Pose3d[]",
                     "visible": false,
                     "options": {}
