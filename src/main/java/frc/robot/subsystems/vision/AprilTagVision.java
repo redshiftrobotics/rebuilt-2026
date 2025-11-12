@@ -33,13 +33,22 @@ public class AprilTagVision extends SubsystemBase {
             .toArray(Camera[]::new);
   }
 
+  /** Set a consumer to receive all vision poses as they are processed */
   public void setVisionPoseConsumer(Consumer<ProcessedEstimatedRobotPose> visionPoseConsumer) {
     this.visionPoseConsumer = visionPoseConsumer;
   }
 
+  /** Set the AprilTag field layout for all cameras */
   public void setAprilTagFieldLayout(AprilTagFieldLayout layout) {
     for (Camera camera : cameras) {
       camera.setAprilTagFieldLayout(layout);
+    }
+  }
+
+  /** Enable pose filtering for all cameras. Only enable if you are providing a good robot pose */
+  public void enablePoseFiltering(boolean filterBasedOnLastPose, boolean filterBasedOnGyro) {
+    for (Camera camera : cameras) {
+      camera.enablePoseFiltering(filterBasedOnLastPose, filterBasedOnGyro);
     }
   }
 
@@ -75,7 +84,8 @@ public class AprilTagVision extends SubsystemBase {
             "Vision/" + camera.getCameraPosition() + "/standardDeviations",
             result.standardDeviations().getData());
         Logger.recordOutput(
-            "Vision/" + camera.getCameraPosition() + "/timestampSeconds", result.timestampSeconds());
+            "Vision/" + camera.getCameraPosition() + "/timestampSeconds",
+            result.timestampSeconds());
         Logger.recordOutput(
             "Vision/" + camera.getCameraPosition() + "/tagPositionsOnField",
             result.tagPositionsOnField().toArray(Pose3d[]::new));
@@ -98,10 +108,12 @@ public class AprilTagVision extends SubsystemBase {
     return hasSuccessfulEstimation;
   }
 
+  /** Send a command to restart the PhotonVision program on the given IP address */
   public static void restartPhotonVision(String ipString) {
     sendPhotonVisionCommand(ipString, "restartProgram");
   }
 
+  /** Send a command to reboot the PhotonVision device on the given IP address */
   public static void rebootPhotonVision(String ipString) {
     sendPhotonVisionCommand(ipString, "restartDevice");
   }

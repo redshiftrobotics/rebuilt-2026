@@ -107,6 +107,11 @@ public class Camera {
     return results;
   }
 
+  public void enablePoseFiltering(boolean filterBasedOnLastPose, boolean filterBasedOnGyro) {
+    this.filterBasedOnLastPose = filterBasedOnLastPose;
+    this.filterBasedOnGyro = filterBasedOnGyro;
+  }
+
   private ProcessedEstimatedRobotPose processVision(EstimatedRobotPose estimate) {
 
     VisionResultStatus status = VisionResultStatus.NO_DATA;
