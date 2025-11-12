@@ -1,7 +1,5 @@
 package frc.robot.subsystems.vision;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -9,9 +7,6 @@ import edu.wpi.first.math.util.Units;
 
 public class VisionConstants {
   // --- Vision Config ---
-
-  public static final AprilTagFieldLayout FIELD =
-      AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
 
   // Set cameraName on PhotonVision web interface. Edit camera name from camera type to camera
   // position. To find robotToCamera, measure the distance from the camera to the center of the
@@ -21,7 +16,7 @@ public class VisionConstants {
 
   enum CameraPosition {
     FRONT,
-    UNKNOWN
+    UNKNOWN;
   }
 
   public record CameraConfig(

@@ -2,7 +2,6 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -44,7 +43,6 @@ import frc.robot.subsystems.vision.CameraIOSim;
 import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.utility.Elastic;
 import frc.robot.utility.Elastic.Notification.NotificationLevel;
-
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -100,7 +98,7 @@ public class RobotContainer {
                 new ModuleIOTalonFX(TunerConstants.FrontRight),
                 new ModuleIOTalonFX(TunerConstants.BackLeft),
                 new ModuleIOTalonFX(TunerConstants.BackRight));
-        vision = new AprilTagVision();
+        vision = new AprilTagVision(drive::getRobotPose);
         leds = new LEDSubsystem();
         break;
 
@@ -113,7 +111,7 @@ public class RobotContainer {
                 new ModuleIOSparkMax(ModuleConstants.FRONT_RIGHT_MODULE_CONFIG),
                 new ModuleIOSparkMax(ModuleConstants.BACK_LEFT_MODULE_CONFIG),
                 new ModuleIOSparkMax(ModuleConstants.BACK_RIGHT_MODULE_CONFIG));
-        vision = new AprilTagVision();
+        vision = new AprilTagVision(drive::getRobotPose);
         leds =
             new LEDSubsystem(
                 new LEDStripIOBlinken(
@@ -133,7 +131,7 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.BackRight));
         vision =
             new AprilTagVision(
-                new CameraIOSim(VisionConstants.SIM_FRONT_CAMERA, drive::getRobotPose));
+                drive::getRobotPose, new CameraIOSim(VisionConstants.SIM_FRONT_CAMERA));
         leds = new LEDSubsystem(new LEDStripIOSim(LEDConstants.DEFAULT_PATTERN));
         break;
 
@@ -146,20 +144,23 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
-        vision = new AprilTagVision();
+        vision = new AprilTagVision(drive::getRobotPose);
         leds = new LEDSubsystem();
         break;
     }
 
     // Vision setup
-    vision.setLastRobotPoseSupplier(drive::getRobotPose);
-    vision.addVisionEstimateConsumer(
+    if (Constants.isOnPlayingField()) {
+      vision.setAprilTagFieldLayout(FieldConstants.FIELD_APRIL_TAGS);
+    }
+
+    vision.setVisionPoseConsumer(
         (estimate) -> {
           if (estimate.status().isSuccess() && Constants.getMode() != Mode.SIM) {
             drive.addVisionMeasurement(
-                estimate.estimatedRobotPose().toPose2d(),
-                estimate.timestampSecondFPGA(),
-                estimate.standardDeviation());
+                estimate.estimatedPose().toPose2d(),
+                estimate.timestampSeconds(),
+                estimate.standardDeviations());
           }
         });
 
@@ -415,17 +416,6 @@ public class RobotContainer {
         .onTrue(Commands.runOnce(() -> Elastic.selectTab("Autonomous")));
   }
 
-  public AprilTagFieldLayout getSelectedAprilTagLayout() {
-    // Sometimes you want to select subset of all field tags
-    // For example, in 2025, top teams decided that only the AprilTags on the Reef were useful when
-    // in teleop mode
-    if (Constants.isOnPlayingField()) {
-      return FieldConstants.FIELD_APRIL_TAGS;
-    } else {
-      return FieldConstants.FIELD_NO_APRIL_TAGS;
-    }
-  }
-
   private void registerNamedCommands() {
     // Set up named commands for path planner auto
     NamedCommands.registerCommand("LEDS", leds.runColor(BlinkenLEDPattern.RED));
@@ -456,7 +446,11 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     if (Constants.isDemoMode() && !Constants.isOnPlayingField()) {
-      Elastic.sendNotification(new Elastic.Notification(NotificationLevel.WARNING, "Demo mode off field: auto disabled", "Autonomous command disabled in demo mode when not on playing field and in demo mode. Check Constants.java"));
+      Elastic.sendNotification(
+          new Elastic.Notification(
+              NotificationLevel.WARNING,
+              "Demo mode off field: auto disabled",
+              "Autonomous command disabled in demo mode when not on playing field and in demo mode. Check Constants.java"));
       return null;
     }
     return autoChooser.get();

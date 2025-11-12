@@ -4,7 +4,6 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.subsystems.vision.VisionConstants.CameraConfig;
-import java.util.function.Supplier;
 import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
@@ -14,12 +13,8 @@ public class CameraIOSim extends CameraIOPhotonVision {
   private final PhotonCameraSim cameraSim;
   private final VisionSystemSim visionSim;
 
-  private final Supplier<Pose2d> robotPoseSupplier;
-
-  public CameraIOSim(CameraConfig config, Supplier<Pose2d> robotPoseSupplier) {
+  public CameraIOSim(CameraConfig config) {
     super(config);
-
-    this.robotPoseSupplier = robotPoseSupplier;
 
     // --- Camera Props ---
 
@@ -35,7 +30,7 @@ public class CameraIOSim extends CameraIOPhotonVision {
 
     // --- Sim Camera ---
 
-    cameraSim = new PhotonCameraSim(getCamera(), cameraProperties);
+    cameraSim = new PhotonCameraSim(camera, cameraProperties);
 
     cameraSim.enableDrawWireframe(true);
     cameraSim.enableProcessedStream(true);
@@ -46,10 +41,9 @@ public class CameraIOSim extends CameraIOPhotonVision {
   }
 
   @Override
-  public void updateInputs(CameraIOInputs inputs) {
-    Pose2d robotPose = robotPoseSupplier.get();
-    visionSim.update(robotPose);
-    super.updateInputs(inputs);
+  public void setLastRobotPose(Pose2d lastRobotPose) {
+    super.setLastRobotPose(lastRobotPose);
+    visionSim.update(lastRobotPose);
   }
 
   @Override
