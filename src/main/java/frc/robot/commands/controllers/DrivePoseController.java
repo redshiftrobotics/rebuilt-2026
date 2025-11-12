@@ -131,9 +131,13 @@ public class DrivePoseController {
     return setpoint != null;
   }
 
+  /** Returns the current setpoint from the supplier. */
+  public Optional<Pose2d> getNextSetpoint() {
+    return Optional.ofNullable(setpointSupplier.get());
+  }
+
   /** Returns the setpoint that was used in the last calculate() call. */
   public Optional<Pose2d> getLastSetpoint() {
-    System.out.println("Setpoint: " + setpoint);
     return Optional.ofNullable(setpoint);
   }
 }

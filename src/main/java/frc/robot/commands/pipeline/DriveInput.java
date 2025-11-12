@@ -99,9 +99,14 @@ public class DriveInput {
     return headingDirection(
         () -> {
           Rotation2d angle = headingAngleSupplier.get();
-          if (angle == null || !allianceRelative) return angle;
+          if (angle == null) return null;
+          if (!allianceRelative) return angle;
           return AllianceMirrorUtil.apply(angle);
         });
+  }
+
+  public DriveInput headingDirection(Rotation2d headingAngle, boolean allianceRelative) {
+    return headingDirection(() -> headingAngle, allianceRelative);
   }
 
   public DriveInput headingStick(DoubleSupplier xSupplier, DoubleSupplier ySupplier) {
@@ -113,8 +118,14 @@ public class DriveInput {
   }
 
   public DriveInput facingPoint(Translation2d point) {
+    return facingPoint(() -> point);
+  }
+
+  public DriveInput facingPoint(Supplier<Translation2d> pointSupplier) {
     return headingDirection(
         () -> {
+          Translation2d point = pointSupplier.get();
+          if (point == null) return null;
           var diff = point.minus(drive.getRobotPose().getTranslation());
           return diff.getNorm() > 1e-6 ? diff.getAngle() : null;
         });

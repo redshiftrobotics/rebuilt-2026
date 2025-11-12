@@ -248,6 +248,8 @@ public class RobotContainer {
                 .rotationStick(() -> -xbox.getRightX())
                 .fieldRelativeEnabled());
 
+    final DrivePoseController poseController = new DrivePoseController(drive);
+
     // Default command, normal joystick drive
     drive.setDefaultCommand(
         drive
@@ -287,7 +289,8 @@ public class RobotContainer {
     xbox.a()
         .whileTrue(
             pipeline.activateLayer(
-                input -> input.facingPoint(Translation2d.kZero).addLabel("Face Point")));
+                input -> input.facingPoint(() -> poseController.getNextSetpoint().map(Pose2d::getTranslation).orElse(null)).addLabel("Face Point")).onlyIf(
+                () -> poseController.getNextSetpoint().isPresent()));
 
     // Slow mode, reduce translation and rotation speeds for fine control
     xbox.leftBumper()
@@ -345,8 +348,6 @@ public class RobotContainer {
     }
 
     if (Constants.isDemoMode()) {
-      final DrivePoseController poseController = new DrivePoseController(drive);
-
       RobotModeTriggers.disabled()
           .onTrue(Commands.runOnce(poseController::reset).withName("Reset Pose Controller"));
       xbox.leftTrigger()
@@ -369,6 +370,7 @@ public class RobotContainer {
                   .alongWith(rumbleController(xbox, 0.1, RumbleType.kLeftRumble))
                   .until(poseController::atSetpoint)
                   .andThen(rumbleController(xbox, 1, RumbleType.kRightRumble).withTimeout(0.2))
+                  .onlyIf(() -> poseController.getNextSetpoint().isPresent())
                   .withName("Drive to Pose Goal"));
     }
   }
