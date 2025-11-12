@@ -343,21 +343,6 @@ public class RobotContainer {
 
       final DrivePoseController poseController = new DrivePoseController(drive);
 
-      Translation2d centerField = FieldConstants.FIELD_CORNER_TO_CORNER.div(2);
-      Translation2d allowedAreaSize = new Translation2d(6, 4); // 6m x 4m area in center of field
-
-      // toggle safety box
-      xbox.back()
-          .debounce(0.5)
-          .toggleOnTrue(
-              pipeline.activateLayer(
-                  input ->
-                      input
-                          .enforceSafetyBox(
-                              centerField.minus(allowedAreaSize.div(2)),
-                              centerField.plus(allowedAreaSize.div(2)))
-                          .addLabel("Safety Box")));
-
       // Face setpoint
       Supplier<Translation2d> translationSetpoint =
           () -> poseController.getNextSetpoint().map(Pose2d::getTranslation).orElse(null);
@@ -365,7 +350,8 @@ public class RobotContainer {
           .whileTrue(
               pipeline
                   .activateLayer(
-                      input -> input.facingPoint(translationSetpoint::get).addLabel("Face Setpoint"))
+                      input ->
+                          input.facingPoint(translationSetpoint::get).addLabel("Face Setpoint"))
                   .onlyIf(() -> poseController.getNextSetpoint().isPresent()));
 
       // Drive to pose setpoint reset
