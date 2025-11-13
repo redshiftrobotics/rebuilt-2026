@@ -35,7 +35,6 @@ import frc.robot.subsystems.drive.ModuleIOSparkMax;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.led.BlinkenLEDPattern;
 import frc.robot.subsystems.led.LEDConstants;
-import frc.robot.subsystems.led.LEDStripIOBlinken;
 import frc.robot.subsystems.led.LEDStripIOSim;
 import frc.robot.subsystems.led.LEDSubsystem;
 import frc.robot.subsystems.vision.AprilTagVision;
@@ -90,8 +89,7 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, IO devices, and commands. */
   public RobotContainer() {
     switch (Constants.getRobot()) {
-      case PHOENIX_TUNER_X:
-        // Real robot (Competition bot with mechanisms), instantiate hardware IO implementations
+      case PRESEASON_2026:
         drive =
             new Drive(
                 new GyroIOPigeon2(DriveConstants.GYRO_CAN_ID, true),
@@ -103,8 +101,9 @@ public class RobotContainer {
         leds = new LEDSubsystem();
         break;
 
-      case CHASSIS_2025:
-        // Real robot (Competition bot with mechanisms), instantiate hardware IO implementations
+      case CHASSIS_CANNON:
+      case WOOD_BOT_2026:
+      case REEFSCAPE_2025:
         drive =
             new Drive(
                 new GyroIOPigeon2(DriveConstants.GYRO_CAN_ID, false),
@@ -113,16 +112,10 @@ public class RobotContainer {
                 new ModuleIOSparkMax(ModuleConstants.BACK_LEFT_MODULE_CONFIG),
                 new ModuleIOSparkMax(ModuleConstants.BACK_RIGHT_MODULE_CONFIG));
         vision = new AprilTagVision(drive::getRobotPose);
-        leds =
-            new LEDSubsystem(
-                new LEDStripIOBlinken(
-                    LEDConstants.LEDS_STRIP_2025_LEFT, LEDConstants.DEFAULT_PATTERN),
-                new LEDStripIOBlinken(
-                    LEDConstants.LEDS_STRIP_2025_RIGHT, LEDConstants.DEFAULT_PATTERN));
+        leds = new LEDSubsystem();
         break;
 
       case SIM_BOT:
-        // Sim robot, instantiate physics sim IO implementations
         drive =
             new Drive(
                 new GyroIO() {},
@@ -137,7 +130,6 @@ public class RobotContainer {
         break;
 
       default:
-        // Replayed robot, disable IO implementations
         drive =
             new Drive(
                 new GyroIO() {},

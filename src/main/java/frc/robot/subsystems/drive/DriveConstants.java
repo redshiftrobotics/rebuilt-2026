@@ -60,13 +60,13 @@ public class DriveConstants {
 
   public static final DriveConfig DRIVE_CONFIG =
       switch (Constants.getRobot()) {
-        case PHOENIX_TUNER_X, SIM_BOT -> new DriveConfig(
+        case PRESEASON_2026, SIM_BOT -> new DriveConfig(
             new Translation2d(
                 TunerConstants.FrontLeft.LocationX, TunerConstants.FrontLeft.LocationY),
             new Translation2d(1, 1),
             TunerConstants.kSpeedAt12Volts.in(MetersPerSecond),
             22.0);
-        case CHASSIS_2025 -> new DriveConfig(
+        case REEFSCAPE_2025, WOOD_BOT_2026 -> new DriveConfig(
             new Translation2d(Units.inchesToMeters(22.729228), Units.inchesToMeters(22.729228)),
             new Translation2d(Units.inchesToMeters(35), Units.inchesToMeters(35)),
             7.05968,
@@ -95,9 +95,9 @@ public class DriveConstants {
 
   public static final int GYRO_CAN_ID =
       switch (Constants.getRobot()) {
-        case CHASSIS_2025 -> 40;
+        case REEFSCAPE_2025 -> 40;
         case CHASSIS_CANNON -> 40;
-        case PHOENIX_TUNER_X -> TunerConstants.DrivetrainConstants.Pigeon2Id;
+        case PRESEASON_2026 -> TunerConstants.DrivetrainConstants.Pigeon2Id;
         default -> -1;
       };
 
@@ -118,7 +118,7 @@ public class DriveConstants {
   public static final double ODOMETRY_FREQUENCY_HERTZ =
       switch (Constants.getRobot()) {
         case SIM_BOT -> 50.0;
-        case PHOENIX_TUNER_X -> new CANBus(TunerConstants.DrivetrainConstants.CANBusName)
+        case PRESEASON_2026 -> new CANBus(TunerConstants.DrivetrainConstants.CANBusName)
                 .isNetworkFD()
             ? 250.0
             : 100.0;

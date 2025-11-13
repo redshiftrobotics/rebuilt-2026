@@ -40,7 +40,7 @@ public class ModuleConstants {
 
   static {
     switch (Constants.getRobot()) {
-      case PHOENIX_TUNER_X:
+      case PRESEASON_2026:
         // DO NOT USE THESE CONSTANTS, USE TUNER CONSTANTS DIRECTLY INSTEAD, HERE FOR REFERENCE
         FRONT_LEFT_MODULE_CONFIG = new ModuleConfig(TunerConstants.FrontLeft);
         FRONT_RIGHT_MODULE_CONFIG = new ModuleConfig(TunerConstants.FrontRight);
@@ -48,7 +48,7 @@ public class ModuleConstants {
         BACK_RIGHT_MODULE_CONFIG = new ModuleConfig(TunerConstants.BackRight);
         break;
 
-      case CHASSIS_2025:
+      case REEFSCAPE_2025:
         FRONT_LEFT_MODULE_CONFIG =
             new ModuleConfig(19, 18, 37, Rotation2d.fromRotations(-0.596435546875), true);
         FRONT_RIGHT_MODULE_CONFIG =
@@ -68,6 +68,13 @@ public class ModuleConstants {
             new ModuleConfig(11, 10, 36, Rotation2d.fromRotations(-0.8603515625), true);
         BACK_RIGHT_MODULE_CONFIG =
             new ModuleConfig(8, 9, 38, Rotation2d.fromRotations(-0.065185546875 + 0.5), true);
+        break;
+
+      case WOOD_BOT_2026:
+        FRONT_LEFT_MODULE_CONFIG = new ModuleConfig(0, 0, 0, Rotation2d.kZero, false);
+        FRONT_RIGHT_MODULE_CONFIG = new ModuleConfig(0, 0, 0, Rotation2d.kZero, false);
+        BACK_LEFT_MODULE_CONFIG = new ModuleConfig(0, 0, 0, Rotation2d.kZero, false);
+        BACK_RIGHT_MODULE_CONFIG = new ModuleConfig(0, 0, 0, Rotation2d.kZero, false);
         break;
 
       default:
@@ -99,13 +106,13 @@ public class ModuleConstants {
 
   public static final double WHEEL_RADIUS =
       switch (Constants.getRobot()) {
-        case PHOENIX_TUNER_X -> TunerConstants.FrontLeft.WheelRadius;
+        case PRESEASON_2026 -> TunerConstants.FrontLeft.WheelRadius;
         default -> Units.inchesToMeters(2.000);
       };
 
   static {
     switch (Constants.getRobot()) {
-      case PHOENIX_TUNER_X:
+      case PRESEASON_2026:
         // DO NOT USE THESE CONSTANTS, USE TUNER DIRECTLY CONSTANTS INSTEAD, HERE FOR REFERENCE
         DRIVE_MOTOR = DCMotor.getKrakenX60Foc(1);
         DRIVE_FEEDBACK = new PIDConstants(0.0, 0.0, 0.0);
@@ -138,7 +145,7 @@ public class ModuleConstants {
         break;
 
       case CHASSIS_CANNON:
-      case CHASSIS_2025:
+      case REEFSCAPE_2025:
       default:
         DRIVE_MOTOR = DCMotor.getNEO(1);
         DRIVE_FEEDBACK = new PIDConstants(0.0001, 0.0, 0.0);

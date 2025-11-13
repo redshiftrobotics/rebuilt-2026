@@ -19,7 +19,7 @@ public final class Constants {
   /** The period, in seconds, of the main robot loop */
   public static final double LOOP_PERIOD_SECONDS = Robot.defaultPeriodSecs; // 0.02
 
-  public static final RobotType PRIMARY_ROBOT_TYPE = RobotType.PHOENIX_TUNER_X;
+  public static final RobotType PRIMARY_ROBOT_TYPE = RobotType.PRESEASON_2026;
   private static RobotType robotType;
 
   /** If true, allows TunableNumbers to be edited from Advantage Scope */
@@ -89,8 +89,9 @@ public final class Constants {
   }
 
   public enum RobotType {
-    PHOENIX_TUNER_X,
-    CHASSIS_2025,
+    PRESEASON_2026,
+    REEFSCAPE_2025,
+    WOOD_BOT_2026,
     CHASSIS_CANNON,
     SIM_BOT,
   }
@@ -101,7 +102,7 @@ public final class Constants {
         case "032D2143":
           return RobotType.CHASSIS_CANNON;
         case "02384981":
-          return RobotType.CHASSIS_2025;
+          return RobotType.REEFSCAPE_2025;
       }
     } else if (RobotBase.isSimulation()) {
       return RobotType.SIM_BOT;

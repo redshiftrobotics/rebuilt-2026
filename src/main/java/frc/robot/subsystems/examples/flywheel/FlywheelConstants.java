@@ -10,7 +10,7 @@ public class FlywheelConstants {
 
   public static final FlywheelConfig FLYWHEEL_CONFIG =
       switch (Constants.getRobot()) {
-        case CHASSIS_2025 -> new FlywheelConfig(12, false);
+        case REEFSCAPE_2025 -> new FlywheelConfig(12, false);
         default -> new FlywheelConfig(0, false);
       };
 
