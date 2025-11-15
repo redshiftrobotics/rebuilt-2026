@@ -1,17 +1,20 @@
-package frc.robot.commands.controllers;
+package frc.robot.subsystems.drive.controllers;
 
 import static frc.robot.subsystems.drive.DriveConstants.HEADING_CONTROLLER_CONFIG;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.utility.VirtualSubsystem;
 import java.util.function.Supplier;
 
 /** Controller for rotating robot to goal heading using ProfiledPIDController */
-public class DriveRotationController {
+public class DriveRotationController extends VirtualSubsystem {
 
   private final Drive drive;
   private Supplier<Rotation2d> goalSupplier;
+
+  private int periodicCounter = 0;
 
   private final PIDController controller =
       new PIDController(
@@ -46,6 +49,11 @@ public class DriveRotationController {
     reset();
   }
 
+  @Override
+  public void periodic() {
+    periodicCounter += 1;
+  }
+
   public void setGoalSupplier(Supplier<Rotation2d> goalSupplier) {
     this.goalSupplier = goalSupplier;
   }
@@ -71,6 +79,10 @@ public class DriveRotationController {
    * @return The angular velocity command in radians per second.
    */
   public double calculate() {
+    if (periodicCounter > 1) {
+      reset();
+    }
+
     Rotation2d goal = goalSupplier.get();
 
     if (goal != null) {
@@ -78,6 +90,8 @@ public class DriveRotationController {
     }
 
     Rotation2d measured = drive.getRobotPose().getRotation();
+
+    periodicCounter = 0;
 
     return controller.calculate(measured.getRadians());
   }

@@ -1,4 +1,4 @@
-package frc.robot.commands.controllers;
+package frc.robot.subsystems.drive.controllers;
 
 import static frc.robot.subsystems.drive.DriveConstants.DRIVE_CONFIG;
 import static frc.robot.subsystems.drive.DriveConstants.ROTATION_CONTROLLER_CONSTANTS;
@@ -12,16 +12,19 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.utility.VirtualSubsystem;
 import java.util.Optional;
 import java.util.function.Supplier;
 
 /** Controller for driving robot to goal pose using HolonomicDriveController */
-public class DrivePoseController {
+public class DrivePoseController extends VirtualSubsystem {
 
   private final Drive drive;
 
   private Pose2d goal;
   private Supplier<Pose2d> goalSupplier;
+
+  private int periodicCounter = 0;
 
   private final HolonomicDriveController controller =
       new HolonomicDriveController(
@@ -65,6 +68,11 @@ public class DrivePoseController {
     reset();
   }
 
+  @Override
+  public void periodic() {
+    periodicCounter += 1;
+  }
+
   /**
    * Resets the pose controller to the current robot pose and speeds.
    *
@@ -100,6 +108,10 @@ public class DrivePoseController {
    * @return The desired chassis speeds.
    */
   public ChassisSpeeds calculate() {
+    if (periodicCounter > 1) {
+      reset();
+    }
+
     Optional<Pose2d> goal = getNextGoal();
     Pose2d measured = drive.getRobotPose();
 
@@ -113,6 +125,8 @@ public class DrivePoseController {
     if (this.goal == null) {
       return new ChassisSpeeds();
     }
+
+    periodicCounter = 0;
 
     return controller.calculate(measured, this.goal, 0, this.goal.getRotation());
   }

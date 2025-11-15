@@ -3,6 +3,7 @@ package frc.robot.commands.pipeline;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.subsystems.drive.Drive;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.UnaryOperator;
@@ -20,19 +21,19 @@ import java.util.function.UnaryOperator;
  */
 public class DriveInputPipeline {
 
-  private final DriveInput baseInput;
+  private final Drive drive;
+
   private final List<UnaryOperator<DriveInput>> layers = new LinkedList<>();
 
-  private DriveInput composedInput; // store to avoid rebuilding every frame for efficiency
+  private DriveInput lastInput = null;
 
   /**
    * Creates a new {@link DriveInputPipeline} with the given base {@link DriveInput}.
    *
    * @param baseInput The base {@link DriveInput} that subsequent layers will modify.
    */
-  public DriveInputPipeline(DriveInput baseInput) {
-    this.baseInput = baseInput;
-    this.composedInput = compose();
+  public DriveInputPipeline(Drive drive) {
+    this.drive = drive;
   }
 
   /**
@@ -54,7 +55,6 @@ public class DriveInputPipeline {
   /** Clears all active modifying layers. */
   public void clearLayers() {
     layers.clear();
-    composedInput = compose();
   }
 
   /**
@@ -65,7 +65,15 @@ public class DriveInputPipeline {
    * @return The current {@link ChassisSpeeds}.
    */
   public ChassisSpeeds getChassisSpeeds() {
-    return composedInput.getChassisSpeeds();
+    DriveInput input = new DriveInput(drive);
+
+    for (UnaryOperator<DriveInput> layer : layers) {
+      input = layer.apply(input);
+    }
+
+    this.lastInput = input;
+
+    return input.getChassisSpeeds();
   }
 
   /**
@@ -77,26 +85,17 @@ public class DriveInputPipeline {
    * @return A list of labels of all active layers.
    */
   public List<String> getActiveLayers() {
-    return composedInput.getLabels();
+    if (lastInput == null) {
+      return List.of();
+    }
+    return lastInput.getLabels();
   }
 
   private void activate(UnaryOperator<DriveInput> layer) {
-    if (layers.add(layer)) {
-      composedInput = compose();
-    }
+    layers.add(layer);
   }
 
   private void deactivate(UnaryOperator<DriveInput> layer) {
-    if (layers.remove(layer)) {
-      composedInput = compose();
-    }
-  }
-
-  private DriveInput compose() {
-    DriveInput input = baseInput;
-    for (UnaryOperator<DriveInput> layer : layers) {
-      input = layer.apply(input);
-    }
-    return input;
+    layers.remove(layer);
   }
 }

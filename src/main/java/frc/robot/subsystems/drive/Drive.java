@@ -31,12 +31,13 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.subsystems.dashboard.DriverDashboard;
+import frc.robot.subsystems.drive.controllers.DrivePoseController;
+import frc.robot.subsystems.drive.controllers.DriveRotationController;
 import frc.robot.utility.AllianceMirrorUtil;
 import frc.robot.utility.LocalADStarAK;
 import java.util.Arrays;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.stream.Stream;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -68,6 +69,9 @@ public class Drive extends SubsystemBase {
   private Rotation2d rawGyroRotation = new Rotation2d();
   private Pose2d robotPose = new Pose2d();
   private ChassisSpeeds robotSpeeds = new ChassisSpeeds();
+
+  private DriveRotationController headingController = new DriveRotationController(this);
+  private DrivePoseController poseController = new DrivePoseController(this);
 
   /**
    * Creates a new drivetrain for robot
@@ -102,13 +106,14 @@ public class Drive extends SubsystemBase {
     // --- Set up kinematics ---
 
     Translation2d[] moduleTranslations =
-        modules().map(Module::getDistanceFromCenter).toArray(Translation2d[]::new);
+        Arrays.stream(modules).map(Module::getDistanceFromCenter).toArray(Translation2d[]::new);
 
     kinematics = new SwerveDriveKinematics(moduleTranslations);
 
     // --- Set up odometry ---
 
-    lastModulePositions = modules().map(Module::getPosition).toArray(SwerveModulePosition[]::new);
+    lastModulePositions =
+        Arrays.stream(modules).map(Module::getPosition).toArray(SwerveModulePosition[]::new);
     poseEstimator =
         new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, robotPose);
 
@@ -189,7 +194,7 @@ public class Drive extends SubsystemBase {
     // different thread
     odometryLock.lock();
     gyroIO.updateInputs(gyroInputs);
-    modules().forEach(Module::updateInputs);
+    Arrays.stream(modules).forEach(Module::updateInputs);
     odometryLock.unlock();
 
     Logger.processInputs("Drive/Gyro", gyroInputs);
@@ -357,7 +362,7 @@ public class Drive extends SubsystemBase {
    * @return array of {@link SwerveModuleState} which contains an array of all swerve module states
    */
   public SwerveModuleState[] getWheelSpeeds() {
-    return modules().map(Module::getSpeeds).toArray(SwerveModuleState[]::new);
+    return Arrays.stream(modules).map(Module::getSpeeds).toArray(SwerveModuleState[]::new);
   }
 
   /**
@@ -367,7 +372,7 @@ public class Drive extends SubsystemBase {
    * @return array of {@link SwerveModuleState} which contains all desired swerve module states.
    */
   public SwerveModuleState[] getDesiredWheelSpeeds() {
-    return modules().map(Module::getDesiredState).toArray(SwerveModuleState[]::new);
+    return Arrays.stream(modules).map(Module::getDesiredState).toArray(SwerveModuleState[]::new);
   }
 
   // --- Wheel Positions ---
@@ -379,7 +384,7 @@ public class Drive extends SubsystemBase {
    * @return array of {@link SwerveModulePosition} which contains all swerve module positions
    */
   public SwerveModulePosition[] getWheelPositions() {
-    return modules().map(Module::getPosition).toArray(SwerveModulePosition[]::new);
+    return Arrays.stream(modules).map(Module::getPosition).toArray(SwerveModulePosition[]::new);
   }
 
   // --- Extra getters ---
@@ -404,7 +409,7 @@ public class Drive extends SubsystemBase {
    */
   public void stopUsingBrakeArrangement() {
     Rotation2d[] headings =
-        modules()
+        Arrays.stream(modules)
             .map(Module::getDistanceFromCenter)
             .map(Translation2d::getAngle)
             .toArray(Rotation2d[]::new);
@@ -417,7 +422,8 @@ public class Drive extends SubsystemBase {
    * their normal driving the next time a nonzero velocity is requested.
    */
   public void stopUsingForwardArrangement() {
-    Rotation2d[] headings = modules().map(module -> Rotation2d.kZero).toArray(Rotation2d[]::new);
+    Rotation2d[] headings =
+        Arrays.stream(modules).map(module -> Rotation2d.kZero).toArray(Rotation2d[]::new);
     kinematics.resetHeadings(headings);
     setWheelSpeeds(kinematics.toWheelSpeeds(new ChassisSpeeds()));
   }
@@ -432,7 +438,7 @@ public class Drive extends SubsystemBase {
    */
   public void setMotorBrakeMode(boolean enabled) {
     if (brakeModeEnabled != enabled) {
-      modules().forEach(module -> module.setBrakeMode(enabled));
+      Arrays.stream(modules).forEach(module -> module.setBrakeMode(enabled));
     }
     brakeModeEnabled = enabled;
   }
@@ -485,18 +491,40 @@ public class Drive extends SubsystemBase {
 
   /** Returns the position of each module in radians. */
   public double[] getWheelRadiusCharacterizationPositions() {
-    return modules().mapToDouble(Module::getWheelRadiusCharacterizationPosition).toArray();
+    return Arrays.stream(modules)
+        .mapToDouble(Module::getWheelRadiusCharacterizationPosition)
+        .toArray();
   }
 
   /** Returns the average velocity of the modules in rotations/sec (native units). */
   public double getFFCharacterizationVelocity() {
-    return modules().mapToDouble(Module::getFFCharacterizationVelocity).average().orElse(0.0);
+    return Arrays.stream(modules)
+        .mapToDouble(Module::getFFCharacterizationVelocity)
+        .average()
+        .orElse(0.0);
   }
 
-  // --- Module Util ---
+  // --- Get Controllers ---
 
-  /** Utility method. Get stream of modules */
-  private Stream<Module> modules() {
-    return Arrays.stream(modules);
+  /**
+   * Returns the heading controller for driving to a specific heading.
+   *
+   * <p>The drivetrain does not use this controller automatically; it must be used by commands.
+   *
+   * @return The heading controller.
+   */
+  public DriveRotationController getHeadingController() {
+    return headingController;
+  }
+
+  /**
+   * Returns the pose controller for driving to a specific pose.
+   *
+   * <p>The drivetrain does not use this controller automatically; it must be used by commands.
+   *
+   * @return The pose controller.
+   */
+  public DrivePoseController getPoseController() {
+    return poseController;
   }
 }

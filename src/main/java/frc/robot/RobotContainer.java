@@ -19,7 +19,6 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.Mode;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.controllers.DrivePoseController;
 import frc.robot.commands.pipeline.DriveInput;
 import frc.robot.commands.pipeline.DriveInputPipeline;
 import frc.robot.generated.TunerConstants;
@@ -33,6 +32,7 @@ import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOSparkMax;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.drive.controllers.DrivePoseController;
 import frc.robot.subsystems.led.BlinkenLEDPattern;
 import frc.robot.subsystems.led.LEDConstants;
 import frc.robot.subsystems.led.LEDStripIOSim;
@@ -42,7 +42,7 @@ import frc.robot.subsystems.vision.CameraIOSim;
 import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.utility.Elastic;
 import frc.robot.utility.Elastic.Notification.NotificationLevel;
-import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -234,12 +234,7 @@ public class RobotContainer {
 
   private void configureDriverControllerBindings(CommandXboxController xbox) {
 
-    final DriveInputPipeline pipeline =
-        new DriveInputPipeline(
-            new DriveInput(drive, "Drive")
-                .translationStick(() -> -xbox.getLeftY(), () -> -xbox.getLeftX())
-                .rotationStick(() -> -xbox.getRightX())
-                .fieldRelativeEnabled());
+    final DriveInputPipeline pipeline = new DriveInputPipeline(drive);
 
     // Default command, normal joystick drive
     drive.setDefaultCommand(
@@ -247,6 +242,16 @@ public class RobotContainer {
             .run(() -> drive.setRobotSpeeds(pipeline.getChassisSpeeds()))
             .finallyDo(drive::stop)
             .withName("Pipeline Drive"));
+
+    RobotModeTriggers.teleop()
+        .whileTrue(
+            pipeline.activateLayer(
+                input ->
+                    input
+                        .linearVelocityStick(-xbox.getLeftY(), -xbox.getLeftX())
+                        .angularVelocityStick(-xbox.getRightX())
+                        .fieldRelativeEnabled()
+                        .addLabel("Drive")));
 
     DriverDashboard.currentDriveModeName =
         () -> {
@@ -273,7 +278,7 @@ public class RobotContainer {
             pipeline.activateLayer(
                 input ->
                     input
-                        .headingStick(() -> -xbox.getRightY(), () -> -xbox.getRightX())
+                        .headingStick(-xbox.getRightY(), -xbox.getRightX())
                         .addLabel("Heading Controlled")));
 
     // Slow mode, reduce translation and rotation speeds for fine control
@@ -282,8 +287,8 @@ public class RobotContainer {
             pipeline.activateLayer(
                 input ->
                     input
-                        .translationCoefficient(0.3)
-                        .rotationCoefficient(0.1)
+                        .linearVelocityCoefficient(0.3)
+                        .angularVelocityCoefficient(0.3)
                         .addLabel("Slow Mode")));
 
     // Cause the robot to resist movement by forming an X shape with the swerve modules
@@ -324,27 +329,31 @@ public class RobotContainer {
           pipeline.activateLayer(
               input ->
                   input
-                      .translation(() -> translation)
+                      .linearVelocity(translation)
                       .fieldRelativeDisabled()
-                      .rotationCoefficient(0.3)
+                      .angularVelocityCoefficient(0.3)
                       .addLabel(name));
       xbox.pov(pov).whileTrue(activateLayer);
     }
 
     if (Constants.isDemoMode()) {
 
-      final DrivePoseController poseController = new DrivePoseController(drive);
+      DrivePoseController poseController = drive.getPoseController();
 
-      // Face setpoint
-      Supplier<Translation2d> translationSetpoint =
-          () -> poseController.getNextGoal().map(Pose2d::getTranslation).orElse(null);
+      UnaryOperator<DriveInput> aim =
+          input ->
+              input
+                  .facingPoint(
+                      drive
+                          .getPoseController()
+                          .getNextGoal()
+                          .map(Pose2d::getTranslation)
+                          .orElse(null))
+                  .addLabel("Face Setpoint");
+
       xbox.a()
           .whileTrue(
-              pipeline
-                  .activateLayer(
-                      input ->
-                          input.facingPoint(translationSetpoint::get).addLabel("Face Setpoint"))
-                  .onlyIf(() -> poseController.getNextGoal().isPresent()));
+              pipeline.activateLayer(aim).onlyIf(() -> poseController.getNextGoal().isPresent()));
 
       // Drive to pose setpoint reset
       RobotModeTriggers.disabled()
