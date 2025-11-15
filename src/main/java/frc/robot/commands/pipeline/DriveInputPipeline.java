@@ -4,7 +4,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.drive.Drive;
-import java.util.LinkedList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.function.UnaryOperator;
 
@@ -21,11 +21,11 @@ import java.util.function.UnaryOperator;
  */
 public class DriveInputPipeline {
 
+  private record Layer(String label, UnaryOperator<DriveInput> operator) {}
+
   private final Drive drive;
 
-  private final List<UnaryOperator<DriveInput>> layers = new LinkedList<>();
-
-  private DriveInput lastInput = null;
+  private final LinkedHashSet<Layer> layers = new LinkedHashSet<>();
 
   /**
    * Creates a new {@link DriveInputPipeline} with the given base {@link DriveInput}.
@@ -37,24 +37,35 @@ public class DriveInputPipeline {
   }
 
   /**
+   * Activates a layer permanently when the returned command starts.
+   *
+   * <p>When the layer is activated, it is applied to the base input after all previously activated
+   * layers.
+   *
+   * @param operator A function that returns a new {@link DriveInput} with additional behavior.
+   * @return A command that activates the layer once when scheduled.
+   */
+  public Command activatePermanentLayer(String name, UnaryOperator<DriveInput> operator) {
+    Layer layer = new Layer(name, operator);
+    return Commands.runOnce(() -> activate(layer)).andThen(Commands.none())
+        .ignoringDisable(true)
+        .withName("Activate Permanent Layer " + name);
+  }
+
+  /**
    * Activates a layer for the duration of the returned command. The layer will be deactivated when
    * the command ends.
    *
    * <p>When the layer is activated, it is applied to the base input after all previously activated
    * layers.
    *
-   * @param layer A function that returns a new {@link DriveInput} with additional behavior.
+   * @param operator A function that returns a new {@link DriveInput} with additional behavior.
    * @return A command that activates the layer while it is running.
    */
-  public Command activateLayer(UnaryOperator<DriveInput> layer) {
+  public Command activateLayer(String name, UnaryOperator<DriveInput> operator) {
+    Layer layer = new Layer(name, operator);
     return Commands.startEnd(() -> activate(layer), () -> deactivate(layer))
-        .ignoringDisable(true)
-        .withName("Activate Layer " + layer.hashCode());
-  }
-
-  /** Clears all active modifying layers. */
-  public void clearLayers() {
-    layers.clear();
+        .withName("Activate Layer " + name);
   }
 
   /**
@@ -67,11 +78,9 @@ public class DriveInputPipeline {
   public ChassisSpeeds getChassisSpeeds() {
     DriveInput input = new DriveInput(drive);
 
-    for (UnaryOperator<DriveInput> layer : layers) {
-      input = layer.apply(input);
+    for (Layer layer : layers) {
+      input = layer.operator.apply(input);
     }
-
-    this.lastInput = input;
 
     return input.getChassisSpeeds();
   }
@@ -85,17 +94,14 @@ public class DriveInputPipeline {
    * @return A list of labels of all active layers.
    */
   public List<String> getActiveLayers() {
-    if (lastInput == null) {
-      return List.of();
-    }
-    return lastInput.getLabels();
+    return layers.stream().map(Layer::label).toList();
   }
 
-  private void activate(UnaryOperator<DriveInput> layer) {
+  private void activate(Layer layer) {
     layers.add(layer);
   }
 
-  private void deactivate(UnaryOperator<DriveInput> layer) {
+  private void deactivate(Layer layer) {
     layers.remove(layer);
   }
 }

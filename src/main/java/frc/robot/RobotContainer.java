@@ -245,13 +245,13 @@ public class RobotContainer {
 
     RobotModeTriggers.teleop()
         .whileTrue(
-            pipeline.activateLayer(
+            pipeline.activatePermanentLayer(
+                "Drive",
                 input ->
                     input
                         .linearVelocityStick(-xbox.getLeftY(), -xbox.getLeftX())
                         .angularVelocityStick(-xbox.getRightX())
-                        .fieldRelativeEnabled()
-                        .addLabel("Drive")));
+                        .fieldRelativeEnabled()));
 
     DriverDashboard.currentDriveModeName =
         () -> {
@@ -268,28 +268,22 @@ public class RobotContainer {
     // Toggle robot relative mode, used as backup if gyro fails
     xbox.y()
         .toggleOnTrue(
-            pipeline.activateLayer(
-                input -> input.fieldRelativeDisabled().addLabel("Robot Relative")));
+            pipeline.activateLayer("Robot Relative", input -> input.fieldRelativeDisabled()));
 
     // Secondary drive command, right stick will be used to control target angular position instead
     // of angular velocity
     xbox.rightBumper()
         .whileTrue(
             pipeline.activateLayer(
-                input ->
-                    input
-                        .headingStick(-xbox.getRightY(), -xbox.getRightX())
-                        .addLabel("Heading Controlled")));
+                "Heading Controlled",
+                input -> input.headingStick(-xbox.getRightY(), -xbox.getRightX())));
 
     // Slow mode, reduce translation and rotation speeds for fine control
     xbox.leftBumper()
         .whileTrue(
             pipeline.activateLayer(
-                input ->
-                    input
-                        .linearVelocityCoefficient(0.3)
-                        .angularVelocityCoefficient(0.3)
-                        .addLabel("Slow Mode")));
+                "Slow Mode",
+                input -> input.linearVelocityCoefficient(0.3).angularVelocityCoefficient(0.3)));
 
     // Cause the robot to resist movement by forming an X shape with the swerve modules
     // Helps prevent getting pushed around
@@ -299,8 +293,7 @@ public class RobotContainer {
     xbox.b()
         .or(RobotModeTriggers.disabled())
         .onTrue(drive.runOnce(drive::stop).withName("Cancel"))
-        .onTrue(rumbleControllers(0).withTimeout(Constants.LOOP_PERIOD_SECONDS))
-        .onTrue(Commands.runOnce(pipeline::clearLayers));
+        .onTrue(rumbleControllers(0).withTimeout(Constants.LOOP_PERIOD_SECONDS));
 
     xbox.b()
         .debounce(1)
@@ -324,15 +317,14 @@ public class RobotContainer {
     for (int pov = 0; pov < 360; pov += 45) {
       Rotation2d rotation = Rotation2d.fromDegrees(-pov);
       Translation2d translation = new Translation2d(1, rotation);
-      String name = String.format("Strafe %.0f°", translation.getAngle().getDegrees());
       Command activateLayer =
           pipeline.activateLayer(
+              String.format("Strafe %.0f°", translation.getAngle().getDegrees()),
               input ->
                   input
                       .linearVelocity(translation)
                       .fieldRelativeDisabled()
-                      .angularVelocityCoefficient(0.3)
-                      .addLabel(name));
+                      .angularVelocityCoefficient(0.3));
       xbox.pov(pov).whileTrue(activateLayer);
     }
 
@@ -342,18 +334,14 @@ public class RobotContainer {
 
       UnaryOperator<DriveInput> aim =
           input ->
-              input
-                  .facingPoint(
-                      drive
-                          .getPoseController()
-                          .getNextGoal()
-                          .map(Pose2d::getTranslation)
-                          .orElse(null))
-                  .addLabel("Face Setpoint");
+              input.facingPoint(
+                  drive.getPoseController().getNextGoal().map(Pose2d::getTranslation).orElse(null));
 
       xbox.a()
           .whileTrue(
-              pipeline.activateLayer(aim).onlyIf(() -> poseController.getNextGoal().isPresent()));
+              pipeline
+                  .activateLayer("Face Setpoint", aim)
+                  .onlyIf(() -> poseController.getNextGoal().isPresent()));
 
       // Drive to pose setpoint reset
       RobotModeTriggers.disabled()

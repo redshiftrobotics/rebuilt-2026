@@ -4,10 +4,9 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.utility.AllianceMirrorUtil;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A mutable container for drive input values. This is a simple data class that stores linear
@@ -20,8 +19,6 @@ public class DriveInput {
 
   public static final double LINEAR_VELOCITY_EXPONENT = 2.0; // Square the joystick input
   public static final double ANGULAR_VELOCITY_EXPONENT = 2.0; // Square the joystick input
-
-  public final List<String> labels = new ArrayList<>();
 
   private final Drive drive;
 
@@ -45,10 +42,6 @@ public class DriveInput {
     }
 
     return chassisSpeeds;
-  }
-
-  public List<String> getLabels() {
-    return labels;
   }
 
   /**
@@ -169,7 +162,7 @@ public class DriveInput {
 
     Translation2d diff = point.minus(drive.getRobotPose().getTranslation());
 
-    if (diff.getNorm() < 1e-6) {
+    if (diff.getNorm() < Units.inchesToMeters(1)) {
       return this;
     }
 
@@ -214,16 +207,5 @@ public class DriveInput {
    */
   public DriveInput angularVelocityCoefficient(double coefficient) {
     return angularVelocity(angularVelocity * coefficient);
-  }
-
-  /**
-   * Adds a label to this input. Labels accumulate to show the history of modifications.
-   *
-   * @param label The label to add
-   * @return This DriveInput for chaining
-   */
-  public DriveInput addLabel(String label) {
-    labels.add(label);
-    return this;
   }
 }
