@@ -29,15 +29,15 @@ public class DriveRotationController {
   }
 
   /**
-   * Creates a new DriveRotationController.
+   * Creates a new DriveRotationController. Holds last goal, which is kept when null is supplied, and starts as the current heading.
    *
    * @param drive The drive subsystem to control.
-   * @param setpointSupplier A supplier that provides the desired setpoint heading. Can supply null
+   * @param goalSupplier A supplier that provides the desired goal heading. Can supply null
    *     if there is no new goal, in which case the controller will hold the last goal.
    */
-  public DriveRotationController(Drive drive, Supplier<Rotation2d> setpointSupplier) {
+  public DriveRotationController(Drive drive, Supplier<Rotation2d> goalSupplier) {
     this.drive = drive;
-    this.goalSupplier = setpointSupplier;
+    this.goalSupplier = goalSupplier;
 
     controller.enableContinuousInput(-Math.PI, Math.PI);
     controller.setTolerance(HEADING_CONTROLLER_CONFIG.toleranceRadians());
@@ -70,10 +70,10 @@ public class DriveRotationController {
    * @return The angular velocity command in radians per second.
    */
   public double calculate() {
-    Rotation2d setpoint = goalSupplier.get();
+    Rotation2d goal = goalSupplier.get();
 
-    if (setpoint != null) {
-      controller.setSetpoint(setpoint.getRadians());
+    if (goal != null) {
+      controller.setSetpoint(goal.getRadians());
     }
 
     Rotation2d measured = drive.getRobotPose().getRotation();
@@ -81,12 +81,13 @@ public class DriveRotationController {
     return controller.calculate(measured.getRadians());
   }
 
-  /**
-   * Returns whether the controller has reached the setpoint rotation.
-   *
-   * @return True if at setpoint, false otherwise.
-   */
-  public boolean atSetpoint() {
+  /** Returns if the controller had a goal during the last calculate() call. */
+  public boolean atGoal() {
     return controller.atSetpoint();
+  }
+
+  /** Returns the goal heading during the last calculate() call. */
+  public Rotation2d getGoal() {
+    return Rotation2d.fromRadians(controller.getSetpoint());
   }
 }

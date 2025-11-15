@@ -337,14 +337,14 @@ public class RobotContainer {
 
       // Face setpoint
       Supplier<Translation2d> translationSetpoint =
-          () -> poseController.getNextSetpoint().map(Pose2d::getTranslation).orElse(null);
+          () -> poseController.getNextGoal().map(Pose2d::getTranslation).orElse(null);
       xbox.a()
           .whileTrue(
               pipeline
                   .activateLayer(
                       input ->
                           input.facingPoint(translationSetpoint::get).addLabel("Face Setpoint"))
-                  .onlyIf(() -> poseController.getNextSetpoint().isPresent()));
+                  .onlyIf(() -> poseController.getNextGoal().isPresent()));
 
       // Drive to pose setpoint reset
       RobotModeTriggers.disabled()
@@ -370,9 +370,9 @@ public class RobotContainer {
                   .finallyDo(drive::stop)
                   .beforeStarting(poseController::reset)
                   .alongWith(rumbleController(xbox, 0.1, RumbleType.kLeftRumble))
-                  .until(poseController::atSetpoint)
+                  .until(poseController::atGoal)
                   .andThen(rumbleController(xbox, 1, RumbleType.kRightRumble).withTimeout(0.2))
-                  .onlyIf(() -> poseController.getNextSetpoint().isPresent())
+                  .onlyIf(() -> poseController.getNextGoal().isPresent())
                   .withName("Drive to Setpoint"));
     }
   }

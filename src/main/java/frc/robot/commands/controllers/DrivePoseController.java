@@ -20,8 +20,8 @@ public class DrivePoseController {
 
   private final Drive drive;
 
-  private Pose2d setpoint;
-  private Supplier<Pose2d> setpointSupplier;
+  private Pose2d goal;
+  private Supplier<Pose2d> goalSupplier;
 
   private final HolonomicDriveController controller =
       new HolonomicDriveController(
@@ -52,12 +52,12 @@ public class DrivePoseController {
    * Creates a new DrivePoseController.
    *
    * @param drive The drive subsystem to control.
-   * @param setpointSupplier A supplier that provides the desired goal pose. Can supply null if
+   * @param goalSupplier A supplier that provides the desired goal pose. Can supply null if
    *     there is no new goal, in which case the controller will hold the last goal.
    */
-  public DrivePoseController(Drive drive, Supplier<Pose2d> setpointSupplier) {
+  public DrivePoseController(Drive drive, Supplier<Pose2d> goalSupplier) {
     this.drive = drive;
-    this.setpointSupplier = setpointSupplier;
+    this.goalSupplier = goalSupplier;
 
     controller.setTolerance(
         new Pose2d(TRANSLATION_TOLERANCE, TRANSLATION_TOLERANCE, ROTATION_TOLERANCE));
@@ -72,16 +72,16 @@ public class DrivePoseController {
    * the current pose.
    */
   public void reset() {
-    setpoint = null;
+    goal = null;
     resetControllers();
   }
 
-  public void setSetpointSupplier(Supplier<Pose2d> setpointSupplier) {
-    this.setpointSupplier = setpointSupplier;
+  public void setSetpointSupplier(Supplier<Pose2d> goalSupplier) {
+    this.goalSupplier = goalSupplier;
   }
 
-  public void setSetpoint(Pose2d setpoint) {
-    this.setpointSupplier = () -> setpoint;
+  public void setSetpoint(Pose2d goal) {
+    this.goalSupplier = () -> goal;
   }
 
   private void resetControllers() {
@@ -100,44 +100,40 @@ public class DrivePoseController {
    * @return The desired chassis speeds.
    */
   public ChassisSpeeds calculate() {
-    Pose2d setpoint = setpointSupplier.get();
+    Optional<Pose2d> goal = getNextGoal();
     Pose2d measured = drive.getRobotPose();
 
-    if (setpoint != null) {
-      if (this.setpoint == null) {
+    if (goal.isPresent()) {
+      if (this.goal == null) {
         resetControllers();
       }
-      this.setpoint = setpoint;
+      this.goal = goal.get();
     }
 
-    if (this.setpoint == null) {
+    if (this.goal == null) {
       return new ChassisSpeeds();
     }
 
-    return controller.calculate(measured, this.setpoint, 0, this.setpoint.getRotation());
+    return controller.calculate(measured, this.goal, 0, this.goal.getRotation());
   }
 
-  /**
-   * Returns whether the controller has reached the goal pose during the last
-   *
-   * @return True if at goal, false otherwise.
-   */
-  public boolean atSetpoint() {
-    return controller.atReference() && hasSetpoint();
+  /** Returns if the controller reached the goal during the last calculate() call. */
+  public boolean atGoal() {
+    return controller.atReference() && hasGoal();
   }
 
-  /** Returns if the controller had a setpoint during the last calculate() call. */
-  public boolean hasSetpoint() {
-    return setpoint != null;
+  /** Returns if the controller had a goal during the last calculate() call. */
+  public boolean hasGoal() {
+    return goal != null;
   }
 
-  /** Returns the current setpoint from the supplier. */
-  public Optional<Pose2d> getNextSetpoint() {
-    return Optional.ofNullable(setpointSupplier.get());
+  /** Returns the current goal from the supplier. */
+  public Optional<Pose2d> getNextGoal() {
+    return Optional.ofNullable(goalSupplier.get());
   }
 
-  /** Returns the setpoint that was used in the last calculate() call. */
-  public Optional<Pose2d> getLastSetpoint() {
-    return Optional.ofNullable(setpoint);
+  /** Returns the goal that was used in the last calculate() call. */
+  public Optional<Pose2d> getLastGoal() {
+    return Optional.ofNullable(goal);
   }
 }
