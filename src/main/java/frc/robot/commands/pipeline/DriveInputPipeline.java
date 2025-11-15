@@ -47,7 +47,8 @@ public class DriveInputPipeline {
    */
   public Command activatePermanentLayer(String name, UnaryOperator<DriveInput> operator) {
     Layer layer = new Layer(name, operator);
-    return Commands.runOnce(() -> activate(layer)).andThen(Commands.none())
+    return Commands.runOnce(() -> activate(layer))
+        .andThen(Commands.idle())
         .ignoringDisable(true)
         .withName("Activate Permanent Layer " + name);
   }
