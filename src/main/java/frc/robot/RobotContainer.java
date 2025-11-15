@@ -243,15 +243,13 @@ public class RobotContainer {
             .finallyDo(drive::stop)
             .withName("Pipeline Drive"));
 
-    RobotModeTriggers.teleop()
-        .whileTrue(
-            pipeline.activatePermanentLayer(
-                "Drive",
-                input ->
-                    input
-                        .linearVelocityStick(-xbox.getLeftY(), -xbox.getLeftX())
-                        .angularVelocityStick(-xbox.getRightX())
-                        .fieldRelativeEnabled()));
+    pipeline.addDefaultLayer(
+        "Drive",
+        input ->
+            input
+                .linearVelocityStick(-xbox.getLeftY(), -xbox.getLeftX())
+                .angularVelocityStick(-xbox.getRightX())
+                .fieldRelativeEnabled());
 
     DriverDashboard.currentDriveModeName =
         () -> {
@@ -267,21 +265,20 @@ public class RobotContainer {
 
     // Toggle robot relative mode, used as backup if gyro fails
     xbox.y()
-        .toggleOnTrue(
-            pipeline.activateLayer("Robot Relative", input -> input.fieldRelativeDisabled()));
+        .toggleOnTrue(pipeline.runLayer("Robot Relative", input -> input.fieldRelativeDisabled()));
 
     // Secondary drive command, right stick will be used to control target angular position instead
     // of angular velocity
     xbox.rightBumper()
         .whileTrue(
-            pipeline.activateLayer(
+            pipeline.runLayer(
                 "Heading Controlled",
                 input -> input.headingStick(-xbox.getRightY(), -xbox.getRightX())));
 
     // Slow mode, reduce translation and rotation speeds for fine control
     xbox.leftBumper()
         .whileTrue(
-            pipeline.activateLayer(
+            pipeline.runLayer(
                 "Slow Mode",
                 input -> input.linearVelocityCoefficient(0.3).angularVelocityCoefficient(0.3)));
 
@@ -318,7 +315,7 @@ public class RobotContainer {
       Rotation2d rotation = Rotation2d.fromDegrees(-pov);
       Translation2d translation = new Translation2d(1, rotation);
       Command activateLayer =
-          pipeline.activateLayer(
+          pipeline.runLayer(
               String.format("Strafe %.0f°", translation.getAngle().getDegrees()),
               input ->
                   input
@@ -340,7 +337,7 @@ public class RobotContainer {
       xbox.a()
           .whileTrue(
               pipeline
-                  .activateLayer("Face Setpoint", aim)
+                  .runLayer("Face Setpoint", aim)
                   .onlyIf(() -> poseController.getNextGoal().isPresent()));
 
       // Drive to pose setpoint reset

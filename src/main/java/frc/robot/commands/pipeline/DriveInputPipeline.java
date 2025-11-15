@@ -4,7 +4,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.drive.Drive;
-import java.util.LinkedHashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.UnaryOperator;
 
@@ -25,7 +25,7 @@ public class DriveInputPipeline {
 
   private final Drive drive;
 
-  private final LinkedHashSet<Layer> layers = new LinkedHashSet<>();
+  private final List<Layer> layers = new ArrayList<>();
 
   /**
    * Creates a new {@link DriveInputPipeline} with the given base {@link DriveInput}.
@@ -36,21 +36,9 @@ public class DriveInputPipeline {
     this.drive = drive;
   }
 
-  /**
-   * Activates a layer permanently when the returned command starts.
-   *
-   * <p>When the layer is activated, it is applied to the base input after all previously activated
-   * layers.
-   *
-   * @param operator A function that returns a new {@link DriveInput} with additional behavior.
-   * @return A command that activates the layer once when scheduled.
-   */
-  public Command activatePermanentLayer(String name, UnaryOperator<DriveInput> operator) {
-    Layer layer = new Layer(name, operator);
-    return Commands.runOnce(() -> activate(layer))
-        .andThen(Commands.idle())
-        .ignoringDisable(true)
-        .withName("Activate Permanent Layer " + name);
+  public void addDefaultLayer(String name, UnaryOperator<DriveInput> modifier) {
+    Layer layer = new Layer(name, modifier);
+    activate(layer);
   }
 
   /**
@@ -63,7 +51,7 @@ public class DriveInputPipeline {
    * @param operator A function that returns a new {@link DriveInput} with additional behavior.
    * @return A command that activates the layer while it is running.
    */
-  public Command activateLayer(String name, UnaryOperator<DriveInput> operator) {
+  public Command runLayer(String name, UnaryOperator<DriveInput> operator) {
     Layer layer = new Layer(name, operator);
     return Commands.startEnd(() -> activate(layer), () -> deactivate(layer))
         .withName("Activate Layer " + name);
