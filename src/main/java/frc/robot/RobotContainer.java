@@ -2,6 +2,7 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -264,8 +265,7 @@ public class RobotContainer {
         };
 
     // Toggle robot relative mode, used as backup if gyro fails
-    xbox.y()
-        .toggleOnTrue(pipeline.runLayer("Robot Relative", input -> input.fieldRelativeDisabled()));
+    xbox.y().toggleOnTrue(pipeline.runLayer("Robot Relative", DriveInput::fieldRelativeDisabled));
 
     // Secondary drive command, right stick will be used to control target angular position instead
     // of angular velocity
@@ -277,10 +277,7 @@ public class RobotContainer {
 
     // Slow mode, reduce translation and rotation speeds for fine control
     xbox.leftBumper()
-        .whileTrue(
-            pipeline.runLayer(
-                "Slow Mode",
-                input -> input.linearVelocityCoefficient(0.3).angularVelocityCoefficient(0.3)));
+        .whileTrue(pipeline.runLayer("Slow Mode", input -> input.coefficients(0.3, 0.3)));
 
     // Cause the robot to resist movement by forming an X shape with the swerve modules
     // Helps prevent getting pushed around
@@ -316,12 +313,10 @@ public class RobotContainer {
       Translation2d translation = new Translation2d(1, rotation);
       Command activateLayer =
           pipeline.runLayer(
-              String.format("Strafe %.0f°", translation.getAngle().getDegrees()),
+              String.format(
+                  "Strafe %.0f°", MathUtil.inputModulus(rotation.getDegrees(), -180, +180)),
               input ->
-                  input
-                      .linearVelocity(translation)
-                      .fieldRelativeDisabled()
-                      .angularVelocityCoefficient(0.3));
+                  input.linearVelocity(translation).fieldRelativeDisabled().coefficients(1, 0.3));
       xbox.pov(pov).whileTrue(activateLayer);
     }
 

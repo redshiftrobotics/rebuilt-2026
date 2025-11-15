@@ -190,22 +190,15 @@ public class DriveInput {
   }
 
   /**
-   * Scales the linear velocity by a coefficient.
+   * Scales the linear and angular velocities by the given coefficients.
    *
-   * @param coefficient The scaling factor (e.g., 0.3 for 30% speed)
+   * @param linearCoeff The coefficient to scale the linear velocity
+   * @param angularCoeff The coefficient to scale the angular velocity
    * @return This DriveInput for chaining
    */
-  public DriveInput linearVelocityCoefficient(double coefficient) {
-    return linearVelocity(linearVelocity.times(coefficient));
-  }
-
-  /**
-   * Scales the angular velocity by a coefficient. Does not affect heading targets.
-   *
-   * @param coefficient The scaling factor (e.g., 0.1 for 10% rotation speed)
-   * @return This DriveInput for chaining
-   */
-  public DriveInput angularVelocityCoefficient(double coefficient) {
-    return angularVelocity(angularVelocity * coefficient);
+  public DriveInput coefficients(double linearCoeff, double angularCoeff) {
+    this.linearVelocity = this.linearVelocity.times(linearCoeff);
+    this.angularVelocity *= angularCoeff;
+    return this;
   }
 }
