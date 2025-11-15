@@ -29,11 +29,12 @@ public class DriveRotationController {
   }
 
   /**
-   * Creates a new DriveRotationController. Holds last goal, which is kept when null is supplied, and starts as the current heading.
+   * Creates a new DriveRotationController. Holds last goal, which is kept when null is supplied,
+   * and starts as the current heading.
    *
    * @param drive The drive subsystem to control.
-   * @param goalSupplier A supplier that provides the desired goal heading. Can supply null
-   *     if there is no new goal, in which case the controller will hold the last goal.
+   * @param goalSupplier A supplier that provides the desired goal heading. Can supply null if there
+   *     is no new goal, in which case the controller will hold the last goal.
    */
   public DriveRotationController(Drive drive, Supplier<Rotation2d> goalSupplier) {
     this.drive = drive;

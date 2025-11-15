@@ -52,8 +52,8 @@ public class DrivePoseController {
    * Creates a new DrivePoseController.
    *
    * @param drive The drive subsystem to control.
-   * @param goalSupplier A supplier that provides the desired goal pose. Can supply null if
-   *     there is no new goal, in which case the controller will hold the last goal.
+   * @param goalSupplier A supplier that provides the desired goal pose. Can supply null if there is
+   *     no new goal, in which case the controller will hold the last goal.
    */
   public DrivePoseController(Drive drive, Supplier<Pose2d> goalSupplier) {
     this.drive = drive;
