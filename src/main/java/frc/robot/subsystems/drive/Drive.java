@@ -70,8 +70,8 @@ public class Drive extends SubsystemBase {
   private Pose2d robotPose = new Pose2d();
   private ChassisSpeeds robotSpeeds = new ChassisSpeeds();
 
-  private DriveRotationController headingController = new DriveRotationController(this);
-  private DrivePoseController poseController = new DrivePoseController(this);
+  private final DriveRotationController headingController = new DriveRotationController(this);
+  private final DrivePoseController poseController = new DrivePoseController(this);
 
   /**
    * Creates a new drivetrain for robot

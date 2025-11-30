@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.controllers.DrivePoseController;
+import frc.robot.subsystems.drive.controllers.DriveRotationController;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -25,13 +26,18 @@ public class DriveCommands {
   private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
 
   /** Drive to a pose, more precise */
-  public static Command driveToPoseSimple(Drive drive, Pose2d desiredPose) {
-    DrivePoseController controller = new DrivePoseController(drive, () -> desiredPose);
-
+  public static Command driveWithPoseController(Drive drive, DrivePoseController controller) {
     return drive
         .run(() -> drive.setRobotSpeeds(controller.calculate()))
         .until(controller::atGoal)
-        .beforeStarting(controller::reset)
+        .finallyDo(drive::stop);
+  }
+
+  public static Command rotateWithRotationController(
+      Drive drive, DriveRotationController controller) {
+    return drive
+        .run(() -> drive.setRobotSpeeds(new ChassisSpeeds(0.0, 0.0, controller.calculate())))
+        .until(controller::atGoal)
         .finallyDo(drive::stop);
   }
 

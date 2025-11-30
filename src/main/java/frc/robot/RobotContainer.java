@@ -34,7 +34,6 @@ import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOSparkMax;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
-import frc.robot.subsystems.drive.controllers.DrivePoseController;
 import frc.robot.subsystems.led.BlinkenLEDPattern;
 import frc.robot.subsystems.led.LEDConstants;
 import frc.robot.subsystems.led.LEDStripIOSim;
@@ -323,8 +322,6 @@ public class RobotContainer {
 
     if (Constants.isDemoMode()) {
 
-      DrivePoseController poseController = drive.getPoseController();
-
       UnaryOperator<DriveInput> aim =
           input ->
               input.facingPoint(
@@ -334,11 +331,12 @@ public class RobotContainer {
           .whileTrue(
               pipeline
                   .runLayer("Face Setpoint", aim)
-                  .onlyIf(() -> poseController.getNextGoal().isPresent()));
+                  .onlyIf(() -> drive.getPoseController().getNextGoal().isPresent()));
 
       // Drive to pose setpoint reset
       RobotModeTriggers.disabled()
-          .onTrue(Commands.runOnce(poseController::reset).withName("Reset Pose Controller"));
+          .onTrue(
+              Commands.runOnce(drive.getPoseController()::reset).withName("Reset Pose Controller"));
 
       // Save current pose as setpoint
       xbox.leftTrigger()
@@ -347,7 +345,7 @@ public class RobotContainer {
               Commands.runOnce(
                       () -> {
                         Pose2d setpoint = drive.getRobotPose();
-                        poseController.setSetpoint(setpoint);
+                        drive.getPoseController().setSetpoint(setpoint);
                         Logger.recordOutput("Teleop/PoseGoal", setpoint);
                       })
                   .withName("Save Setpoint"));
@@ -355,14 +353,9 @@ public class RobotContainer {
       // Drive to pose setpoint
       xbox.rightTrigger()
           .whileTrue(
-              drive
-                  .run(() -> drive.setRobotSpeeds(poseController.calculate()))
-                  .finallyDo(drive::stop)
-                  .beforeStarting(poseController::reset)
-                  .alongWith(rumbleController(xbox, 0.1, RumbleType.kLeftRumble))
-                  .until(poseController::atGoal)
+              DriveCommands.driveWithPoseController(drive, drive.getPoseController())
                   .andThen(rumbleController(xbox, 1, RumbleType.kRightRumble).withTimeout(0.2))
-                  .onlyIf(() -> poseController.getNextGoal().isPresent())
+                  .onlyIf(() -> drive.getPoseController().getNextGoal().isPresent())
                   .withName("Drive to Setpoint"));
     }
   }
