@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.Mode;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.pipeline.DriveInput;
@@ -429,6 +430,17 @@ public class RobotContainer {
       dashboardChooser.addOption(
           "[Characterization] Drive Wheel Radius",
           DriveCommands.wheelRadiusCharacterization(drive));
+
+      dashboardChooser.addOption(
+          "[SysId] Drive Quasistatic Forward",
+          drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+      dashboardChooser.addOption(
+          "[SysId] Drive Quasistatic Reverse",
+          drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+      dashboardChooser.addOption(
+          "[SysId] Drive Dynamic Forward", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
+      dashboardChooser.addOption(
+          "[SysId] Drive Dynamic Reverse", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
     }
   }
 
