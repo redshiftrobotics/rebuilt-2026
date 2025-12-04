@@ -176,7 +176,7 @@ public class ModuleConstants {
   }
 
   // https://www.swervedrivespecialties.com/products/mk5n-swerve-module
-  public enum Mk5nReductionsOptions {
+  public enum Mk5nReductions {
     L1(12.0),
     L2(14.0),
     L3(16.0);
@@ -185,7 +185,7 @@ public class ModuleConstants {
 
     public final double reduction;
 
-    Mk5nReductionsOptions(double adjustableGearTeeth) {
+    Mk5nReductions(double adjustableGearTeeth) {
       this.reduction = (54.0 / adjustableGearTeeth) * (25.0 / 32.0) * (30.0 / 15.0);
     }
   }
