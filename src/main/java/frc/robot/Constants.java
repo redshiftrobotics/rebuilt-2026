@@ -23,7 +23,7 @@ public final class Constants {
   private static RobotType robotType;
 
   /** If true, allows TunableNumbers to be edited from Advantage Scope */
-  public static final boolean TUNING_MODE = false;
+  public static final boolean TUNING_MODE = true;
 
   /** If true, should enable cosmetic logging to Advantage Scope throughout the codebase */
   public static final boolean ADDITIONAL_LOGGING = true;
