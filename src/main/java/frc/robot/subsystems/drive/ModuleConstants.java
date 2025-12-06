@@ -129,7 +129,7 @@ public class ModuleConstants {
         DRIVE_MOTOR = DCMotor.getKrakenX60Foc(1);
         DRIVE_FEEDBACK = new PIDConstants(0.05, 0.0, 0.0);
         DRIVE_FEED_FORWARD =
-            new FeedForwardConstants(0.0, 0.144886 / TunerConstants.FrontLeft.WheelRadius, 0.0);
+            new FeedForwardConstants(0.0, 0.144886, 0.0);
         DRIVE_MOTOR_CURRENT_LIMIT = TunerConstants.FrontLeft.SlipCurrent;
         DRIVE_REDUCTION = Mk4iReductions.L3.reduction;
 
@@ -144,7 +144,7 @@ public class ModuleConstants {
       default:
         DRIVE_MOTOR = DCMotor.getNEO(1);
         DRIVE_FEEDBACK = new PIDConstants(0.0001, 0.0, 0.0);
-        DRIVE_FEED_FORWARD = new FeedForwardConstants(0.1, 2.35, 0.53);
+        DRIVE_FEED_FORWARD = new FeedForwardConstants(0.2, 4.35, 0);
         DRIVE_MOTOR_CURRENT_LIMIT = 50;
         DRIVE_REDUCTION = Mk4iReductions.L3.reduction;
 

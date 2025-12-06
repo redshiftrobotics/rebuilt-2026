@@ -94,8 +94,8 @@ public class ModuleIOTalonFX implements ModuleIO {
   private final StatusSignal<Current> turnCurrent;
 
   // Break or coast mode
-  private boolean driveBreakMode = true;
-  private boolean turnBreakMode = true;
+  private boolean driveBrakeMode = true;
+  private boolean turnBrakeMode = true;
 
   // Connection debouncers
   private final Debouncer driveConnectedDebounce =
@@ -115,7 +115,7 @@ public class ModuleIOTalonFX implements ModuleIO {
 
     // Configure drive motor
     driveConfig.MotorOutput.NeutralMode =
-        driveBreakMode ? NeutralModeValue.Brake : NeutralModeValue.Coast;
+        driveBrakeMode ? NeutralModeValue.Brake : NeutralModeValue.Coast;
     driveConfig.Slot0 = constants.DriveMotorGains;
     driveConfig.Feedback.SensorToMechanismRatio = constants.DriveMotorGearRatio;
     driveConfig.TorqueCurrent.PeakForwardTorqueCurrent = constants.SlipCurrent;
@@ -131,7 +131,7 @@ public class ModuleIOTalonFX implements ModuleIO {
 
     // Configure turn motor
     turnConfig.MotorOutput.NeutralMode =
-        turnBreakMode ? NeutralModeValue.Brake : NeutralModeValue.Coast;
+        turnBrakeMode ? NeutralModeValue.Brake : NeutralModeValue.Coast;
     turnConfig.Slot0 = constants.SteerMotorGains;
     turnConfig.Feedback.FeedbackRemoteSensorID = constants.EncoderId;
     turnConfig.Feedback.FeedbackSensorSource =
@@ -284,20 +284,20 @@ public class ModuleIOTalonFX implements ModuleIO {
 
   @Override
   public void setDriveBrakeMode(boolean enable) {
-    if (driveBreakMode != enable) {
-      driveBreakMode = enable;
+    if (driveBrakeMode != enable) {
+      driveBrakeMode = enable;
       driveConfig.MotorOutput.NeutralMode =
-          driveBreakMode ? NeutralModeValue.Brake : NeutralModeValue.Coast;
+          driveBrakeMode ? NeutralModeValue.Brake : NeutralModeValue.Coast;
       tryUntilOk(5, () -> driveTalon.getConfigurator().apply(driveConfig, 0.25));
     }
   }
 
   @Override
   public void setTurnBrakeMode(boolean enable) {
-    if (turnBreakMode != enable) {
-      turnBreakMode = enable;
+    if (turnBrakeMode != enable) {
+      turnBrakeMode = enable;
       turnConfig.MotorOutput.NeutralMode =
-          turnBreakMode ? NeutralModeValue.Brake : NeutralModeValue.Coast;
+          turnBrakeMode ? NeutralModeValue.Brake : NeutralModeValue.Coast;
       tryUntilOk(5, () -> turnTalon.getConfigurator().apply(turnConfig, 0.25));
     }
   }
@@ -316,5 +316,11 @@ public class ModuleIOTalonFX implements ModuleIO {
     turnConfig.Slot0.kI = kI;
     turnConfig.Slot0.kD = kD;
     tryUntilOk(5, () -> turnTalon.getConfigurator().apply(turnConfig, 0.25));
+  }
+
+  @Override
+  public void stop() {
+    driveTalon.stopMotor();
+    turnTalon.stopMotor();
   }
 }

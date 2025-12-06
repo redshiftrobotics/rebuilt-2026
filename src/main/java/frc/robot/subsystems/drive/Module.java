@@ -19,23 +19,26 @@ import org.littletonrobotics.junction.Logger;
  */
 public class Module {
 
-  private static final TunableNumberGroup driveFeedbackFactory =
-      new TunableNumberGroup("Drive/Module");
+  private static final TunableNumberGroup moduleGains = new TunableNumberGroup("Drive/Module");
 
   private static final TunableNumber driveKp =
-      driveFeedbackFactory.number("DriveKp", ModuleConstants.DRIVE_FEEDBACK.kP());
+      moduleGains.number("DriveKp", ModuleConstants.DRIVE_FEEDBACK.kP());
   private static final TunableNumber driveKd =
-      driveFeedbackFactory.number("DriveKd", ModuleConstants.DRIVE_FEEDBACK.kD());
+      moduleGains.number("DriveKd", ModuleConstants.DRIVE_FEEDBACK.kD());
+  private static final TunableNumber driveKs =
+      moduleGains.number("Drive_FF_Ks", ModuleConstants.DRIVE_FEED_FORWARD.kS());
+  private static final TunableNumber driveKv =
+      moduleGains.number("Drive_FF_Kv", ModuleConstants.DRIVE_FEED_FORWARD.kV());
   private static final TunableNumber turnKp =
-      driveFeedbackFactory.number("TurnKp", ModuleConstants.TURN_FEEDBACK.kP());
+      moduleGains.number("TurnKp", ModuleConstants.TURN_FEEDBACK.kP());
   private static final TunableNumber turnKd =
-      driveFeedbackFactory.number("TurnKd", ModuleConstants.TURN_FEEDBACK.kD());
+      moduleGains.number("TurnKd", ModuleConstants.TURN_FEEDBACK.kD());
 
   private final ModuleIO io;
   private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
   private final Translation2d distanceFromCenter;
 
-  private SimpleMotorFeedforward driveFeedforward;
+  private final SimpleMotorFeedforward driveFeedforward;
   private SwerveModuleState desiredState = new SwerveModuleState();
 
   private final Alert driveDisconnectedAlert;
@@ -54,11 +57,7 @@ public class Module {
     this.distanceFromCenter = distanceFromCenter;
 
     driveFeedforward =
-        new SimpleMotorFeedforward(
-            ModuleConstants.DRIVE_FEED_FORWARD.kS(),
-            ModuleConstants.DRIVE_FEED_FORWARD.kV(),
-            ModuleConstants.DRIVE_FEED_FORWARD.kA(),
-            Constants.LOOP_PERIOD_SECONDS);
+        new SimpleMotorFeedforward(driveKs.get(), driveKv.get(), 0);
 
     io.setDrivePID(driveKp.get(), 0, driveKd.get());
     io.setTurnPID(turnKp.get(), 0, turnKd.get());
@@ -82,25 +81,24 @@ public class Module {
    * updates need to be properly thread-locked.
    */
   public void updateInputs() {
-    Logger.processInputs("Drive/" + toString(), inputs);
     io.updateInputs(inputs);
+    Logger.processInputs("Drive/" + toString(), inputs);
 
     // Update tunable numbers
     TunableNumber.ifChanged(
-        hashCode(),
-        (values) -> {
-          io.setDrivePID(values[0], 0, values[1]);
-        },
-        driveKp,
-        driveKd);
+        hashCode(), () -> io.setDrivePID(driveKp.get(), 0, driveKd.get()), driveKp, driveKd);
+
+    TunableNumber.ifChanged(
+        hashCode(), () -> io.setTurnPID(turnKp.get(), 0, turnKd.get()), turnKp, turnKd);
 
     TunableNumber.ifChanged(
         hashCode(),
-        (values) -> {
-          io.setTurnPID(values[0], 0, values[1]);
+        () -> {
+          driveFeedforward.setKs(driveKs.get());
+          driveFeedforward.setKv(driveKv.get());
         },
-        turnKp,
-        turnKd);
+        driveKs,
+        driveKv);
 
     // Update alerts
     driveDisconnectedAlert.set(!inputs.driveMotorConnected);
@@ -135,6 +133,9 @@ public class Module {
 
   /** Runs the module with the specified setpoint state. */
   public void setSpeeds(SwerveModuleState state) {
+
+    state = new SwerveModuleState(state.speedMetersPerSecond, state.angle);
+
     // Optimize velocity setpoint
     state.optimize(getAngle());
     state.cosineScale(getAngle());
@@ -145,7 +146,7 @@ public class Module {
 
     // Apply setpoints
     io.setDriveVelocity(
-        velocityRadiansPerSecond, driveFeedforward.calculate(state.speedMetersPerSecond));
+        velocityRadiansPerSecond, driveFeedforward.calculate(velocityRadiansPerSecond));
     io.setTurnPosition(angleRadians);
 
     desiredState = state;
