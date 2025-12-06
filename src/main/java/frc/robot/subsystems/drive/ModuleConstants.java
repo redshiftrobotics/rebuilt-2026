@@ -113,15 +113,14 @@ public class ModuleConstants {
   static {
     switch (Constants.getRobot()) {
       case PRESEASON_2026:
-        // DO NOT USE THESE CONSTANTS, USE TUNER DIRECTLY CONSTANTS INSTEAD, HERE FOR REFERENCE
         DRIVE_MOTOR = DCMotor.getKrakenX60Foc(1);
-        DRIVE_FEEDBACK = new PIDConstants(0.0, 0.0, 0.0);
+        DRIVE_FEEDBACK = new PIDConstants(0.1, 0.0, 0.0);
         DRIVE_FEED_FORWARD = new FeedForwardConstants(0.0, 0.0, 0.0);
         DRIVE_MOTOR_CURRENT_LIMIT = TunerConstants.FrontLeft.SlipCurrent;
         DRIVE_REDUCTION = TunerConstants.FrontLeft.DriveMotorGearRatio;
 
         TURN_MOTOR = DCMotor.getKrakenX60Foc(1);
-        TURN_FEEDBACK = new PIDConstants(0.0, 0.0, 0.0);
+        TURN_FEEDBACK = new PIDConstants(100, 0.0, 0.5);
         TURN_MOTOR_CURRENT_LIMIT = TunerConstants.FrontLeft.SlipCurrent;
         TURN_REDUCTION = TunerConstants.FrontLeft.SteerMotorGearRatio;
         break;
