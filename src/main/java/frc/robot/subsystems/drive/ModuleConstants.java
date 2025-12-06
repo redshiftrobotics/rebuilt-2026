@@ -159,6 +159,8 @@ public class ModuleConstants {
     }
   }
 
+  public static final double TURN_ALIGNMENT_TOLERANCE_DEGREES = 1;
+
   // --- Module reductions ---
 
   // https://www.swervedrivespecialties.com/products/mk4i-swerve-module
