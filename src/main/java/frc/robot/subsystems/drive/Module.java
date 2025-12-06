@@ -1,5 +1,6 @@
 package frc.robot.subsystems.drive;
 
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -32,9 +33,9 @@ public class Module {
   private static final TunableNumber turnKd =
       moduleGains.number("TurnKd", ModuleConstants.TURN_FEEDBACK.kD());
   private static final TunableNumber turnKs =
-      moduleGains.number("Turn_FF_Ks", ModuleConstants.DRIVE_FEED_FORWARD.kS());
+      moduleGains.number("Turn_FF_Ks", ModuleConstants.TURN_FEED_FORWARD.kS());
   private static final TunableNumber turnKv =
-      moduleGains.number("Turn_FF_Kv", ModuleConstants.DRIVE_FEED_FORWARD.kV());
+      moduleGains.number("Turn_FF_Kv", ModuleConstants.TURN_FEED_FORWARD.kV());
 
   private final ModuleIO io;
   private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
@@ -93,7 +94,7 @@ public class Module {
         hashCode(), () -> io.setDriveFF(driveKs.get(), driveKv.get(), 0), driveKs, driveKv);
 
     TunableNumber.ifChanged(
-        hashCode(), () -> io.setDriveFF(turnKs.get(), turnKv.get(), 0), turnKs, turnKv);
+        hashCode(), () -> io.setTurnFF(turnKs.get(), turnKv.get(), 0), turnKs, turnKv);
 
     // Update alerts
     driveDisconnectedAlert.set(!inputs.driveMotorConnected);
@@ -132,7 +133,7 @@ public class Module {
     state = new SwerveModuleState(state.speedMetersPerSecond, state.angle);
 
     // Optimize velocity setpoint
-    state.optimize(getAngle());
+    // state.optimize(getAngle());
     state.cosineScale(getAngle());
 
     // Calculator drive velocity and angle in radians

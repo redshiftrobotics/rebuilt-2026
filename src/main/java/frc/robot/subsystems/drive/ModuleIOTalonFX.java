@@ -315,18 +315,18 @@ public class ModuleIOTalonFX implements ModuleIO {
   }
 
   @Override
-  public void setDriveFF(double kS, double kV, double kD) {
+  public void setDriveFF(double kS, double kV, double kA) {
     driveConfig.Slot0.kS = kS;
     driveConfig.Slot0.kV = kV;
-    driveConfig.Slot0.kA = kD;
+    driveConfig.Slot0.kA = kA;
     tryUntilOk(5, () -> driveTalon.getConfigurator().apply(driveConfig, 0.25));
   }
 
   @Override
-  public void setTurnFF(double kS, double kV, double kD) {
+  public void setTurnFF(double kS, double kV, double kA) {
     turnConfig.Slot0.kS = kS;
     turnConfig.Slot0.kV = kV;
-    turnConfig.Slot0.kA = kD;
+    turnConfig.Slot0.kA = kA;
     tryUntilOk(5, () -> turnTalon.getConfigurator().apply(turnConfig, 0.25));
   }
 
