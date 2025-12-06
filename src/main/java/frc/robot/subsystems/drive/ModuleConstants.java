@@ -121,8 +121,8 @@ public class ModuleConstants {
         DRIVE_REDUCTION = TunerConstants.FrontLeft.DriveMotorGearRatio;
 
         TURN_MOTOR = DCMotor.getKrakenX60Foc(1);
-        TURN_FEEDBACK = new PIDConstants(70, 0.0, 0.5);
-        TURN_FEED_FORWARD = new FeedForwardConstants(2.0, 0.0, 0.0);
+        TURN_FEEDBACK = new PIDConstants(75, 0.0, 2.7);
+        TURN_FEED_FORWARD = new FeedForwardConstants(2.0, 16.0, 0.0);
         TURN_MOTOR_CURRENT_LIMIT = TunerConstants.FrontLeft.SlipCurrent;
         TURN_REDUCTION = TunerConstants.FrontLeft.SteerMotorGearRatio;
         break;

@@ -37,7 +37,8 @@ public class Module {
   private static final TunableNumber turnKv =
       moduleGains.number("Turn_FF_Kv", ModuleConstants.TURN_FEED_FORWARD.kV());
   private static final TunableNumber turnAlignmentTolerance =
-      moduleGains.number("TurnAlignmentTolerance", ModuleConstants.TURN_ALIGNMENT_TOLERANCE_DEGREES);
+      moduleGains.number(
+          "TurnAlignmentTolerance", ModuleConstants.TURN_ALIGNMENT_TOLERANCE_DEGREES);
 
   private final ModuleIO io;
   private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
@@ -146,7 +147,11 @@ public class Module {
     // Apply setpoints
     io.setDriveVelocity(velocityRadiansPerSecond, 0);
 
-    boolean nearlyAligned = MathUtil.isNear(angleRadians, moduleCurrentAngle.getRadians(), Units.degreesToRadians(turnAlignmentTolerance.get()));
+    boolean nearlyAligned =
+        MathUtil.isNear(
+            angleRadians,
+            moduleCurrentAngle.getRadians(),
+            Units.degreesToRadians(turnAlignmentTolerance.get()));
     if (nearlyAligned) {
       io.setTurnOpenLoop(0);
     } else {
