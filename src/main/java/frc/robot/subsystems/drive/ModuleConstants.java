@@ -115,7 +115,7 @@ public class ModuleConstants {
     switch (Constants.getRobot()) {
       case PRESEASON_2026:
         DRIVE_MOTOR = DCMotor.getKrakenX60Foc(1);
-        DRIVE_FEEDBACK = new PIDConstants(0.1, 0.0, 0.0);
+        DRIVE_FEEDBACK = new PIDConstants(1, 0.0, 0.1);
         DRIVE_FEED_FORWARD = new FeedForwardConstants(0.0, 0.0, 0.0);
         DRIVE_MOTOR_CURRENT_LIMIT = TunerConstants.FrontLeft.SlipCurrent;
         DRIVE_REDUCTION = TunerConstants.FrontLeft.DriveMotorGearRatio;

@@ -437,9 +437,7 @@ public class Drive extends SubsystemBase {
    * @param enabled true if motors should brake, false if they should coast
    */
   public void setMotorBrakeMode(boolean enabled) {
-    if (brakeModeEnabled != enabled) {
-      Arrays.stream(modules).forEach(module -> module.setBrakeMode(enabled));
-    }
+    Arrays.stream(modules).forEach(module -> module.setBrakeMode(enabled));
     brakeModeEnabled = enabled;
   }
 

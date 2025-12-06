@@ -281,6 +281,7 @@ public class ModuleIOTalonFX implements ModuleIO {
   @Override
   public void setDriveBrakeMode(boolean enable) {
     if (driveBrakeMode != enable) {
+      System.out.println("Drive " + enable);
       driveBrakeMode = enable;
       driveConfig.MotorOutput.NeutralMode =
           driveBrakeMode ? NeutralModeValue.Brake : NeutralModeValue.Coast;
@@ -291,6 +292,7 @@ public class ModuleIOTalonFX implements ModuleIO {
   @Override
   public void setTurnBrakeMode(boolean enable) {
     if (turnBrakeMode != enable) {
+      System.out.println("Turn " + enable);
       turnBrakeMode = enable;
       turnConfig.MotorOutput.NeutralMode =
           turnBrakeMode ? NeutralModeValue.Brake : NeutralModeValue.Coast;

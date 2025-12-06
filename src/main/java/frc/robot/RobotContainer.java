@@ -249,14 +249,14 @@ public class RobotContainer {
         input ->
             input
                 .linearVelocityStick(-xbox.getLeftY(), -xbox.getLeftX())
-                .angularVelocityStick(-xbox.getRightX())
+                .angularVelocityStick(xbox.getRightX())
                 .fieldRelativeEnabled());
 
     DriverDashboard.currentDriveModeName =
         () -> {
           Command current = drive.getCurrentCommand();
           if (current == drive.getDefaultCommand()) {
-            String layers = String.join(" → ", pipeline.getActiveLayers());
+            String layers = String.join(" + ", pipeline.getActiveLayers());
             return "[" + layers + "]";
           } else if (current != null) {
             return current.getName();
