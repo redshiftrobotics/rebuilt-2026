@@ -128,8 +128,7 @@ public class ModuleConstants {
       case SIM_BOT:
         DRIVE_MOTOR = DCMotor.getKrakenX60Foc(1);
         DRIVE_FEEDBACK = new PIDConstants(0.05, 0.0, 0.0);
-        DRIVE_FEED_FORWARD =
-            new FeedForwardConstants(0.0, 0.144886, 0.0);
+        DRIVE_FEED_FORWARD = new FeedForwardConstants(0.0, 0.144886, 0.0);
         DRIVE_MOTOR_CURRENT_LIMIT = TunerConstants.FrontLeft.SlipCurrent;
         DRIVE_REDUCTION = Mk4iReductions.L3.reduction;
 

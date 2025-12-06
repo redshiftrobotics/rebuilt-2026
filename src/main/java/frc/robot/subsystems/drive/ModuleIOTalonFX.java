@@ -263,12 +263,8 @@ public class ModuleIOTalonFX implements ModuleIO {
     double velocityRotPerSec = Units.radiansToRotations(velocityRadPerSec);
     driveTalon.setControl(
         switch (constants.DriveMotorClosedLoopOutput) {
-          case Voltage -> velocityVoltageRequest
-              .withVelocity(velocityRotPerSec)
-              .withFeedForward(feedForward);
-          case TorqueCurrentFOC -> velocityTorqueCurrentRequest
-              .withVelocity(velocityRotPerSec)
-              .withFeedForward(feedForward);
+          case Voltage -> velocityVoltageRequest.withVelocity(velocityRotPerSec);
+          case TorqueCurrentFOC -> velocityTorqueCurrentRequest.withVelocity(velocityRotPerSec);
         });
   }
 
@@ -315,6 +311,22 @@ public class ModuleIOTalonFX implements ModuleIO {
     turnConfig.Slot0.kP = kP;
     turnConfig.Slot0.kI = kI;
     turnConfig.Slot0.kD = kD;
+    tryUntilOk(5, () -> turnTalon.getConfigurator().apply(turnConfig, 0.25));
+  }
+
+  @Override
+  public void setDriveFF(double kS, double kV, double kD) {
+    driveConfig.Slot0.kS = kS;
+    driveConfig.Slot0.kV = kV;
+    driveConfig.Slot0.kA = kD;
+    tryUntilOk(5, () -> driveTalon.getConfigurator().apply(driveConfig, 0.25));
+  }
+
+  @Override
+  public void setTurnFF(double kS, double kV, double kD) {
+    turnConfig.Slot0.kS = kS;
+    turnConfig.Slot0.kV = kV;
+    turnConfig.Slot0.kA = kD;
     tryUntilOk(5, () -> turnTalon.getConfigurator().apply(turnConfig, 0.25));
   }
 

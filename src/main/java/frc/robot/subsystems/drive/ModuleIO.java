@@ -48,6 +48,12 @@ public interface ModuleIO {
   /** Configure turn PID */
   default void setTurnPID(double kP, double kI, double kD) {}
 
+  /** Configure turn Feed Forward */
+  default void setDriveFF(double kS, double kV, double kD) {}
+
+  /** Configure turn Feed Forward */
+  default void setTurnFF(double kS, double kV, double kD) {}
+
   /** Enable or disable brake mode on the drive motor. */
   default void setDriveBrakeMode(boolean enable) {}
 
