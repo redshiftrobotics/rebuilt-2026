@@ -146,7 +146,8 @@ public class Module {
     // Apply setpoints
     io.setDriveVelocity(velocityRadiansPerSecond, 0);
 
-    if (MathUtil.isNear(angleRadians, moduleCurrentAngle.getRadians(), Units.degreesToRadians(turnAlignmentTolerance.get()))) {
+    boolean nearlyAligned = MathUtil.isNear(angleRadians, moduleCurrentAngle.getRadians(), Units.degreesToRadians(turnAlignmentTolerance.get()));
+    if (nearlyAligned) {
       io.setTurnOpenLoop(0);
     } else {
       io.setTurnPosition(angleRadians);
