@@ -1,6 +1,6 @@
 package frc.robot.subsystems.drive;
 
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -129,12 +129,13 @@ public class Module {
 
   /** Runs the module with the specified setpoint state. */
   public void setSpeeds(SwerveModuleState state) {
-
+    // Copy the state object to prevent side effects from mutating passed-in object
     state = new SwerveModuleState(state.speedMetersPerSecond, state.angle);
 
     // Optimize velocity setpoint
-    // state.optimize(getAngle());
-    state.cosineScale(getAngle());
+    Rotation2d moduleCurrentAngle = getAngle();
+    state.optimize(moduleCurrentAngle);
+    state.cosineScale(moduleCurrentAngle);
 
     // Calculator drive velocity and angle in radians
     double velocityRadiansPerSecond = state.speedMetersPerSecond / ModuleConstants.WHEEL_RADIUS;
@@ -142,8 +143,12 @@ public class Module {
 
     // Apply setpoints
     io.setDriveVelocity(velocityRadiansPerSecond, 0);
-    io.setTurnPosition(angleRadians);
 
+    if (MathUtil.isNear(angleRadians, moduleCurrentAngle.getRadians(), Units.degreesToRadians(1))) {
+      io.setTurnOpenLoop(0);
+    } else {
+      io.setTurnPosition(angleRadians);
+    }
     desiredState = state;
   }
 

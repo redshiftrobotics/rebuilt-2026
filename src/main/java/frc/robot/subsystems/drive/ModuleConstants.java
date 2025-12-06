@@ -98,7 +98,7 @@ public class ModuleConstants {
   public static final PIDConstants DRIVE_FEEDBACK;
   public static final double DRIVE_MOTOR_CURRENT_LIMIT;
   public static final double DRIVE_REDUCTION;
-  
+
   public static final DCMotor TURN_MOTOR;
   public static final PIDConstants TURN_FEEDBACK;
   public static final FeedForwardConstants TURN_FEED_FORWARD;
@@ -119,7 +119,7 @@ public class ModuleConstants {
         DRIVE_FEED_FORWARD = new FeedForwardConstants(0.0, 0.0, 0.0);
         DRIVE_MOTOR_CURRENT_LIMIT = TunerConstants.FrontLeft.SlipCurrent;
         DRIVE_REDUCTION = TunerConstants.FrontLeft.DriveMotorGearRatio;
-        
+
         TURN_MOTOR = DCMotor.getKrakenX60Foc(1);
         TURN_FEEDBACK = new PIDConstants(70, 0.0, 0.5);
         TURN_FEED_FORWARD = new FeedForwardConstants(2.0, 0.0, 0.0);
@@ -127,29 +127,29 @@ public class ModuleConstants {
         TURN_REDUCTION = TunerConstants.FrontLeft.SteerMotorGearRatio;
         break;
 
-        case SIM_BOT:
+      case SIM_BOT:
         DRIVE_MOTOR = DCMotor.getKrakenX60Foc(1);
         DRIVE_FEEDBACK = new PIDConstants(0.05, 0.0, 0.0);
         DRIVE_FEED_FORWARD = new FeedForwardConstants(0.0, 0.144886, 0.0);
         DRIVE_MOTOR_CURRENT_LIMIT = TunerConstants.FrontLeft.SlipCurrent;
         DRIVE_REDUCTION = Mk4iReductions.L3.reduction;
-        
+
         TURN_MOTOR = DCMotor.getKrakenX60Foc(1);
         TURN_FEEDBACK = new PIDConstants(8, 0, 0);
         TURN_FEED_FORWARD = new FeedForwardConstants(0.0, 0.0, 0.0);
         TURN_MOTOR_CURRENT_LIMIT = 800; // No limit
         TURN_REDUCTION = TunerConstants.FrontLeft.SteerMotorGearRatio;
         break;
-        
-        case CHASSIS_CANNON:
-        case REEFSCAPE_2025:
-        default:
+
+      case CHASSIS_CANNON:
+      case REEFSCAPE_2025:
+      default:
         DRIVE_MOTOR = DCMotor.getNEO(1);
         DRIVE_FEEDBACK = new PIDConstants(0.0001, 0.0, 0.0);
         DRIVE_FEED_FORWARD = new FeedForwardConstants(0.2, 4.35, 0);
         DRIVE_MOTOR_CURRENT_LIMIT = 50;
         DRIVE_REDUCTION = Mk4iReductions.L3.reduction;
-        
+
         TURN_MOTOR = DCMotor.getNEO(1);
         TURN_FEEDBACK = new PIDConstants(10, 0.0, 0.0);
         TURN_FEED_FORWARD = new FeedForwardConstants(0.0, 0.0, 0.0);
