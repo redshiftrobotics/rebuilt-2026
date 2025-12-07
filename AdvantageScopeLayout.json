@@ -346,11 +346,16 @@
                     }
                   }
                 ],
-                "leftLockedRange": null,
+                "leftLockedRange": [
+                  -180,
+                  180
+                ],
                 "rightLockedRange": null,
                 "leftUnitConversion": {
-                  "type": null,
-                  "factor": 1
+                  "type": "angle",
+                  "factor": 1,
+                  "from": "radians",
+                  "to": "degrees"
                 },
                 "rightUnitConversion": {
                   "type": null,
@@ -401,7 +406,10 @@
                     }
                   }
                 ],
-                "leftLockedRange": null,
+                "leftLockedRange": [
+                  -6,
+                  6
+                ],
                 "rightLockedRange": null,
                 "leftUnitConversion": {
                   "type": null,
@@ -424,5 +432,5 @@
     }
   ],
   "satellites": [],
-  "version": "4.1.5"
+  "version": "4.1.0"
 }
