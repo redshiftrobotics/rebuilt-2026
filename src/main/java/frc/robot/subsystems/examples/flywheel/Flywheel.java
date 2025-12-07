@@ -1,7 +1,7 @@
 package frc.robot.subsystems.examples.flywheel;
 
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.subsystems.examples.flywheel.FlywheelConstants.FEED_FORWARD_CONFIG;
+import static frc.robot.subsystems.examples.flywheel.FlywheelConstants.FEEDFORWARD_CONFIG;
 import static frc.robot.subsystems.examples.flywheel.FlywheelConstants.PID_CONFIG;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -25,9 +25,9 @@ public class Flywheel extends SubsystemBase {
 
     ffModel =
         new SimpleMotorFeedforward(
-            FEED_FORWARD_CONFIG.Ks(), FEED_FORWARD_CONFIG.Kv(), FEED_FORWARD_CONFIG.Ka());
+            FEEDFORWARD_CONFIG.kS(), FEEDFORWARD_CONFIG.kV(), FEEDFORWARD_CONFIG.kA());
 
-    io.configurePID(PID_CONFIG.Kp(), PID_CONFIG.Ki(), PID_CONFIG.Kd());
+    io.configurePID(PID_CONFIG.kP(), PID_CONFIG.kI(), PID_CONFIG.kD());
 
     // Configure SysId
     sysId =

@@ -20,18 +20,15 @@ import frc.robot.subsystems.drive.ModuleConstants.Mk5nReductions;
 public class TunerConstants {
   // Both sets of gains need to be tuned to your individual robot.
 
-  // NOTE: We overwrite gains elsewhere in the codebase! Leave these as zero! Change ModuleConstants
-  // instead.
-
   // The steer motor uses any SwerveModule.SteerRequestType control request with the
   // output type specified by SwerveModuleConstants.SteerMotorClosedLoopOutput
   private static final Slot0Configs steerGains =
       new Slot0Configs()
-          .withKP(0)
+          .withKP(75)
           .withKI(0)
-          .withKD(0)
-          .withKS(0)
-          .withKV(0)
+          .withKD(2.7)
+          .withKS(2.0)
+          .withKV(16.0)
           .withKA(0)
           .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
 

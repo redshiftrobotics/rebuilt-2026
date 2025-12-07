@@ -130,7 +130,7 @@ public class Drive extends SubsystemBase {
         this::getRobotPose,
         this::resetPose,
         this::getRobotSpeeds,
-        (speeds, feedForward) -> setRobotSpeeds(speeds),
+        (speeds, feedforward) -> setRobotSpeeds(speeds),
         new PPHolonomicDriveController(
             DriveConstants.TRANSLATION_CONTROLLER_CONSTANTS_TRAJECTORY.toPathPlannerPIDConstants(),
             DriveConstants.ROTATION_CONTROLLER_CONSTANTS_TRAJECTORY.toPathPlannerPIDConstants(),
@@ -437,7 +437,9 @@ public class Drive extends SubsystemBase {
    * @param enabled true if motors should brake, false if they should coast
    */
   public void setMotorBrakeMode(boolean enabled) {
-    Arrays.stream(modules).forEach(module -> module.setBrakeMode(enabled));
+    if (brakeModeEnabled != enabled) {
+      Arrays.stream(modules).forEach(module -> module.setBrakeMode(enabled));
+    }
     brakeModeEnabled = enabled;
   }
 
@@ -478,10 +480,10 @@ public class Drive extends SubsystemBase {
     return sysId.dynamic(direction);
   }
 
-  /** Runs forwards at the commanded voltage. */
-  public void runCharacterization(double volts) {
+  /** Runs forwards at the commanded amount. */
+  public void runCharacterization(double output) {
     for (Module module : modules) {
-      module.runCharacterization(0, volts);
+      module.runCharacterization(0, output);
     }
   }
 

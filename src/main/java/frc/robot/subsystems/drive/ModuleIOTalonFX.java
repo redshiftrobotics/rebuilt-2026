@@ -42,6 +42,8 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.generated.TunerConstants;
 import java.util.Queue;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 /**
  * Module IO implementation for Talon FX drive motor controller, Talon FX turn motor controller, and
@@ -62,6 +64,8 @@ public class ModuleIOTalonFX implements ModuleIO {
   // Config
   private final TalonFXConfiguration driveConfig = new TalonFXConfiguration();
   private final TalonFXConfiguration turnConfig = new TalonFXConfiguration();
+
+  private static final Executor brakeModeExecutor = Executors.newFixedThreadPool(8);
 
   // Voltage control requests
   private final VoltageOut voltageRequest = new VoltageOut(0);
@@ -259,7 +263,7 @@ public class ModuleIOTalonFX implements ModuleIO {
   }
 
   @Override
-  public void setDriveVelocity(double velocityRadPerSec, double feedForward) {
+  public void setDriveVelocity(double velocityRadPerSec) {
     double velocityRotPerSec = Units.radiansToRotations(velocityRadPerSec);
     driveTalon.setControl(
         switch (constants.DriveMotorClosedLoopOutput) {
@@ -280,24 +284,32 @@ public class ModuleIOTalonFX implements ModuleIO {
 
   @Override
   public void setDriveBrakeMode(boolean enable) {
-    if (driveBrakeMode != enable) {
-      System.out.println("Drive " + enable);
-      driveBrakeMode = enable;
-      driveConfig.MotorOutput.NeutralMode =
-          driveBrakeMode ? NeutralModeValue.Brake : NeutralModeValue.Coast;
-      tryUntilOk(5, () -> driveTalon.getConfigurator().apply(driveConfig, 0.25));
-    }
+    // driveTalon.setNeutralMode(
+    //     enable ? NeutralModeValue.Brake : NeutralModeValue.Coast);
+
+    brakeModeExecutor.execute(
+        () -> {
+          synchronized (driveConfig) {
+            driveConfig.MotorOutput.NeutralMode =
+                driveBrakeMode ? NeutralModeValue.Brake : NeutralModeValue.Coast;
+            tryUntilOk(5, () -> driveTalon.getConfigurator().apply(driveConfig, 0.25));
+          }
+        });
   }
 
   @Override
   public void setTurnBrakeMode(boolean enable) {
-    if (turnBrakeMode != enable) {
-      System.out.println("Turn " + enable);
-      turnBrakeMode = enable;
-      turnConfig.MotorOutput.NeutralMode =
-          turnBrakeMode ? NeutralModeValue.Brake : NeutralModeValue.Coast;
-      tryUntilOk(5, () -> turnTalon.getConfigurator().apply(turnConfig, 0.25));
-    }
+    // turnTalon.setNeutralMode(
+    //     enable ? NeutralModeValue.Brake : NeutralModeValue.Coast);
+
+    brakeModeExecutor.execute(
+        () -> {
+          synchronized (turnConfig) {
+            turnConfig.MotorOutput.NeutralMode =
+                turnBrakeMode ? NeutralModeValue.Brake : NeutralModeValue.Coast;
+            tryUntilOk(5, () -> turnTalon.getConfigurator().apply(turnConfig, 0.25));
+          }
+        });
   }
 
   @Override

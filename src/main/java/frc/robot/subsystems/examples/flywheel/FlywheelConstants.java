@@ -1,6 +1,8 @@
 package frc.robot.subsystems.examples.flywheel;
 
 import frc.robot.Constants;
+import frc.robot.utility.records.FeedforwardConstants;
+import frc.robot.utility.records.PIDConstants;
 
 public class FlywheelConstants {
 
@@ -14,18 +16,14 @@ public class FlywheelConstants {
         default -> new FlywheelConfig(0, false);
       };
 
-  public record PID(double Kp, double Ki, double Kd) {}
-
-  public static final PID PID_CONFIG =
+  public static final PIDConstants PID_CONFIG =
       switch (Constants.getRobot()) {
-        default -> new PID(1.0, 0, 0);
+        default -> new PIDConstants(1.0, 0, 0);
       };
 
-  public record FeedForward(double Ks, double Kv, double Ka) {}
-
-  public static final FeedForward FEED_FORWARD_CONFIG =
+  public static final FeedforwardConstants FEEDFORWARD_CONFIG =
       switch (Constants.getRobot()) {
-        default -> new FeedForward(0.1, 0.05, 0);
+        default -> new FeedforwardConstants(0.1, 0.05, 0);
       };
 
   // --- Flywheel constants ---

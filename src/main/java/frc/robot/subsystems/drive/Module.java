@@ -10,6 +10,8 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import frc.robot.utility.tunable.TunableNumber;
 import frc.robot.utility.tunable.TunableNumberGroup;
+import frc.robot.utility.tunable.TunableNumbers.TunableFF;
+import frc.robot.utility.tunable.TunableNumbers.TunablePID;
 import org.littletonrobotics.junction.Logger;
 
 /**
@@ -20,25 +22,17 @@ public class Module {
 
   private static final TunableNumberGroup moduleGains = new TunableNumberGroup("Drive/Module");
 
-  private static final TunableNumber driveKp =
-      moduleGains.number("DriveKp", ModuleConstants.DRIVE_FEEDBACK.kP());
-  private static final TunableNumber driveKd =
-      moduleGains.number("DriveKd", ModuleConstants.DRIVE_FEEDBACK.kD());
-  private static final TunableNumber driveKs =
-      moduleGains.number("Drive_FF_Ks", ModuleConstants.DRIVE_FEED_FORWARD.kS());
-  private static final TunableNumber driveKv =
-      moduleGains.number("Drive_FF_Kv", ModuleConstants.DRIVE_FEED_FORWARD.kV());
-  private static final TunableNumber turnKp =
-      moduleGains.number("TurnKp", ModuleConstants.TURN_FEEDBACK.kP());
-  private static final TunableNumber turnKd =
-      moduleGains.number("TurnKd", ModuleConstants.TURN_FEEDBACK.kD());
-  private static final TunableNumber turnKs =
-      moduleGains.number("Turn_FF_Ks", ModuleConstants.TURN_FEED_FORWARD.kS());
-  private static final TunableNumber turnKv =
-      moduleGains.number("Turn_FF_Kv", ModuleConstants.TURN_FEED_FORWARD.kV());
+  private static final TunablePID drivePID =
+      moduleGains.pid("Drive_PID", ModuleConstants.DRIVE_FEEDBACK);
+  private static final TunableFF driveFF =
+      moduleGains.ff("Drive_FF", ModuleConstants.DRIVE_FEEDFORWARD);
+  private static final TunablePID turnKp =
+      moduleGains.pid("Turn_PID", ModuleConstants.TURN_FEEDBACK);
+  private static final TunableFF turnFF =
+      moduleGains.ff("Turn_FF", ModuleConstants.TURN_FEEDFORWARD);
+
   private static final TunableNumber turnAlignmentTolerance =
-      moduleGains.number(
-          "TurnAlignmentTolerance", ModuleConstants.TURN_ALIGNMENT_TOLERANCE_DEGREES);
+      moduleGains.number("turnToleranceDegrees", ModuleConstants.TURN_ALIGNMENT_TOLERANCE_DEGREES);
 
   private final ModuleIO io;
   private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
@@ -61,8 +55,10 @@ public class Module {
     this.io = io;
     this.distanceFromCenter = distanceFromCenter;
 
-    io.setDrivePID(driveKp.get(), 0, driveKd.get());
-    io.setTurnPID(turnKp.get(), 0, turnKd.get());
+    io.setDrivePID(drivePID.get().kP(), drivePID.get().kI(), drivePID.get().kD());
+    io.setTurnPID(turnKp.get().kP(), turnKp.get().kI(), turnKp.get().kD());
+    io.setDriveFF(driveFF.get().kS(), driveFF.get().kV(), driveFF.get().kA());
+    io.setTurnFF(turnFF.get().kS(), turnFF.get().kV(), turnFF.get().kA());
 
     setBrakeMode(true);
 
@@ -87,17 +83,10 @@ public class Module {
     Logger.processInputs("Drive/" + toString(), inputs);
 
     // Update tunable numbers
-    TunableNumber.ifChanged(
-        hashCode(), () -> io.setDrivePID(driveKp.get(), 0, driveKd.get()), driveKp, driveKd);
-
-    TunableNumber.ifChanged(
-        hashCode(), () -> io.setTurnPID(turnKp.get(), 0, turnKd.get()), turnKp, turnKd);
-
-    TunableNumber.ifChanged(
-        hashCode(), () -> io.setDriveFF(driveKs.get(), driveKv.get(), 0), driveKs, driveKv);
-
-    TunableNumber.ifChanged(
-        hashCode(), () -> io.setTurnFF(turnKs.get(), turnKv.get(), 0), turnKs, turnKv);
+    drivePID.ifChanged(hashCode(), (pid) -> io.setDrivePID(pid.kP(), pid.kI(), pid.kD()));
+    turnKp.ifChanged(hashCode(), (pid) -> io.setTurnPID(pid.kP(), pid.kI(), pid.kD()));
+    driveFF.ifChanged(hashCode(), (ff) -> io.setDriveFF(ff.kS(), ff.kV(), ff.kA()));
+    turnFF.ifChanged(hashCode(), (ff) -> io.setTurnFF(ff.kS(), ff.kV(), ff.kA()));
 
     // Update alerts
     driveDisconnectedAlert.set(!inputs.driveMotorConnected);
@@ -145,18 +134,20 @@ public class Module {
     double angleRadians = state.angle.getRadians();
 
     // Apply setpoints
-    io.setDriveVelocity(velocityRadiansPerSecond, 0);
+    io.setDriveVelocity(velocityRadiansPerSecond);
 
     boolean nearlyAligned =
         MathUtil.isNear(
             angleRadians,
             moduleCurrentAngle.getRadians(),
             Units.degreesToRadians(turnAlignmentTolerance.get()));
+
     if (nearlyAligned) {
       io.setTurnOpenLoop(0);
     } else {
       io.setTurnPosition(angleRadians);
     }
+
     desiredState = state;
   }
 

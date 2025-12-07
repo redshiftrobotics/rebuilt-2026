@@ -30,14 +30,14 @@ public interface ModuleIO {
   /** Updates the set of loggable inputs. */
   default void updateInputs(ModuleIOInputs inputs) {}
 
-  /** Run the drive motor at the specified voltage. */
+  /** Run the drive motor at the specified amount. */
   default void setDriveOpenLoop(double output) {}
 
-  /** Run the turn motor at the specified voltage. */
+  /** Run the turn motor at the specified amount. */
   default void setTurnOpenLoop(double output) {}
 
   /** Run to drive velocity setpoint with feedforward */
-  default void setDriveVelocity(double velocityRadsPerSec, double feedForward) {}
+  default void setDriveVelocity(double velocityRadsPerSec) {}
 
   /** Run to turn position setpoint */
   default void setTurnPosition(double angleRads) {}
@@ -48,10 +48,10 @@ public interface ModuleIO {
   /** Configure turn PID */
   default void setTurnPID(double kP, double kI, double kD) {}
 
-  /** Configure turn Feed Forward */
+  /** Configure turn feedforward */
   default void setDriveFF(double kS, double kV, double kA) {}
 
-  /** Configure turn Feed Forward */
+  /** Configure turn feedforward */
   default void setTurnFF(double kS, double kV, double kA) {}
 
   /** Enable or disable brake mode on the drive motor. */

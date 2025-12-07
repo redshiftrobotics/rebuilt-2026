@@ -8,7 +8,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
 import frc.robot.generated.TunerConstants;
-import frc.robot.utility.records.FeedForwardConstants;
+import frc.robot.utility.records.FeedforwardConstants;
 import frc.robot.utility.records.PIDConstants;
 
 public class ModuleConstants {
@@ -94,14 +94,14 @@ public class ModuleConstants {
   // --- Module Constants ---
 
   public static final DCMotor DRIVE_MOTOR;
-  public static final FeedForwardConstants DRIVE_FEED_FORWARD;
+  public static final FeedforwardConstants DRIVE_FEEDFORWARD;
   public static final PIDConstants DRIVE_FEEDBACK;
   public static final double DRIVE_MOTOR_CURRENT_LIMIT;
   public static final double DRIVE_REDUCTION;
 
   public static final DCMotor TURN_MOTOR;
   public static final PIDConstants TURN_FEEDBACK;
-  public static final FeedForwardConstants TURN_FEED_FORWARD;
+  public static final FeedforwardConstants TURN_FEEDFORWARD;
   public static final double TURN_MOTOR_CURRENT_LIMIT;
   public static final double TURN_REDUCTION;
 
@@ -115,14 +115,14 @@ public class ModuleConstants {
     switch (Constants.getRobot()) {
       case PRESEASON_2026:
         DRIVE_MOTOR = DCMotor.getKrakenX60Foc(1);
-        DRIVE_FEEDBACK = new PIDConstants(1, 0.0, 0.1);
-        DRIVE_FEED_FORWARD = new FeedForwardConstants(0.0, 0.0, 0.0);
+        DRIVE_FEEDBACK = new PIDConstants(TunerConstants.FrontLeft.DriveMotorGains);
+        DRIVE_FEEDFORWARD = new FeedforwardConstants(TunerConstants.FrontLeft.DriveMotorGains);
         DRIVE_MOTOR_CURRENT_LIMIT = TunerConstants.FrontLeft.SlipCurrent;
         DRIVE_REDUCTION = TunerConstants.FrontLeft.DriveMotorGearRatio;
 
         TURN_MOTOR = DCMotor.getKrakenX60Foc(1);
-        TURN_FEEDBACK = new PIDConstants(75, 0.0, 2.7);
-        TURN_FEED_FORWARD = new FeedForwardConstants(2.0, 16.0, 0.0);
+        TURN_FEEDBACK = new PIDConstants(TunerConstants.FrontLeft.SteerMotorGains);
+        TURN_FEEDFORWARD = new FeedforwardConstants(TunerConstants.FrontLeft.SteerMotorGains);
         TURN_MOTOR_CURRENT_LIMIT = TunerConstants.FrontLeft.SlipCurrent;
         TURN_REDUCTION = TunerConstants.FrontLeft.SteerMotorGearRatio;
         break;
@@ -130,13 +130,13 @@ public class ModuleConstants {
       case SIM_BOT:
         DRIVE_MOTOR = DCMotor.getKrakenX60Foc(1);
         DRIVE_FEEDBACK = new PIDConstants(0.05, 0.0, 0.0);
-        DRIVE_FEED_FORWARD = new FeedForwardConstants(0.0, 0.144886, 0.0);
+        DRIVE_FEEDFORWARD = new FeedforwardConstants(0.0, 0.144886, 0.0);
         DRIVE_MOTOR_CURRENT_LIMIT = TunerConstants.FrontLeft.SlipCurrent;
         DRIVE_REDUCTION = Mk4iReductions.L3.reduction;
 
         TURN_MOTOR = DCMotor.getKrakenX60Foc(1);
         TURN_FEEDBACK = new PIDConstants(8, 0, 0);
-        TURN_FEED_FORWARD = new FeedForwardConstants(0.0, 0.0, 0.0);
+        TURN_FEEDFORWARD = new FeedforwardConstants(0.0, 0.0, 0.0);
         TURN_MOTOR_CURRENT_LIMIT = 800; // No limit
         TURN_REDUCTION = TunerConstants.FrontLeft.SteerMotorGearRatio;
         break;
@@ -146,13 +146,13 @@ public class ModuleConstants {
       default:
         DRIVE_MOTOR = DCMotor.getNEO(1);
         DRIVE_FEEDBACK = new PIDConstants(0.0001, 0.0, 0.0);
-        DRIVE_FEED_FORWARD = new FeedForwardConstants(0.2, 4.35, 0);
+        DRIVE_FEEDFORWARD = new FeedforwardConstants(0.2, 4.35, 0);
         DRIVE_MOTOR_CURRENT_LIMIT = 50;
         DRIVE_REDUCTION = Mk4iReductions.L3.reduction;
 
         TURN_MOTOR = DCMotor.getNEO(1);
         TURN_FEEDBACK = new PIDConstants(10, 0.0, 0.0);
-        TURN_FEED_FORWARD = new FeedForwardConstants(0.0, 0.0, 0.0);
+        TURN_FEEDFORWARD = new FeedforwardConstants(0.0, 0.0, 0.0);
         TURN_MOTOR_CURRENT_LIMIT = 20;
         TURN_REDUCTION = Mk4iReductions.TURN_REDUCTION;
         break;

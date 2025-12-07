@@ -5,6 +5,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -32,6 +33,9 @@ public class ModuleIOSim implements ModuleIO {
   private final PIDController driveFeedback;
   private final PIDController turnFeedback;
 
+  // FF
+  private final SimpleMotorFeedforward driveFeedforward;
+
   private boolean driveClosedLoop = false;
   private boolean turnClosedLoop = false;
   private double driveFFVolts = 0;
@@ -43,8 +47,11 @@ public class ModuleIOSim implements ModuleIO {
     // Create PID
     this.driveFeedback = new PIDController(0.0, 0.0, 0.0, Constants.LOOP_PERIOD_SECONDS);
     this.turnFeedback = new PIDController(0.0, 0.0, 0.0, Constants.LOOP_PERIOD_SECONDS);
-
     this.turnFeedback.enableContinuousInput(-Math.PI, Math.PI);
+
+    // Create Feedforward
+    this.driveFeedforward =
+        new SimpleMotorFeedforward(0.0, 0.0, 0.0, Constants.LOOP_PERIOD_SECONDS);
   }
 
   public ModuleIOSim() {
@@ -140,9 +147,9 @@ public class ModuleIOSim implements ModuleIO {
   }
 
   @Override
-  public void setDriveVelocity(double velocityRadsPerSec, double feedForward) {
+  public void setDriveVelocity(double velocityRadsPerSec) {
     driveClosedLoop = true;
-    driveFFVolts = feedForward;
+    driveFFVolts = driveFeedforward.calculate(velocityRadsPerSec);
     driveFeedback.setSetpoint(velocityRadsPerSec);
   }
 
@@ -160,6 +167,13 @@ public class ModuleIOSim implements ModuleIO {
   @Override
   public void setTurnPID(double kP, double kI, double kD) {
     turnFeedback.setPID(kP, kI, kD);
+  }
+
+  @Override
+  public void setDriveFF(double kS, double kV, double kA) {
+    driveFeedforward.setKs(kS);
+    driveFeedforward.setKv(kV);
+    driveFeedforward.setKa(kA);
   }
 
   @Override

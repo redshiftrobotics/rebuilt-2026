@@ -18,10 +18,12 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
+import frc.robot.Constants;
 import frc.robot.subsystems.drive.ModuleConstants.ModuleConfig;
 import frc.robot.utility.SparkUtil;
 import java.util.Queue;
@@ -49,6 +51,9 @@ public class ModuleIOSparkMax implements ModuleIO {
   // Build In PID
   private final SparkClosedLoopController driveFeedback;
   private final SparkClosedLoopController turnFeedback;
+
+  // FF
+  private final SimpleMotorFeedforward driveFeedforward;
 
   // Odometry queues
   private final Queue<Double> timestampQueue;
@@ -83,6 +88,9 @@ public class ModuleIOSparkMax implements ModuleIO {
     // PID
     driveFeedback = driveSpark.getClosedLoopController();
     turnFeedback = turnSpark.getClosedLoopController();
+
+    // Feed Forward
+    driveFeedforward = new SimpleMotorFeedforward(0, 0, 0, Constants.LOOP_PERIOD_SECONDS);
 
     // Cancoder config
     MagnetSensorConfigs magnetSensorConfig = new MagnetSensorConfigs();
@@ -228,22 +236,22 @@ public class ModuleIOSparkMax implements ModuleIO {
   }
 
   @Override
-  public void setDriveOpenLoop(double volts) {
-    driveSpark.setVoltage(volts);
+  public void setDriveOpenLoop(double output) {
+    driveSpark.setVoltage(output);
   }
 
   @Override
-  public void setTurnOpenLoop(double volts) {
-    turnSpark.setVoltage(volts);
+  public void setTurnOpenLoop(double output) {
+    turnSpark.setVoltage(output);
   }
 
   @Override
-  public void setDriveVelocity(double velocityRadsPerSec, double feedForwardVoltage) {
+  public void setDriveVelocity(double velocityRadsPerSec) {
     driveFeedback.setReference(
         Units.radiansPerSecondToRotationsPerMinute(velocityRadsPerSec),
         ControlType.kVelocity,
         ClosedLoopSlot.kSlot0,
-        feedForwardVoltage,
+        driveFeedforward.calculate(velocityRadsPerSec),
         ArbFFUnits.kVoltage);
   }
 
@@ -275,6 +283,13 @@ public class ModuleIOSparkMax implements ModuleIO {
         () ->
             turnSpark.configure(
                 turnConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters));
+  }
+
+  @Override
+  public void setDriveFF(double kS, double kV, double kA) {
+    driveFeedforward.setKs(kS);
+    driveFeedforward.setKv(kV);
+    driveFeedforward.setKa(kA);
   }
 
   @Override
