@@ -249,7 +249,7 @@ public class RobotContainer {
         input ->
             input
                 .linearVelocityStick(-xbox.getLeftY(), -xbox.getLeftX())
-                .angularVelocityStick(xbox.getRightX())
+                .angularVelocityStick(-xbox.getRightX())
                 .fieldRelativeEnabled());
 
     DriverDashboard.currentDriveModeName =
