@@ -57,7 +57,7 @@ public class Drive extends SubsystemBase {
   private Debouncer disabledDebouncer = new Debouncer(3, DebounceType.kRising);
 
   @AutoLogOutput(key = "Drive/BrakeModeEnabled")
-  private boolean brakeModeEnabled = true;
+  private boolean brakeModeEnabled;
 
   private final SysIdRoutine sysId;
 
@@ -178,7 +178,9 @@ public class Drive extends SubsystemBase {
                 (voltage) -> runCharacterization(voltage.in(Units.Volts)), null, this));
 
     // --- Break mode ---
-    setMotorBrakeMode(brakeModeEnabled);
+    
+    brakeModeEnabled = false;
+    setMotorBrakeMode(true);
   }
 
   // --- Robot Pose ---
