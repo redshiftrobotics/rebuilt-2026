@@ -178,7 +178,7 @@ public class Drive extends SubsystemBase {
                 (voltage) -> runCharacterization(voltage.in(Units.Volts)), null, this));
 
     // --- Break mode ---
-    
+
     brakeModeEnabled = false;
     setMotorBrakeMode(true);
   }
