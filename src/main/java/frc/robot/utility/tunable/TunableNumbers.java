@@ -1,6 +1,6 @@
 package frc.robot.utility.tunable;
 
-import frc.robot.utility.records.FeedforwardConstants;
+import frc.robot.utility.records.FeedForwardConfigRecord;
 import frc.robot.utility.records.PIDConstants;
 import java.util.function.Consumer;
 
@@ -29,8 +29,8 @@ public abstract class TunableNumbers<T> {
     }
   }
 
-  public static class TunableFF extends TunableNumbers<FeedforwardConstants> {
-    public TunableFF(String keyPrefix, FeedforwardConstants defaultValues) {
+  public static class TunableFF extends TunableNumbers<FeedForwardConfigRecord> {
+    public TunableFF(String keyPrefix, FeedForwardConfigRecord defaultValues) {
       super(
           new String[] {
             keyPrefix + "/kS", keyPrefix + "/kV", keyPrefix + "/kA",
@@ -41,9 +41,9 @@ public abstract class TunableNumbers<T> {
     }
 
     @Override
-    public FeedforwardConstants get() {
+    public FeedForwardConfigRecord get() {
       double[] values = getValues();
-      return new FeedforwardConstants(values[0], values[1], values[2]);
+      return new FeedForwardConfigRecord(values[0], values[1], values[2]);
     }
   }
 

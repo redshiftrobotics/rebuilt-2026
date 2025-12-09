@@ -1,6 +1,6 @@
 package frc.robot.utility.tunable;
 
-import frc.robot.utility.records.FeedforwardConstants;
+import frc.robot.utility.records.FeedForwardConfigRecord;
 import frc.robot.utility.records.PIDConstants;
 import frc.robot.utility.tunable.TunableNumbers.TunableFF;
 import frc.robot.utility.tunable.TunableNumbers.TunablePID;
@@ -33,7 +33,7 @@ public class TunableNumberGroup {
     return new TunableNumbers.TunablePID(key + "/" + dashboardKey, defaultValues);
   }
 
-  public TunableFF ff(String dashboardKey, FeedforwardConstants defaultValues) {
+  public TunableFF ff(String dashboardKey, FeedForwardConfigRecord defaultValues) {
     return new TunableNumbers.TunableFF(key + "/" + dashboardKey, defaultValues);
   }
 
