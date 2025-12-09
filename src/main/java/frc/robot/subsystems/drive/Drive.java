@@ -206,9 +206,6 @@ public class Drive extends SubsystemBase {
       stop();
     }
 
-    brakeModeEnabled = !disabledDebouncer.calculate(DriverStation.isDisabled());
-    setMotorBrakeMode(brakeModeEnabled);
-
     // Log current wheel speeds
     Logger.recordOutput("SwerveStates/MeasuredWheelSpeeds", getWheelSpeeds());
     Logger.recordOutput("SwerveStates/ModuleDesiredWheelSpeeds", getDesiredWheelSpeeds());

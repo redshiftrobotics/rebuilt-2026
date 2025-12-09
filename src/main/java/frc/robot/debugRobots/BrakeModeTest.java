@@ -17,7 +17,7 @@ public class BrakeModeTest extends TimedRobot {
 
   private boolean brakeModeStartsEnabled = true;
 
-  private Boolean brakeModeEnabled = null;
+  private boolean brakeModeEnabled = false;
 
   public BrakeModeTest() {
     var configs =
@@ -46,6 +46,7 @@ public class BrakeModeTest extends TimedRobot {
 
   private void setBreakMode(boolean enabled) {
     if (enabled != brakeModeEnabled) {
+      System.out.println("brake mode " + enabled);
       for (int i = 0; i < motors.size(); i++) {
         motorConfigs.get(i).MotorOutput.NeutralMode =
             enabled ? NeutralModeValue.Brake : NeutralModeValue.Coast;
