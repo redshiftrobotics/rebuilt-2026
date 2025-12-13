@@ -287,12 +287,14 @@ public class RobotContainer {
     xbox.b()
         .or(RobotModeTriggers.disabled())
         .onTrue(drive.runOnce(drive::stop).withName("Cancel"))
-        .onTrue(rumbleControllers(0).withTimeout(Constants.LOOP_PERIOD_SECONDS));
+        .onTrue(rumbleControllers(0).raceWith(Commands.none()));
 
-    xbox.b()
-        .debounce(1)
-        .onTrue(rumbleController(xbox, 0.3).withTimeout(0.25))
-        .whileTrue(drive.run(drive::stopUsingForwardArrangement).withName("Stop and Orient"));
+    xbox.b().whileTrue(drive.run(drive::stop).withName("Stop Request"));
+
+    // xbox.b()
+    //     .debounce(1)
+    //     .onTrue(rumbleController(xbox, 0.3).withTimeout(0.25))
+    //     .whileTrue(drive.run(drive::stopUsingForwardArrangement).withName("Stop and Orient"));
 
     // Reset the gyro heading
     xbox.start()
@@ -314,7 +316,7 @@ public class RobotContainer {
       Command activateLayer =
           pipeline.runLayer(
               String.format(
-                  "Strafe %.0f°", MathUtil.inputModulus(rotation.getDegrees(), -180, +180)),
+                  "Strafe %.0f", MathUtil.inputModulus(rotation.getDegrees(), -180, +180)),
               input ->
                   input.linearVelocity(translation).fieldRelativeDisabled().coefficients(1, 0.3));
       xbox.pov(pov).whileTrue(activateLayer);

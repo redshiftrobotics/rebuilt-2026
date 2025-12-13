@@ -134,7 +134,7 @@ public class DriveConstants {
 
   public static final PIDConstants TRANSLATION_CONTROLLER_CONSTANTS =
       new PIDConstants(5.0, 0.0, 0.0);
-  public static final PIDConstants ROTATION_CONTROLLER_CONSTANTS = new PIDConstants(8, 0.0, 0.0);
+  public static final PIDConstants ROTATION_CONTROLLER_CONSTANTS = new PIDConstants(5, 0.0, 0.0);
   public static final double TRANSLATION_TOLERANCE = Units.inchesToMeters(0.5);
   public static final Rotation2d ROTATION_TOLERANCE = Rotation2d.fromDegrees(1);
 

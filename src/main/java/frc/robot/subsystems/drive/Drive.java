@@ -54,7 +54,7 @@ public class Drive extends SubsystemBase {
 
   private final Module[] modules; // FL, FR, BL, BR
 
-  private Debouncer disabledDebouncer = new Debouncer(3, DebounceType.kRising);
+  private Debouncer enabledDebouncer = new Debouncer(3, DebounceType.kFalling);
 
   @AutoLogOutput(key = "Drive/BrakeModeEnabled")
   private boolean brakeModeEnabled;
@@ -205,6 +205,8 @@ public class Drive extends SubsystemBase {
     if (DriverStation.isDisabled()) {
       stop();
     }
+
+    setMotorBrakeMode(enabledDebouncer.calculate(DriverStation.isEnabled()));
 
     // Log current wheel speeds
     Logger.recordOutput("SwerveStates/MeasuredWheelSpeeds", getWheelSpeeds());

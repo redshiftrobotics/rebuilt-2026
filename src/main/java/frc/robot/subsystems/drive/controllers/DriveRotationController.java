@@ -1,11 +1,17 @@
 package frc.robot.subsystems.drive.controllers;
 
+import static frc.robot.subsystems.drive.DriveConstants.DRIVE_CONFIG;
 import static frc.robot.subsystems.drive.DriveConstants.HEADING_CONTROLLER_CONFIG;
 
-import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import frc.robot.Constants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.utility.VirtualSubsystem;
+import frc.robot.utility.tunable.TunableNumber;
+import frc.robot.utility.tunable.TunableNumberGroup;
+import frc.robot.utility.tunable.TunableNumbers.TunablePID;
 import java.util.function.Supplier;
 
 /** Controller for rotating robot to goal heading using ProfiledPIDController */
@@ -14,13 +20,19 @@ public class DriveRotationController extends VirtualSubsystem {
   private final Drive drive;
   private Supplier<Rotation2d> goalSupplier;
 
-  private int periodicCounter = 0;
+  private static final TunableNumberGroup factory = new TunableNumberGroup("HeadingController/");
 
-  private final PIDController controller =
-      new PIDController(
-          HEADING_CONTROLLER_CONFIG.pid().kP(),
-          HEADING_CONTROLLER_CONFIG.pid().kI(),
-          HEADING_CONTROLLER_CONFIG.pid().kD());
+  private static final TunablePID tunablePID = factory.pid("PID", HEADING_CONTROLLER_CONFIG.pid());
+
+  private static final TunableNumber angularVelocity =
+      factory.number("kAngularVelocity", DRIVE_CONFIG.maxAngularVelocity());
+
+  private static final TunableNumber angularAcceleration =
+      factory.number("kAngularAcceleration", DRIVE_CONFIG.maxAngularAcceleration());
+
+  private final ProfiledPIDController controller;
+
+  private int periodicCounter = 0;
 
   /**
    * Creates a new DriveRotationController.
@@ -43,6 +55,14 @@ public class DriveRotationController extends VirtualSubsystem {
     this.drive = drive;
     this.goalSupplier = goalSupplier;
 
+    controller =
+        new ProfiledPIDController(
+            tunablePID.get().kP(),
+            tunablePID.get().kI(),
+            tunablePID.get().kD(),
+            new TrapezoidProfile.Constraints(angularVelocity.get(), angularAcceleration.get()),
+            Constants.LOOP_PERIOD_SECONDS);
+
     controller.enableContinuousInput(-Math.PI, Math.PI);
     controller.setTolerance(HEADING_CONTROLLER_CONFIG.toleranceRadians());
 
@@ -59,7 +79,7 @@ public class DriveRotationController extends VirtualSubsystem {
   }
 
   public void setGoal(Rotation2d goal) {
-    controller.setSetpoint(goal.getRadians());
+    this.goalSupplier = () -> goal;
   }
 
   /**
@@ -69,8 +89,10 @@ public class DriveRotationController extends VirtualSubsystem {
    * the current heading.
    */
   public void reset() {
-    controller.setSetpoint(drive.getRobotPose().getRotation().getRadians());
-    controller.reset();
+    setGoal(drive.getRobotPose().getRotation());
+    controller.reset(
+        drive.getRobotPose().getRotation().getRadians(),
+        drive.getRobotSpeeds().omegaRadiansPerSecond);
   }
 
   /**
@@ -86,7 +108,7 @@ public class DriveRotationController extends VirtualSubsystem {
     Rotation2d goal = goalSupplier.get();
 
     if (goal != null) {
-      controller.setSetpoint(goal.getRadians());
+      controller.setGoal(goal.getRadians());
     }
 
     Rotation2d measured = drive.getRobotPose().getRotation();
@@ -98,11 +120,11 @@ public class DriveRotationController extends VirtualSubsystem {
 
   /** Returns if the controller had a goal during the last calculate() call. */
   public boolean atGoal() {
-    return controller.atSetpoint();
+    return controller.atGoal();
   }
 
   /** Returns the goal heading during the last calculate() call. */
   public Rotation2d getGoal() {
-    return Rotation2d.fromRadians(controller.getSetpoint());
+    return Rotation2d.fromRadians(controller.getGoal().position);
   }
 }
