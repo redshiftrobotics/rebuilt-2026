@@ -126,7 +126,6 @@ public class ModuleIOTalonFX implements ModuleIO {
         constants.DriveMotorInverted
             ? InvertedValue.Clockwise_Positive
             : InvertedValue.CounterClockwise_Positive;
-    driveConfig.MotorOutput.DutyCycleNeutralDeadband = 0.01; // Neutral Mode Deadband
     tryUntilOk(5, () -> driveTalon.getConfigurator().apply(driveConfig, 0.25));
     tryUntilOk(5, () -> driveTalon.setPosition(0.0, 0.25));
 
@@ -252,11 +251,15 @@ public class ModuleIOTalonFX implements ModuleIO {
 
   @Override
   public void setTurnOpenLoop(double output) {
-    turnTalon.setControl(
-        switch (constants.SteerMotorClosedLoopOutput) {
-          case Voltage -> voltageRequest.withOutput(output);
-          case TorqueCurrentFOC -> torqueCurrentRequest.withOutput(output);
-        });
+    if (output == 0) {
+      turnTalon.stopMotor();
+    } else {
+      turnTalon.setControl(
+          switch (constants.SteerMotorClosedLoopOutput) {
+            case Voltage -> voltageRequest.withOutput(output);
+            case TorqueCurrentFOC -> torqueCurrentRequest.withOutput(output);
+          });
+    }
   }
 
   @Override
