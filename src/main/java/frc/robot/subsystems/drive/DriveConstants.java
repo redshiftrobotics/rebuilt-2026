@@ -66,15 +66,10 @@ public class DriveConstants {
             new Translation2d(1, 1),
             TunerConstants.kSpeedAt12Volts.in(MetersPerSecond),
             22.0);
-        case REEFSCAPE_2025, WOOD_BOT_2026 -> new DriveConfig(
+        case REEFSCAPE_2025, WOOD_BOT_2026, CHASSIS_CANNON -> new DriveConfig(
             new Translation2d(Units.inchesToMeters(22.729228), Units.inchesToMeters(22.729228)),
             new Translation2d(Units.inchesToMeters(35), Units.inchesToMeters(35)),
-            7.05968,
-            14.5);
-        case CHASSIS_CANNON -> new DriveConfig(
-            new Translation2d(Units.inchesToMeters(22.729226), Units.inchesToMeters(22.729226)),
-            new Translation2d(Units.inchesToMeters(25.729226), Units.inchesToMeters(25.729226)),
-            5.05968,
+            5.0,
             14.5);
       };
 
@@ -97,6 +92,7 @@ public class DriveConstants {
       switch (Constants.getRobot()) {
         case REEFSCAPE_2025 -> 40;
         case CHASSIS_CANNON -> 40;
+        case WOOD_BOT_2026 -> 40;
         case PRESEASON_2026 -> TunerConstants.DrivetrainConstants.Pigeon2Id;
         default -> -1;
       };

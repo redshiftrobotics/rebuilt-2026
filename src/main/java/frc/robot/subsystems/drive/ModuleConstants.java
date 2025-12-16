@@ -71,10 +71,11 @@ public class ModuleConstants {
         break;
 
       case WOOD_BOT_2026:
-        FRONT_LEFT_MODULE_CONFIG = new ModuleConfig(0, 0, 0, Rotation2d.kZero, false);
-        FRONT_RIGHT_MODULE_CONFIG = new ModuleConfig(0, 0, 0, Rotation2d.kZero, false);
-        BACK_LEFT_MODULE_CONFIG = new ModuleConfig(0, 0, 0, Rotation2d.kZero, false);
-        BACK_RIGHT_MODULE_CONFIG = new ModuleConfig(0, 0, 0, Rotation2d.kZero, false);
+        FRONT_LEFT_MODULE_CONFIG = new ModuleConfig(20, 1, 37, new Rotation2d(-5.535), true);
+        FRONT_RIGHT_MODULE_CONFIG = new ModuleConfig(15, 16, 36, new Rotation2d(-1.922), true);
+        BACK_LEFT_MODULE_CONFIG =
+            new ModuleConfig(2, 3, 39, new Rotation2d(-5.147).plus(Rotation2d.k180deg), true);
+        BACK_RIGHT_MODULE_CONFIG = new ModuleConfig(19, 18, 38, new Rotation2d(-5.657), true);
         break;
 
       default:
@@ -143,6 +144,7 @@ public class ModuleConstants {
 
       case CHASSIS_CANNON:
       case REEFSCAPE_2025:
+      case WOOD_BOT_2026:
       default:
         DRIVE_MOTOR = DCMotor.getNEO(1);
         DRIVE_FEEDBACK = new PIDConstants(0.0001, 0.0, 0.0);

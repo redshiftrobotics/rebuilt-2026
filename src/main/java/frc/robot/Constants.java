@@ -103,6 +103,8 @@ public final class Constants {
           return RobotType.CHASSIS_CANNON;
         case "02384981":
           return RobotType.REEFSCAPE_2025;
+        case "032D216B":
+          return RobotType.WOOD_BOT_2026;
       }
     } else if (RobotBase.isSimulation()) {
       return RobotType.SIM_BOT;
