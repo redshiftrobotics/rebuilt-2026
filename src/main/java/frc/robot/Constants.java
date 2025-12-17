@@ -29,7 +29,7 @@ public final class Constants {
   public static final boolean ADDITIONAL_LOGGING = true;
 
   /** If true, includes testing/diagnostic autos in auto chooser */
-  public static final boolean RUNNING_TEST_PLANS = false;
+  public static final boolean RUNNING_TEST_PLANS = true;
 
   /** If true, includes all created PathPlanner autos in auto chooser */
   public static final boolean INCLUDE_ALL_PATHPLANNER_AUTOS = true;
@@ -99,6 +99,8 @@ public final class Constants {
   private static RobotType determineRobotType() {
     if (RobotBase.isReal()) {
       switch (RobotController.getSerialNumber()) {
+        case "023AC95B":
+          return RobotType.PRESEASON_2026;
         case "032D2143":
           return RobotType.CHASSIS_CANNON;
         case "02384981":
