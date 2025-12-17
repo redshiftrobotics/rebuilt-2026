@@ -18,6 +18,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 public class DriveCommands {
   private static final double FF_START_DELAY_SECONDS = 2.0; // Secs
@@ -26,17 +27,27 @@ public class DriveCommands {
   private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
 
   /** Drive to a pose, more precise */
-  public static Command driveWithPoseController(Drive drive, DrivePoseController controller) {
+  public static Command driveWithPoseController(Drive drive, Supplier<Pose2d> goalSupplier) {
+    DrivePoseController controller = new DrivePoseController(drive);
     return drive
-        .run(() -> drive.setRobotSpeeds(controller.calculate()))
+        .run(
+            () -> {
+              controller.setGoal(goalSupplier.get());
+              drive.setRobotSpeeds(controller.calculate());
+            })
         .until(controller::atGoal)
         .finallyDo(drive::stop);
   }
 
   public static Command rotateWithRotationController(
-      Drive drive, DriveRotationController controller) {
+      Drive drive, Supplier<Rotation2d> goalSupplier) {
+    DriveRotationController controller = new DriveRotationController(drive);
     return drive
-        .run(() -> drive.setRobotSpeeds(new ChassisSpeeds(0.0, 0.0, controller.calculate())))
+        .run(
+            () -> {
+              controller.setGoal(goalSupplier.get());
+              drive.setRobotSpeeds(new ChassisSpeeds(0.0, 0.0, controller.calculate()));
+            })
         .until(controller::atGoal)
         .finallyDo(drive::stop);
   }

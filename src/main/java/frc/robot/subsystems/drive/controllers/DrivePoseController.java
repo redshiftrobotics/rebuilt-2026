@@ -12,19 +12,13 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.utility.VirtualSubsystem;
-import java.util.Optional;
-import java.util.function.Supplier;
 
 /** Controller for driving robot to goal pose using HolonomicDriveController */
-public class DrivePoseController extends VirtualSubsystem {
+public class DrivePoseController {
 
   private final Drive drive;
 
-  private Pose2d goal;
-  private Supplier<Pose2d> goalSupplier;
-
-  private int periodicCounter = 0;
+  private Pose2d goal = null;
 
   private final HolonomicDriveController controller =
       new HolonomicDriveController(
@@ -42,25 +36,8 @@ public class DrivePoseController extends VirtualSubsystem {
               ROTATION_CONTROLLER_CONSTANTS.kD(),
               DRIVE_CONFIG.getAngularConstraints()));
 
-  /**
-   * Creates a new DrivePoseController.
-   *
-   * @param drive The drive subsystem to control.
-   */
   public DrivePoseController(Drive drive) {
-    this(drive, () -> null);
-  }
-
-  /**
-   * Creates a new DrivePoseController.
-   *
-   * @param drive The drive subsystem to control.
-   * @param goalSupplier A supplier that provides the desired goal pose. Can supply null if there is
-   *     no new goal, in which case the controller will hold the last goal.
-   */
-  public DrivePoseController(Drive drive, Supplier<Pose2d> goalSupplier) {
     this.drive = drive;
-    this.goalSupplier = goalSupplier;
 
     controller.setTolerance(
         new Pose2d(TRANSLATION_TOLERANCE, TRANSLATION_TOLERANCE, ROTATION_TOLERANCE));
@@ -68,31 +45,7 @@ public class DrivePoseController extends VirtualSubsystem {
     reset();
   }
 
-  @Override
-  public void periodic() {
-    periodicCounter += 1;
-  }
-
-  /**
-   * Resets the pose controller to the current robot pose and speeds.
-   *
-   * <p>This is typically called at the start of a new command to ensure the controller starts from
-   * the current pose.
-   */
   public void reset() {
-    goal = null;
-    resetControllers();
-  }
-
-  public void setSetpointSupplier(Supplier<Pose2d> goalSupplier) {
-    this.goalSupplier = goalSupplier;
-  }
-
-  public void setSetpoint(Pose2d goal) {
-    this.goalSupplier = () -> goal;
-  }
-
-  private void resetControllers() {
     controller.getXController().reset();
     controller.getYController().reset();
     controller
@@ -102,33 +55,17 @@ public class DrivePoseController extends VirtualSubsystem {
             drive.getRobotSpeeds().omegaRadiansPerSecond);
   }
 
+  public void setGoal(Pose2d goal) {
+    this.goal = goal;
+  }
+
   /**
    * Calculates the required chassis speeds to drive to the goal pose.
    *
    * @return The desired chassis speeds.
    */
   public ChassisSpeeds calculate() {
-    if (periodicCounter > 1) {
-      reset();
-    }
-
-    Optional<Pose2d> goal = getNextGoal();
-    Pose2d measured = drive.getRobotPose();
-
-    if (goal.isPresent()) {
-      if (this.goal == null) {
-        resetControllers();
-      }
-      this.goal = goal.get();
-    }
-
-    if (this.goal == null) {
-      return new ChassisSpeeds();
-    }
-
-    periodicCounter = 0;
-
-    return controller.calculate(measured, this.goal, 0, this.goal.getRotation());
+    return controller.calculate(drive.getRobotPose(), this.goal, 0, this.goal.getRotation());
   }
 
   /** Returns if the controller reached the goal during the last calculate() call. */
@@ -139,15 +76,5 @@ public class DrivePoseController extends VirtualSubsystem {
   /** Returns if the controller had a goal during the last calculate() call. */
   public boolean hasGoal() {
     return goal != null;
-  }
-
-  /** Returns the current goal from the supplier. */
-  public Optional<Pose2d> getNextGoal() {
-    return Optional.ofNullable(goalSupplier.get());
-  }
-
-  /** Returns the goal that was used in the last calculate() call. */
-  public Optional<Pose2d> getLastGoal() {
-    return Optional.ofNullable(goal);
   }
 }

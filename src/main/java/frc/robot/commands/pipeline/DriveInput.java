@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.controllers.DriveRotationController;
 import frc.robot.utility.AllianceMirrorUtil;
 
 /**
@@ -25,15 +26,25 @@ public class DriveInput {
   private Translation2d linearVelocity = Translation2d.kZero;
   private double angularVelocity = 0.0;
   private boolean fieldRelative = true;
+  private boolean headingTargeted = false;
+  private Rotation2d headingTarget = null;
 
   public DriveInput(Drive drive) {
     this.drive = drive;
   }
 
-  public ChassisSpeeds getChassisSpeeds() {
+  public ChassisSpeeds getChassisSpeeds(DriveRotationController headingController) {
+
+    if (headingTarget != null) {
+      headingController.setGoal(headingTarget);
+    }
 
     ChassisSpeeds chassisSpeeds =
         new ChassisSpeeds(linearVelocity.getX(), linearVelocity.getY(), angularVelocity);
+
+    if (headingTargeted) {
+      chassisSpeeds.omegaRadiansPerSecond = headingController.calculate();
+    }
 
     if (fieldRelative) {
       chassisSpeeds =
@@ -86,6 +97,7 @@ public class DriveInput {
    */
   public DriveInput angularVelocity(double angularVelocity) {
     this.angularVelocity = angularVelocity;
+    this.headingTargeted = false;
     return this;
   }
 
@@ -110,10 +122,8 @@ public class DriveInput {
    * @return This DriveInput for chaining
    */
   public DriveInput headingTarget(Rotation2d headingTarget) {
-    if (headingTarget != null) {
-      drive.getHeadingController().setGoal(headingTarget);
-    }
-    this.angularVelocity = drive.getHeadingController().calculate();
+    this.headingTarget = headingTarget;
+    this.headingTargeted = true;
     return this;
   }
 
@@ -142,7 +152,7 @@ public class DriveInput {
   public DriveInput headingStick(double x, double y) {
     Translation2d translation = new Translation2d(x, y);
 
-    if (translation.getNorm() < JOYSTICK_DEADBAND) {
+    if (translation.getNorm() < ANGLE_DEADBAND) {
       return headingTarget(null);
     }
 

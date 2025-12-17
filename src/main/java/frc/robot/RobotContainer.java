@@ -43,8 +43,8 @@ import frc.robot.subsystems.vision.CameraIOSim;
 import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.utility.Elastic;
 import frc.robot.utility.Elastic.Notification.NotificationLevel;
-import java.util.function.UnaryOperator;
-import org.littletonrobotics.junction.Logger;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -235,7 +235,14 @@ public class RobotContainer {
 
   private void configureDriverControllerBindings(CommandXboxController xbox) {
 
-    final DriveInputPipeline pipeline = new DriveInputPipeline(drive);
+    Supplier<DriveInput> baseDrive =
+        () ->
+            new DriveInput(drive)
+                .linearVelocityStick(-xbox.getLeftY(), -xbox.getLeftX())
+                .angularVelocityStick(-xbox.getRightX())
+                .fieldRelativeEnabled();
+
+    final DriveInputPipeline pipeline = new DriveInputPipeline(drive, baseDrive);
 
     // Default command, normal joystick drive
     drive.setDefaultCommand(
@@ -244,20 +251,11 @@ public class RobotContainer {
             .finallyDo(drive::stop)
             .withName("Pipeline Drive"));
 
-    pipeline.addDefaultLayer(
-        "Drive",
-        input ->
-            input
-                .linearVelocityStick(-xbox.getLeftY(), -xbox.getLeftX())
-                .angularVelocityStick(-xbox.getRightX())
-                .fieldRelativeEnabled());
-
     DriverDashboard.currentDriveModeName =
         () -> {
           Command current = drive.getCurrentCommand();
           if (current == drive.getDefaultCommand()) {
-            String layers = String.join(" + ", pipeline.getActiveLayers());
-            return "[" + layers + "]";
+            return "[" + pipeline.getLayerInfo() + "]";
           } else if (current != null) {
             return current.getName();
           }
@@ -287,14 +285,12 @@ public class RobotContainer {
     xbox.b()
         .or(RobotModeTriggers.disabled())
         .onTrue(drive.runOnce(drive::stop).withName("Cancel"))
-        .onTrue(rumbleControllers(0).raceWith(Commands.none()));
+        .onTrue(rumbleControllers(0).withTimeout(0.02));
 
-    xbox.b().whileTrue(drive.run(drive::stop).withName("Stop Request"));
-
-    // xbox.b()
-    //     .debounce(1)
-    //     .onTrue(rumbleController(xbox, 0.3).withTimeout(0.25))
-    //     .whileTrue(drive.run(drive::stopUsingForwardArrangement).withName("Stop and Orient"));
+    xbox.b()
+        .debounce(1)
+        .onTrue(rumbleController(xbox, 0.3).withTimeout(0.25))
+        .whileTrue(drive.run(drive::stopUsingForwardArrangement).withName("Stop and Orient"));
 
     // Reset the gyro heading
     xbox.start()
@@ -324,40 +320,36 @@ public class RobotContainer {
 
     if (Constants.isDemoMode()) {
 
-      UnaryOperator<DriveInput> aim =
-          input ->
-              input.facingPoint(
-                  drive.getPoseController().getNextGoal().map(Pose2d::getTranslation).orElse(null));
+      SmartDashboard.putBoolean("Slow Mode", false);
+      Trigger dashboardSlowMode = new Trigger(() -> SmartDashboard.getBoolean("Slow Mode", false));
+      dashboardSlowMode.whileTrue(
+          pipeline.runLayer("Slow Mode", input -> input.coefficients(0.1, 0.2)));
+
+      AtomicReference<Pose2d> setpoint = new AtomicReference<>(null);
 
       xbox.a()
           .whileTrue(
               pipeline
-                  .runLayer("Face Setpoint", aim)
-                  .onlyIf(() -> drive.getPoseController().getNextGoal().isPresent()));
+                  .runLayer(
+                      "Face Setpoint", input -> input.facingPoint(setpoint.get().getTranslation()))
+                  .onlyIf(() -> setpoint.get() != null));
 
       // Drive to pose setpoint reset
       RobotModeTriggers.disabled()
-          .onTrue(
-              Commands.runOnce(drive.getPoseController()::reset).withName("Reset Pose Controller"));
+          .onTrue(Commands.runOnce(() -> setpoint.set(null)).withName("Reset Pose Controller"));
 
       // Save current pose as setpoint
       xbox.leftTrigger()
           .onTrue(rumbleController(xbox, 0.4).withTimeout(0.1))
           .onTrue(
-              Commands.runOnce(
-                      () -> {
-                        Pose2d setpoint = drive.getRobotPose();
-                        drive.getPoseController().setSetpoint(setpoint);
-                        Logger.recordOutput("Teleop/PoseGoal", setpoint);
-                      })
-                  .withName("Save Setpoint"));
+              Commands.runOnce(() -> setpoint.set(drive.getRobotPose())).withName("Save Setpoint"));
 
       // Drive to pose setpoint
       xbox.rightTrigger()
           .whileTrue(
-              DriveCommands.driveWithPoseController(drive, drive.getPoseController())
+              DriveCommands.driveWithPoseController(drive, setpoint::get)
                   .andThen(rumbleController(xbox, 1, RumbleType.kRightRumble).withTimeout(0.2))
-                  .onlyIf(() -> drive.getPoseController().getNextGoal().isPresent())
+                  .onlyIf(() -> setpoint.get() != null)
                   .withName("Drive to Setpoint"));
     }
   }

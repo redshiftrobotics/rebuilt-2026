@@ -2,95 +2,62 @@ package frc.robot.commands.pipeline;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.drive.Drive;
-import java.util.ArrayList;
-import java.util.List;
+import frc.robot.subsystems.drive.controllers.DriveRotationController;
+import frc.robot.subsystems.drive.controllers.SmartResetDriveRotationController;
+import java.util.StringJoiner;
+import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 /**
- * A pipeline for modifying {@link DriveInput} using layers of {@link UnaryOperator}. Each layer can
- * modify the input, and layers can be activated or deactivated.
+ * A pipeline for modifying {@link DriveInput} using layers.
  *
- * <p>The pipeline starts with a base {@link DriveInput}, and each active layer is applied in the
- * order they were activated, with the most recently activated layer being applied last.
- *
- * <p>This allows for multiple modifications to be applied to the drive input in a modular way, such
- * as adding a slow mode layer, combined with an aiming layer, without running into the issue of
- * commands wanting exclusive control over the drive input.
+ * <p>This wraps a {@link LayeredPipeline} with drive-specific functionality.
  */
 public class DriveInputPipeline {
 
-  private record Layer(String label, UnaryOperator<DriveInput> operator) {}
+  private final LayeredPipeline<DriveInput> pipeline;
+  private final DriveRotationController headingController;
 
-  private final Drive drive;
-
-  private final List<Layer> layers = new ArrayList<>();
-
-  /**
-   * Creates a new {@link DriveInputPipeline} with the given base {@link DriveInput}.
-   *
-   * @param baseInput The base {@link DriveInput} that subsequent layers will modify.
-   */
   public DriveInputPipeline(Drive drive) {
-    this.drive = drive;
+    this(drive, () -> new DriveInput(drive));
   }
 
-  public void addDefaultLayer(String name, UnaryOperator<DriveInput> modifier) {
-    Layer layer = new Layer(name, modifier);
-    activate(layer);
+  public DriveInputPipeline(Drive drive, Supplier<DriveInput> baseSupplier) {
+    this.headingController =
+        new SmartResetDriveRotationController(drive, () -> drive.getRobotPose().getRotation());
+    this.pipeline = new LayeredPipeline<>(baseSupplier);
   }
 
   /**
-   * Activates a layer for the duration of the returned command. The layer will be deactivated when
-   * the command ends.
+   * Activates a layer for the duration of the returned command.
    *
-   * <p>When the layer is activated, it is applied to the base input after all previously activated
-   * layers.
-   *
-   * @param operator A function that returns a new {@link DriveInput} with additional behavior.
+   * @param name A label for the layer.
+   * @param operator A function that modifies the drive input.
    * @return A command that activates the layer while it is running.
    */
   public Command runLayer(String name, UnaryOperator<DriveInput> operator) {
-    Layer layer = new Layer(name, operator);
-    return Commands.startEnd(() -> activate(layer), () -> deactivate(layer))
-        .withName("Activate Layer " + name);
+    return pipeline.runLayer(name, operator);
   }
 
   /**
    * Gets the current {@link ChassisSpeeds} output of the pipeline.
    *
-   * <p>The speed comes from the base input modified by all active layers.
-   *
    * @return The current {@link ChassisSpeeds}.
    */
   public ChassisSpeeds getChassisSpeeds() {
-    DriveInput input = new DriveInput(drive);
-
-    for (Layer layer : layers) {
-      input = layer.operator.apply(input);
-    }
-
-    return input.getChassisSpeeds();
+    return pipeline.get().getChassisSpeeds(headingController);
   }
 
   /**
-   * Gets all active layers' labels, with the most recently activated (and last applied) layer at
-   * the end of the list.
-   *
-   * <p>This can be used for debugging or displaying the current state of the pipeline.
+   * Gets all active layers' labels.
    *
    * @return A list of labels of all active layers.
    */
-  public List<String> getActiveLayers() {
-    return layers.stream().map(Layer::label).toList();
-  }
-
-  private void activate(Layer layer) {
-    layers.add(layer);
-  }
-
-  private void deactivate(Layer layer) {
-    layers.remove(layer);
+  public String getLayerInfo() {
+    StringJoiner joiner = new StringJoiner(" > ");
+    joiner.add("Drive");
+    pipeline.getActiveLayers().forEach(joiner::add);
+    return joiner.toString();
   }
 }

@@ -31,8 +31,6 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.subsystems.dashboard.DriverDashboard;
-import frc.robot.subsystems.drive.controllers.DrivePoseController;
-import frc.robot.subsystems.drive.controllers.DriveRotationController;
 import frc.robot.utility.AllianceMirrorUtil;
 import frc.robot.utility.LocalADStarAK;
 import java.util.Arrays;
@@ -69,9 +67,6 @@ public class Drive extends SubsystemBase {
   private Rotation2d rawGyroRotation = new Rotation2d();
   private Pose2d robotPose = new Pose2d();
   private ChassisSpeeds robotSpeeds = new ChassisSpeeds();
-
-  private final DriveRotationController headingController = new DriveRotationController(this);
-  private final DrivePoseController poseController = new DrivePoseController(this);
 
   /**
    * Creates a new drivetrain for robot
@@ -503,29 +498,5 @@ public class Drive extends SubsystemBase {
         .mapToDouble(Module::getFFCharacterizationVelocity)
         .average()
         .orElse(0.0);
-  }
-
-  // --- Get Controllers ---
-
-  /**
-   * Returns the heading controller for driving to a specific heading.
-   *
-   * <p>The drivetrain does not use this controller automatically; it must be used by commands.
-   *
-   * @return The heading controller.
-   */
-  public DriveRotationController getHeadingController() {
-    return headingController;
-  }
-
-  /**
-   * Returns the pose controller for driving to a specific pose.
-   *
-   * <p>The drivetrain does not use this controller automatically; it must be used by commands.
-   *
-   * @return The pose controller.
-   */
-  public DrivePoseController getPoseController() {
-    return poseController;
   }
 }
