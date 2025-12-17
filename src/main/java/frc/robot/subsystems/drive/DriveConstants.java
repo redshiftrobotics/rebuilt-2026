@@ -58,19 +58,30 @@ public class DriveConstants {
     }
   }
 
+  private static final Translation2d TRACK_SIZE =
+      switch (Constants.getRobot()) {
+        case PRESEASON_2026, SIM_BOT -> new Translation2d(
+            TunerConstants.FrontLeft.LocationX - TunerConstants.BackRight.LocationX,
+            TunerConstants.FrontLeft.LocationY - TunerConstants.BackRight.LocationY);
+        case REEFSCAPE_2025, WOOD_BOT_2026, CHASSIS_CANNON -> new Translation2d(
+            Units.inchesToMeters(22.729228), Units.inchesToMeters(22.729228));
+      };
+
+  private static final Translation2d TRACK_TO_BUMPER =
+      switch (Constants.getRobot()) {
+        case PRESEASON_2026, SIM_BOT -> new Translation2d(3.0 + 3.750, 3.0 + 3.750);
+        case REEFSCAPE_2025, WOOD_BOT_2026, CHASSIS_CANNON -> new Translation2d(7, 7);
+      };
+
   public static final DriveConfig DRIVE_CONFIG =
       switch (Constants.getRobot()) {
         case PRESEASON_2026, SIM_BOT -> new DriveConfig(
-            new Translation2d(
-                TunerConstants.FrontLeft.LocationX, TunerConstants.FrontLeft.LocationY),
-            new Translation2d(1, 1),
+            TRACK_SIZE,
+            TRACK_SIZE.plus(TRACK_TO_BUMPER.times(2)),
             TunerConstants.kSpeedAt12Volts.in(MetersPerSecond),
             22.0);
         case REEFSCAPE_2025, WOOD_BOT_2026, CHASSIS_CANNON -> new DriveConfig(
-            new Translation2d(Units.inchesToMeters(22.729228), Units.inchesToMeters(22.729228)),
-            new Translation2d(Units.inchesToMeters(35), Units.inchesToMeters(35)),
-            5.0,
-            14.5);
+            TRACK_SIZE, TRACK_SIZE.plus(TRACK_TO_BUMPER.times(2)), 5.0, 14.5);
       };
 
   // --- Module Offsets ---

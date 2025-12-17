@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.Mode;
+import frc.robot.commands.DriveCharacterizationCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.pipeline.DriveInput;
 import frc.robot.commands.pipeline.DriveInputPipeline;
@@ -413,10 +414,10 @@ public class RobotContainer {
     if (Constants.RUNNING_TEST_PLANS) {
       dashboardChooser.addOption(
           "[Characterization] Drive Feed Forward",
-          DriveCommands.feedforwardCharacterization(drive));
+          DriveCharacterizationCommands.feedforwardCharacterization(drive));
       dashboardChooser.addOption(
           "[Characterization] Drive Wheel Radius",
-          DriveCommands.wheelRadiusCharacterization(drive));
+          DriveCharacterizationCommands.wheelRadiusCharacterization(drive));
 
       dashboardChooser.addOption(
           "[SysId] Drive Quasistatic Forward",
