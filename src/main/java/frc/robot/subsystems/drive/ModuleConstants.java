@@ -116,14 +116,14 @@ public class ModuleConstants {
     switch (Constants.getRobot()) {
       case PRESEASON_2026:
         DRIVE_MOTOR = DCMotor.getKrakenX60Foc(1);
-        DRIVE_FEEDBACK = new PIDConstants(TunerConstants.FrontLeft.DriveMotorGains);
-        DRIVE_FEEDFORWARD = new FeedForwardConfigRecord(TunerConstants.FrontLeft.DriveMotorGains);
+        DRIVE_FEEDBACK = new PIDConstants(20, 0, 0);
+        DRIVE_FEEDFORWARD = new FeedForwardConfigRecord(2.00544, 1.05719, 0);
         DRIVE_MOTOR_CURRENT_LIMIT = TunerConstants.FrontLeft.SlipCurrent;
         DRIVE_REDUCTION = TunerConstants.FrontLeft.DriveMotorGearRatio;
 
         TURN_MOTOR = DCMotor.getKrakenX60Foc(1);
-        TURN_FEEDBACK = new PIDConstants(TunerConstants.FrontLeft.SteerMotorGains);
-        TURN_FEEDFORWARD = new FeedForwardConfigRecord(TunerConstants.FrontLeft.SteerMotorGains);
+        TURN_FEEDBACK = new PIDConstants(1000, 0, 15);
+        TURN_FEEDFORWARD = new FeedForwardConfigRecord(0.2, 0, 0);
         TURN_MOTOR_CURRENT_LIMIT = TunerConstants.FrontLeft.SlipCurrent;
         TURN_REDUCTION = TunerConstants.FrontLeft.SteerMotorGearRatio;
         break;
@@ -161,7 +161,7 @@ public class ModuleConstants {
     }
   }
 
-  public static final double TURN_ALIGNMENT_TOLERANCE_DEGREES = 1;
+  public static final double TURN_ALIGNMENT_TOLERANCE_DEGREES = 0.25;
 
   // --- Module reductions ---
 

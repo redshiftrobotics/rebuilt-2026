@@ -58,6 +58,7 @@ public class DriveConstants {
     }
   }
 
+  /** Center of wheel to center of wheel size */
   private static final Translation2d TRACK_SIZE =
       switch (Constants.getRobot()) {
         case PRESEASON_2026, SIM_BOT -> new Translation2d(
@@ -67,7 +68,7 @@ public class DriveConstants {
             Units.inchesToMeters(22.729228), Units.inchesToMeters(22.729228));
       };
 
-  private static final Translation2d TRACK_TO_BUMPER =
+  private static final Translation2d BUMPER_TO_BUMPER =
       switch (Constants.getRobot()) {
         case PRESEASON_2026, SIM_BOT -> new Translation2d(3.0 + 3.750, 3.0 + 3.750);
         case REEFSCAPE_2025, WOOD_BOT_2026, CHASSIS_CANNON -> new Translation2d(7, 7);
@@ -77,11 +78,14 @@ public class DriveConstants {
       switch (Constants.getRobot()) {
         case PRESEASON_2026, SIM_BOT -> new DriveConfig(
             TRACK_SIZE,
-            TRACK_SIZE.plus(TRACK_TO_BUMPER.times(2)),
+            BUMPER_TO_BUMPER,
             TunerConstants.kSpeedAt12Volts.in(MetersPerSecond),
             22.0);
         case REEFSCAPE_2025, WOOD_BOT_2026, CHASSIS_CANNON -> new DriveConfig(
-            TRACK_SIZE, TRACK_SIZE.plus(TRACK_TO_BUMPER.times(2)), 5.0, 14.5);
+            TRACK_SIZE,
+            BUMPER_TO_BUMPER,
+            5.0,
+            14.5);
       };
 
   // --- Module Offsets ---
