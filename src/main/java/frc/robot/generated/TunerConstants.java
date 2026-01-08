@@ -8,7 +8,6 @@ import com.ctre.phoenix6.signals.*;
 import com.ctre.phoenix6.swerve.*;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.*;
 import edu.wpi.first.units.measure.*;
-import frc.robot.subsystems.drive.ModuleConstants.Mk4iReductions;
 // import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.drive.ModuleConstants.Mk5nReductions;
 
@@ -90,7 +89,7 @@ public class TunerConstants {
   private static final double kCoupleRatio = 0;
 
   private static final double kDriveGearRatio = Mk5nReductions.L3.reduction;
-  private static final double kSteerGearRatio = Mk4iReductions.TURN_REDUCTION;
+  private static final double kSteerGearRatio = Mk5nReductions.TURN_REDUCTION;
   private static final Distance kWheelRadius = Inches.of(2);
 
   private static final boolean kInvertLeftSide = false;
