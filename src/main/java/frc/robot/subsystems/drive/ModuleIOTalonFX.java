@@ -60,8 +60,9 @@ public class ModuleIOTalonFX implements ModuleIO {
   private final CANcoder cancoder;
 
   // Config
-  private final TalonFXConfiguration driveConfig = new TalonFXConfiguration();
-  private final TalonFXConfiguration turnConfig = new TalonFXConfiguration();
+  private final TalonFXConfiguration driveConfig;
+  private final TalonFXConfiguration turnConfig;
+  private final CANcoderConfiguration cancoderConfig;
 
   // Voltage control requests
   private final VoltageOut voltageRequest = new VoltageOut(0);
@@ -108,12 +109,15 @@ public class ModuleIOTalonFX implements ModuleIO {
   public ModuleIOTalonFX(
       SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>
           constants) {
+
     this.constants = constants;
+
     driveTalon = new TalonFX(constants.DriveMotorId, TunerConstants.DrivetrainConstants.CANBusName);
     turnTalon = new TalonFX(constants.SteerMotorId, TunerConstants.DrivetrainConstants.CANBusName);
     cancoder = new CANcoder(constants.EncoderId, TunerConstants.DrivetrainConstants.CANBusName);
 
     // Configure drive motor
+    driveConfig = constants.DriveMotorInitialConfigs;
     driveConfig.MotorOutput.NeutralMode =
         driveBrakeMode ? NeutralModeValue.Brake : NeutralModeValue.Coast;
     driveConfig.Slot0 = constants.DriveMotorGains;
@@ -130,6 +134,7 @@ public class ModuleIOTalonFX implements ModuleIO {
     tryUntilOk(5, () -> driveTalon.setPosition(0.0, 0.25));
 
     // Configure turn motor
+    turnConfig = constants.SteerMotorInitialConfigs;
     turnConfig.MotorOutput.NeutralMode =
         turnBrakeMode ? NeutralModeValue.Brake : NeutralModeValue.Coast;
     turnConfig.Slot0 = constants.SteerMotorGains;
@@ -156,7 +161,7 @@ public class ModuleIOTalonFX implements ModuleIO {
     tryUntilOk(5, () -> turnTalon.getConfigurator().apply(turnConfig, 0.25));
 
     // Configure CANCoder
-    CANcoderConfiguration cancoderConfig = constants.EncoderInitialConfigs;
+    cancoderConfig = constants.EncoderInitialConfigs;
     cancoderConfig.MagnetSensor.MagnetOffset = constants.EncoderOffset;
     cancoderConfig.MagnetSensor.SensorDirection =
         constants.EncoderInverted
