@@ -77,15 +77,9 @@ public class DriveConstants {
   public static final DriveConfig DRIVE_CONFIG =
       switch (Constants.getRobot()) {
         case PRESEASON_2026, SIM_BOT -> new DriveConfig(
-            TRACK_SIZE,
-            BUMPER_TO_BUMPER,
-            TunerConstants.kSpeedAt12Volts.in(MetersPerSecond),
-            22.0);
+            TRACK_SIZE, BUMPER_TO_BUMPER, TunerConstants.kSpeedAt12Volts.in(MetersPerSecond), 22.0);
         case REEFSCAPE_2025, WOOD_BOT_2026, CHASSIS_CANNON -> new DriveConfig(
-            TRACK_SIZE,
-            BUMPER_TO_BUMPER,
-            5.0,
-            14.5);
+            TRACK_SIZE, BUMPER_TO_BUMPER, 5.0, 14.5);
       };
 
   // --- Module Offsets ---
@@ -105,11 +99,9 @@ public class DriveConstants {
 
   public static final int GYRO_CAN_ID =
       switch (Constants.getRobot()) {
-        case REEFSCAPE_2025 -> 40;
-        case CHASSIS_CANNON -> 40;
-        case WOOD_BOT_2026 -> 40;
+        case REEFSCAPE_2025, CHASSIS_CANNON, WOOD_BOT_2026 -> 40;
         case PRESEASON_2026 -> TunerConstants.DrivetrainConstants.Pigeon2Id;
-        default -> -1;
+        case SIM_BOT -> -1;
       };
 
   // --- Pathplanner Config ---
