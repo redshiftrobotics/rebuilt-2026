@@ -172,8 +172,6 @@ out/
 networktables.json
 simgui.json
 *-window.json
-# why is this not in here by default
-simgui-ds.json 
 
 # Simulation data log directory
 logs/
@@ -187,6 +185,3 @@ compile_commands.json
 
 # Eclipse generated file for annotation processors
 .factorypath
-
-# Ignore auto generated build file
-src/main/java/frc/robot/BuildConstants.java
