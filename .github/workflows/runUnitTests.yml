@@ -1,0 +1,19 @@
+name: Test
+
+on:
+  push
+
+jobs:
+  build-gradle-project:
+    name: Build
+    runs-on: ubuntu-latest
+    container: wpilib/roborio-cross-ubuntu:2024-22.04 # Run in a rio like environment
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Grant execute permission
+        run: chmod +x gradlew
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@417ae3ccd767c252f5661f1ace9f835f9654f2b5 # v3.1.0
+      - name: Test robot code
+        run: ./gradlew test
