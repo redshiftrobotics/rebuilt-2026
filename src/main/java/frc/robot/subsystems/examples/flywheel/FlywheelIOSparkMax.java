@@ -3,11 +3,11 @@ package frc.robot.subsystems.examples.flywheel;
 import static frc.robot.subsystems.examples.flywheel.FlywheelConstants.FLYWHEEL_CONFIG;
 import static frc.robot.subsystems.examples.flywheel.FlywheelConstants.GEAR_RATIO;
 
+import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.ResetMode;
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase.ControlType;
-import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkClosedLoopController.ArbFFUnits;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -65,7 +65,7 @@ public class FlywheelIOSparkMax implements FlywheelIO {
 
   @Override
   public void setVelocity(double velocityRadPerSec, double ffVolts) {
-    pid.setReference(
+    pid.setSetpoint(
         Units.radiansPerSecondToRotationsPerMinute(velocityRadPerSec) * GEAR_RATIO,
         ControlType.kVelocity,
         ClosedLoopSlot.kSlot0,
@@ -81,7 +81,7 @@ public class FlywheelIOSparkMax implements FlywheelIO {
   @Override
   public void configurePID(double kP, double kI, double kD) {
     SparkMaxConfig config = new SparkMaxConfig();
-    config.closedLoop.pidf(kP, kI, kD, 0.0);
+    config.closedLoop.pid(kP, kI, kD);
     motor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
   }
 }

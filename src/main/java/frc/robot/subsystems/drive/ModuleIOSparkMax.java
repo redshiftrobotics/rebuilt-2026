@@ -6,16 +6,16 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.ResetMode;
 import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.SparkBase.ControlType;
-import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkClosedLoopController.ArbFFUnits;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -114,7 +114,7 @@ public class ModuleIOSparkMax implements ModuleIO {
         .velocityConversionFactor(1 / ModuleConstants.DRIVE_REDUCTION)
         .uvwMeasurementPeriod(10)
         .uvwAverageDepth(2);
-    driveConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pidf(0.0, 0.0, 0.0, 0.0);
+    driveConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(0.0, 0.0, 0.0);
     driveConfig
         .signals
         .primaryEncoderPositionAlwaysOn(true)
@@ -150,7 +150,7 @@ public class ModuleIOSparkMax implements ModuleIO {
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
         .positionWrappingEnabled(true)
         .positionWrappingInputRange(0, 1)
-        .pidf(0.0, 0.0, 0.0, 0.0);
+        .pid(0.0, 0.0, 0.0);
     turnConfig
         .signals
         .absoluteEncoderPositionAlwaysOn(true)
@@ -247,7 +247,7 @@ public class ModuleIOSparkMax implements ModuleIO {
 
   @Override
   public void setDriveVelocity(double velocityRadsPerSec) {
-    driveFeedback.setReference(
+    driveFeedback.setSetpoint(
         Units.radiansPerSecondToRotationsPerMinute(velocityRadsPerSec),
         ControlType.kVelocity,
         ClosedLoopSlot.kSlot0,
@@ -257,14 +257,14 @@ public class ModuleIOSparkMax implements ModuleIO {
 
   @Override
   public void setTurnPosition(double angleRads) {
-    turnFeedback.setReference(
+    turnFeedback.setSetpoint(
         Units.radiansToRotations(angleRads), ControlType.kPosition, ClosedLoopSlot.kSlot0);
   }
 
   @Override
   public void setDrivePID(double kP, double kI, double kD) {
     SparkMaxConfig driveConfig = new SparkMaxConfig();
-    driveConfig.closedLoop.pidf(kP, kI, kD, 0.0);
+    driveConfig.closedLoop.pid(kP, kI, kD);
     tryUntilOk(
         driveSpark,
         5,
@@ -276,7 +276,7 @@ public class ModuleIOSparkMax implements ModuleIO {
   @Override
   public void setTurnPID(double kP, double kI, double kD) {
     SparkMaxConfig turnConfig = new SparkMaxConfig();
-    turnConfig.closedLoop.pidf(kP, kI, kD, 0.0);
+    turnConfig.closedLoop.pid(kP, kI, kD);
     tryUntilOk(
         turnSpark,
         5,
