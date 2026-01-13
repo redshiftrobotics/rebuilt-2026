@@ -1,4 +1,4 @@
-package frc.robot.subsystems.dashboard;
+package frc.robot;
 
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.utility.AllianceMirrorUtil;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -30,19 +29,16 @@ public class DriverDashboard {
   public static Supplier<String> currentDriveModeName = () -> "Unknown";
 
   public static Supplier<Pose2d> poseSupplier = () -> Pose2d.kZero;
-  public static Supplier<SwerveModuleState[]> wheelStatesSupplier =
-      () ->
-          new SwerveModuleState[] {
-            new SwerveModuleState(),
-            new SwerveModuleState(),
-            new SwerveModuleState(),
-            new SwerveModuleState()
-          };
+  public static Supplier<SwerveModuleState[]> wheelStatesSupplier = () -> new SwerveModuleState[] {
+      new SwerveModuleState(),
+      new SwerveModuleState(),
+      new SwerveModuleState(),
+      new SwerveModuleState()
+  };
   public static Supplier<ChassisSpeeds> speedsSupplier = () -> new ChassisSpeeds();
 
   public static BooleanSupplier hasVisionEstimate = () -> false;
-  private static final Debouncer hasVisionEstimateDebounce =
-      new Debouncer(0.1, DebounceType.kFalling);
+  private static final Debouncer hasVisionEstimateDebounce = new Debouncer(0.1, DebounceType.kFalling);
 
   public static void addSubsystem(SubsystemBase subsystem) {
     SmartDashboard.putData(subsystem);
@@ -75,6 +71,11 @@ public class DriverDashboard {
     return field;
   }
 
+  /**
+   * Initalize the dashboard.
+   * This populates the dashboard's initial layout, and starts the remote layout
+   * server to support downloading the dashboard layout from the robot.
+   */
   public static void initDashboard() {
     SmartDashboard.putData("Field", field);
     SmartDashboard.putData(CommandScheduler.getInstance());
@@ -82,12 +83,13 @@ public class DriverDashboard {
     SmartDashboard.putString("RobotName", Constants.getRobot().toString());
     SmartDashboard.putString("RobotRoboRioSerialNumber", RobotController.getSerialNumber());
 
-    customWidgets();
+    putCustomWidgets();
 
     // https://frc-elastic.gitbook.io/docs/additional-features-and-references/remote-layout-downloading
     WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
   }
-
+  
+  /** Update the dashboard to reflect the robot's current state. */
   public static void updateDashboard() {
     SmartDashboard.putNumber("Game Time", DriverStation.getMatchTime());
 
@@ -107,8 +109,9 @@ public class DriverDashboard {
     SmartDashboard.putString("Drive Mode", currentDriveModeName.get());
   }
 
-  private static void customWidgets() {
-    String[] moduleNames = {"Front Left", "Front Right", "Back Left", "Back Right"};
+  private static void putCustomWidgets() {
+    // Put swerve modules on dashboard
+    String[] moduleNames = { "Front Left", "Front Right", "Back Left", "Back Right" };
     SmartDashboard.putData(
         "Swerve Drive",
         new Sendable() {
@@ -120,8 +123,7 @@ public class DriverDashboard {
               final int index = i;
               builder.addDoubleProperty(
                   moduleNames[i] + " Angle",
-                  () ->
-                      AllianceMirrorUtil.apply(wheelStatesSupplier.get()[index].angle).getRadians(),
+                  () -> AllianceMirrorUtil.apply(wheelStatesSupplier.get()[index].angle).getRadians(),
                   null);
               builder.addDoubleProperty(
                   moduleNames[i] + " Velocity",
