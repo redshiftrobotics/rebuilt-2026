@@ -187,7 +187,7 @@ public class Robot extends LoggedRobot {
     if (autonomousCommand != null) {
       System.out.println("*** Starting auto ***");
       System.out.println(autonomousCommand);
-      autonomousCommand.schedule();
+      CommandScheduler.getInstance().schedule(autonomousCommand);
       autoMessagePrinted = false;
     }
   }
