@@ -7,7 +7,7 @@ jobs:
   build-gradle-project:
     name: Build
     runs-on: ubuntu-latest
-    container: wpilib/roborio-cross-ubuntu:2024-22.04 # Run in a rio like environment
+    container: wpilib/roborio-cross-ubuntu:2026-22.04-py314 # https://hub.docker.com/r/wpilib/roborio-cross-ubuntu
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
