@@ -121,7 +121,7 @@ public class ModuleConstants {
         DRIVE_MOTOR_CURRENT_LIMIT = TunerConstants.FrontLeft.SlipCurrent;
         DRIVE_REDUCTION = TunerConstants.FrontLeft.DriveMotorGearRatio;
 
-        TURN_MOTOR = DCMotor.getKrakenX60Foc(1);
+        TURN_MOTOR = DCMotor.getKrakenX44Foc(1);
         TURN_FEEDBACK = new PIDConstants(1400, 0, 15);
         TURN_FEEDFORWARD = new FeedForwardConfigRecord(0.2, 0, 0);
         TURN_MOTOR_CURRENT_LIMIT = TunerConstants.FrontLeft.SlipCurrent;
@@ -135,7 +135,7 @@ public class ModuleConstants {
         DRIVE_MOTOR_CURRENT_LIMIT = TunerConstants.FrontLeft.SlipCurrent;
         DRIVE_REDUCTION = Mk4iReductions.L3.reduction;
 
-        TURN_MOTOR = DCMotor.getKrakenX60Foc(1);
+        TURN_MOTOR = DCMotor.getKrakenX44Foc(1);
         TURN_FEEDBACK = new PIDConstants(8, 0, 0);
         TURN_FEEDFORWARD = new FeedForwardConfigRecord(0.0, 0.0, 0.0);
         TURN_MOTOR_CURRENT_LIMIT = 800; // No limit
@@ -190,9 +190,11 @@ public class ModuleConstants {
     public static final double TURN_REDUCTION = (287.0 / 11.0);
 
     public final double reduction;
+    public final double couplingRatio;
 
     Mk5nReductions(double adjustableGearTeeth) {
       this.reduction = (54.0 / adjustableGearTeeth) * (25.0 / 32.0) * (30.0 / 15.0);
+      this.couplingRatio = 54.0 / adjustableGearTeeth;
     }
   }
 }
