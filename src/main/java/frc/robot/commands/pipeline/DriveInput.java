@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.util.Units;
+import frc.robot.Robot;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.controllers.DriveRotationController;
 import frc.robot.utility.AllianceMirrorUtil;
@@ -23,6 +24,8 @@ public class DriveInput {
 
   public static final double LINEAR_VELOCITY_EXPONENT = 2.0; // Square the joystick input
   public static final double ANGULAR_VELOCITY_EXPONENT = 2.0; // Square the joystick input
+
+  public static final double SKEW_COMPENSATION_SCALAR = -0.03;
 
   private final Drive drive;
 
@@ -47,6 +50,17 @@ public class DriveInput {
 
     if (headingTargeted) {
       chassisSpeeds.omegaRadiansPerSecond = headingController.calculate();
+    }
+
+    // https://github.com/FRCTeam2910/2025CompetitionRobot-Public/blob/main/src/main/java/org/frc2910/robot/subsystems/drive/SwerveSubsystem.java#L381
+    if (SKEW_COMPENSATION_SCALAR != 0 && Robot.isReal()) {
+      Rotation2d skewCompensationFactor = Rotation2d
+          .fromRadians(drive.getRobotSpeeds().omegaRadiansPerSecond * SKEW_COMPENSATION_SCALAR);
+  
+      chassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(
+          ChassisSpeeds.fromFieldRelativeSpeeds(
+              chassisSpeeds, drive.getRobotPose().getRotation()),
+          drive.getRobotPose().getRotation().plus(skewCompensationFactor));      
     }
 
     if (fieldRelative) {
