@@ -20,7 +20,7 @@ import frc.robot.utility.AllianceMirrorUtil;
 public class DriveInput {
 
   public static final double JOYSTICK_DEADBAND = 0.15;
-  public static final double ANGLE_DEADBAND = 0.5;
+  public static final double ANGLE_DEADBAND = 0.25;
 
   public static final double LINEAR_VELOCITY_EXPONENT = 2.0; // Square the joystick input
   public static final double ANGULAR_VELOCITY_EXPONENT = 2.0; // Square the joystick input
