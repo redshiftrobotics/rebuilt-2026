@@ -9,7 +9,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
-import frc.robot.generated.TunerConstants;
+import frc.robot.generated.PreseasonConstants;
 import frc.robot.utility.records.PIDConstants;
 
 /**
@@ -62,8 +62,8 @@ public class DriveConstants {
   private static final Translation2d TRACK_SIZE =
       switch (Constants.getRobot()) {
         case PRESEASON_2026, SIM_BOT -> new Translation2d(
-            TunerConstants.FrontLeft.LocationX - TunerConstants.BackRight.LocationX,
-            TunerConstants.FrontLeft.LocationY - TunerConstants.BackRight.LocationY);
+            PreseasonConstants.FrontLeft.LocationX - PreseasonConstants.BackRight.LocationX,
+            PreseasonConstants.FrontLeft.LocationY - PreseasonConstants.BackRight.LocationY);
         case REEFSCAPE_2025, WOOD_BOT_2026, CHASSIS_CANNON -> new Translation2d(
             Units.inchesToMeters(22.729228), Units.inchesToMeters(22.729228));
       };
@@ -77,7 +77,7 @@ public class DriveConstants {
   public static final DriveConfig DRIVE_CONFIG =
       switch (Constants.getRobot()) {
         case PRESEASON_2026, SIM_BOT -> new DriveConfig(
-            TRACK_SIZE, BUMPER_TO_BUMPER, TunerConstants.kSpeedAt12Volts.in(MetersPerSecond), 22.0);
+            TRACK_SIZE, BUMPER_TO_BUMPER, PreseasonConstants.kSpeedAt12Volts.in(MetersPerSecond), 22.0);
         case REEFSCAPE_2025, WOOD_BOT_2026, CHASSIS_CANNON -> new DriveConfig(
             TRACK_SIZE, BUMPER_TO_BUMPER, 5.0, 14.5);
       };
@@ -100,8 +100,17 @@ public class DriveConstants {
   public static final int GYRO_CAN_ID =
       switch (Constants.getRobot()) {
         case REEFSCAPE_2025, CHASSIS_CANNON, WOOD_BOT_2026 -> 40;
-        case PRESEASON_2026 -> TunerConstants.DrivetrainConstants.Pigeon2Id;
+        case PRESEASON_2026 -> PreseasonConstants.DrivetrainConstants.Pigeon2Id;
         case SIM_BOT -> -1;
+      };
+
+  // --- CANBus ---
+
+  public static final CANBus CAN_BUS =
+      switch (Constants.getRobot()) {
+        case PRESEASON_2026 -> PreseasonConstants.kCANBus;
+        case REEFSCAPE_2025, CHASSIS_CANNON, WOOD_BOT_2026 -> CANBus.roboRIO();
+        case SIM_BOT -> new CANBus();
       };
 
   // --- Pathplanner Config ---
@@ -121,7 +130,7 @@ public class DriveConstants {
   public static final double ODOMETRY_FREQUENCY_HERTZ =
       switch (Constants.getRobot()) {
         case SIM_BOT -> 50.0;
-        case PRESEASON_2026 -> new CANBus(TunerConstants.DrivetrainConstants.CANBusName)
+        case PRESEASON_2026 -> new CANBus(PreseasonConstants.DrivetrainConstants.CANBusName)
                 .isNetworkFD()
             ? 250.0
             : 100.0;
