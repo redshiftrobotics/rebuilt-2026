@@ -1,0 +1,984 @@
+[
+    {
+        "messageType": 2,
+        "timestamp": 121.972900390625,
+        "seqNumber": 1,
+        "line": "********** Robot program starting **********"
+    },
+    {
+        "messageType": 2,
+        "timestamp": 121.9833984375,
+        "seqNumber": 2,
+        "line": "NT: could not open persistent file '/home/lvuser/networktables.json': No such file or directory (this can be ignored if you aren't expecting persistent values)"
+    },
+    {
+        "messageType": 2,
+        "timestamp": 121.985595703125,
+        "seqNumber": 3,
+        "line": "NT: Listening on NT3 port 1735, NT4 port 5810"
+    },
+    {
+        "messageType": 2,
+        "timestamp": 122.01034545898438,
+        "seqNumber": 4,
+        "line": "NT: Got a NT4 connection from 10.80.32.202 port 52129"
+    },
+    {
+        "messageType": 2,
+        "timestamp": 122.01589965820312,
+        "seqNumber": 5,
+        "line": "NT: CONNECTED NT4 client 'shuffleboard@1' (from 10.80.32.202:52129)"
+    },
+    {
+        "messageType": 2,
+        "timestamp": 122.74530029296875,
+        "seqNumber": 6,
+        "line": "[AdvantageKit] Logging to \"/U/logs/akit_b4955f20adda105d.wpilog\""
+    },
+    {
+        "timestamp": 122.76318359375,
+        "seqNumber": 7,
+        "numOccur": 1,
+        "errorCode": 1,
+        "flags": 1,
+        "details": "[AdvantageKit] Failed to open output log file.",
+        "location": "org.littletonrobotics.junction.wpilog.WPILOGWriter.start(WPILOGWriter.java:149)",
+        "callStack": "\tat org.littletonrobotics.junction.wpilog.WPILOGWriter.start(WPILOGWriter.java:149)\n\tat org.littletonrobotics.junction.ReceiverThread.run(ReceiverThread.java:31)\n",
+        "messageType": 0
+    },
+    {
+        "messageType": 2,
+        "timestamp": 122.7640380859375,
+        "seqNumber": 8,
+        "line": "Error at org.littletonrobotics.junction.wpilog.WPILOGWriter.start(WPILOGWriter.java:149): [AdvantageKit] Failed to open output log file."
+    },
+    {
+        "messageType": 2,
+        "timestamp": 122.76788330078125,
+        "seqNumber": 9,
+        "line": "\tat org.littletonrobotics.junction.wpilog.WPILOGWriter.start(WPILOGWriter.java:149)"
+    },
+    {
+        "messageType": 2,
+        "timestamp": 122.7681884765625,
+        "seqNumber": 10,
+        "line": "\tat org.littletonrobotics.junction.ReceiverThread.run(ReceiverThread.java:31)"
+    },
+    {
+        "messageType": 2,
+        "timestamp": 122.7684326171875,
+        "seqNumber": 11,
+        "line": ""
+    },
+    {
+        "timestamp": 124.08889770507812,
+        "seqNumber": 12,
+        "numOccur": 1,
+        "errorCode": -1008,
+        "flags": 1,
+        "details": "Firmware Too Old.  Use Phoenix Tuner X to field upgrade your CTRE CAN device firmware(CRF).  Then restart your robot application to clear this error.",
+        "location": "pigeon 2 40 (\"\")",
+        "callStack": "com.ctre.phoenix6.jni.ErrorReportingJNI.reportStatusCode(Native Method)\ncom.ctre.phoenix6.hardware.ParentDevice$FirmwareVersChecker.reportIfTooOld(ParentDevice.java:99)\ncom.ctre.phoenix6.BaseStatusSignal.refreshValue(BaseStatusSignal.java:607)\ncom.ctre.phoenix6.StatusSignal.refresh(StatusSignal.java:98)\ncom.ctre.phoenix6.hardware.ParentDevice.commonLookup(ParentDevice.java:588)\ncom.ctre.phoenix6.hardware.ParentDevice.lookupStatusSignal(ParentDevice.java:600)\ncom.ctre.phoenix6.hardware.ParentDevice.<init>(ParentDevice.java:128)\ncom.ctre.phoenix6.hardware.core.CorePigeon2.<init>(CorePigeon2.java:117)\ncom.ctre.phoenix6.hardware.Pigeon2.<init>(Pigeon2.java:123)\ncom.ctre.phoenix6.hardware.Pigeon2.<init>(Pigeon2.java:84)\nfrc.robot.subsystems.drive.GyroIOPigeon2.<init>(GyroIOPigeon2.java:30)\nfrc.robot.RobotContainer.<init>(RobotContainer.java:94)\nfrc.robot.Robot.robotInit(Robot.java:118)\norg.littletonrobotics.junction.LoggedRobot.startCompetition(LoggedRobot.java:75)\nedu.wpi.first.wpilibj.RobotBase.runRobot(RobotBase.java:436)\nedu.wpi.first.wpilibj.RobotBase.startRobot(RobotBase.java:527)\nfrc.robot.Main.main(Main.java:19)\n",
+        "messageType": 0
+    },
+    {
+        "timestamp": 124.14892578125,
+        "seqNumber": 13,
+        "numOccur": 1,
+        "errorCode": -1003,
+        "flags": 1,
+        "details": "CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.",
+        "location": "pigeon 2 40 (\"\") Status Signal Yaw",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 124.15243530273438,
+        "seqNumber": 14,
+        "numOccur": 1,
+        "errorCode": -1003,
+        "flags": 1,
+        "details": "CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.",
+        "location": "pigeon 2 40 (\"\") Status Signal AngularVelocityZWorld",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 124.17874145507812,
+        "seqNumber": 15,
+        "numOccur": 1,
+        "errorCode": -10028,
+        "flags": 1,
+        "details": "Firmware version is not compatible with this version of Phoenix. Make sure your firmware and API major versions match.",
+        "location": "pigeon 2 40 (\"\") Apply Config",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 124.31964111328125,
+        "seqNumber": 16,
+        "numOccur": 1,
+        "errorCode": -1008,
+        "flags": 1,
+        "details": "Firmware Too Old.  Use Phoenix Tuner X to field upgrade your CTRE CAN device firmware(CRF).  Then restart your robot application to clear this error.",
+        "location": "talon fx 12 (\"\")",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 124.36822509765625,
+        "seqNumber": 17,
+        "numOccur": 1,
+        "errorCode": -1008,
+        "flags": 1,
+        "details": "Firmware Too Old.  Use Phoenix Tuner X to field upgrade your CTRE CAN device firmware(CRF).  Then restart your robot application to clear this error.",
+        "location": "talon fx 11 (\"\")",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 124.37948608398438,
+        "seqNumber": 18,
+        "numOccur": 1,
+        "errorCode": -1008,
+        "flags": 1,
+        "details": "Firmware Too Old.  Use Phoenix Tuner X to field upgrade your CTRE CAN device firmware(CRF).  Then restart your robot application to clear this error.",
+        "location": "cancoder 4 (\"\")",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 124.5374755859375,
+        "seqNumber": 19,
+        "numOccur": 1,
+        "errorCode": -1001,
+        "flags": 1,
+        "details": "Could not transmit CAN Frame.",
+        "location": "talon fx 12 (\"\") Apply Config",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "messageType": 2,
+        "timestamp": 124.95376586914062,
+        "seqNumber": 20,
+        "line": "PhoenixUtil: Command failed after 5 attempts."
+    },
+    {
+        "messageType": 2,
+        "timestamp": 124.97653198242188,
+        "seqNumber": 21,
+        "line": "PhoenixUtil: Command failed after 5 attempts."
+    },
+    {
+        "timestamp": 125.0845947265625,
+        "seqNumber": 22,
+        "numOccur": 1,
+        "errorCode": -1001,
+        "flags": 1,
+        "details": "Could not transmit CAN Frame.",
+        "location": "talon fx 11 (\"\") Apply Config",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "messageType": 2,
+        "timestamp": 125.50003051757812,
+        "seqNumber": 23,
+        "line": "PhoenixUtil: Command failed after 5 attempts."
+    },
+    {
+        "timestamp": 125.5089111328125,
+        "seqNumber": 24,
+        "numOccur": 1,
+        "errorCode": -10028,
+        "flags": 1,
+        "details": "Firmware version is not compatible with this version of Phoenix. Make sure your firmware and API major versions match.",
+        "location": "cancoder 4 (\"\") Apply Config",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 125.51217651367188,
+        "seqNumber": 25,
+        "numOccur": 1,
+        "errorCode": -1003,
+        "flags": 1,
+        "details": "CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.",
+        "location": "talon fx 12 (\"\") Status Signal Position",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 125.51589965820312,
+        "seqNumber": 26,
+        "numOccur": 1,
+        "errorCode": -1003,
+        "flags": 1,
+        "details": "CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.",
+        "location": "talon fx 12 (\"\") Status Signal Velocity",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 125.51898193359375,
+        "seqNumber": 27,
+        "numOccur": 1,
+        "errorCode": -1003,
+        "flags": 1,
+        "details": "CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.",
+        "location": "talon fx 12 (\"\") Status Signal MotorVoltage",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 125.52182006835938,
+        "seqNumber": 28,
+        "numOccur": 1,
+        "errorCode": -1003,
+        "flags": 1,
+        "details": "CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.",
+        "location": "talon fx 12 (\"\") Status Signal StatorCurrent",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 125.52459716796875,
+        "seqNumber": 29,
+        "numOccur": 1,
+        "errorCode": -1003,
+        "flags": 1,
+        "details": "CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.",
+        "location": "cancoder 4 (\"\") Status Signal AbsolutePosition",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 125.52532958984375,
+        "seqNumber": 30,
+        "numOccur": 1,
+        "errorCode": -1003,
+        "flags": 1,
+        "details": "CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.",
+        "location": "talon fx 11 (\"\") Status Signal Position",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 125.52630615234375,
+        "seqNumber": 31,
+        "numOccur": 1,
+        "errorCode": -1003,
+        "flags": 1,
+        "details": "CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.",
+        "location": "talon fx 11 (\"\") Status Signal Velocity",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 125.52682495117188,
+        "seqNumber": 32,
+        "numOccur": 1,
+        "errorCode": -1003,
+        "flags": 1,
+        "details": "CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.",
+        "location": "talon fx 11 (\"\") Status Signal MotorVoltage",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 125.52734375,
+        "seqNumber": 33,
+        "numOccur": 1,
+        "errorCode": -1003,
+        "flags": 1,
+        "details": "CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.",
+        "location": "talon fx 11 (\"\") Status Signal StatorCurrent",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 125.68118286132812,
+        "seqNumber": 34,
+        "numOccur": 1,
+        "errorCode": -1008,
+        "flags": 1,
+        "details": "Firmware Too Old.  Use Phoenix Tuner X to field upgrade your CTRE CAN device firmware(CRF).  Then restart your robot application to clear this error.",
+        "location": "talon fx 9 (\"\")",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 125.68270874023438,
+        "seqNumber": 35,
+        "numOccur": 1,
+        "errorCode": -1008,
+        "flags": 1,
+        "details": "Firmware Too Old.  Use Phoenix Tuner X to field upgrade your CTRE CAN device firmware(CRF).  Then restart your robot application to clear this error.",
+        "location": "talon fx 10 (\"\")",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 125.68405151367188,
+        "seqNumber": 36,
+        "numOccur": 1,
+        "errorCode": -1008,
+        "flags": 1,
+        "details": "Firmware Too Old.  Use Phoenix Tuner X to field upgrade your CTRE CAN device firmware(CRF).  Then restart your robot application to clear this error.",
+        "location": "cancoder 3 (\"\")",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 125.78903198242188,
+        "seqNumber": 37,
+        "numOccur": 1,
+        "errorCode": -1001,
+        "flags": 1,
+        "details": "Could not transmit CAN Frame.",
+        "location": "talon fx 9 (\"\") Apply Config",
+        "callStack": "com.ctre.phoenix6.jni.ErrorReportingJNI.reportStatusCode(Native Method)\ncom.ctre.phoenix6.configs.ParentConfigurator.setConfigsPrivate(ParentConfigurator.java:87)\ncom.ctre.phoenix6.configs.TalonFXConfigurator.apply(TalonFXConfigurator.java:84)\nfrc.robot.subsystems.drive.ModuleIOTalonFX.lambda$new$0(ModuleIOTalonFX.java:138)\nfrc.robot.utility.PhoenixUtil.tryUntilOk(PhoenixUtil.java:23)\nfrc.robot.subsystems.drive.ModuleIOTalonFX.<init>(ModuleIOTalonFX.java:138)\nfrc.robot.RobotContainer.<init>(RobotContainer.java:94)\nfrc.robot.Robot.robotInit(Robot.java:118)\norg.littletonrobotics.junction.LoggedRobot.startCompetition(LoggedRobot.java:75)\nedu.wpi.first.wpilibj.RobotBase.runRobot(RobotBase.java:436)\nedu.wpi.first.wpilibj.RobotBase.startRobot(RobotBase.java:527)\nfrc.robot.Main.main(Main.java:19)\n",
+        "messageType": 0
+    },
+    {
+        "messageType": 2,
+        "timestamp": 126.20098876953125,
+        "seqNumber": 38,
+        "line": "PhoenixUtil: Command failed after 5 attempts."
+    },
+    {
+        "messageType": 2,
+        "timestamp": 126.22100830078125,
+        "seqNumber": 39,
+        "line": "PhoenixUtil: Command failed after 5 attempts."
+    },
+    {
+        "timestamp": 126.32525634765625,
+        "seqNumber": 40,
+        "numOccur": 1,
+        "errorCode": -1001,
+        "flags": 1,
+        "details": "Could not transmit CAN Frame.",
+        "location": "talon fx 10 (\"\") Apply Config",
+        "callStack": "com.ctre.phoenix6.jni.ErrorReportingJNI.reportStatusCode(Native Method)\ncom.ctre.phoenix6.configs.ParentConfigurator.setConfigsPrivate(ParentConfigurator.java:87)\ncom.ctre.phoenix6.configs.TalonFXConfigurator.apply(TalonFXConfigurator.java:84)\nfrc.robot.subsystems.drive.ModuleIOTalonFX.lambda$new$2(ModuleIOTalonFX.java:166)\nfrc.robot.utility.PhoenixUtil.tryUntilOk(PhoenixUtil.java:23)\nfrc.robot.subsystems.drive.ModuleIOTalonFX.<init>(ModuleIOTalonFX.java:166)\nfrc.robot.RobotContainer.<init>(RobotContainer.java:94)\nfrc.robot.Robot.robotInit(Robot.java:118)\norg.littletonrobotics.junction.LoggedRobot.startCompetition(LoggedRobot.java:75)\nedu.wpi.first.wpilibj.RobotBase.runRobot(RobotBase.java:436)\nedu.wpi.first.wpilibj.RobotBase.startRobot(RobotBase.java:527)\nfrc.robot.Main.main(Main.java:19)\n",
+        "messageType": 0
+    },
+    {
+        "messageType": 2,
+        "timestamp": 126.73727416992188,
+        "seqNumber": 41,
+        "line": "PhoenixUtil: Command failed after 5 attempts."
+    },
+    {
+        "timestamp": 126.7413330078125,
+        "seqNumber": 42,
+        "numOccur": 1,
+        "errorCode": -10028,
+        "flags": 1,
+        "details": "Firmware version is not compatible with this version of Phoenix. Make sure your firmware and API major versions match.",
+        "location": "cancoder 3 (\"\") Apply Config",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 126.74212646484375,
+        "seqNumber": 43,
+        "numOccur": 1,
+        "errorCode": -1003,
+        "flags": 1,
+        "details": "CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.",
+        "location": "talon fx 9 (\"\") Status Signal Position",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 126.74407958984375,
+        "seqNumber": 44,
+        "numOccur": 1,
+        "errorCode": -1003,
+        "flags": 1,
+        "details": "CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.",
+        "location": "talon fx 9 (\"\") Status Signal Velocity",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 126.74468994140625,
+        "seqNumber": 45,
+        "numOccur": 1,
+        "errorCode": -1003,
+        "flags": 1,
+        "details": "CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.",
+        "location": "talon fx 9 (\"\") Status Signal MotorVoltage",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 126.7451171875,
+        "seqNumber": 46,
+        "numOccur": 1,
+        "errorCode": -1003,
+        "flags": 1,
+        "details": "CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.",
+        "location": "talon fx 9 (\"\") Status Signal StatorCurrent",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 126.74566650390625,
+        "seqNumber": 47,
+        "numOccur": 1,
+        "errorCode": -1003,
+        "flags": 1,
+        "details": "CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.",
+        "location": "cancoder 3 (\"\") Status Signal AbsolutePosition",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 126.74627685546875,
+        "seqNumber": 48,
+        "numOccur": 1,
+        "errorCode": -1003,
+        "flags": 1,
+        "details": "CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.",
+        "location": "talon fx 10 (\"\") Status Signal Position",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 126.747314453125,
+        "seqNumber": 49,
+        "numOccur": 1,
+        "errorCode": -1003,
+        "flags": 1,
+        "details": "CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.",
+        "location": "talon fx 10 (\"\") Status Signal Velocity",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 126.74789428710938,
+        "seqNumber": 50,
+        "numOccur": 1,
+        "errorCode": -1003,
+        "flags": 1,
+        "details": "CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.",
+        "location": "talon fx 10 (\"\") Status Signal MotorVoltage",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 126.74856567382812,
+        "seqNumber": 51,
+        "numOccur": 1,
+        "errorCode": -1003,
+        "flags": 1,
+        "details": "CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.",
+        "location": "talon fx 10 (\"\") Status Signal StatorCurrent",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 126.91213989257812,
+        "seqNumber": 52,
+        "numOccur": 1,
+        "errorCode": -1008,
+        "flags": 1,
+        "details": "Firmware Too Old.  Use Phoenix Tuner X to field upgrade your CTRE CAN device firmware(CRF).  Then restart your robot application to clear this error.",
+        "location": "talon fx 8 (\"\")",
+        "callStack": "com.ctre.phoenix6.jni.ErrorReportingJNI.reportStatusCode(Native Method)\ncom.ctre.phoenix6.hardware.ParentDevice$FirmwareVersChecker.reportIfTooOld(ParentDevice.java:99)\ncom.ctre.phoenix6.BaseStatusSignal.refreshValue(BaseStatusSignal.java:607)\ncom.ctre.phoenix6.StatusSignal.refresh(StatusSignal.java:98)\ncom.ctre.phoenix6.hardware.ParentDevice.commonLookup(ParentDevice.java:588)\ncom.ctre.phoenix6.hardware.ParentDevice.lookupStatusSignal(ParentDevice.java:600)\ncom.ctre.phoenix6.hardware.ParentDevice.<init>(ParentDevice.java:128)\ncom.ctre.phoenix6.hardware.core.CoreTalonFX.<init>(CoreTalonFX.java:116)\ncom.ctre.phoenix6.hardware.TalonFX.<init>(TalonFX.java:153)\nfrc.robot.subsystems.drive.ModuleIOTalonFX.<init>(ModuleIOTalonFX.java:118)\nfrc.robot.RobotContainer.<init>(RobotContainer.java:94)\nfrc.robot.Robot.robotInit(Robot.java:118)\norg.littletonrobotics.junction.LoggedRobot.startCompetition(LoggedRobot.java:75)\nedu.wpi.first.wpilibj.RobotBase.runRobot(RobotBase.java:436)\nedu.wpi.first.wpilibj.RobotBase.startRobot(RobotBase.java:527)\nfrc.robot.Main.main(Main.java:19)\n",
+        "messageType": 0
+    },
+    {
+        "timestamp": 126.91384887695312,
+        "seqNumber": 53,
+        "numOccur": 1,
+        "errorCode": -1008,
+        "flags": 1,
+        "details": "Firmware Too Old.  Use Phoenix Tuner X to field upgrade your CTRE CAN device firmware(CRF).  Then restart your robot application to clear this error.",
+        "location": "talon fx 7 (\"\")",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 126.91500854492188,
+        "seqNumber": 54,
+        "numOccur": 1,
+        "errorCode": -1008,
+        "flags": 1,
+        "details": "Firmware Too Old.  Use Phoenix Tuner X to field upgrade your CTRE CAN device firmware(CRF).  Then restart your robot application to clear this error.",
+        "location": "cancoder 2 (\"\")",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 126.92147827148438,
+        "seqNumber": 55,
+        "numOccur": 1,
+        "errorCode": 0,
+        "flags": 0,
+        "details": "[phoenix] Library initialization is complete.",
+        "location": "",
+        "callStack": "",
+        "messageType": 1
+    },
+    {
+        "timestamp": 127.01834106445312,
+        "seqNumber": 56,
+        "numOccur": 1,
+        "errorCode": -1001,
+        "flags": 1,
+        "details": "Could not transmit CAN Frame.",
+        "location": "talon fx 8 (\"\") Apply Config",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "messageType": 2,
+        "timestamp": 127.43032836914062,
+        "seqNumber": 57,
+        "line": "PhoenixUtil: Command failed after 5 attempts."
+    },
+    {
+        "messageType": 2,
+        "timestamp": 127.45108032226562,
+        "seqNumber": 58,
+        "line": "PhoenixUtil: Command failed after 5 attempts."
+    },
+    {
+        "timestamp": 127.55389404296875,
+        "seqNumber": 59,
+        "numOccur": 1,
+        "errorCode": -1001,
+        "flags": 1,
+        "details": "Could not transmit CAN Frame.",
+        "location": "talon fx 7 (\"\") Apply Config",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "messageType": 2,
+        "timestamp": 127.967041015625,
+        "seqNumber": 60,
+        "line": "PhoenixUtil: Command failed after 5 attempts."
+    },
+    {
+        "timestamp": 127.9716796875,
+        "seqNumber": 61,
+        "numOccur": 1,
+        "errorCode": -10028,
+        "flags": 1,
+        "details": "Firmware version is not compatible with this version of Phoenix. Make sure your firmware and API major versions match.",
+        "location": "cancoder 2 (\"\") Apply Config",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 127.97247314453125,
+        "seqNumber": 62,
+        "numOccur": 1,
+        "errorCode": -1003,
+        "flags": 1,
+        "details": "CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.",
+        "location": "talon fx 8 (\"\") Status Signal Position",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 127.97317504882812,
+        "seqNumber": 63,
+        "numOccur": 1,
+        "errorCode": -1003,
+        "flags": 1,
+        "details": "CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.",
+        "location": "talon fx 8 (\"\") Status Signal Velocity",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 127.97357177734375,
+        "seqNumber": 64,
+        "numOccur": 1,
+        "errorCode": -1003,
+        "flags": 1,
+        "details": "CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.",
+        "location": "talon fx 8 (\"\") Status Signal MotorVoltage",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 127.9739990234375,
+        "seqNumber": 65,
+        "numOccur": 1,
+        "errorCode": -1003,
+        "flags": 1,
+        "details": "CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.",
+        "location": "talon fx 8 (\"\") Status Signal StatorCurrent",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 127.97451782226562,
+        "seqNumber": 66,
+        "numOccur": 1,
+        "errorCode": -1003,
+        "flags": 1,
+        "details": "CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.",
+        "location": "cancoder 2 (\"\") Status Signal AbsolutePosition",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 127.97509765625,
+        "seqNumber": 67,
+        "numOccur": 1,
+        "errorCode": -1003,
+        "flags": 1,
+        "details": "CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.",
+        "location": "talon fx 7 (\"\") Status Signal Position",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 127.97637939453125,
+        "seqNumber": 68,
+        "numOccur": 1,
+        "errorCode": -1003,
+        "flags": 1,
+        "details": "CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.",
+        "location": "talon fx 7 (\"\") Status Signal Velocity",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 127.97677612304688,
+        "seqNumber": 69,
+        "numOccur": 1,
+        "errorCode": -1003,
+        "flags": 1,
+        "details": "CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.",
+        "location": "talon fx 7 (\"\") Status Signal MotorVoltage",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 127.97750854492188,
+        "seqNumber": 70,
+        "numOccur": 1,
+        "errorCode": -1003,
+        "flags": 1,
+        "details": "CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.",
+        "location": "talon fx 7 (\"\") Status Signal StatorCurrent",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 128.14453125,
+        "seqNumber": 71,
+        "numOccur": 1,
+        "errorCode": -1008,
+        "flags": 1,
+        "details": "Firmware Too Old.  Use Phoenix Tuner X to field upgrade your CTRE CAN device firmware(CRF).  Then restart your robot application to clear this error.",
+        "location": "talon fx 5 (\"\")",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 128.14620971679688,
+        "seqNumber": 72,
+        "numOccur": 1,
+        "errorCode": -1008,
+        "flags": 1,
+        "details": "Firmware Too Old.  Use Phoenix Tuner X to field upgrade your CTRE CAN device firmware(CRF).  Then restart your robot application to clear this error.",
+        "location": "talon fx 6 (\"\")",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 128.1474609375,
+        "seqNumber": 73,
+        "numOccur": 1,
+        "errorCode": -1008,
+        "flags": 1,
+        "details": "Firmware Too Old.  Use Phoenix Tuner X to field upgrade your CTRE CAN device firmware(CRF).  Then restart your robot application to clear this error.",
+        "location": "cancoder 1 (\"\")",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 128.25164794921875,
+        "seqNumber": 74,
+        "numOccur": 1,
+        "errorCode": -1001,
+        "flags": 1,
+        "details": "Could not transmit CAN Frame.",
+        "location": "talon fx 5 (\"\") Apply Config",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "messageType": 2,
+        "timestamp": 128.66644287109375,
+        "seqNumber": 75,
+        "line": "PhoenixUtil: Command failed after 5 attempts."
+    },
+    {
+        "messageType": 2,
+        "timestamp": 128.68545532226562,
+        "seqNumber": 76,
+        "line": "PhoenixUtil: Command failed after 5 attempts."
+    },
+    {
+        "timestamp": 128.79046630859375,
+        "seqNumber": 77,
+        "numOccur": 1,
+        "errorCode": -1001,
+        "flags": 1,
+        "details": "Could not transmit CAN Frame.",
+        "location": "talon fx 6 (\"\") Apply Config",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 128.8980712890625,
+        "seqNumber": 78,
+        "numOccur": 1,
+        "errorCode": 0,
+        "flags": 0,
+        "details": "[phoenix-diagnostics] Server 2026.1.0 (Jan  7 2026, 19:24:14) running on port: 1250",
+        "location": "",
+        "callStack": "",
+        "messageType": 1
+    },
+    {
+        "timestamp": 128.931640625,
+        "seqNumber": 79,
+        "numOccur": 1,
+        "errorCode": 0,
+        "flags": 0,
+        "details": "[phoenix] Signal Logger Started (Network: rio)",
+        "location": "",
+        "callStack": "",
+        "messageType": 1
+    },
+    {
+        "messageType": 2,
+        "timestamp": 129.20315551757812,
+        "seqNumber": 80,
+        "line": "PhoenixUtil: Command failed after 5 attempts."
+    },
+    {
+        "timestamp": 129.20895385742188,
+        "seqNumber": 81,
+        "numOccur": 1,
+        "errorCode": -10028,
+        "flags": 1,
+        "details": "Firmware version is not compatible with this version of Phoenix. Make sure your firmware and API major versions match.",
+        "location": "cancoder 1 (\"\") Apply Config",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 129.20977783203125,
+        "seqNumber": 82,
+        "numOccur": 1,
+        "errorCode": -1003,
+        "flags": 1,
+        "details": "CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.",
+        "location": "talon fx 5 (\"\") Status Signal Position",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 129.21090698242188,
+        "seqNumber": 83,
+        "numOccur": 1,
+        "errorCode": -1003,
+        "flags": 1,
+        "details": "CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.",
+        "location": "talon fx 5 (\"\") Status Signal Velocity",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 129.21173095703125,
+        "seqNumber": 84,
+        "numOccur": 1,
+        "errorCode": -1003,
+        "flags": 1,
+        "details": "CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.",
+        "location": "talon fx 5 (\"\") Status Signal MotorVoltage",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 129.21273803710938,
+        "seqNumber": 85,
+        "numOccur": 1,
+        "errorCode": -1003,
+        "flags": 1,
+        "details": "CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.",
+        "location": "talon fx 5 (\"\") Status Signal StatorCurrent",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 129.21334838867188,
+        "seqNumber": 86,
+        "numOccur": 1,
+        "errorCode": -1003,
+        "flags": 1,
+        "details": "CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.",
+        "location": "cancoder 1 (\"\") Status Signal AbsolutePosition",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 129.21395874023438,
+        "seqNumber": 87,
+        "numOccur": 1,
+        "errorCode": -1003,
+        "flags": 1,
+        "details": "CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.",
+        "location": "talon fx 6 (\"\") Status Signal Position",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 129.21493530273438,
+        "seqNumber": 88,
+        "numOccur": 1,
+        "errorCode": -1003,
+        "flags": 1,
+        "details": "CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.",
+        "location": "talon fx 6 (\"\") Status Signal Velocity",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 129.21554565429688,
+        "seqNumber": 89,
+        "numOccur": 1,
+        "errorCode": -1003,
+        "flags": 1,
+        "details": "CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.",
+        "location": "talon fx 6 (\"\") Status Signal MotorVoltage",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 129.21612548828125,
+        "seqNumber": 90,
+        "numOccur": 1,
+        "errorCode": -1003,
+        "flags": 1,
+        "details": "CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.",
+        "location": "talon fx 6 (\"\") Status Signal StatorCurrent",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 129.53897094726562,
+        "seqNumber": 91,
+        "numOccur": 1,
+        "errorCode": -1001,
+        "flags": 1,
+        "details": "Could not transmit CAN Frame.",
+        "location": "talon fx 12 (\"\") Apply Config",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "messageType": 2,
+        "timestamp": 129.9525146484375,
+        "seqNumber": 92,
+        "line": "PhoenixUtil: Command failed after 5 attempts."
+    },
+    {
+        "timestamp": 130.06021118164062,
+        "seqNumber": 93,
+        "numOccur": 1,
+        "errorCode": -1001,
+        "flags": 1,
+        "details": "Could not transmit CAN Frame.",
+        "location": "talon fx 11 (\"\") Apply Config",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "messageType": 2,
+        "timestamp": 130.47442626953125,
+        "seqNumber": 94,
+        "line": "PhoenixUtil: Command failed after 5 attempts."
+    },
+    {
+        "messageType": 2,
+        "timestamp": 130.99365234375,
+        "seqNumber": 95,
+        "line": "PhoenixUtil: Command failed after 5 attempts."
+    },
+    {
+        "messageType": 2,
+        "timestamp": 131.51809692382812,
+        "seqNumber": 96,
+        "line": "PhoenixUtil: Command failed after 5 attempts."
+    },
+    {
+        "timestamp": 131.55770874023438,
+        "seqNumber": 97,
+        "numOccur": 1,
+        "errorCode": -10028,
+        "flags": 1,
+        "details": "Firmware version is not compatible with this version of Phoenix. Make sure your firmware and API major versions match.",
+        "location": "talon fx 12 (\"\") Refresh Config",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 131.59359741210938,
+        "seqNumber": 98,
+        "numOccur": 1,
+        "errorCode": -10028,
+        "flags": 1,
+        "details": "Firmware version is not compatible with this version of Phoenix. Make sure your firmware and API major versions match.",
+        "location": "talon fx 11 (\"\") Refresh Config",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "timestamp": 131.69775390625,
+        "seqNumber": 99,
+        "numOccur": 1,
+        "errorCode": -1001,
+        "flags": 1,
+        "details": "Could not transmit CAN Frame.",
+        "location": "talon fx 9 (\"\") Apply Config",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "messageType": 2,
+        "timestamp": 132.11090087890625,
+        "seqNumber": 100,
+        "line": "PhoenixUtil: Command failed after 5 attempts."
+    },
+    {
+        "timestamp": 132.21475219726562,
+        "seqNumber": 101,
+        "numOccur": 1,
+        "errorCode": -1001,
+        "flags": 1,
+        "details": "Could not transmit CAN Frame.",
+        "location": "talon fx 10 (\"\") Apply Config",
+        "callStack": "Stack Trace not received for performance reasons.",
+        "messageType": 0
+    },
+    {
+        "messageType": 2,
+        "timestamp": 132.62765502929688,
+        "seqNumber": 102,
+        "line": "PhoenixUtil: Command failed after 5 attempts."
+    }
+]
