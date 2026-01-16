@@ -8,7 +8,6 @@ import com.ctre.phoenix6.signals.*;
 import com.ctre.phoenix6.swerve.*;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.*;
 import edu.wpi.first.units.measure.*;
-// import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.drive.ModuleConstants.Mk5nReductions;
 
 // FOLLOW LINK BELOW:
