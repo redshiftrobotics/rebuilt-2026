@@ -16,6 +16,7 @@ package frc.robot.subsystems.drive;
 import static frc.robot.utility.PhoenixUtil.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -40,6 +41,8 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
+import frc.robot.generated.PreseasonConstants;
+
 import java.util.Queue;
 
 /**
@@ -109,7 +112,7 @@ public class ModuleIOTalonFX implements ModuleIO {
 
     this.constants = constants;
 
-    CANBus bus = new CANBus(TunerConstants.DrivetrainConstants.CANBusName);
+    CANBus bus = DriveConstants.CAN_BUS;
 
     driveTalon = new TalonFX(constants.DriveMotorId, bus);
     turnTalon = new TalonFX(constants.SteerMotorId, bus);

@@ -89,6 +89,7 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, IO devices, and commands. */
   public RobotContainer() {
+    System.out.println("Initializing for robot ID: " + Constants.getRobot());
     switch (Constants.getRobot()) {
       case PRESEASON_2026:
         drive =

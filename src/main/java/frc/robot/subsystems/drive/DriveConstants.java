@@ -77,7 +77,10 @@ public class DriveConstants {
   public static final DriveConfig DRIVE_CONFIG =
       switch (Constants.getRobot()) {
         case PRESEASON_2026, SIM_BOT -> new DriveConfig(
-            TRACK_SIZE, BUMPER_TO_BUMPER, PreseasonConstants.kSpeedAt12Volts.in(MetersPerSecond), 22.0);
+            TRACK_SIZE,
+            BUMPER_TO_BUMPER,
+            PreseasonConstants.kSpeedAt12Volts.in(MetersPerSecond),
+            22.0);
         case REEFSCAPE_2025, WOOD_BOT_2026, CHASSIS_CANNON -> new DriveConfig(
             TRACK_SIZE, BUMPER_TO_BUMPER, 5.0, 14.5);
       };
