@@ -110,9 +110,7 @@ public class ModuleIOTalonFX implements ModuleIO {
 
     this.constants = constants;
 
-    CANBus bus = DriveConstants.CAN_BUS;
-
-    System.out.println("IDs: " + constants.SteerMotorId + " " + constants.EncoderId);
+    final CANBus bus = DriveConstants.CAN_BUS;
     driveTalon = new TalonFX(constants.DriveMotorId, bus);
     turnTalon = new TalonFX(constants.SteerMotorId, bus);
     cancoder = new CANcoder(constants.EncoderId, bus);
