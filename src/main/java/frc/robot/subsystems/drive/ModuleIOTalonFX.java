@@ -112,6 +112,7 @@ public class ModuleIOTalonFX implements ModuleIO {
 
     CANBus bus = DriveConstants.CAN_BUS;
 
+    System.out.println("IDs: " + constants.SteerMotorId + " " + constants.EncoderId);
     driveTalon = new TalonFX(constants.DriveMotorId, bus);
     turnTalon = new TalonFX(constants.SteerMotorId, bus);
     cancoder = new CANcoder(constants.EncoderId, bus);
@@ -134,7 +135,7 @@ public class ModuleIOTalonFX implements ModuleIO {
     tryUntilOk(5, () -> driveTalon.setPosition(0.0, 0.25));
 
     // Configure turn motor
-    turnConfig = constants.SteerMotorInitialConfigs;
+    turnConfig = constants.SteerMotorInitialConfigs.clone();
     turnConfig.MotorOutput.NeutralMode =
         turnBrakeMode ? NeutralModeValue.Brake : NeutralModeValue.Coast;
     turnConfig.Slot0 = constants.SteerMotorGains;
