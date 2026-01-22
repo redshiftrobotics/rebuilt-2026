@@ -110,14 +110,13 @@ public class ModuleIOTalonFX implements ModuleIO {
 
     this.constants = constants;
 
-    CANBus bus = DriveConstants.CAN_BUS;
-
+    final CANBus bus = DriveConstants.CAN_BUS;
     driveTalon = new TalonFX(constants.DriveMotorId, bus);
     turnTalon = new TalonFX(constants.SteerMotorId, bus);
     cancoder = new CANcoder(constants.EncoderId, bus);
 
     // Configure drive motor
-    driveConfig = constants.DriveMotorInitialConfigs;
+    driveConfig = constants.DriveMotorInitialConfigs.clone();
     driveConfig.MotorOutput.NeutralMode =
         driveBrakeMode ? NeutralModeValue.Brake : NeutralModeValue.Coast;
     driveConfig.Slot0 = constants.DriveMotorGains;
@@ -134,7 +133,7 @@ public class ModuleIOTalonFX implements ModuleIO {
     tryUntilOk(5, () -> driveTalon.setPosition(0.0, 0.25));
 
     // Configure turn motor
-    turnConfig = constants.SteerMotorInitialConfigs;
+    turnConfig = constants.SteerMotorInitialConfigs.clone();
     turnConfig.MotorOutput.NeutralMode =
         turnBrakeMode ? NeutralModeValue.Brake : NeutralModeValue.Coast;
     turnConfig.Slot0 = constants.SteerMotorGains;
@@ -161,7 +160,7 @@ public class ModuleIOTalonFX implements ModuleIO {
     tryUntilOk(5, () -> turnTalon.getConfigurator().apply(turnConfig, 0.25));
 
     // Configure CANCoder
-    cancoderConfig = constants.EncoderInitialConfigs;
+    cancoderConfig = constants.EncoderInitialConfigs.clone();
     cancoderConfig.MagnetSensor.MagnetOffset = constants.EncoderOffset;
     cancoderConfig.MagnetSensor.SensorDirection =
         constants.EncoderInverted
