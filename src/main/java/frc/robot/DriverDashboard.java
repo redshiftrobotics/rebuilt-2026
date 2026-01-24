@@ -29,16 +29,19 @@ public class DriverDashboard {
   public static Supplier<String> currentDriveModeName = () -> "Unknown";
 
   public static Supplier<Pose2d> poseSupplier = () -> Pose2d.kZero;
-  public static Supplier<SwerveModuleState[]> wheelStatesSupplier = () -> new SwerveModuleState[] {
-      new SwerveModuleState(),
-      new SwerveModuleState(),
-      new SwerveModuleState(),
-      new SwerveModuleState()
-  };
+  public static Supplier<SwerveModuleState[]> wheelStatesSupplier =
+      () ->
+          new SwerveModuleState[] {
+            new SwerveModuleState(),
+            new SwerveModuleState(),
+            new SwerveModuleState(),
+            new SwerveModuleState()
+          };
   public static Supplier<ChassisSpeeds> speedsSupplier = () -> new ChassisSpeeds();
 
   public static BooleanSupplier hasVisionEstimate = () -> false;
-  private static final Debouncer hasVisionEstimateDebounce = new Debouncer(0.1, DebounceType.kFalling);
+  private static final Debouncer hasVisionEstimateDebounce =
+      new Debouncer(0.1, DebounceType.kFalling);
 
   public static void addSubsystem(SubsystemBase subsystem) {
     SmartDashboard.putData(subsystem);
@@ -72,9 +75,8 @@ public class DriverDashboard {
   }
 
   /**
-   * Initalize the dashboard.
-   * This populates the dashboard's initial layout, and starts the remote layout
-   * server to support downloading the dashboard layout from the robot.
+   * Initalize the dashboard. This populates the dashboard's initial layout, and starts the remote
+   * layout server to support downloading the dashboard layout from the robot.
    */
   public static void initDashboard() {
     SmartDashboard.putData("Field", field);
@@ -88,7 +90,7 @@ public class DriverDashboard {
     // https://frc-elastic.gitbook.io/docs/additional-features-and-references/remote-layout-downloading
     WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
   }
-  
+
   /** Update the dashboard to reflect the robot's current state. */
   public static void updateDashboard() {
     SmartDashboard.putNumber("Game Time", DriverStation.getMatchTime());
@@ -111,7 +113,7 @@ public class DriverDashboard {
 
   private static void putCustomWidgets() {
     // Put swerve modules on dashboard
-    String[] moduleNames = { "Front Left", "Front Right", "Back Left", "Back Right" };
+    String[] moduleNames = {"Front Left", "Front Right", "Back Left", "Back Right"};
     SmartDashboard.putData(
         "Swerve Drive",
         new Sendable() {
@@ -123,7 +125,8 @@ public class DriverDashboard {
               final int index = i;
               builder.addDoubleProperty(
                   moduleNames[i] + " Angle",
-                  () -> AllianceMirrorUtil.apply(wheelStatesSupplier.get()[index].angle).getRadians(),
+                  () ->
+                      AllianceMirrorUtil.apply(wheelStatesSupplier.get()[index].angle).getRadians(),
                   null);
               builder.addDoubleProperty(
                   moduleNames[i] + " Velocity",

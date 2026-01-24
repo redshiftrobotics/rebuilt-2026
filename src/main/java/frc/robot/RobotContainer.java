@@ -24,7 +24,7 @@ import frc.robot.commands.DriveCharacterizationCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.pipeline.DriveInput;
 import frc.robot.commands.pipeline.DriveInputPipeline;
-import frc.robot.generated.TunerConstants;
+import frc.robot.generated.PreseasonConstants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.subsystems.drive.GyroIO;
@@ -89,15 +89,16 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, IO devices, and commands. */
   public RobotContainer() {
+    System.out.println("Initializing for robot ID: " + Constants.getRobot());
     switch (Constants.getRobot()) {
       case PRESEASON_2026:
         drive =
             new Drive(
                 new GyroIOPigeon2(DriveConstants.GYRO_CAN_ID, true),
-                new ModuleIOTalonFX(TunerConstants.FrontLeft),
-                new ModuleIOTalonFX(TunerConstants.FrontRight),
-                new ModuleIOTalonFX(TunerConstants.BackLeft),
-                new ModuleIOTalonFX(TunerConstants.BackRight));
+                new ModuleIOTalonFX(PreseasonConstants.FrontLeft),
+                new ModuleIOTalonFX(PreseasonConstants.FrontRight),
+                new ModuleIOTalonFX(PreseasonConstants.BackLeft),
+                new ModuleIOTalonFX(PreseasonConstants.BackRight));
         vision = new AprilTagVision(drive::getRobotPose);
         leds = new LEDSubsystem();
         break;
@@ -120,10 +121,10 @@ public class RobotContainer {
         drive =
             new Drive(
                 new GyroIO() {},
-                new ModuleIOSim(TunerConstants.FrontLeft),
-                new ModuleIOSim(TunerConstants.FrontRight),
-                new ModuleIOSim(TunerConstants.BackLeft),
-                new ModuleIOSim(TunerConstants.BackRight));
+                new ModuleIOSim(PreseasonConstants.FrontLeft),
+                new ModuleIOSim(PreseasonConstants.FrontRight),
+                new ModuleIOSim(PreseasonConstants.BackLeft),
+                new ModuleIOSim(PreseasonConstants.BackRight));
         vision =
             new AprilTagVision(
                 drive::getRobotPose, new CameraIOSim(VisionConstants.SIM_FRONT_CAMERA));

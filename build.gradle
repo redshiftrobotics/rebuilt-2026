@@ -29,14 +29,34 @@ deploy {
                 // getTargetTypeClass is a shortcut to get the class type using a string
 
                 frcJava(getArtifactTypeClass('FRCJavaArtifact')) {
+                    // jvmArgs.add("-XX:+UnlockExperimentalVMOptions")
+                    // jvmArgs.add("-XX:GCTimeRatio=5")
+                    // jvmArgs.add("-XX:+UseSerialGC")
+                    // jvmArgs.add("-XX:MaxGCPauseMillis=50")
+
+                    // The options below may improve performance, but should only be enabled on the RIO 2
+                    // final MAX_JAVA_HEAP_SIZE_MB = 100;
+                    // jvmArgs.add("-Xmx" + MAX_JAVA_HEAP_SIZE_MB + "M")
+                    // jvmArgs.add("-Xms" + MAX_JAVA_HEAP_SIZE_MB + "M")
+                    // jvmArgs.add("-XX:+AlwaysPreTouch")
+
+                    // https://docs.wpilib.org/en/stable/docs/software/advanced-gradlerio/profiling-with-visualvm.html
+                    // JMX for VisualVM
+                    // jvmArgs.add("-Dcom.sun.management.jmxremote=true")
+                    // jvmArgs.add("-Dcom.sun.management.jmxremote.port=1198")
+                    // jvmArgs.add("-Dcom.sun.management.jmxremote.local.only=false")
+                    // jvmArgs.add("-Dcom.sun.management.jmxremote.ssl=false")
+                    // jvmArgs.add("-Dcom.sun.management.jmxremote.authenticate=false")
+                    // jvmArgs.add("-Djava.rmi.server.hostname=10.80.32.2")
                 }
 
                 // Static files artifact
                 frcStaticFileDeploy(getArtifactTypeClass('FileTreeArtifact')) {
                     files = project.fileTree('src/main/deploy')
                     directory = '/home/lvuser/deploy'
-                    deleteOldFiles = false // Change to true to delete files on roboRIO that no
-                                           // longer exist in deploy directory of this project
+                    // Change to true to delete files on roboRIO that no
+                    // longer exist in deploy directory on roboRIO (suggested during development)
+                    deleteOldFiles = false
                 }
             }
         }
@@ -86,7 +106,7 @@ test {
 }
 
 // Simulation configuration (e.g. environment variables).
-wpi.sim.addGui().defaultEnabled = true
+wpi.sim.addGui().defaultEnabled = false
 wpi.sim.addDriverstation()
 
 // Setting up my Jar File. In this case, adding all libraries into the main jar ('fat jar')
@@ -125,4 +145,39 @@ gversion {
     dateFormat   = "yyyy-MM-dd HH:mm:ss z"
     timeZone     = "US/Pacific"
     indent       = "    "
+}
+
+// Spotless formatting
+project.compileJava.dependsOn(spotlessApply)
+spotless {
+    java {
+        target fileTree(".") {
+            include "**/*.java"
+            exclude "**/build/**", "**/build-*/**"
+        }
+        toggleOffOn()
+        googleJavaFormat()
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+    groovyGradle {
+        target fileTree(".") {
+            include "**/*.gradle"
+            exclude "**/build/**", "**/build-*/**"
+        }
+        greclipse()
+        indentWithSpaces(4)
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+    format "misc", {
+        target fileTree(".") {
+            include "**/*.md", "**/.gitignore"
+            exclude "**/build/**", "**/build-*/**"
+        }
+        trimTrailingWhitespace()
+        indentWithSpaces(2)
+        endWithNewline()
+    }
 }
