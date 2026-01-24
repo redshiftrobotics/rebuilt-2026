@@ -54,13 +54,15 @@ public class DriveInput {
 
     // https://github.com/FRCTeam2910/2025CompetitionRobot-Public/blob/main/src/main/java/org/frc2910/robot/subsystems/drive/SwerveSubsystem.java#L381
     if (SKEW_COMPENSATION_SCALAR != 0 && Robot.isReal()) {
-      Rotation2d skewCompensationFactor = Rotation2d
-          .fromRadians(drive.getRobotSpeeds().omegaRadiansPerSecond * SKEW_COMPENSATION_SCALAR);
-  
-      chassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(
-          ChassisSpeeds.fromFieldRelativeSpeeds(
-              chassisSpeeds, drive.getRobotPose().getRotation()),
-          drive.getRobotPose().getRotation().plus(skewCompensationFactor));      
+      Rotation2d skewCompensationFactor =
+          Rotation2d.fromRadians(
+              drive.getRobotSpeeds().omegaRadiansPerSecond * SKEW_COMPENSATION_SCALAR);
+
+      chassisSpeeds =
+          ChassisSpeeds.fromRobotRelativeSpeeds(
+              ChassisSpeeds.fromFieldRelativeSpeeds(
+                  chassisSpeeds, drive.getRobotPose().getRotation()),
+              drive.getRobotPose().getRotation().plus(skewCompensationFactor));
     }
 
     if (fieldRelative) {
