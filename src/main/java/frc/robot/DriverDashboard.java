@@ -5,6 +5,7 @@ import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.net.WebServer;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
@@ -103,7 +104,7 @@ public class DriverDashboard {
     ChassisSpeeds speeds = speedsSupplier.get();
 
     SmartDashboard.putNumber(
-        "Speed MPH", Math.hypot(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond) * 2.2369);
+        "Speed MPH", Units.metersPerSecondToMilesPerHour(Math.hypot(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond)));
 
     SmartDashboard.putBoolean(
         "Has Vision", hasVisionEstimateDebounce.calculate(hasVisionEstimate.getAsBoolean()));
