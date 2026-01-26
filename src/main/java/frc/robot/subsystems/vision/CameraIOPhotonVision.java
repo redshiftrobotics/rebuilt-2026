@@ -42,7 +42,7 @@ public class CameraIOPhotonVision implements CameraIO {
 
     photonPoseEstimator =
         new PhotonPoseEstimator(
-            FieldConstants.FIELD_NO_APRIL_TAGS,
+            FieldConstants.emptyFieldLayout,
             PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
             config.robotToCamera());
 

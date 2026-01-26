@@ -104,7 +104,9 @@ public class DriverDashboard {
     ChassisSpeeds speeds = speedsSupplier.get();
 
     SmartDashboard.putNumber(
-        "Speed MPH", Units.metersPerSecondToMilesPerHour(Math.hypot(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond)));
+        "Speed MPH",
+        Units.metersPerSecondToMilesPerHour(
+            Math.hypot(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond)));
 
     SmartDashboard.putBoolean(
         "Has Vision", hasVisionEstimateDebounce.calculate(hasVisionEstimate.getAsBoolean()));

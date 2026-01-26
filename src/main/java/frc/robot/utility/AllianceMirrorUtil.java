@@ -26,11 +26,11 @@ public class AllianceMirrorUtil {
   private AllianceMirrorUtil() {}
 
   private static double applyX(double x) {
-    return shouldFlip() ? FieldConstants.FIELD_CORNER_TO_CORNER.getX() - x : x;
+    return shouldFlip() ? FieldConstants.fieldLength - x : x;
   }
 
   private static double applyY(double y) {
-    return shouldFlip() ? FieldConstants.FIELD_CORNER_TO_CORNER.getY() - y : y;
+    return shouldFlip() ? FieldConstants.fieldWidth - y : y;
   }
 
   public static Translation2d apply(Translation2d translation) {
