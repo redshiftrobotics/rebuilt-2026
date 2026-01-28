@@ -7,15 +7,9 @@
       "height": 832,
       "state": {
         "sidebar": {
-          "width": 318,
+          "width": 300,
           "expanded": [
-            "/RealOutputs",
-            "/LED/strip0",
-            "/RealOutputs/Odometry",
-            "/RealOutputs/SwerveStates",
-            "/RealOutputs/ChassisStates",
-            "/DriverStation",
-            "/RealOutputs/Logger"
+            "/RealOutputs"
           ]
         },
         "tabs": {
@@ -26,7 +20,7 @@
               "title": "",
               "controller": null,
               "controllerUUID": "gzx9mn46nlpciwyqfg33v0bi5kk5xmho",
-              "renderer": "",
+              "renderer": "#/",
               "controlsHeight": 0
             },
             {
@@ -108,17 +102,17 @@
               },
               "controllerUUID": "e8hgomb1yslv0cwpvfxkohzvzsz5j7n2",
               "renderer": {
-                "cameraIndex": -1,
+                "cameraIndex": -3,
                 "orbitFov": 50,
                 "cameraPosition": [
-                  -3.7100686630009796,
-                  2.0691536628795606,
-                  -7.311801211314986
+                  -9.683390031424642,
+                  1.574799999999999,
+                  -3.602810912692994
                 ],
                 "cameraTarget": [
-                  -2.416603442906561,
-                  0.6543979995675826,
-                  4.035299220391996
+                  0,
+                  0.5,
+                  0
                 ]
               },
               "controlsHeight": 225
@@ -129,12 +123,12 @@
               "controller": {
                 "sources": [
                   {
-                    "type": "ghost",
+                    "type": "robot",
                     "logKey": "/RealOutputs/Odometry/Robot",
                     "logType": "Pose2d",
                     "visible": true,
                     "options": {
-                      "color": "#0000ff"
+                      "bumpers": ""
                     }
                   },
                   {
@@ -255,6 +249,13 @@
                     "options": {
                       "color": "#00ff00"
                     }
+                  },
+                  {
+                    "type": "rotation",
+                    "logKey": "/RealOutputs/Odometry/Robot/rotation",
+                    "logType": "Rotation2d",
+                    "visible": true,
+                    "options": {}
                   }
                 ],
                 "maxSpeed": 5,
@@ -290,6 +291,54 @@
               "controllerUUID": "w9w5xc31mtb5rc0u96k48z2eieaibqfq",
               "renderer": null,
               "controlsHeight": 85
+            },
+            {
+              "type": 1,
+              "title": "FL Module Turn",
+              "controller": {
+                "leftSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/SwerveStates/ModuleDesiredWheelSpeeds/0/angle/value",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/SwerveStates/MeasuredWheelSpeeds/0/angle/value",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e5b31b",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "rightSources": [],
+                "discreteSources": [],
+                "leftLockedRange": [
+                  -180,
+                  180
+                ],
+                "rightLockedRange": null,
+                "leftUnitConversion": {
+                  "autoTarget": "degrees",
+                  "preset": null
+                },
+                "rightUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "wnsaktydth5fjbshpwwfpx2zxvpz3ndd",
+              "renderer": null,
+              "controlsHeight": 153
             }
           ]
         }

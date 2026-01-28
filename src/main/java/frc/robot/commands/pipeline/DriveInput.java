@@ -1,10 +1,14 @@
 package frc.robot.commands.pipeline;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.util.Units;
+import frc.robot.Robot;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.controllers.DriveRotationController;
 import frc.robot.utility.AllianceMirrorUtil;
@@ -16,10 +20,12 @@ import frc.robot.utility.AllianceMirrorUtil;
 public class DriveInput {
 
   public static final double JOYSTICK_DEADBAND = 0.15;
-  public static final double ANGLE_DEADBAND = 0.5;
+  public static final double ANGLE_DEADBAND = 0.25;
 
   public static final double LINEAR_VELOCITY_EXPONENT = 2.0; // Square the joystick input
   public static final double ANGULAR_VELOCITY_EXPONENT = 2.0; // Square the joystick input
+
+  public static final double SKEW_COMPENSATION_SCALAR = -0.03;
 
   private final Drive drive;
 
@@ -44,6 +50,19 @@ public class DriveInput {
 
     if (headingTargeted) {
       chassisSpeeds.omegaRadiansPerSecond = headingController.calculate();
+    }
+
+    // https://github.com/FRCTeam2910/2025CompetitionRobot-Public/blob/main/src/main/java/org/frc2910/robot/subsystems/drive/SwerveSubsystem.java#L381
+    if (SKEW_COMPENSATION_SCALAR != 0 && Robot.isReal()) {
+      Rotation2d skewCompensationFactor =
+          Rotation2d.fromRadians(
+              drive.getRobotSpeeds().omegaRadiansPerSecond * SKEW_COMPENSATION_SCALAR);
+
+      chassisSpeeds =
+          ChassisSpeeds.fromRobotRelativeSpeeds(
+              ChassisSpeeds.fromFieldRelativeSpeeds(
+                  chassisSpeeds, drive.getRobotPose().getRotation()),
+              drive.getRobotPose().getRotation().plus(skewCompensationFactor));
     }
 
     if (fieldRelative) {
@@ -74,19 +93,13 @@ public class DriveInput {
    * @return This DriveInput for chaining
    */
   public DriveInput linearVelocityStick(double x, double y) {
-    Translation2d translation = new Translation2d(x, y);
+    Vector<N2> linearVelocityVec = VecBuilder.fill(x, y);
 
-    double magnitude = MathUtil.applyDeadband(translation.getNorm(), JOYSTICK_DEADBAND);
+    linearVelocityVec = MathUtil.applyDeadband(linearVelocityVec, JOYSTICK_DEADBAND);
+    linearVelocityVec = MathUtil.copyDirectionPow(linearVelocityVec, LINEAR_VELOCITY_EXPONENT);
+    linearVelocityVec = linearVelocityVec.times(drive.getMaxLinearSpeedMetersPerSec());
 
-    if (magnitude == 0) return linearVelocity(Translation2d.kZero);
-
-    double magnitudeSquared = Math.abs(Math.pow(magnitude, LINEAR_VELOCITY_EXPONENT));
-
-    Translation2d squaredTranslation = new Translation2d(magnitudeSquared, translation.getAngle());
-
-    this.linearVelocity = squaredTranslation.times(drive.getMaxLinearSpeedMetersPerSec());
-
-    return this;
+    return linearVelocity(new Translation2d(linearVelocityVec));
   }
 
   /**
@@ -108,11 +121,12 @@ public class DriveInput {
    * @return This DriveInput for chaining
    */
   public DriveInput angularVelocityStick(double omega) {
-    double deadbandOmega = MathUtil.applyDeadband(omega, JOYSTICK_DEADBAND);
 
-    double omegaSquared = Math.copySign(Math.pow(deadbandOmega, ANGULAR_VELOCITY_EXPONENT), omega);
+    omega = MathUtil.applyDeadband(omega, JOYSTICK_DEADBAND);
+    omega = MathUtil.copyDirectionPow(omega, ANGULAR_VELOCITY_EXPONENT);
+    omega = omega * drive.getMaxAngularSpeedRadPerSec();
 
-    return angularVelocity(omegaSquared * drive.getMaxAngularSpeedRadPerSec());
+    return angularVelocity(omega);
   }
 
   /**
