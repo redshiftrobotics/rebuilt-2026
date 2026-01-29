@@ -93,8 +93,8 @@ public class ModuleIOTalonFX implements ModuleIO {
   private final StatusSignal<Current> turnCurrent;
 
   // Break or coast mode
-  private boolean driveBrakeMode = true;
-  private boolean turnBrakeMode = true;
+  private final boolean driveBrakeMode = true;
+  private final boolean turnBrakeMode = true;
 
   // Connection debouncers
   private final Debouncer driveConnectedDebounce =
