@@ -11,7 +11,7 @@ import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.util.Units;
-import frc.robot.subsystems.intake.IntakeWheelIO.IntakeWheelIOInputsAutoLogged;
+
 
 public class IntakeWheelIOSparkMax implements IntakeWheelIO {
   double GEAR_RATIO = 1;

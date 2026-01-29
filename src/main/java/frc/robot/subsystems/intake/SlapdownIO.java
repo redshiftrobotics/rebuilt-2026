@@ -13,4 +13,8 @@ public interface SlapdownIO {
   }
 
   public default void updateInputs(SlapdownIOInputsAutoLogged inputs) {}
+
+  public default void setMotorMode(){}
+
+    
 }
