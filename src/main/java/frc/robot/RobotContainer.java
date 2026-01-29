@@ -146,7 +146,7 @@ public class RobotContainer {
 
     // Vision setup
     if (Constants.isOnPlayingField()) {
-      vision.setAprilTagFieldLayout(FieldConstants.FIELD_APRIL_TAGS);
+      vision.setAprilTagFieldLayout(FieldConstants.apriltagLayout);
     }
 
     vision.setVisionPoseConsumer(
@@ -219,7 +219,7 @@ public class RobotContainer {
         () ->
             drive.resetPose(
                 new Pose2d(
-                    FieldConstants.FIELD_CORNER_TO_CORNER.div(2),
+                    new Translation2d(FieldConstants.fieldLength, FieldConstants.fieldWidth).div(2),
                     drive.getRobotPose().getRotation())),
         true);
   }
