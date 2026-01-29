@@ -7,8 +7,8 @@ public interface IntakeWheelIO {
   public class IntakeIOInputsAutoLogged {
     public double leftPositionRad = 0.0;
     public double rightPositionRad = 0.0;
-    public double leftVelocityRadPerSec = 0.0;
-    public double rightVelocityRadPerSec = 0.0;
+    public double leftVelocity = 0.0;
+    public double rightVelocity = 0.0;
 
     public double[] leftAppliedVolts = new double[] {};
     public double[] rightAppliedVolts = new double[] {};
@@ -18,9 +18,7 @@ public interface IntakeWheelIO {
 
   public default void updateInputs(IntakeIOInputsAutoLogged inputs) {}
 
-  public default void setVelocity(double velocityRadPerSec) {}
+  public default void setVelocity(double velocity) {}
 
   public default void stop() {}
-
-  public default void configurePID(double kP, double kI, double kD) {}
 }
