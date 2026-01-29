@@ -1,21 +1,25 @@
 package frc.robot.subsystems.intake;
 
-import java.time.Period;
-
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.intake.IntakeWheelIO.IntakeWheelIOInputsAutoLogged;
+import frc.robot.subsystems.intake.SlapdownIO.SlapdownIOInputsAutoLogged;
 
-public class Intake extends SubsystemBase{
-    
-    private final IntakeWheelIO wheelIO;
-    private final SlapdownIO SlapdownIO;
+public class Intake extends SubsystemBase {
 
-    public Intake(IntakeWheelIO wheelIO, SlapdownIO slapdownIO){
-        this.wheelIO = wheelIO;
-        this.SlapdownIO = slapdownIO;
-    }
+  private final IntakeWheelIO wheelIO;
+  private final SlapdownIO SlapdownIO;
 
-    @Override
-    public void periodic() {
-        
-    }   
+  private IntakeWheelIOInputsAutoLogged wheelInputs;
+  private SlapdownIOInputsAutoLogged slapdownInputs;
+
+  public Intake(IntakeWheelIO wheelIO, SlapdownIO slapdownIO) {
+    this.wheelIO = wheelIO;
+    this.SlapdownIO = slapdownIO;
+  }
+
+  @Override
+  public void periodic() {
+    wheelIO.updateInputs(wheelInputs);
+    SlapdownIO.updateInputs(slapdownInputs);
+  }
 }
