@@ -41,13 +41,8 @@ public class IntakeWheelIOSparkMax implements IntakeWheelIO {
   }
 
   @Override
-  public void setVelocity(double velocityRadPerSec) {
-    motor
-        .getClosedLoopController()
-        .setSetpoint(
-            Units.radiansPerSecondToRotationsPerMinute(velocityRadPerSec),
-            ControlType.kVelocity,
-            ClosedLoopSlot.kSlot0);
+  public void setVelocity(double velocity) {
+    motor.set(velocity);
   }
 
   @Override
