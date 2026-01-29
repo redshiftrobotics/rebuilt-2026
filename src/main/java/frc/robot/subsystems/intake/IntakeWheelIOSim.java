@@ -22,8 +22,8 @@ public class IntakeWheelIOSim implements IntakeWheelIO {
   }
 
   @Override
-  public void setVelocity(double velocityRadPerSec) {
-    sim.setAngularVelocity(velocityRadPerSec);
+  public void setVelocity(double velocity) {
+    sim.setInput(velocity);
   }
 
   @Override
