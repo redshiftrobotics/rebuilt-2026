@@ -38,7 +38,7 @@ public class IntakeWheelIOSparkMax implements IntakeWheelIO {
   }
 
   @Override
-  public void setVelocity(double speed) {
+  public void set(double speed) {
     motor.set(speed);
   }
 
