@@ -12,9 +12,19 @@ public interface SlapdownIO {
     public double[] SupplyCurrentAmps = new double[] {};
   }
 
-  public default void updateInputs(SlapdownIOInputsAutoLogged inputs) {}
+  public default void updateInputs(SlapdownIOInputsAutoLogged inputs) {
+    
+  }
 
-  public default void setMotorMode() {}
+  public default void setMotorMode() {
 
-  public default void setPID() {}
+  }
+
+  public default void setPID() {
+
+  }
+
+  public default void setSpeed() {
+
+  }
 }
