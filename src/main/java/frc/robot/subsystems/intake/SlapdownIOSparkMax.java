@@ -16,9 +16,9 @@ public class SlapdownIOSparkMax implements SlapdownIO {
     private final SparkClosedLoopController motorPID;
     private final RelativeEncoder encoder;
 
-    public SlapdownIOSparkMax(SparkMax motor, RelativeEncoder encoder){
+    public SlapdownIOSparkMax(SparkMax motor){
      this.motor = motor;   
-     this.encoder = encoder;
+    this.encoder = motor.getEncoder();
      motorPID = motor.getClosedLoopController();
     }
 

@@ -29,7 +29,7 @@ public interface SlapdownIO {
   }
 
   public default void setPoint(double setPointRad) {
-
+    
   }
 
   public default void stopMotor(){
