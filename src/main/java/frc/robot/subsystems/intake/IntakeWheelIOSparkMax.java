@@ -12,11 +12,12 @@ import edu.wpi.first.math.util.Units;
 
 
 public class IntakeWheelIOSparkMax implements IntakeWheelIO {
-  private final SparkMax motor = new SparkMax(0, MotorType.kBrushless);
+  private final SparkMax motor;
   private final SparkBaseConfig config;
   private final RelativeEncoder encoder;
 
-  public IntakeWheelIOSparkMax() {
+  public IntakeWheelIOSparkMax(SparkMax motor) {
+    this.motor = motor;
     encoder = motor.getEncoder();
 
     config = new SparkMaxConfig();

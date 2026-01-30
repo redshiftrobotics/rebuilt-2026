@@ -9,9 +9,8 @@ public class IntakeConstants {
   public static final double SPEED = 0.5;
   // Make the following constants real values
   public static final double JKgMetersSquared = 1;
-  public static final double gearing = 1;
-  // Example of a constant that is dependent on the robot
-  
+  public static final double gearing = 1; /// maybe change
+
   public static final int WHEEL_GEAR_RATIO =
       switch (Constants.getRobot()) {
         case PRESEASON_2026 -> 0;
@@ -26,9 +25,16 @@ public class IntakeConstants {
         default -> 0;
       };
 
-    public static final int CAN_ID =
+    public static final int WHEEL_CAN_ID =
     switch (Constants.getRobot()) {
-      case PRESEASON_2026 -> 1;
+      case PRESEASON_2026 -> 0;
+      case SIM_BOT -> 0;
+      default -> 0;
+    };
+
+    public static final int SLAPDOWN_CAN_ID =
+    switch (Constants.getRobot()) {
+      case PRESEASON_2026 -> 0;
       case SIM_BOT -> 0;
       default -> 0;
     };
