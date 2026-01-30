@@ -27,9 +27,9 @@ public class IntakeWheelIOSparkMax implements IntakeWheelIO {
 
   @Override
   public void updateInputs(IntakeWheelIOInputsAutoLogged inputs) {
-    inputs.positionRad = Units.rotationsToRadians(encoder.getPosition() / IntakeConstants.GEAR_RATIO);
+    inputs.positionRad = Units.rotationsToRadians(encoder.getPosition() / IntakeConstants.WHEEL_GEAR_RATIO);
     inputs.velocityRadPerSec =
-        Units.rotationsPerMinuteToRadiansPerSecond(encoder.getVelocity() / IntakeConstants.GEAR_RATIO);
+        Units.rotationsPerMinuteToRadiansPerSecond(encoder.getVelocity() / IntakeConstants.WHEEL_GEAR_RATIO);
     inputs.appliedVolts =
         new double[] {
           motor.getAppliedOutput() * motor.getBusVoltage(),

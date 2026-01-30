@@ -1,24 +1,36 @@
 package frc.robot.subsystems.intake;
 
 import com.revrobotics.PersistMode;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import edu.wpi.first.math.util.Units;
+
 public class SlapdownIOSparkMax implements SlapdownIO {
 
     private final SparkMax motor;
     private final SparkClosedLoopController motorPID;
+    private final RelativeEncoder encoder;
 
-    public SlapdownIOSparkMax(SparkMax motor){
+    public SlapdownIOSparkMax(SparkMax motor, RelativeEncoder encoder){
      this.motor = motor;   
+     this.encoder = encoder;
      motorPID = motor.getClosedLoopController();
     }
 
     @Override
     public void updateInputs(SlapdownIOInputsAutoLogged inputs) {
-        
+        inputs.PositionRad = Units.rotationsPerMinuteToRadiansPerSecond(encoder.getVelocity() / IntakeConstants.SLAPDOWN_GEAR_RATIO);
+        inputs.VelocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(encoder.getVelocity() / IntakeConstants.SLAPDOWN_GEAR_RATIO);
+
+        inputs.AppliedVolts =
+        new double[] {
+          motor.getAppliedOutput() * motor.getBusVoltage(),
+        };
+        inputs.SupplyCurrentAmps = new double[] {motor.getOutputCurrent()};
     }
 
     @Override
