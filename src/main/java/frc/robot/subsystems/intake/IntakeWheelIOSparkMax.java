@@ -44,6 +44,6 @@ public class IntakeWheelIOSparkMax implements IntakeWheelIO {
 
   @Override
   public void stop() {
-    motor.set(0);
+    motor.stopMotor();
   }
 }
