@@ -31,7 +31,8 @@ public class HopperConstants {
   public static enum RunMode {
     Stopped(0, 0), // All hopper motors stopped
     FuelStore(1, 0), // Bubbler running at low speed to push fuel to the back, feeder stopped
-    Firing(1, 1); // Bubbler running at high speed to send balls to the feeder, feeder running
+    Firing(1, 1), // Bubbler running at high speed to send balls to the feeder, feeder running
+    Reverse(-1, -1); // All hopper motors running in reverse in case of jams
 
     public int bubblerVelocityRadPerSec;
     public int feederVelocityRadPerSec;
