@@ -5,6 +5,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.util.Units;
@@ -48,6 +49,12 @@ public class SlapdownIOSparkMax implements SlapdownIO {
     @Override
     public void setSpeed(double speed) {
         motor.set(speed);
+    }
+
+    @Override
+    public void setPoint(double setPointRad) {
+        motorPID.setSetpoint(setPointRad, ControlType.kVelocity); //check this
+        //TODO idk
     }
 
     @Override

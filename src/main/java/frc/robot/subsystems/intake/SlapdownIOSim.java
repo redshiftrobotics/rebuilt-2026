@@ -34,6 +34,11 @@ public class SlapdownIOSim implements SlapdownIO{
     }
 
     @Override
+    public void setPoint(double setPointRad) {
+        motor.setAngle(setPointRad);
+    }
+
+    @Override
     public void stopMotor(){
         motor.setAngularVelocity(0);
     }
