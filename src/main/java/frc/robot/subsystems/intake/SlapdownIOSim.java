@@ -13,12 +13,12 @@ public class SlapdownIOSim implements SlapdownIO{
     }
 
     @Override
-    public void setPID() {
+    public void setPID(double kp, double ki,double kd) {
         
     }
 
     @Override
-    public void setSpeed() {
+    public void setSpeed(double speed) {
         
     }
 }

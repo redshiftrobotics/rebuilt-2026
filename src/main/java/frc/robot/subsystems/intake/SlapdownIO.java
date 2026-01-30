@@ -13,18 +13,22 @@ public interface SlapdownIO {
   }
 
   public default void updateInputs(SlapdownIOInputsAutoLogged inputs) {
-    
+
   }
 
   public default void setMotorMode() {
 
   }
 
-  public default void setPID() {
+  public default void setPID(double kp, double ki,double kd) {
 
   }
 
-  public default void setSpeed() {
+  public default void setSpeed(double speed) {
+
+  }
+
+  public default void stopMotor(){
 
   }
 }
