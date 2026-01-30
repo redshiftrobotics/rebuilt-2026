@@ -7,7 +7,10 @@ public class IntakeConstants {
 
   // Example of a constant that is not dependent on the robot
   public static final double SPEED = 0.5;
+  // Make the following constants real values
   public static final double GEAR_RATIO = 1;
+  public static final double JKgMetersSquared = 1;
+  public static final double gearing = 1;
   // Example of a constant that is dependent on the robot
   public static final int CAN_ID =
       switch (Constants.getRobot()) {

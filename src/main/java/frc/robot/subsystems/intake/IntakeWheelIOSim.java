@@ -5,12 +5,12 @@ import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 
 public class IntakeWheelIOSim implements IntakeWheelIO {
-  private DCMotor motor;
+  private DCMotor gearbox;
   private DCMotorSim sim;
 
   public IntakeWheelIOSim() {
-    motor = DCMotor.getNEO(1);
-    sim = new DCMotorSim(LinearSystemId.createDCMotorSystem(motor, 0.004, 1.0), motor);
+    gearbox = DCMotor.getNEO(1);
+    sim = new DCMotorSim(LinearSystemId.createDCMotorSystem(gearbox, IntakeConstants.JKgMetersSquared, IntakeConstants.gearing), gearbox);
   }
 
   @Override
@@ -22,8 +22,8 @@ public class IntakeWheelIOSim implements IntakeWheelIO {
   }
 
   @Override
-  public void setVelocity(double velocity) {
-    sim.setInput(velocity);
+  public void setVelocity(double speed) {
+    sim.setInput(speed);
   }
 
   @Override

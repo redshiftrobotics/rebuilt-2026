@@ -9,7 +9,6 @@ import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.util.Units;
-import frc.robot.subsystems.intake.IntakeConstants;;
 
 
 public class IntakeWheelIOSparkMax implements IntakeWheelIO {
@@ -39,8 +38,8 @@ public class IntakeWheelIOSparkMax implements IntakeWheelIO {
   }
 
   @Override
-  public void setVelocity(double velocity) {
-    motor.set(velocity);
+  public void setVelocity(double speed) {
+    motor.set(speed);
   }
 
   @Override
