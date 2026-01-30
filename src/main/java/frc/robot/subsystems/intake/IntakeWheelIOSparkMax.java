@@ -2,8 +2,6 @@ package frc.robot.subsystems.intake;
 
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
-import com.revrobotics.spark.ClosedLoopSlot;
-import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.PersistMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
@@ -41,13 +39,8 @@ public class IntakeWheelIOSparkMax implements IntakeWheelIO {
   }
 
   @Override
-  public void setVelocity(double velocityRadPerSec) {
-    motor
-        .getClosedLoopController()
-        .setSetpoint(
-            Units.radiansPerSecondToRotationsPerMinute(velocityRadPerSec),
-            ControlType.kVelocity,
-            ClosedLoopSlot.kSlot0);
+  public void setVelocity(double velocity) {
+    motor.set(velocity);
   }
 
   @Override
