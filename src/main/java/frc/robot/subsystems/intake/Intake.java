@@ -22,4 +22,12 @@ public class Intake extends SubsystemBase {
     wheelIO.updateInputs(wheelInputs);
     SlapdownIO.updateInputs(slapdownInputs);
   }
+
+  public void set(double speed) {
+    wheelIO.set(speed);
+  }
+
+  public void stop() {
+    wheelIO.stop();
+  }
 }
