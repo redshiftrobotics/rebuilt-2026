@@ -9,10 +9,10 @@ import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.util.Units;
+import frc.robot.subsystems.intake.IntakeConstants;;
 
 
 public class IntakeWheelIOSparkMax implements IntakeWheelIO {
-  double GEAR_RATIO = 1;
   private final SparkMax motor = new SparkMax(0, MotorType.kBrushless);
   private final SparkBaseConfig config;
   private final RelativeEncoder encoder;
@@ -28,9 +28,9 @@ public class IntakeWheelIOSparkMax implements IntakeWheelIO {
 
   @Override
   public void updateInputs(IntakeWheelIOInputsAutoLogged inputs) {
-    inputs.positionRad = Units.rotationsToRadians(encoder.getPosition() / GEAR_RATIO);
+    inputs.positionRad = Units.rotationsToRadians(encoder.getPosition() / IntakeConstants.GEAR_RATIO);
     inputs.velocityRadPerSec =
-        Units.rotationsPerMinuteToRadiansPerSecond(encoder.getVelocity() / GEAR_RATIO);
+        Units.rotationsPerMinuteToRadiansPerSecond(encoder.getVelocity() / IntakeConstants.GEAR_RATIO);
     inputs.appliedVolts =
         new double[] {
           motor.getAppliedOutput() * motor.getBusVoltage(),
