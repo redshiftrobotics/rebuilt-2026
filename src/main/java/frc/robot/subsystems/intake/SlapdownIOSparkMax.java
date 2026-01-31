@@ -7,6 +7,8 @@ import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
+
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 
 public class SlapdownIOSparkMax implements SlapdownIO {
@@ -53,8 +55,8 @@ public class SlapdownIOSparkMax implements SlapdownIO {
   }
 
   @Override
-  public void setSetpoint(double setPointRad) {
-    motorPID.setSetpoint(setPointRad, ControlType.kVelocity); // check this
+  public void setSetpoint(Rotation2d setPoint) {
+    motorPID.setSetpoint(setPoint.getRadians(), ControlType.kVelocity); // check this
     // TODO idk
   }
 

@@ -2,6 +2,8 @@ package frc.robot.subsystems.intake;
 
 import org.littletonrobotics.junction.AutoLog;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+
 public interface SlapdownIO {
   @AutoLog
   public class SlapdownIOInputsAutoLogged {
@@ -20,7 +22,7 @@ public interface SlapdownIO {
 
   public default void setSpeed(double speed) {}
 
-  public default void setSetpoint(double setPointRad) {}
+  public default void setSetpoint(Rotation2d setPoint) {}
 
   public default void stopMotor() {}
 }

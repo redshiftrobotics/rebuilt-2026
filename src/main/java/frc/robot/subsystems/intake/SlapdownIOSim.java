@@ -1,5 +1,6 @@
 package frc.robot.subsystems.intake;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 
 public class SlapdownIOSim implements SlapdownIO {
@@ -30,8 +31,8 @@ public class SlapdownIOSim implements SlapdownIO {
   }
 
   @Override
-  public void setSetpoint(double setPointRad) {
-    motor.setAngle(setPointRad);
+  public void setSetpoint(Rotation2d setPoint) {
+    motor.setAngle(setPoint.getRadians());
   }
 
   @Override
