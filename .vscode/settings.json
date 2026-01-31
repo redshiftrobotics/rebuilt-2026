@@ -58,6 +58,5 @@
     "edu.wpi.first.math.**.struct.*",
   ],
   "java.dependency.enableDependencyCheckup": false,
-  "chat.disableAIFeatures": true,
-  "java.debug.settings.onBuildFailureProceed": true
+  "chat.disableAIFeatures": true
 }

@@ -67,10 +67,14 @@ public class HopperConstants {
   // TODO: Add real values
   public static final PIDConstants BUBBLER_PID =
       switch (Constants.getRobot()) {
+        case PRESEASON_2026 -> new PIDConstants(0.0, 0.0, 0.0);
+        case SIM_BOT -> new PIDConstants(0.0, 0.0, 0.0);
         default -> new PIDConstants(0.0, 0.0, 0.0);
       };
   public static final PIDConstants FEEDER_PID =
       switch (Constants.getRobot()) {
+        case PRESEASON_2026 -> new PIDConstants(0.0, 0.0, 0.0);
+        case SIM_BOT -> new PIDConstants(0.0, 0.0, 0.0);
         default -> new PIDConstants(0.0, 0.0, 0.0);
       };
 
@@ -78,10 +82,14 @@ public class HopperConstants {
   // TODO: Add real values
   public static final FeedForwardConfigRecord BUBBLER_FF =
       switch (Constants.getRobot()) {
+        case PRESEASON_2026 -> new FeedForwardConfigRecord(0.0, 0.0, 0.0);
+        case SIM_BOT -> new FeedForwardConfigRecord(0.0, 0.0, 0.0);
         default -> new FeedForwardConfigRecord(0.0, 0.0, 0.0);
       };
   public static final FeedForwardConfigRecord FEEDER_FF =
       switch (Constants.getRobot()) {
+        case PRESEASON_2026 -> new FeedForwardConfigRecord(0.0, 0.0, 0.0);
+        case SIM_BOT -> new FeedForwardConfigRecord(0.0, 0.0, 0.0);
         default -> new FeedForwardConfigRecord(0.0, 0.0, 0.0);
       };
 
@@ -89,10 +97,14 @@ public class HopperConstants {
   // TODO: Add real values (thank you design team)
   public static final double BUBBLER_GEAR_RATIO =
       switch (Constants.getRobot()) {
+        case PRESEASON_2026 -> 1.0;
+        case SIM_BOT -> 1.0;
         default -> 1.0;
       };
   public static final double FEEDER_GEAR_RATIO =
       switch (Constants.getRobot()) {
+        case PRESEASON_2026 -> 1.0;
+        case SIM_BOT -> 1.0;
         default -> 1.0;
       };
 }

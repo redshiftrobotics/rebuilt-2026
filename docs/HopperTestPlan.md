@@ -7,8 +7,8 @@ As a reference:
 ## Preparation
 1. Pull the latest code from the `jim-hopper` branch (note: change this to `main` once merged).
 2. Set the proper constants in `HopperConstants`.java:
-    - Set `BUBBLER_CAN_ID` to the bubbler motor's CAN ID (make sure the appropriate `switch`/`case` label is used for the robot type).
-    - Set `FEEDER_CAN_ID` to the feeder motor's CAN ID (make sure the appropriate `switch`/`case` label is used for the robot type).
+    - Set `BUBBLER_CAN_ID` to the bubbler motor's CAN ID (check that you're setting them for the correct `RobotType` in the `switch` statement).
+    - Set `FEEDER_CAN_ID` to the feeder motor's CAN ID (check that you're setting them for the correct `RobotType` in the `switch` statement).
     - Set `BUBBLER_PID` to the appropriate PID constants for the bubbler.
     - Set `FEEDER_PID` to the appropriate PID constants for the feeder.
     - Set `BUBBLER_FF` to the appropriate feedforward constants for the bubbler.
