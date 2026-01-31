@@ -44,6 +44,10 @@ public class DriverDashboard {
   private static final Debouncer hasVisionEstimateDebounce =
       new Debouncer(0.1, DebounceType.kFalling);
 
+  public static Supplier<String> currentHopperRunModeNameSupplier = () -> "Unknown";
+  public static DoubleSupplier hopperBubblerVelocitySupplier = () -> 0.0;
+  public static DoubleSupplier hopperFeederVelocitySupplier = () -> 0.0;
+
   public static void addSubsystem(SubsystemBase subsystem) {
     SmartDashboard.putData(subsystem);
   }
@@ -141,6 +145,21 @@ public class DriverDashboard {
                 "Robot Angle",
                 () -> AllianceMirrorUtil.apply(poseSupplier.get().getRotation()).getRadians(),
                 null);
+          }
+        });
+
+    // Put hopper state on dashboard
+    SmartDashboard.putData(
+        "Hopper State",
+        new Sendable() {
+          @Override
+          public void initSendable(SendableBuilder builder) {
+            builder.addStringProperty("Run Mode", currentHopperRunModeNameSupplier, null);
+
+            builder.addDoubleProperty(
+                "Bubbler Velocity (rad per sec)", hopperBubblerVelocitySupplier, null);
+            builder.addDoubleProperty(
+                "Feeder Velocity (rad per sec)", hopperFeederVelocitySupplier, null);
           }
         });
   }
