@@ -69,10 +69,10 @@ public class HopperConstants {
   // TODO: Add real values (thank you design team)
   public static final double BUBBLER_GEAR_RATIO =
       switch (Constants.getRobot()) {
-        default -> 0.0;
+        default -> 1.0;
       };
   public static final double FEEDER_GEAR_RATIO =
       switch (Constants.getRobot()) {
-        default -> 0.0;
+        default -> 1.0;
       };
 }

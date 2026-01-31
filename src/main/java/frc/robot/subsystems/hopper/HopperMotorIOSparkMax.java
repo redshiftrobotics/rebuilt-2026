@@ -66,12 +66,10 @@ public class HopperMotorIOSparkMax implements HopperMotorIO {
   @Override
   public void updateInputs(HopperMotorIOInputs inputs) {
     // Motor position
-    inputs.positionRad =
-        Units.rotationsToRadians(encoder.getPosition() / gearRatio);
+    inputs.positionRad = Units.rotationsToRadians(encoder.getPosition() / gearRatio);
 
     // Motor velocity
-    inputs.velocityRadPerSec =
-        Units.rotationsToRadians(encoder.getVelocity() / gearRatio);
+    inputs.velocityRadPerSec = Units.rotationsToRadians(encoder.getVelocity() / gearRatio);
 
     // Voltage input to the motor
     inputs.appliedVolts =

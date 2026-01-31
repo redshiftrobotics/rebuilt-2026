@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.Mode;
 import frc.robot.commands.DriveCharacterizationCommands;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.HopperCommands;
 import frc.robot.commands.pipeline.DriveInput;
 import frc.robot.commands.pipeline.DriveInputPipeline;
 import frc.robot.generated.PreseasonConstants;
@@ -34,6 +35,12 @@ import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOSparkMax;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.hopper.Hopper;
+import frc.robot.subsystems.hopper.HopperConstants;
+import frc.robot.subsystems.hopper.HopperConstants.RunMode;
+import frc.robot.subsystems.hopper.HopperMotorIO;
+import frc.robot.subsystems.hopper.HopperMotorIOSim;
+import frc.robot.subsystems.hopper.HopperMotorIOSparkMax;
 import frc.robot.subsystems.led.BlinkenLEDPattern;
 import frc.robot.subsystems.led.LEDConstants;
 import frc.robot.subsystems.led.LEDStripIOSim;
@@ -59,6 +66,7 @@ public class RobotContainer {
   private final Drive drive;
   private final AprilTagVision vision;
   private final LEDSubsystem leds;
+  private final Hopper hopper;
 
   // Controller
   private final CommandXboxController driverController = new CommandXboxController(0);
@@ -101,6 +109,12 @@ public class RobotContainer {
                 new ModuleIOTalonFX(PreseasonConstants.BackRight));
         vision = new AprilTagVision(drive::getRobotPose);
         leds = new LEDSubsystem();
+        hopper =
+            new Hopper(
+                new HopperMotorIOSparkMax(
+                    HopperConstants.BUBBLER_CAN_ID, HopperConstants.BUBBLER_GEAR_RATIO),
+                new HopperMotorIOSparkMax(
+                    HopperConstants.FEEDER_CAN_ID, HopperConstants.FEEDER_GEAR_RATIO));
         break;
 
       case CHASSIS_CANNON:
@@ -115,6 +129,7 @@ public class RobotContainer {
                 new ModuleIOSparkMax(ModuleConstants.BACK_RIGHT_MODULE_CONFIG));
         vision = new AprilTagVision(drive::getRobotPose);
         leds = new LEDSubsystem();
+        hopper = new Hopper(new HopperMotorIO() {}, new HopperMotorIO() {});
         break;
 
       case SIM_BOT:
@@ -129,6 +144,10 @@ public class RobotContainer {
             new AprilTagVision(
                 drive::getRobotPose, new CameraIOSim(VisionConstants.SIM_FRONT_CAMERA));
         leds = new LEDSubsystem(new LEDStripIOSim(LEDConstants.DEFAULT_PATTERN));
+        hopper =
+            new Hopper(
+                new HopperMotorIOSim(HopperConstants.BUBBLER_GEAR_RATIO),
+                new HopperMotorIOSim(HopperConstants.FEEDER_GEAR_RATIO));
         break;
 
       default:
@@ -141,6 +160,7 @@ public class RobotContainer {
                 new ModuleIO() {});
         vision = new AprilTagVision(drive::getRobotPose);
         leds = new LEDSubsystem();
+        hopper = new Hopper(new HopperMotorIO() {}, new HopperMotorIO() {});
         break;
     }
 
@@ -355,7 +375,23 @@ public class RobotContainer {
     }
   }
 
-  private void configureOperatorControllerBindings(CommandXboxController xbox) {}
+  private void configureOperatorControllerBindings(CommandXboxController xbox) {
+    // This is the input for firing; when the shooter is added, it should be triggered by this as
+    // well
+    xbox.rightTrigger()
+        .whileTrue(HopperCommands.setHopperMode(hopper, RunMode.Firing))
+        .onFalse(HopperCommands.setHopperMode(hopper, RunMode.Stopped));
+
+    // Run the bubbler at low speed to send fuel towards the back without firing
+    xbox.b()
+        .whileTrue(HopperCommands.setHopperMode(hopper, RunMode.FuelStore))
+        .onFalse(HopperCommands.setHopperMode(hopper, RunMode.Stopped));
+
+    // Run the hopper motors in reverse to deal with jams
+    xbox.start()
+        .whileTrue(HopperCommands.setHopperMode(hopper, RunMode.FuelStore))
+        .onFalse(HopperCommands.setHopperMode(hopper, RunMode.Stopped));
+  }
 
   private Command rumbleController(
       CommandXboxController controller, double rumbleIntensity, RumbleType type) {

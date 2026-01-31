@@ -26,10 +26,7 @@ public class HopperMotorIOSim implements HopperMotorIO {
     this.gearRatio = gearRatio;
 
     // Create motor
-    sim =
-        new DCMotorSim(
-            LinearSystemId.createDCMotorSystem(motor, 0.004, gearRatio),
-            motor);
+    sim = new DCMotorSim(LinearSystemId.createDCMotorSystem(motor, 0.004, gearRatio), motor);
 
     // Create PID controller
     pidController = new PIDController(0, 0, 0);
