@@ -1,14 +1,13 @@
 package frc.robot.subsystems.intake;
 
+import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
-import com.revrobotics.PersistMode;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.util.Units;
-
 
 public class IntakeWheelIOSparkMax implements IntakeWheelIO {
   private final SparkMax motor;
@@ -27,9 +26,11 @@ public class IntakeWheelIOSparkMax implements IntakeWheelIO {
 
   @Override
   public void updateInputs(IntakeWheelIOInputsAutoLogged inputs) {
-    inputs.positionRad = Units.rotationsToRadians(encoder.getPosition() / IntakeConstants.WHEEL_GEAR_RATIO);
+    inputs.positionRad =
+        Units.rotationsToRadians(encoder.getPosition() / IntakeConstants.WHEEL_GEAR_RATIO);
     inputs.velocityRadPerSec =
-        Units.rotationsPerMinuteToRadiansPerSecond(encoder.getVelocity() / IntakeConstants.WHEEL_GEAR_RATIO);
+        Units.rotationsPerMinuteToRadiansPerSecond(
+            encoder.getVelocity() / IntakeConstants.WHEEL_GEAR_RATIO);
     inputs.appliedVolts =
         new double[] {
           motor.getAppliedOutput() * motor.getBusVoltage(),

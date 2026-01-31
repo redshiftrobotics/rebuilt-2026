@@ -23,7 +23,7 @@ public class Intake extends SubsystemBase {
     SlapdownIO.updateInputs(slapdownInputs);
   }
 
-  //wheel
+  // wheel
 
   public void wheelSet(double speed) {
     wheelIO.set(speed);
@@ -33,23 +33,21 @@ public class Intake extends SubsystemBase {
     wheelIO.stop();
   }
 
+  // slapdown
 
-  //slapdown
-
-  public void setSlapdownPID(double kp,double ki,double kd) {
+  public void setSlapdownPID(double kp, double ki, double kd) {
     SlapdownIO.setPID(kp, ki, kd);
   }
 
-  public void slapdownSet(double speed){
+  public void slapdownSet(double speed) {
     SlapdownIO.setSpeed(speed);
   }
 
-  public void splapdownSetPoint(double setPointRad){
+  public void splapdownSetPoint(double setPointRad) {
     SlapdownIO.setSetpoint(setPointRad);
   }
-  
-  public void slapdownStop()
-  {
+
+  public void slapdownStop() {
     SlapdownIO.stopMotor();
   }
 }

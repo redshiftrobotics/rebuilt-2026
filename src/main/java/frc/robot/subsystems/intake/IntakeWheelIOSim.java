@@ -7,7 +7,8 @@ public class IntakeWheelIOSim implements IntakeWheelIO {
 
   public IntakeWheelIOSim(DCMotorSim sim) {
     // gearbox = DCMotor.getNEO(1);
-    // sim = new DCMotorSim(LinearSystemId.createDCMotorSystem(gearbox, IntakeConstants.JKgMetersSquared, IntakeConstants.gearing), gearbox);
+    // sim = new DCMotorSim(LinearSystemId.createDCMotorSystem(gearbox,
+    // IntakeConstants.JKgMetersSquared, IntakeConstants.gearing), gearbox);
     this.sim = sim;
   }
 
