@@ -1,4 +1,4 @@
-package frc.robot.subsystems.hopper.bubbler;
+package frc.robot.subsystems.hopper;
 
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
@@ -11,9 +11,8 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.util.Units;
-import frc.robot.subsystems.hopper.HopperConstants;
 
-public class BubblerIOSparkMax implements BubblerIO {
+public class HopperMotorIOSparkMax implements HopperMotorIO {
   /* Motor */
   private final SparkMax motor;
 
@@ -23,9 +22,14 @@ public class BubblerIOSparkMax implements BubblerIO {
   /* Encoder */
   private final RelativeEncoder encoder;
 
-  public BubblerIOSparkMax() {
+  /* Gear ratio */
+  private double gearRatio;
+
+  public HopperMotorIOSparkMax(int motorID, double gearRatio) {
+    this.gearRatio = gearRatio;
+
     // Create motor
-    motor = new SparkMax(HopperConstants.BUBBLER_CAN_ID, MotorType.kBrushless);
+    motor = new SparkMax(motorID, MotorType.kBrushless);
 
     // Get motor resources
     pidController = motor.getClosedLoopController();
@@ -60,12 +64,14 @@ public class BubblerIOSparkMax implements BubblerIO {
   }
 
   @Override
-  public void updateInputs(BubblerIOInputs inputs) {
+  public void updateInputs(HopperMotorIOInputs inputs) {
     // Motor position
-    inputs.positionRad = Units.rotationsToRadians(encoder.getPosition() / HopperConstants.BUBBLER_GEAR_RATIO);
+    inputs.positionRad =
+        Units.rotationsToRadians(encoder.getPosition() / gearRatio);
 
     // Motor velocity
-    inputs.velocityRadPerSec = Units.rotationsToRadians(encoder.getVelocity() / HopperConstants.BUBBLER_GEAR_RATIO);
+    inputs.velocityRadPerSec =
+        Units.rotationsToRadians(encoder.getVelocity() / gearRatio);
 
     // Voltage input to the motor
     inputs.appliedVolts =

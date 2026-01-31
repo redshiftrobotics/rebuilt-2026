@@ -1,10 +1,10 @@
-package frc.robot.subsystems.hopper.bubbler;
+package frc.robot.subsystems.hopper;
 
 import org.littletonrobotics.junction.AutoLog;
 
-public interface BubblerIO {
+public interface HopperMotorIO {
   @AutoLog
-  public static class BubblerIOInputs {
+  public static class HopperMotorIOInputs {
     public double positionRad = 0.0;
     public double velocityRadPerSec = 0.0;
     public double[] appliedVolts = new double[] {};
@@ -12,7 +12,7 @@ public interface BubblerIO {
   }
 
   /** Updates the set of loggable inputs */
-  public default void updateInputs(BubblerIOInputs inputs) {}
+  public default void updateInputs(HopperMotorIOInputs inputs) {}
 
   /** Configure the PID constants */
   public default void configurePID(double kP, double kI, double kD) {}

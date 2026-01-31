@@ -1,4 +1,4 @@
-package frc.robot.subsystems.hopper.bubbler;
+package frc.robot.subsystems.hopper;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
@@ -6,9 +6,8 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.Constants;
-import frc.robot.subsystems.hopper.HopperConstants;
 
-public class BubblerIOSim implements BubblerIO {
+public class HopperMotorIOSim implements HopperMotorIO {
   /* Motor and sim */
   private final DCMotor motor = DCMotor.getNEO(1);
   private final DCMotorSim sim;
@@ -20,9 +19,17 @@ public class BubblerIOSim implements BubblerIO {
   private double appliedVolts = 0.0;
   private double ffVolts = 0.0;
 
-  public BubblerIOSim() {
+  /* Gear ratio */
+  private double gearRatio;
+
+  public HopperMotorIOSim(double gearRatio) {
+    this.gearRatio = gearRatio;
+
     // Create motor
-    sim = new DCMotorSim(LinearSystemId.createDCMotorSystem(motor, 0.004, HopperConstants.BUBBLER_GEAR_RATIO), motor);
+    sim =
+        new DCMotorSim(
+            LinearSystemId.createDCMotorSystem(motor, 0.004, gearRatio),
+            motor);
 
     // Create PID controller
     pidController = new PIDController(0, 0, 0);
@@ -50,9 +57,11 @@ public class BubblerIOSim implements BubblerIO {
   }
 
   @Override
-  public void updateInputs(BubblerIOInputs inputs) {
+  public void updateInputs(HopperMotorIOInputs inputs) {
     // Set new input voltage
-    appliedVolts = MathUtil.clamp(pidController.calculate(sim.getAngularVelocityRadPerSec()) + ffVolts, -12.0, 12.0);
+    appliedVolts =
+        MathUtil.clamp(
+            pidController.calculate(sim.getAngularVelocityRadPerSec()) + ffVolts, -12.0, 12.0);
     sim.setInputVoltage(appliedVolts);
 
     // Update simulation state
@@ -61,7 +70,7 @@ public class BubblerIOSim implements BubblerIO {
     // Fetch new values
     inputs.positionRad = sim.getAngularPositionRad();
     inputs.velocityRadPerSec = sim.getAngularVelocityRadPerSec();
-    inputs.appliedVolts = new double[] { appliedVolts };
-    inputs.supplyCurrentAmps = new double[] { sim.getCurrentDrawAmps() };
+    inputs.appliedVolts = new double[] {appliedVolts};
+    inputs.supplyCurrentAmps = new double[] {sim.getCurrentDrawAmps()};
   }
 }

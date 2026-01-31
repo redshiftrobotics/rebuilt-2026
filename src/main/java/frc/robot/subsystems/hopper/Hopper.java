@@ -3,27 +3,23 @@ package frc.robot.subsystems.hopper;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.hopper.bubbler.BubblerIO;
-import frc.robot.subsystems.hopper.bubbler.BubblerIOInputsAutoLogged;
-import frc.robot.subsystems.hopper.feeder.FeederIO;
-import frc.robot.subsystems.hopper.feeder.FeederIOInputsAutoLogged;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Hopper extends SubsystemBase {
   /* IO layers */
-  private final BubblerIO bubbler;
-  private final FeederIO feeder;
+  private final HopperMotorIO bubbler;
+  private final HopperMotorIO feeder;
 
   /* Loggable inputs */
-  private final BubblerIOInputsAutoLogged bubblerInputs = new BubblerIOInputsAutoLogged();
-  private final FeederIOInputsAutoLogged feederInputs = new FeederIOInputsAutoLogged();
+  private final HopperMotorIOInputsAutoLogged bubblerInputs = new HopperMotorIOInputsAutoLogged();
+  private final HopperMotorIOInputsAutoLogged feederInputs = new HopperMotorIOInputsAutoLogged();
 
   /* Feedforward models */
   private final SimpleMotorFeedforward bubblerFF;
   private final SimpleMotorFeedforward feederFF;
 
-  public Hopper(BubblerIO bubblerIO, FeederIO feederIO) {
+  public Hopper(HopperMotorIO bubblerIO, HopperMotorIO feederIO) {
     // Set IO layers
     bubbler = bubblerIO;
     feeder = feederIO;
