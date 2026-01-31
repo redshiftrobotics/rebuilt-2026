@@ -19,12 +19,7 @@ public class HopperMotorIOSim implements HopperMotorIO {
   private double appliedVolts = 0.0;
   private double ffVolts = 0.0;
 
-  /* Gear ratio */
-  private double gearRatio;
-
   public HopperMotorIOSim(double gearRatio) {
-    this.gearRatio = gearRatio;
-
     // Create motor
     sim = new DCMotorSim(LinearSystemId.createDCMotorSystem(motor, 0.004, gearRatio), motor);
 

@@ -3,6 +3,7 @@ package frc.robot.subsystems.hopper;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.hopper.HopperConstants.RunMode;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -18,6 +19,9 @@ public class Hopper extends SubsystemBase {
   /* Feedforward models */
   private final SimpleMotorFeedforward bubblerFF;
   private final SimpleMotorFeedforward feederFF;
+
+  /* Run mode storage */
+  private HopperConstants.RunMode runMode = RunMode.STOPPED;
 
   public Hopper(HopperMotorIO bubblerIO, HopperMotorIO feederIO) {
     // Set IO layers
@@ -56,14 +60,14 @@ public class Hopper extends SubsystemBase {
     Logger.processInputs("Hopper/Feeder", feederInputs);
   }
 
-  public void runBubblerAtVelocity(double velocityRPM) {
+  private void runBubblerAtVelocity(double velocityRPM) {
     double velocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(velocityRPM);
     bubbler.setVelocity(velocityRadPerSec, bubblerFF.calculate(velocityRadPerSec));
 
     Logger.recordOutput("Hopper/Bubbler/SetpointRPM", velocityRPM);
   }
 
-  public void runFeederAtVelocity(double velocityRPM) {
+  private void runFeederAtVelocity(double velocityRPM) {
     double velocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(velocityRPM);
     feeder.setVelocity(velocityRadPerSec, feederFF.calculate(velocityRadPerSec));
 
@@ -76,13 +80,28 @@ public class Hopper extends SubsystemBase {
   }
 
   public void stopFeeder() {
-    runBubblerAtVelocity(0);
+    runFeederAtVelocity(0);
     feeder.stop();
   }
 
   public void stopAll() {
+    runMode = HopperConstants.RunMode.STOPPED;
     stopBubbler();
     stopFeeder();
+  }
+
+  public void runInMode(HopperConstants.RunMode mode) {
+    runMode = mode;
+    if (mode == HopperConstants.RunMode.STOPPED) {
+      stopAll();
+      return;
+    }
+    runBubblerAtVelocity(mode.bubblerVelocityRadPerSec);
+    runFeederAtVelocity(mode.feederVelocityRadPerSec);
+  }
+
+  public HopperConstants.RunMode getCurrentRunMode() {
+    return runMode;
   }
 
   @AutoLogOutput

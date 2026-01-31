@@ -222,6 +222,9 @@ public class RobotContainer {
     DriverDashboard.speedsSupplier = drive::getRobotSpeeds;
     DriverDashboard.wheelStatesSupplier = drive::getWheelSpeeds;
     DriverDashboard.hasVisionEstimate = vision::hasSuccessfulEstimate;
+    DriverDashboard.currentHopperRunModeNameSupplier = () -> hopper.getCurrentRunMode().toString();
+    DriverDashboard.hopperBubblerVelocitySupplier = hopper::getBubblerCharacterizationVelocity;
+    DriverDashboard.hopperFeederVelocitySupplier = hopper::getFeederCharacterizationVelocity;
 
     DriverDashboard.currentDriveModeName =
         () -> drive.getCurrentCommand() == null ? "Idle" : drive.getCurrentCommand().getName();
@@ -379,18 +382,18 @@ public class RobotContainer {
     // This is the input for firing; when the shooter is added, it should be triggered by this as
     // well
     xbox.rightTrigger()
-        .whileTrue(HopperCommands.setHopperMode(hopper, RunMode.Firing))
-        .onFalse(HopperCommands.setHopperMode(hopper, RunMode.Stopped));
+        .whileTrue(HopperCommands.setHopperMode(hopper, RunMode.FIRING))
+        .onFalse(HopperCommands.setHopperMode(hopper, RunMode.STOPPED));
 
     // Run the bubbler at low speed to send fuel towards the back without firing
     xbox.b()
-        .whileTrue(HopperCommands.setHopperMode(hopper, RunMode.FuelStore))
-        .onFalse(HopperCommands.setHopperMode(hopper, RunMode.Stopped));
+        .whileTrue(HopperCommands.setHopperMode(hopper, RunMode.FUEL_STORE))
+        .onFalse(HopperCommands.setHopperMode(hopper, RunMode.STOPPED));
 
     // Run the hopper motors in reverse to deal with jams
     xbox.start()
-        .whileTrue(HopperCommands.setHopperMode(hopper, RunMode.FuelStore))
-        .onFalse(HopperCommands.setHopperMode(hopper, RunMode.Stopped));
+        .whileTrue(HopperCommands.setHopperMode(hopper, RunMode.REVERSE))
+        .onFalse(HopperCommands.setHopperMode(hopper, RunMode.STOPPED));
   }
 
   private Command rumbleController(

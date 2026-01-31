@@ -14,7 +14,6 @@ As a reference:
     - Set `BUBBLER_FF` to the appropriate feedforward constants for the bubbler.
     - Set `FEEDER_FF` to the appropriate feedforward constants for the feeder.
     - Check that `BUBBLER_GEAR_RATIO` and `FEEDER_GEAR_RATIO` match the actual gear ratios of the motors.
-3. Check that `RUNNING_TEST_PLANS` in `Constants.java` is set to `true`.
 
 ## Setup
 1. Put the battery in the robot and check that everything is connected properly.

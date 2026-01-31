@@ -10,8 +10,7 @@ public class HopperCommands {
   public static Command setHopperMode(Hopper hopper, HopperConstants.RunMode mode) {
     return Commands.runOnce(
         () -> {
-          hopper.runBubblerAtVelocity(mode.bubblerVelocityRadPerSec);
-          hopper.runFeederAtVelocity(mode.feederVelocityRadPerSec);
+          hopper.runInMode(mode);
         },
         hopper);
   }

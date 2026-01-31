@@ -29,17 +29,37 @@ public class HopperConstants {
   // Hopper run mode
   // TODO: Set real speeds
   public static enum RunMode {
-    Stopped(0, 0), // All hopper motors stopped
-    FuelStore(1, 0), // Bubbler running at low speed to push fuel to the back, feeder stopped
-    Firing(1, 1), // Bubbler running at high speed to send balls to the feeder, feeder running
-    Reverse(-1, -1); // All hopper motors running in reverse in case of jams
-
+    STOPPED(0, 0),
+    /** All hopper motors stopped */
+    FUEL_STORE(1, 0),
+    /** Bubbler running at low speed to push fuel to the back, feeder stopped */
+    FIRING(1, 1),
+    /** Bubbler running at high speed to send balls to the feeder, feeder running */
+    REVERSE(-1, -1);
+    /** All hopper motors running in reverse in case of jams */
     public int bubblerVelocityRadPerSec;
+
     public int feederVelocityRadPerSec;
 
     private RunMode(int bubblerVelocity, int feederVelocity) {
       bubblerVelocityRadPerSec = bubblerVelocity;
       feederVelocityRadPerSec = feederVelocity;
+    }
+
+    @Override
+    public String toString() {
+      switch (this) {
+        case STOPPED:
+          return "Stopped";
+        case FUEL_STORE:
+          return "Fuel Storing";
+        case FIRING:
+          return "Firing";
+        case REVERSE:
+          return "Reverse";
+        default:
+          return "Unknown";
+      }
     }
   }
 
