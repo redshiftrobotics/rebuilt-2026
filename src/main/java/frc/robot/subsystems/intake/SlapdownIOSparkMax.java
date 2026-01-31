@@ -52,7 +52,7 @@ public class SlapdownIOSparkMax implements SlapdownIO {
     }
 
     @Override
-    public void setPoint(double setPointRad) {
+    public void setSetpoint(double setPointRad) {
         motorPID.setSetpoint(setPointRad, ControlType.kVelocity); //check this
         //TODO idk
     }

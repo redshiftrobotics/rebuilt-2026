@@ -28,7 +28,7 @@ public interface SlapdownIO {
 
   }
 
-  public default void setPoint(double setPointRad) {
+  public default void setSetpoint(double setPointRad) {
     
   }
 

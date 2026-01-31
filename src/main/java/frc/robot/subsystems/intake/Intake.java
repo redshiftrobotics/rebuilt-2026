@@ -45,7 +45,7 @@ public class Intake extends SubsystemBase {
   }
 
   public void splapdownSetPoint(double setPointRad){
-    SlapdownIO.setPoint(setPointRad);
+    SlapdownIO.setSetpoint(setPointRad);
   }
   
   public void slapdownStop()
