@@ -1,5 +1,7 @@
 package frc.robot.subsystems.intake;
 
+import java.io.ObjectInputFilter.Config;
+
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
@@ -7,6 +9,7 @@ import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
@@ -21,6 +24,11 @@ public class SlapdownIOSparkMax implements SlapdownIO {
     this.motor = motor;
     this.encoder = motor.getEncoder();
     motorPID = motor.getClosedLoopController();
+
+    SparkMaxConfig config = new SparkMaxConfig();
+    config.idleMode(IntakeConstants.SlapdownBrakeMode);
+
+    motor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
   }
 
   @Override
@@ -40,7 +48,10 @@ public class SlapdownIOSparkMax implements SlapdownIO {
   }
 
   @Override
-  public void setMotorMode() {}
+  public void setMotorIdleMode(IdleMode idleMode) {
+    SparkMaxConfig config = new SparkMaxConfig();
+    config.idleMode(idleMode);
+  }
 
   @Override
   public void setPID(double kp, double ki, double kd) {

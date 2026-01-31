@@ -1,5 +1,8 @@
 package frc.robot.subsystems.intake;
 
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.intake.IntakeWheelIO.IntakeWheelIOInputsAutoLogged;
 import frc.robot.subsystems.intake.SlapdownIO.SlapdownIOInputsAutoLogged;
@@ -43,8 +46,12 @@ public class Intake extends SubsystemBase {
     SlapdownIO.setSpeed(speed);
   }
 
-  public void splapdownSetPoint(double setPointRad) {
-    SlapdownIO.setSetpoint(setPointRad);
+  public void setSlapdownIdleMode(IdleMode idleMode){
+    SlapdownIO.setMotorIdleMode(idleMode);
+  }
+
+  public void splapdownSetPoint(Rotation2d setPoint) {
+    SlapdownIO.setSetpoint(setPoint);
   }
 
   public void slapdownStop() {

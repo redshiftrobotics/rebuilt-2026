@@ -1,8 +1,12 @@
 package frc.robot.subsystems.intake;
 
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+
 import frc.robot.Constants;
 
 public class IntakeConstants {
+
+  public static final IdleMode SlapdownBrakeMode = IdleMode.kCoast;
 
   public static final int WHEEL_GEAR_RATIO =
       switch (Constants.getRobot()) {

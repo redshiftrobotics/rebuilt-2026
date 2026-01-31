@@ -2,6 +2,8 @@ package frc.robot.subsystems.intake;
 
 import org.littletonrobotics.junction.AutoLog;
 
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public interface SlapdownIO {
@@ -16,7 +18,7 @@ public interface SlapdownIO {
 
   public default void updateInputs(SlapdownIOInputsAutoLogged inputs) {}
 
-  public default void setMotorMode() {}
+  public abstract void setMotorIdleMode(IdleMode idleMode);
 
   public default void setPID(double kp, double ki, double kd) {}
 
