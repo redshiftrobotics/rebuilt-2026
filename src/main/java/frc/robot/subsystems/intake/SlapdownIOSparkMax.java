@@ -2,6 +2,7 @@ package frc.robot.subsystems.intake;
 
 import java.io.ObjectInputFilter.Config;
 
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
@@ -18,12 +19,18 @@ public class SlapdownIOSparkMax implements SlapdownIO {
 
   private final SparkMax motor;
   private final SparkClosedLoopController motorPID;
-  private final RelativeEncoder encoder;
+  private final RelativeEncoder relativeEncoder;
+  private final AbsoluteEncoder absoluteEncoder;
 
-  public SlapdownIOSparkMax(SparkMax motor) {
+  public SlapdownIOSparkMax(SparkMax motor, AbsoluteEncoder absoluteEncoder) {
     this.motor = motor;
-    this.encoder = motor.getEncoder();
+    relativeEncoder = motor.getEncoder();
     motorPID = motor.getClosedLoopController();
+
+    relativeEncoder.setPosition(absoluteEncoder.getPosition());
+
+    this.absoluteEncoder = absoluteEncoder;
+
 
     SparkMaxConfig config = new SparkMaxConfig();
     config.idleMode(IntakeConstants.SlapdownBrakeMode);
@@ -34,11 +41,11 @@ public class SlapdownIOSparkMax implements SlapdownIO {
   @Override
   public void updateInputs(SlapdownIOInputsAutoLogged inputs) {
     inputs.PositionRad =
-        Units.rotationsPerMinuteToRadiansPerSecond(
-            encoder.getVelocity() / IntakeConstants.SLAPDOWN_GEAR_RATIO);
+        Units.rotationsToRadians(
+            absoluteEncoder.getPosition() / IntakeConstants.SLAPDOWN_GEAR_RATIO);
     inputs.VelocityRadPerSec =
         Units.rotationsPerMinuteToRadiansPerSecond(
-            encoder.getVelocity() / IntakeConstants.SLAPDOWN_GEAR_RATIO);
+            absoluteEncoder.getVelocity() / IntakeConstants.SLAPDOWN_GEAR_RATIO);
 
     inputs.AppliedVolts =
         new double[] {
@@ -67,8 +74,7 @@ public class SlapdownIOSparkMax implements SlapdownIO {
 
   @Override
   public void setSetpoint(Rotation2d setPoint) {
-    motorPID.setSetpoint(setPoint.getRadians(), ControlType.kVelocity); // check this
-    // TODO idk
+    motorPID.setSetpoint(setPoint.getRotations(), ControlType.kVelocity);
   }
 
   @Override
