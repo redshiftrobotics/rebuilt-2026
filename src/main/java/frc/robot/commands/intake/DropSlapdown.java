@@ -17,6 +17,4 @@ public class DropSlapdown extends Command {
     public void execute() {
         intake.slapdownSet(0.1);
     }
-
-    
 }
