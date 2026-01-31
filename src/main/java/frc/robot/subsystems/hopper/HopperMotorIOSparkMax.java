@@ -23,7 +23,7 @@ public class HopperMotorIOSparkMax implements HopperMotorIO {
   private final RelativeEncoder encoder;
 
   /* Gear ratio */
-  private double gearRatio;
+  private final double gearRatio;
 
   public HopperMotorIOSparkMax(int motorID, double gearRatio) {
     this.gearRatio = gearRatio;
