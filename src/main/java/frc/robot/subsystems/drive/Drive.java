@@ -7,7 +7,10 @@ import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.pathfinding.Pathfinding;
+import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.PathPlannerLogging;
+import com.pathplanner.lib.util.swerve.SwerveSetpoint;
+import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.Debouncer;
@@ -68,6 +71,9 @@ public class Drive extends SubsystemBase {
   private Pose2d robotPose = new Pose2d();
   private ChassisSpeeds robotSpeeds = new ChassisSpeeds();
 
+  private final SwerveSetpointGenerator setpointGenerator;
+  private SwerveSetpoint previousSetpoint;
+
   /**
    * Creates a new drivetrain for robot
    *
@@ -120,16 +126,7 @@ public class Drive extends SubsystemBase {
 
     // --- PathPlanner ---
 
-    // Configure AutoBuilder for PathPlanner
-    AutoBuilder.configure(
-        this::getRobotPose,
-        this::resetPose,
-        this::getRobotSpeeds,
-        (speeds, feedforward) -> setRobotSpeeds(speeds),
-        new PPHolonomicDriveController(
-            DriveConstants.TRANSLATION_CONTROLLER_CONSTANTS_TRAJECTORY.toPathPlannerPIDConstants(),
-            DriveConstants.ROTATION_CONTROLLER_CONSTANTS_TRAJECTORY.toPathPlannerPIDConstants(),
-            Constants.LOOP_PERIOD_SECONDS),
+    final RobotConfig pathPlannerConfig =
         new RobotConfig(
             DriveConstants.robotMassKg,
             DriveConstants.robotMOI,
@@ -140,7 +137,19 @@ public class Drive extends SubsystemBase {
                 ModuleConstants.DRIVE_MOTOR.withReduction(ModuleConstants.DRIVE_REDUCTION),
                 ModuleConstants.DRIVE_MOTOR_CURRENT_LIMIT,
                 1),
-            moduleTranslations),
+            moduleTranslations);
+
+    // Configure AutoBuilder for PathPlanner
+    AutoBuilder.configure(
+        this::getRobotPose,
+        this::resetPose,
+        this::getRobotSpeeds,
+        (speeds, feedforward) -> setRobotSpeeds(speeds),
+        new PPHolonomicDriveController(
+            DriveConstants.TRANSLATION_CONTROLLER_CONSTANTS_TRAJECTORY.toPathPlannerPIDConstants(),
+            DriveConstants.ROTATION_CONTROLLER_CONSTANTS_TRAJECTORY.toPathPlannerPIDConstants(),
+            Constants.LOOP_PERIOD_SECONDS),
+        pathPlannerConfig,
         AllianceMirrorUtil::shouldFlip,
         this);
 
@@ -156,6 +165,13 @@ public class Drive extends SubsystemBase {
         });
     PathPlannerLogging.setLogTargetPoseCallback(
         targetPose -> Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose));
+
+    // --- Setpoint Genorator ---
+
+    setpointGenerator =
+        new SwerveSetpointGenerator(pathPlannerConfig, DriveConstants.maxSteerVeloicty);
+    previousSetpoint =
+        new SwerveSetpoint(robotSpeeds, getWheelSpeeds(), DriveFeedforwards.zeros(4));
 
     // --- Configure SysId ---
 
@@ -329,6 +345,18 @@ public class Drive extends SubsystemBase {
     SwerveModuleState[] wheelSpeeds = kinematics.toSwerveModuleStates(speeds);
 
     setWheelSpeeds(wheelSpeeds);
+  }
+
+  public void setRobotSpeedsWithGenorator(ChassisSpeeds speeds) {
+    previousSetpoint =
+        setpointGenerator.generateSetpoint(previousSetpoint, speeds, Constants.LOOP_PERIOD_SECONDS);
+
+    Logger.recordOutput("ChassisStates/DesiredRobotSpeeds", speeds);
+    Logger.recordOutput("SwerveStates/DesiredWheelSpeeds", previousSetpoint.moduleStates());
+
+    for (int i = 0; i < modules.length; i++) {
+      modules[i].setSpeedsRaw(previousSetpoint.moduleStates()[i]);
+    }
   }
 
   // --- Wheel States ---

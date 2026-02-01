@@ -70,8 +70,11 @@ public class DriveConstants {
 
   private static final Translation2d BUMPER_TO_BUMPER =
       switch (Constants.getRobot()) {
-        case PRESEASON_2026, SIM_BOT -> new Translation2d(3.0 + 3.750, 3.0 + 3.750);
-        case REEFSCAPE_2025, WOOD_BOT_2026, CHASSIS_CANNON -> new Translation2d(7, 7);
+        case PRESEASON_2026, SIM_BOT -> TRACK_SIZE.plus(
+            new Translation2d(
+                Units.inchesToMeters(3.0 + 3.750), Units.inchesToMeters(3.0 + 3.750)));
+        case REEFSCAPE_2025, WOOD_BOT_2026, CHASSIS_CANNON -> TRACK_SIZE.plus(
+            new Translation2d(Units.inchesToMeters(7), Units.inchesToMeters(7)));
       };
 
   public static final DriveConfig DRIVE_CONFIG =
@@ -116,11 +119,35 @@ public class DriveConstants {
         case SIM_BOT -> new CANBus();
       };
 
-  // --- Pathplanner Config ---
+  // --- PathPlanner Config ---
 
-  public static final double robotMassKg = 74.088;
-  public static final double robotMOI = 6.883;
-  public static final double wheelCOF = 1.2;
+  public static final double robotMassKg;
+  public static final double robotMOI;
+  public static final double wheelCOF;
+  public static final double maxSteerVeloicty;
+
+  static {
+    switch (Constants.getRobot()) {
+      case PRESEASON_2026, SIM_BOT:
+        robotMassKg = 50.0; // Mass from scale
+        robotMOI =
+            (1.0 / 12.0)
+                * robotMassKg
+                * TRACK_SIZE
+                    .getSquaredNorm(); // MOI from https://choreo.autos/usage/estimating-moi/
+        wheelCOF = 2.255; // COF from
+        // https://www.chiefdelphi.com/t/spectrum-3847-build-blog-2025/478254/420?u=michael888
+        maxSteerVeloicty = Units.rotationsToRadians(10);
+        break;
+      default:
+        robotMassKg = 74.088;
+        robotMOI = 6.883;
+        wheelCOF = 1.2;
+        maxSteerVeloicty = Units.rotationsToRadians(10);
+        break;
+    }
+  }
+
   public static final Translation2d[] MODULE_TRANSLATION = {
     DriveConstants.FRONT_LEFT_MODULE_DISTANCE_FROM_CENTER,
     DriveConstants.FRONT_RIGHT_MODULE_DISTANCE_FROM_CENTER,
@@ -159,4 +186,10 @@ public class DriveConstants {
 
   public static final HeadingControllerConfig HEADING_CONTROLLER_CONFIG =
       new HeadingControllerConfig(ROTATION_CONTROLLER_CONSTANTS, Units.degreesToRadians(1));
+
+  static {
+    System.out.printf(
+        "mass=%s, MOI=%s, COF=%s, maxSteerVel=%s",
+        robotMassKg, robotMOI, wheelCOF, maxSteerVeloicty);
+  }
 }

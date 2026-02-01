@@ -271,7 +271,7 @@ public class RobotContainer {
     // Default command, normal joystick drive
     drive.setDefaultCommand(
         drive
-            .run(() -> drive.setRobotSpeeds(pipeline.getChassisSpeeds()))
+            .run(() -> drive.setRobotSpeedsWithGenorator(pipeline.getChassisSpeeds()))
             .finallyDo(drive::stop)
             .withName("Pipeline Drive"));
 

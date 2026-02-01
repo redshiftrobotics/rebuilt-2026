@@ -1,6 +1,5 @@
 package frc.robot.subsystems.drive;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -8,7 +7,6 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
-import frc.robot.utility.tunable.TunableNumber;
 import frc.robot.utility.tunable.TunableNumberGroup;
 import frc.robot.utility.tunable.TunableNumbers.TunableFF;
 import frc.robot.utility.tunable.TunableNumbers.TunablePID;
@@ -31,8 +29,9 @@ public class Module {
   private static final TunableFF turnFF =
       moduleGains.ff("Turn_FF", ModuleConstants.TURN_FEEDFORWARD);
 
-  private static final TunableNumber turnAlignmentTolerance =
-      moduleGains.number("turnToleranceDegrees", ModuleConstants.TURN_ALIGNMENT_TOLERANCE_DEGREES);
+  // private static final TunableNumber turnAlignmentTolerance =
+  //     moduleGains.number("turnToleranceDegrees",
+  // ModuleConstants.TURN_ALIGNMENT_TOLERANCE_DEGREES);
 
   private final ModuleIO io;
   private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
@@ -129,24 +128,17 @@ public class Module {
     state.optimize(moduleCurrentAngle);
     state.cosineScale(moduleCurrentAngle);
 
+    setSpeedsRaw(state);
+  }
+
+  public void setSpeedsRaw(SwerveModuleState state) {
     // Calculator drive velocity and angle in radians
     double velocityRadiansPerSecond = state.speedMetersPerSecond / ModuleConstants.WHEEL_RADIUS;
     double angleRadians = state.angle.getRadians();
 
     // Apply setpoints
     io.setDriveVelocity(velocityRadiansPerSecond);
-
-    boolean nearlyAligned =
-        MathUtil.isNear(
-            angleRadians,
-            moduleCurrentAngle.getRadians(),
-            Units.degreesToRadians(turnAlignmentTolerance.get()));
-
-    if (nearlyAligned) {
-      io.setTurnOpenLoop(0);
-    } else {
-      io.setTurnPosition(angleRadians);
-    }
+    io.setTurnPosition(angleRadians);
 
     desiredState = state;
   }
