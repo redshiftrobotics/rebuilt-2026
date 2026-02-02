@@ -129,7 +129,7 @@ public class DriveConstants {
   static {
     switch (Constants.getRobot()) {
       case PRESEASON_2026, SIM_BOT:
-        robotMassKg = 50.0; // Mass from scale
+        robotMassKg = 55.0; // Mass from scale
         robotMOI =
             (1.0 / 12.0)
                 * robotMassKg
@@ -137,7 +137,7 @@ public class DriveConstants {
                     .getSquaredNorm(); // MOI from https://choreo.autos/usage/estimating-moi/
         wheelCOF = 2.255; // COF from
         // https://www.chiefdelphi.com/t/spectrum-3847-build-blog-2025/478254/420?u=michael888
-        maxSteerVeloicty = Units.rotationsToRadians(10);
+        maxSteerVeloicty = 28.0; // rad/s, from testing
         break;
       default:
         robotMassKg = 74.088;

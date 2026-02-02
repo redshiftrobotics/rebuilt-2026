@@ -347,7 +347,7 @@ public class Drive extends SubsystemBase {
     setWheelSpeeds(wheelSpeeds);
   }
 
-  public void setRobotSpeedsWithGenorator(ChassisSpeeds speeds) {
+  public void setRobotSpeedsWithGenerator(ChassisSpeeds speeds) {
     previousSetpoint =
         setpointGenerator.generateSetpoint(previousSetpoint, speeds, Constants.LOOP_PERIOD_SECONDS);
 

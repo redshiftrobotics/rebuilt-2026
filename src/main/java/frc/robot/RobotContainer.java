@@ -6,6 +6,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -51,6 +52,7 @@ import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.utility.Elastic;
 import frc.robot.utility.Elastic.Notification.NotificationLevel;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -268,10 +270,15 @@ public class RobotContainer {
 
     final DriveInputPipeline pipeline = new DriveInputPipeline(drive, baseDrive);
 
+    final LoggedDashboardChooser<Consumer<ChassisSpeeds>> driveMode =
+        new LoggedDashboardChooser<>("DriveVelocityMode");
+    driveMode.addDefaultOption("Standard", drive::setRobotSpeeds);
+    driveMode.addOption("Generated", drive::setRobotSpeedsWithGenerator);
+
     // Default command, normal joystick drive
     drive.setDefaultCommand(
         drive
-            .run(() -> drive.setRobotSpeedsWithGenorator(pipeline.getChassisSpeeds()))
+            .run(() -> driveMode.get().accept(pipeline.getChassisSpeeds()))
             .finallyDo(drive::stop)
             .withName("Pipeline Drive"));
 
