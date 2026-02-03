@@ -15,10 +15,13 @@ jobs:
         run: chmod +x gradlew
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@417ae3ccd767c252f5661f1ace9f835f9654f2b5 # v3.1.0
-        # Spotless apply will also build:
+      # Spotless apply will also build:
       - name: Run spotlessApply
         run: ./gradlew spotlessApply --no-daemon
-      - name: Show git status (debug)
+      - name: Make repository safe
+        run: git config --global --add safe.directory /__w/rebuilt-2026/rebuilt-2026 
+      # Debug Step: show any changes made by spotless apply
+      - name: Check Git Status
         run: git status --porcelain
       # Helper step: set a changed 'output' (variuble)
       - name: Detect changes
