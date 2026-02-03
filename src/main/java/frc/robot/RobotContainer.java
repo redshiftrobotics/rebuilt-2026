@@ -40,7 +40,6 @@ import frc.robot.subsystems.hopper.HopperConstants;
 import frc.robot.subsystems.hopper.HopperConstants.RunMode;
 import frc.robot.subsystems.hopper.HopperMotorIO;
 import frc.robot.subsystems.hopper.HopperMotorIOSim;
-import frc.robot.subsystems.hopper.HopperMotorIOSparkMax;
 import frc.robot.subsystems.led.BlinkenLEDPattern;
 import frc.robot.subsystems.led.LEDConstants;
 import frc.robot.subsystems.led.LEDStripIOSim;
@@ -109,12 +108,7 @@ public class RobotContainer {
                 new ModuleIOTalonFX(PreseasonConstants.BackRight));
         vision = new AprilTagVision(drive::getRobotPose);
         leds = new LEDSubsystem();
-        hopper =
-            new Hopper(
-                new HopperMotorIOSparkMax(
-                    HopperConstants.BUBBLER_CAN_ID, HopperConstants.BUBBLER_GEAR_RATIO),
-                new HopperMotorIOSparkMax(
-                    HopperConstants.FEEDER_CAN_ID, HopperConstants.FEEDER_GEAR_RATIO));
+        hopper = new Hopper(new HopperMotorIO() {}, new HopperMotorIO() {});
         break;
 
       case CHASSIS_CANNON:
