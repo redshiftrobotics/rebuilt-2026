@@ -35,4 +35,25 @@ public class IntakeConstants {
         case SIM_BOT -> 0;
         default -> 0;
       };
+
+    public static final int SLAPDOWN_KP =
+      switch (Constants.getRobot()) {
+        case PRESEASON_2026 -> 0;
+        case SIM_BOT -> 0;
+        default -> 0;
+      };
+
+    public static final int SLAPDOWN_KI =
+      switch (Constants.getRobot()) {
+        case PRESEASON_2026 -> 0;
+        case SIM_BOT -> 0;
+        default -> 0;
+      };
+
+      public static final int SLAPDOWN_KD =
+      switch (Constants.getRobot()) {
+        case PRESEASON_2026 -> 0;
+        case SIM_BOT -> 0;
+        default -> 0;
+      };
 }

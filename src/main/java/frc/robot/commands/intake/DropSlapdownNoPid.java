@@ -15,7 +15,7 @@ public class DropSlapdownNoPid extends Command {
 
     @Override
     public void initialize() {
-        intake.slapdownSet(0.1);
+        intake.slapdownSet(0.5);
     }
 
     @Override

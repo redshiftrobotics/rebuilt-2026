@@ -14,8 +14,8 @@ public class DropSlapdown extends Command {
     }
 
     @Override
-    public void initialize() {
-        intake.slapdownSet(0.1);
+    public void execute() {
+        intake.setp
     }
 
     @Override
