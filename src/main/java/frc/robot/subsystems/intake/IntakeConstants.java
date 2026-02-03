@@ -1,7 +1,6 @@
 package frc.robot.subsystems.intake;
 
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Constants;
 
@@ -58,10 +57,5 @@ public class IntakeConstants {
         default -> 0;
       };
 
-  public static final Rotation2d SLAPDOWN_DOWN_SETPOINT =
-      switch (Constants.getRobot()) {
-        case PRESEASON_2026 -> new Rotation2d();
-        case SIM_BOT -> new Rotation2d();
-        default -> new Rotation2d();
-      };
+  public static final Rotation2d SLAPDOWN_DOWN_SETPOINT = Rotation2d.kZero;
 }

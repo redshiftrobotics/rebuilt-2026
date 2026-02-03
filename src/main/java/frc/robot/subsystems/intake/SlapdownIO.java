@@ -24,5 +24,7 @@ public interface SlapdownIO {
 
   public default void setSetpoint(Rotation2d setPoint) {}
 
+  public abstract boolean slapdownIsAtSetpoint();
+
   public default void stopMotor() {}
 }

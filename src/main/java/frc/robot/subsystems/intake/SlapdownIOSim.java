@@ -37,6 +37,12 @@ public class SlapdownIOSim implements SlapdownIO {
   }
 
   @Override
+  public boolean slapdownIsAtSetpoint() {
+    // TODO Auto-generated method stub
+    return true;
+  }
+
+  @Override
   public void stopMotor() {
     motor.setAngularVelocity(0);
   }

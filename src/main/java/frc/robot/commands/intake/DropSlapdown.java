@@ -21,7 +21,7 @@ public class DropSlapdown extends Command {
 
   @Override
   public boolean isFinished() {
-    return true;
+    return intake.slapdownIsAtSetpoint();
   }
 
   @Override

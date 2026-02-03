@@ -53,6 +53,10 @@ public class Intake extends SubsystemBase {
     SlapdownIO.setSetpoint(setPoint);
   }
 
+  public boolean slapdownIsAtSetpoint(){
+    return SlapdownIO.slapdownIsAtSetpoint();
+  }
+
   public void slapdownStop() {
     SlapdownIO.stopMotor();
   }
