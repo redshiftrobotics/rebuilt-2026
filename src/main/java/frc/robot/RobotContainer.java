@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.Mode;
 import frc.robot.commands.DriveCharacterizationCommands;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.HopperCommands;
 import frc.robot.commands.pipeline.DriveInput;
 import frc.robot.commands.pipeline.DriveInputPipeline;
 import frc.robot.generated.PreseasonConstants;
@@ -66,11 +67,11 @@ public class RobotContainer {
   private final Drive drive;
   private final AprilTagVision vision;
   private final LEDSubsystem leds;
-  //   private final Hopper hopper;
+  private final Hopper hopper;
 
   // Controller
   private final CommandXboxController driverController = new CommandXboxController(0);
-  //   private final CommandXboxController operatorController = new CommandXboxController(1);
+  private final CommandXboxController operatorController = new CommandXboxController(1);
 
   // Alerts for controller disconnection
   private final Alert driverDisconnected =
@@ -79,12 +80,12 @@ public class RobotContainer {
               "Driver xbox controller disconnected (port %s).",
               driverController.getHID().getPort()),
           AlertType.kWarning);
-  //   private final Alert operatorDisconnected =
-  //       new Alert(
-  //           String.format(
-  //               "Operator xbox controller disconnected (port %s).",
-  //               operatorController.getHID().getPort()),
-  //           AlertType.kWarning);
+  private final Alert operatorDisconnected =
+      new Alert(
+          String.format(
+              "Operator xbox controller disconnected (port %s).",
+              operatorController.getHID().getPort()),
+          AlertType.kWarning);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -124,7 +125,7 @@ public class RobotContainer {
                 new ModuleIOSparkMax(ModuleConstants.BACK_RIGHT_MODULE_CONFIG));
         vision = new AprilTagVision(drive::getRobotPose);
         leds = new LEDSubsystem();
-        // hopper = new Hopper(new HopperMotorIO() {}, new HopperMotorIO() {});
+        hopper = new Hopper(new HopperMotorIO() {}, new HopperMotorIO() {});
         break;
 
       case SIM_BOT:
@@ -139,10 +140,10 @@ public class RobotContainer {
             new AprilTagVision(
                 drive::getRobotPose, new CameraIOSim(VisionConstants.SIM_FRONT_CAMERA));
         leds = new LEDSubsystem(new LEDStripIOSim(LEDConstants.DEFAULT_PATTERN));
-        // hopper =
-        //     new Hopper(
-        //         new HopperMotorIOSim(HopperConstants.BUBBLER_GEAR_RATIO),
-        //         new HopperMotorIOSim(HopperConstants.FEEDER_GEAR_RATIO));
+        hopper =
+            new Hopper(
+                new HopperMotorIOSim(HopperConstants.BUBBLER_GEAR_RATIO),
+                new HopperMotorIOSim(HopperConstants.FEEDER_GEAR_RATIO));
         break;
 
       default:
@@ -155,7 +156,7 @@ public class RobotContainer {
                 new ModuleIO() {});
         vision = new AprilTagVision(drive::getRobotPose);
         leds = new LEDSubsystem();
-        // hopper = new Hopper(new HopperMotorIO() {}, new HopperMotorIO() {});
+        hopper = new Hopper(new HopperMotorIO() {}, new HopperMotorIO() {});
         break;
     }
 
@@ -205,7 +206,7 @@ public class RobotContainer {
 
     // Configure the button bindings
     configureDriverControllerBindings(driverController);
-    // configureOperatorControllerBindings(operatorController);
+    configureOperatorControllerBindings(operatorController);
     configureAlertTriggers();
   }
 
@@ -217,10 +218,9 @@ public class RobotContainer {
     DriverDashboard.speedsSupplier = drive::getRobotSpeeds;
     DriverDashboard.wheelStatesSupplier = drive::getWheelSpeeds;
     DriverDashboard.hasVisionEstimate = vision::hasSuccessfulEstimate;
-    // DriverDashboard.currentHopperRunModeNameSupplier = () ->
-    // hopper.getCurrentRunMode().toString();
-    // DriverDashboard.hopperBubblerVelocitySupplier = hopper::getBubblerCharacterizationVelocity;
-    // DriverDashboard.hopperFeederVelocitySupplier = hopper::getFeederCharacterizationVelocity;
+    DriverDashboard.currentHopperRunModeNameSupplier = () -> hopper.getCurrentRunMode().toString();
+    DriverDashboard.hopperBubblerVelocitySupplier = hopper::getBubblerCharacterizationVelocity;
+    DriverDashboard.hopperFeederVelocitySupplier = hopper::getFeederCharacterizationVelocity;
 
     DriverDashboard.currentDriveModeName =
         () -> drive.getCurrentCommand() == null ? "Idle" : drive.getCurrentCommand().getName();
@@ -248,9 +248,9 @@ public class RobotContainer {
     driverDisconnected.set(
         !DriverStation.isJoystickConnected(driverController.getHID().getPort())
             || !DriverStation.getJoystickIsXbox(driverController.getHID().getPort()));
-    // operatorDisconnected.set(
-    //     !DriverStation.isJoystickConnected(operatorController.getHID().getPort())
-    //         || !DriverStation.getJoystickIsXbox(operatorController.getHID().getPort()));
+    operatorDisconnected.set(
+        !DriverStation.isJoystickConnected(operatorController.getHID().getPort())
+            || !DriverStation.getJoystickIsXbox(operatorController.getHID().getPort()));
   }
 
   private void configureDriverControllerBindings(CommandXboxController xbox) {
@@ -389,19 +389,19 @@ public class RobotContainer {
   private void configureOperatorControllerBindings(CommandXboxController xbox) {
     // This is the input for firing; when the shooter is added, it should be triggered by this as
     // well
-    // xbox.rightTrigger()
-    //     .whileTrue(HopperCommands.setHopperMode(hopper, RunMode.FIRING))
-    //     .onFalse(HopperCommands.setHopperMode(hopper, RunMode.STOPPED));
+    xbox.rightTrigger()
+        .whileTrue(HopperCommands.setHopperMode(hopper, RunMode.FIRING))
+        .onFalse(HopperCommands.setHopperMode(hopper, RunMode.STOPPED));
 
-    // // Run the bubbler at low speed to send fuel towards the back without firing
-    // xbox.b()
-    //     .whileTrue(HopperCommands.setHopperMode(hopper, RunMode.FUEL_STORE))
-    //     .onFalse(HopperCommands.setHopperMode(hopper, RunMode.STOPPED));
+    // Run the bubbler at low speed to send fuel towards the back without firing
+    xbox.b()
+        .whileTrue(HopperCommands.setHopperMode(hopper, RunMode.FUEL_STORE))
+        .onFalse(HopperCommands.setHopperMode(hopper, RunMode.STOPPED));
 
-    // // Run the hopper motors in reverse to deal with jams
-    // xbox.start()
-    //     .whileTrue(HopperCommands.setHopperMode(hopper, RunMode.REVERSE))
-    //     .onFalse(HopperCommands.setHopperMode(hopper, RunMode.STOPPED));
+    // Run the hopper motors in reverse to deal with jams
+    xbox.start()
+        .whileTrue(HopperCommands.setHopperMode(hopper, RunMode.REVERSE))
+        .onFalse(HopperCommands.setHopperMode(hopper, RunMode.STOPPED));
   }
 
   private Command rumbleController(
@@ -416,8 +416,9 @@ public class RobotContainer {
   }
 
   private Command rumbleControllers(double rumbleIntensity) {
-    return Commands.parallel(rumbleController(driverController, rumbleIntensity));
-    // rumbleController(operatorController, rumbleIntensity));
+    return Commands.parallel(
+        rumbleController(driverController, rumbleIntensity),
+        rumbleController(operatorController, rumbleIntensity));
   }
 
   private void configureAlertTriggers() {
