@@ -27,7 +27,8 @@ import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 public class DriveToPose extends Command {
-  private static final TunableNumber drivekP = new TunableNumber("DriveToPose/DrivekP");
+  private       static final TunableNumber drivekP = new TunableNumber(
+    "DriveToPose/DrivekP");
   private static final TunableNumber drivekD = new TunableNumber("DriveToPose/DrivekD");
   private static final TunableNumber thetakP = new TunableNumber("DriveToPose/ThetakP");
   private static final TunableNumber thetakD = new TunableNumber("DriveToPose/ThetakD");

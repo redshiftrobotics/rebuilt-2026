@@ -5,7 +5,7 @@ on:
 
 jobs:
   build:
-    name: Build
+    name: Build and Format
     runs-on: ubuntu-latest
     container: wpilib/roborio-cross-ubuntu:2025-24.04 # https://hub.docker.com/r/wpilib/roborio-cross-ubuntu
     steps:
@@ -15,20 +15,27 @@ jobs:
         run: chmod +x gradlew
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@417ae3ccd767c252f5661f1ace9f835f9654f2b5 # v3.1.0
-      - name: Build robot code
-        run: ./gradlew build
-  spotless:
-    name: Check spotless
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-java@v4
-        with:
-          distribution: 'zulu'
-          java-version: 17
-      - name: Grant execute permission
-        run: chmod +x gradlew
-      - name: spotlessCheck
-        run: ./gradlew spotlessCheck
+        # Spotless apply will also build:
+      - name: Run spotlessApply
+        run: ./gradlew spotlessApply --no-daemon
+      - name: Show git status (debug)
+        run: git status --porcelain
+      # Helper step: set a changed 'output' (variuble)
+      - name: Detect changes
+        id: check_changes
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "::set-output name=changed::true"
+          else
+            echo "::set-output name=changed::false"
+          fi
+      - name: Commit and push formatting changes
+        if: ${{ steps.check_changes.outputs.changed == 'true' }}
+        run: |
+          git config user.name "Build and Format Action"
+          git config user.email 144858100+AceiusRedshift@users.noreply.github.com"
+          git add -A
+          git commit -m "Apply Spotless formatting"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
