@@ -38,7 +38,7 @@ jobs:
           git config user.name "Build and Format Action"
           git config user.email "144858100+AceiusRedshift@users.noreply.github.com"
           git add -A
-          git commit -m "Apply Spotless formatting"
+          git commit -m "(Automatic) Apply formatting"
           git push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
