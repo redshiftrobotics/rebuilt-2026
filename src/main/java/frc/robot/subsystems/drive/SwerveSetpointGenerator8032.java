@@ -224,12 +224,14 @@ public class SwerveSetpointGenerator8032 {
 
         // getRadians() bounds to +/- Pi.
         final double numStepsNeeded = Math.abs(necessaryRotation.getRadians()) / max_theta_step;
-        
+
         if (numStepsNeeded <= 1.0) {
           // Steer directly to goal angle.
           overrideSteering.set(m, Optional.of(desiredModuleStates[m].angle));
         } else {
-          if (m == 0) System.out.println(counter + " Module " + m + " needs " + numStepsNeeded + " steps to rotate.");
+          if (m == 0)
+            System.out.println(
+                counter + " Module " + m + " needs " + numStepsNeeded + " steps to rotate.");
 
           // Adjust steering by max_theta_step.
           overrideSteering.set(

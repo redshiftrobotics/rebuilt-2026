@@ -362,7 +362,8 @@ public class Drive extends SubsystemBase {
 
   public void setRobotSpeedsWithGenerator(ChassisSpeeds speeds) {
     previousSetpoint =
-        setpointGenerator.generateSetpoint(previousSetpoint, speeds, Constants.LOOP_PERIOD_SECONDS, 1);
+        setpointGenerator.generateSetpoint(
+            previousSetpoint, speeds, Constants.LOOP_PERIOD_SECONDS, 1);
 
     Logger.recordOutput("ChassisStates/DesiredRobotSpeeds", speeds);
 
