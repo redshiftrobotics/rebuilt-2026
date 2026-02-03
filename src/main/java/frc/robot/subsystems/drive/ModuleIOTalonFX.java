@@ -41,7 +41,11 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.DriverDashboard;
 import java.util.Queue;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 /**
  * Module IO implementation for Talon FX drive motor controller, Talon FX turn motor controller, and
@@ -92,9 +96,7 @@ public class ModuleIOTalonFX implements ModuleIO {
   private final StatusSignal<Voltage> turnAppliedVolts;
   private final StatusSignal<Current> turnCurrent;
 
-  // Break or coast mode
-  private final boolean driveBrakeMode = true;
-  private final boolean turnBrakeMode = true;
+  private static final Executor brakeModeExecutor = Executors.newFixedThreadPool(8);
 
   // Connection debouncers
   private final Debouncer driveConnectedDebounce =
@@ -117,8 +119,7 @@ public class ModuleIOTalonFX implements ModuleIO {
 
     // Configure drive motor
     driveConfig = constants.DriveMotorInitialConfigs.clone();
-    driveConfig.MotorOutput.NeutralMode =
-        driveBrakeMode ? NeutralModeValue.Brake : NeutralModeValue.Coast;
+    driveConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     driveConfig.Slot0 = constants.DriveMotorGains;
     driveConfig.Feedback.SensorToMechanismRatio = constants.DriveMotorGearRatio;
     driveConfig.TorqueCurrent.PeakForwardTorqueCurrent = constants.SlipCurrent;
@@ -134,8 +135,7 @@ public class ModuleIOTalonFX implements ModuleIO {
 
     // Configure turn motor
     turnConfig = constants.SteerMotorInitialConfigs.clone();
-    turnConfig.MotorOutput.NeutralMode =
-        turnBrakeMode ? NeutralModeValue.Brake : NeutralModeValue.Coast;
+    turnConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     turnConfig.Slot0 = constants.SteerMotorGains;
     turnConfig.Feedback.FeedbackRemoteSensorID = constants.EncoderId;
     turnConfig.Feedback.FeedbackSensorSource =
@@ -217,6 +217,7 @@ public class ModuleIOTalonFX implements ModuleIO {
     inputs.driveVelocityRadPerSec = Units.rotationsToRadians(driveVelocity.getValueAsDouble());
     inputs.driveAppliedVolts = driveAppliedVolts.getValueAsDouble();
     inputs.driveSupplyCurrentAmps = driveCurrent.getValueAsDouble();
+    inputs.driveMotorBrakeMode = driveConfig.MotorOutput.NeutralMode == NeutralModeValue.Brake;
 
     // Update turn inputs
     inputs.turnMotorConnected = turnConnectedDebounce.calculate(turnStatus.isOK());
@@ -227,6 +228,7 @@ public class ModuleIOTalonFX implements ModuleIO {
     inputs.turnVelocityRadPerSec = Units.rotationsToRadians(turnVelocity.getValueAsDouble());
     inputs.turnAppliedVolts = turnAppliedVolts.getValueAsDouble();
     inputs.turnSupplyCurrentAmps = turnCurrent.getValueAsDouble();
+    inputs.turnMotorBrakeMode = turnConfig.MotorOutput.NeutralMode == NeutralModeValue.Brake;
 
     // Update odometry inputs
     inputs.odometryTimestamps =
@@ -246,6 +248,15 @@ public class ModuleIOTalonFX implements ModuleIO {
 
   @Override
   public void setDriveOpenLoop(double output) {
+
+    if (output == 0 && SmartDashboard.getBoolean(DriverDashboard.drivePassiveStopping, false)) {
+      driveTalon.stopMotor();
+      SmartDashboard.putBoolean("Drive Passive Stop", true);
+      return;
+    } else {
+      SmartDashboard.putBoolean("Drive Passive Stop", false);
+    }
+
     driveTalon.setControl(
         switch (constants.DriveMotorClosedLoopOutput) {
           case Voltage -> voltageRequest.withOutput(output);
@@ -268,6 +279,16 @@ public class ModuleIOTalonFX implements ModuleIO {
 
   @Override
   public void setDriveVelocity(double velocityRadPerSec) {
+
+    if (velocityRadPerSec == 0
+        && SmartDashboard.getBoolean(DriverDashboard.drivePassiveStopping, false)) {
+      driveTalon.stopMotor();
+      SmartDashboard.putBoolean("Drive Passive Stop", true);
+      return;
+    } else {
+      SmartDashboard.putBoolean("Drive Passive Stop", false);
+    }
+
     double velocityRotPerSec = Units.radiansToRotations(velocityRadPerSec);
     driveTalon.setControl(
         switch (constants.DriveMotorClosedLoopOutput) {
@@ -289,11 +310,27 @@ public class ModuleIOTalonFX implements ModuleIO {
   @Override
   public void setDriveBrakeMode(boolean enable) {
     driveTalon.setNeutralMode(enable ? NeutralModeValue.Brake : NeutralModeValue.Coast);
+    // brakeModeExecutor.execute(
+    //     () -> {
+    //       synchronized (driveConfig) {
+    //         driveConfig.MotorOutput.NeutralMode =
+    //             enable ? NeutralModeValue.Brake : NeutralModeValue.Coast;
+    //         tryUntilOk(5, () -> driveTalon.getConfigurator().apply(driveConfig, 0.25));
+    //       }
+    //     });
   }
 
   @Override
   public void setTurnBrakeMode(boolean enable) {
     turnTalon.setNeutralMode(enable ? NeutralModeValue.Brake : NeutralModeValue.Coast);
+    // brakeModeExecutor.execute(
+    //     () -> {
+    //       synchronized (turnConfig) {
+    //         turnConfig.MotorOutput.NeutralMode =
+    //             enable ? NeutralModeValue.Brake : NeutralModeValue.Coast;
+    //         tryUntilOk(5, () -> turnTalon.getConfigurator().apply(turnConfig, 0.25));
+    //       }
+    //     });
   }
 
   @Override

@@ -28,6 +28,7 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -192,6 +193,9 @@ public class Drive extends SubsystemBase {
 
     brakeModeEnabled = false;
     setMotorBrakeMode(true);
+    SmartDashboard.putBoolean(DriverDashboard.driveBrakeModeInput, true);
+
+    SmartDashboard.putBoolean(DriverDashboard.drivePassiveStopping, true);
   }
 
   // --- Robot Pose ---
@@ -217,7 +221,8 @@ public class Drive extends SubsystemBase {
       stop();
     }
 
-    setMotorBrakeMode(enabledDebouncer.calculate(DriverStation.isEnabled()));
+    // setMotorBrakeMode(enabledDebouncer.calculate(DriverStation.isEnabled()));
+    setMotorBrakeMode(SmartDashboard.getBoolean(DriverDashboard.driveBrakeModeInput, true));
 
     // Log current wheel speeds
     Logger.recordOutput("SwerveStates/MeasuredWheelSpeeds", getWheelSpeeds());
@@ -355,7 +360,7 @@ public class Drive extends SubsystemBase {
     Logger.recordOutput("SwerveStates/DesiredWheelSpeeds", previousSetpoint.moduleStates());
 
     for (int i = 0; i < modules.length; i++) {
-      modules[i].setSpeedsRaw(previousSetpoint.moduleStates()[i]);
+      modules[i].setSpeeds(previousSetpoint.moduleStates()[i]);
     }
   }
 

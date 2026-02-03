@@ -40,6 +40,9 @@ public class ModuleIOSim implements ModuleIO {
   private boolean turnClosedLoop = false;
   private double driveFFVolts = 0;
 
+  private boolean driveBrakeMode = true;
+  private boolean turnBrakeMode = true;
+
   private ModuleIOSim(DCMotorSim driveMotor, DCMotorSim turnMotor) {
     this.driveSim = driveMotor;
     this.turnSim = turnMotor;
@@ -116,6 +119,7 @@ public class ModuleIOSim implements ModuleIO {
     inputs.driveVelocityRadPerSec = driveSim.getAngularVelocityRadPerSec();
     inputs.driveAppliedVolts = driveAppliedVolts;
     inputs.driveSupplyCurrentAmps = Math.abs(driveSim.getCurrentDrawAmps());
+    inputs.driveMotorBrakeMode = driveBrakeMode;
 
     // --- Turn ---
     inputs.turnMotorConnected = true;
@@ -123,6 +127,7 @@ public class ModuleIOSim implements ModuleIO {
     inputs.turnVelocityRadPerSec = turnSim.getAngularVelocityRadPerSec();
     inputs.turnAppliedVolts = turnAppliedVolts;
     inputs.turnSupplyCurrentAmps = Math.abs(turnSim.getCurrentDrawAmps());
+    inputs.turnMotorBrakeMode = turnBrakeMode;
 
     // --- Absolute Encoder ---
     inputs.turnAbsoluteEncoderConnected = true;
@@ -177,10 +182,14 @@ public class ModuleIOSim implements ModuleIO {
   }
 
   @Override
-  public void setDriveBrakeMode(boolean enable) {}
+  public void setDriveBrakeMode(boolean enable) {
+    driveBrakeMode = enable;
+  }
 
   @Override
-  public void setTurnBrakeMode(boolean enable) {}
+  public void setTurnBrakeMode(boolean enable) {
+    turnBrakeMode = enable;
+  }
 
   @Override
   public void stop() {

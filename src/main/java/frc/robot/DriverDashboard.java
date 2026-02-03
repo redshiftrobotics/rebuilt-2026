@@ -25,6 +25,9 @@ import java.util.function.Supplier;
 
 public class DriverDashboard {
 
+  public static final String driveBrakeModeInput = "DriveBrakeMode";
+  public static final String drivePassiveStopping = "DrivePassiveStopping";
+
   private static final Field2d field = new Field2d();
 
   public static Supplier<String> currentDriveModeName = () -> "Unknown";
