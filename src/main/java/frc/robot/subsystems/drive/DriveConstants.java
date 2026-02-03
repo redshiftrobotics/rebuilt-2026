@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
+import frc.robot.generated.MetalBot2Constants;
 import frc.robot.generated.PreseasonConstants;
 import frc.robot.utility.records.PIDConstants;
 
@@ -61,7 +62,10 @@ public class DriveConstants {
   /** Center of wheel to center of wheel size */
   private static final Translation2d TRACK_SIZE =
       switch (Constants.getRobot()) {
-        case PRESEASON_2026, SIM_BOT -> new Translation2d(
+        case METAL_BOT_2, SIM_BOT -> new Translation2d(
+            MetalBot2Constants.FrontLeft.LocationX - MetalBot2Constants.BackRight.LocationX,
+            MetalBot2Constants.FrontLeft.LocationY - MetalBot2Constants.BackRight.LocationY);
+        case PRESEASON_2026 -> new Translation2d(
             PreseasonConstants.FrontLeft.LocationX - PreseasonConstants.BackRight.LocationX,
             PreseasonConstants.FrontLeft.LocationY - PreseasonConstants.BackRight.LocationY);
         case REEFSCAPE_2025, WOOD_BOT_2026, CHASSIS_CANNON -> new Translation2d(
@@ -79,7 +83,7 @@ public class DriveConstants {
 
   public static final DriveConfig DRIVE_CONFIG =
       switch (Constants.getRobot()) {
-        case PRESEASON_2026, SIM_BOT -> new DriveConfig(
+        case METAL_BOT_2, PRESEASON_2026, SIM_BOT -> new DriveConfig(
             TRACK_SIZE,
             BUMPER_TO_BUMPER,
             PreseasonConstants.kSpeedAt12Volts.in(MetersPerSecond),
@@ -106,6 +110,7 @@ public class DriveConstants {
   public static final int GYRO_CAN_ID =
       switch (Constants.getRobot()) {
         case REEFSCAPE_2025, CHASSIS_CANNON, WOOD_BOT_2026 -> 40;
+        case METAL_BOT_2 -> MetalBot2Constants.DrivetrainConstants.Pigeon2Id;
         case PRESEASON_2026 -> PreseasonConstants.DrivetrainConstants.Pigeon2Id;
         case SIM_BOT -> -1;
       };
@@ -115,6 +120,7 @@ public class DriveConstants {
   public static final CANBus CAN_BUS =
       switch (Constants.getRobot()) {
         case PRESEASON_2026 -> PreseasonConstants.kCANBus;
+        case METAL_BOT_2 -> MetalBot2Constants.kCANBus;
         case REEFSCAPE_2025, CHASSIS_CANNON, WOOD_BOT_2026 -> CANBus.roboRIO();
         case SIM_BOT -> new CANBus();
       };
