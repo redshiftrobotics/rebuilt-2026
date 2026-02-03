@@ -129,21 +129,21 @@ public class Module {
     state.optimize(moduleCurrentAngle);
     state.cosineScale(moduleCurrentAngle);
 
-    setSpeedsRaw(state);
-  }
-
-  public void setSpeedsRaw(SwerveModuleState state) {
     // Calculator drive velocity and angle in radians
     double velocityRadiansPerSecond = state.speedMetersPerSecond / ModuleConstants.WHEEL_RADIUS;
     double angleRadians = state.angle.getRadians();
 
     // Apply setpoints
-    io.setDriveVelocity(velocityRadiansPerSecond);
+    if (velocityRadiansPerSecond == 0) {
+      io.setDriveOpenLoop(0);
+    } else {
+      io.setDriveVelocity(velocityRadiansPerSecond);
+    }
 
     boolean nearlyAligned =
         MathUtil.isNear(
             angleRadians,
-            getAngle().getRadians(),
+            moduleCurrentAngle.getRadians(),
             Units.degreesToRadians(turnAlignmentTolerance.get()));
 
     if (nearlyAligned) {

@@ -249,19 +249,15 @@ public class ModuleIOTalonFX implements ModuleIO {
   @Override
   public void setDriveOpenLoop(double output) {
 
-    if (output == 0 && SmartDashboard.getBoolean(DriverDashboard.drivePassiveStopping, false)) {
+    if (output == 0) {
       driveTalon.stopMotor();
-      SmartDashboard.putBoolean("Drive Passive Stop", true);
-      return;
     } else {
-      SmartDashboard.putBoolean("Drive Passive Stop", false);
+      driveTalon.setControl(
+          switch (constants.DriveMotorClosedLoopOutput) {
+            case Voltage -> voltageRequest.withOutput(output);
+            case TorqueCurrentFOC -> torqueCurrentRequest.withOutput(output);
+          });
     }
-
-    driveTalon.setControl(
-        switch (constants.DriveMotorClosedLoopOutput) {
-          case Voltage -> voltageRequest.withOutput(output);
-          case TorqueCurrentFOC -> torqueCurrentRequest.withOutput(output);
-        });
   }
 
   @Override
