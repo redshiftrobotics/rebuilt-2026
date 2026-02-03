@@ -166,6 +166,7 @@ public class SwerveSetpointGenerator8032 {
         && !epsilonEquals(desiredStateRobotRelative, new ChassisSpeeds())) {
       // It will (likely) be faster to stop the robot, rotate the modules in place to the complement
       // of the desired angle, and accelerate again.
+      System.out.println(counter + " All modules should flip; stopping robot to re-angle modules");
       return generateSetpoint(prevSetpoint, new ChassisSpeeds(), constraints, dt, inputVoltage);
     }
 
@@ -223,11 +224,13 @@ public class SwerveSetpointGenerator8032 {
 
         // getRadians() bounds to +/- Pi.
         final double numStepsNeeded = Math.abs(necessaryRotation.getRadians()) / max_theta_step;
-
+        
         if (numStepsNeeded <= 1.0) {
           // Steer directly to goal angle.
           overrideSteering.set(m, Optional.of(desiredModuleStates[m].angle));
         } else {
+          if (m == 0) System.out.println(counter + " Module " + m + " needs " + numStepsNeeded + " steps to rotate.");
+
           // Adjust steering by max_theta_step.
           overrideSteering.set(
               m,
@@ -558,6 +561,8 @@ public class SwerveSetpointGenerator8032 {
         prevSetpoint, desiredStateRobotRelative, null, dt.in(Seconds), inputVoltage.in(Volts));
   }
 
+  public static int counter = 0;
+
   /**
    * Generate a new setpoint. Note: Do not discretize ChassisSpeeds passed into or returned from
    * this method. This method will discretize the speeds for you.
@@ -573,7 +578,8 @@ public class SwerveSetpointGenerator8032 {
    *     desiredState quickly.
    */
   public SwerveSetpoint generateSetpoint(
-      SwerveSetpoint prevSetpoint, ChassisSpeeds desiredStateRobotRelative, double dt) {
+      SwerveSetpoint prevSetpoint, ChassisSpeeds desiredStateRobotRelative, double dt, int count) {
+    SwerveSetpointGenerator8032.counter += count;
     return generateSetpoint(
         prevSetpoint, desiredStateRobotRelative, null, dt, RobotController.getInputVoltage());
   }

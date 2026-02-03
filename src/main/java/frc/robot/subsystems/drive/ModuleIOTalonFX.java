@@ -274,7 +274,12 @@ public class ModuleIOTalonFX implements ModuleIO {
   }
 
   @Override
-  public void setDriveVelocity(double velocityRadPerSec) {
+  public void setDriveVelocity(double velocityRadsPerSec) {
+    setDriveVelocity(velocityRadsPerSec, 0.0);
+  }
+
+  @Override
+  public void setDriveVelocity(double velocityRadPerSec, double feedforward) {
 
     if (velocityRadPerSec == 0
         && SmartDashboard.getBoolean(DriverDashboard.drivePassiveStopping, false)) {
@@ -289,7 +294,9 @@ public class ModuleIOTalonFX implements ModuleIO {
     driveTalon.setControl(
         switch (constants.DriveMotorClosedLoopOutput) {
           case Voltage -> velocityVoltageRequest.withVelocity(velocityRotPerSec);
-          case TorqueCurrentFOC -> velocityTorqueCurrentRequest.withVelocity(velocityRotPerSec);
+          case TorqueCurrentFOC -> velocityTorqueCurrentRequest
+              .withVelocity(velocityRotPerSec)
+              .withFeedForward(feedforward);
         });
   }
 

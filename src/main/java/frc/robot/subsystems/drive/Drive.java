@@ -144,7 +144,7 @@ public class Drive extends SubsystemBase {
         this::getRobotPose,
         this::resetPose,
         this::getRobotSpeeds,
-        (speeds, feedforward) -> setRobotSpeeds(speeds),
+        (speeds, feedforward) -> setRobotSpeeds(speeds, feedforward),
         new PPHolonomicDriveController(
             DriveConstants.TRANSLATION_CONTROLLER_CONSTANTS_TRAJECTORY.toPathPlannerPIDConstants(),
             DriveConstants.ROTATION_CONTROLLER_CONSTANTS_TRAJECTORY.toPathPlannerPIDConstants(),
@@ -342,25 +342,31 @@ public class Drive extends SubsystemBase {
    * @param speeds translational speed in meters/sec and rotation speed in radians/sec
    */
   public void setRobotSpeeds(ChassisSpeeds speeds) {
+    setRobotSpeeds(speeds, DriveFeedforwards.zeros(modules.length));
+  }
+
+  /**
+   * Set desired robot relative velocity of robot chassis.
+   *
+   * @param speeds translational speed in meters/sec and rotation speed in radians/sec
+   */
+  public void setRobotSpeeds(ChassisSpeeds speeds, DriveFeedforwards feedforwards) {
     Logger.recordOutput("ChassisStates/DesiredRobotSpeeds", speeds);
 
     speeds = ChassisSpeeds.discretize(speeds, Constants.LOOP_PERIOD_SECONDS);
 
     SwerveModuleState[] wheelSpeeds = kinematics.toSwerveModuleStates(speeds);
 
-    setWheelSpeeds(wheelSpeeds);
+    setWheelSpeeds(wheelSpeeds, feedforwards);
   }
 
   public void setRobotSpeedsWithGenerator(ChassisSpeeds speeds) {
     previousSetpoint =
-        setpointGenerator.generateSetpoint(previousSetpoint, speeds, Constants.LOOP_PERIOD_SECONDS);
+        setpointGenerator.generateSetpoint(previousSetpoint, speeds, Constants.LOOP_PERIOD_SECONDS, 1);
 
     Logger.recordOutput("ChassisStates/DesiredRobotSpeeds", speeds);
-    Logger.recordOutput("SwerveStates/DesiredWheelSpeeds", previousSetpoint.moduleStates());
 
-    for (int i = 0; i < modules.length; i++) {
-      modules[i].setSpeeds(previousSetpoint.moduleStates()[i]);
-    }
+    setWheelSpeeds(previousSetpoint.moduleStates(), previousSetpoint.feedforwards());
   }
 
   // --- Wheel States ---
@@ -373,13 +379,18 @@ public class Drive extends SubsystemBase {
    *     module states
    */
   public void setWheelSpeeds(SwerveModuleState[] speeds) {
+    setWheelSpeeds(speeds, DriveFeedforwards.zeros(modules.length));
+  }
+
+  public void setWheelSpeeds(SwerveModuleState[] speeds, DriveFeedforwards feedforwards) {
 
     SwerveDriveKinematics.desaturateWheelSpeeds(speeds, getMaxLinearSpeedMetersPerSec());
 
     Logger.recordOutput("SwerveStates/DesiredWheelSpeeds", speeds);
+    Logger.recordOutput("SwerveStates/DesiredWheelFeedforwards", feedforwards.torqueCurrentsAmps());
 
     for (int i = 0; i < modules.length; i++) {
-      modules[i].setSpeeds(speeds[i]);
+      modules[i].setSpeeds(speeds[i], feedforwards.torqueCurrentsAmps()[i]);
     }
   }
 

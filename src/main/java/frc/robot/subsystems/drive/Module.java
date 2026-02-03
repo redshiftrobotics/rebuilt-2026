@@ -119,8 +119,12 @@ public class Module {
 
   // --- Speeds ---
 
-  /** Runs the module with the specified setpoint state. */
   public void setSpeeds(SwerveModuleState state) {
+    setSpeeds(state, 0.0);
+  }
+
+  /** Runs the module with the specified setpoint state. */
+  public void setSpeeds(SwerveModuleState state, double feedforward) {
     // Copy the state object to prevent side effects from mutating passed-in object
     state = new SwerveModuleState(state.speedMetersPerSecond, state.angle);
 
@@ -137,7 +141,7 @@ public class Module {
     if (velocityRadiansPerSecond == 0) {
       io.setDriveOpenLoop(0);
     } else {
-      io.setDriveVelocity(velocityRadiansPerSecond);
+      io.setDriveVelocity(velocityRadiansPerSecond, feedforward);
     }
 
     boolean nearlyAligned =
