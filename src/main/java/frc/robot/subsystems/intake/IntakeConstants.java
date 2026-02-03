@@ -2,6 +2,7 @@ package frc.robot.subsystems.intake;
 
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Constants;
 
 public class IntakeConstants {
@@ -36,24 +37,31 @@ public class IntakeConstants {
         default -> 0;
       };
 
-    public static final int SLAPDOWN_KP =
+  public static final int SLAPDOWN_KP =
       switch (Constants.getRobot()) {
         case PRESEASON_2026 -> 0;
         case SIM_BOT -> 0;
         default -> 0;
       };
 
-    public static final int SLAPDOWN_KI =
+  public static final int SLAPDOWN_KI =
       switch (Constants.getRobot()) {
         case PRESEASON_2026 -> 0;
         case SIM_BOT -> 0;
         default -> 0;
       };
 
-      public static final int SLAPDOWN_KD =
+  public static final int SLAPDOWN_KD =
       switch (Constants.getRobot()) {
         case PRESEASON_2026 -> 0;
         case SIM_BOT -> 0;
         default -> 0;
+      };
+
+  public static final Rotation2d SLAPDOWN_DOWN_SETPOINT =
+      switch (Constants.getRobot()) {
+        case PRESEASON_2026 -> new Rotation2d();
+        case SIM_BOT -> new Rotation2d();
+        default -> new Rotation2d();
       };
 }

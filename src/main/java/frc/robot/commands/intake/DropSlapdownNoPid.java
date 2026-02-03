@@ -5,26 +5,26 @@ import frc.robot.subsystems.intake.Intake;
 
 public class DropSlapdownNoPid extends Command {
 
-    private final Intake intake;
+  private final Intake intake;
 
-    public DropSlapdownNoPid(Intake intake){
-        this.intake = intake;
+  public DropSlapdownNoPid(Intake intake) {
+    this.intake = intake;
 
-        addRequirements(intake);
-    }
+    addRequirements(intake);
+  }
 
-    @Override
-    public void initialize() {
-        intake.slapdownSet(0.5);
-    }
+  @Override
+  public void initialize() {
+    intake.slapdownSet(0.5);
+  }
 
-    @Override
-    public boolean isFinished() {
-        return true;
-    }
+  @Override
+  public boolean isFinished() {
+    return true;
+  }
 
-    @Override
-    public void end(boolean interrupted) {
-        intake.slapdownStop();
-    }
+  @Override
+  public void end(boolean interrupted) {
+    intake.slapdownStop();
+  }
 }
