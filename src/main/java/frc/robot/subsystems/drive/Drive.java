@@ -10,7 +10,6 @@ import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.swerve.SwerveSetpoint;
-import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.Debouncer;
@@ -72,7 +71,7 @@ public class Drive extends SubsystemBase {
   private Pose2d robotPose = new Pose2d();
   private ChassisSpeeds robotSpeeds = new ChassisSpeeds();
 
-  private final SwerveSetpointGenerator setpointGenerator;
+  private final SwerveSetpointGenerator8032 setpointGenerator;
   private SwerveSetpoint previousSetpoint;
 
   /**
@@ -170,7 +169,7 @@ public class Drive extends SubsystemBase {
     // --- Setpoint Genorator ---
 
     setpointGenerator =
-        new SwerveSetpointGenerator(pathPlannerConfig, DriveConstants.maxSteerVeloicty);
+        new SwerveSetpointGenerator8032(pathPlannerConfig, DriveConstants.maxSteerVeloicty);
     previousSetpoint =
         new SwerveSetpoint(robotSpeeds, getWheelSpeeds(), DriveFeedforwards.zeros(4));
 
