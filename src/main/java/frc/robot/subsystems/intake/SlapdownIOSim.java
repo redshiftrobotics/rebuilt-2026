@@ -15,10 +15,10 @@ public class SlapdownIOSim implements SlapdownIO {
 
   @Override
   public void updateInputs(SlapdownIOInputsAutoLogged inputs) {
-    inputs.PositionRad = motor.getAngularPositionRad();
-    inputs.VelocityRadPerSec = motor.getAngularVelocityRadPerSec();
-    inputs.AppliedVolts = new double[] {0.0};
-    inputs.SupplyCurrentAmps = new double[] {motor.getCurrentDrawAmps()};
+    inputs.positionRad = motor.getAngularPositionRad();
+    inputs.velocityRadPerSec = motor.getAngularVelocityRadPerSec();
+    inputs.appliedVolts = new double[] {0.0};
+    inputs.supplyCurrentAmps = new double[] {motor.getCurrentDrawAmps()};
   }
 
   @Override

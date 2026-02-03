@@ -40,18 +40,18 @@ public class SlapdownIOSparkMax implements SlapdownIO {
 
   @Override
   public void updateInputs(SlapdownIOInputsAutoLogged inputs) {
-    inputs.PositionRad =
+    inputs.positionRad =
         Units.rotationsToRadians(
             absoluteEncoder.getPosition() / IntakeConstants.SLAPDOWN_GEAR_RATIO);
-    inputs.VelocityRadPerSec =
+    inputs.velocityRadPerSec =
         Units.rotationsPerMinuteToRadiansPerSecond(
             absoluteEncoder.getVelocity() / IntakeConstants.SLAPDOWN_GEAR_RATIO);
 
-    inputs.AppliedVolts =
+    inputs.appliedVolts =
         new double[] {
           motor.getAppliedOutput() * motor.getBusVoltage(),
         };
-    inputs.SupplyCurrentAmps = new double[] {motor.getOutputCurrent()};
+    inputs.supplyCurrentAmps = new double[] {motor.getOutputCurrent()};
   }
 
   @Override

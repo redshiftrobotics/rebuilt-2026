@@ -3,11 +3,11 @@ package frc.robot.commands.intake;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.intake.Intake;
 
-public class DropSlapdown extends Command {
+public class DropSlapdownNoPid extends Command {
 
     private final Intake intake;
 
-    public DropSlapdown(Intake intake){
+    public DropSlapdownNoPid(Intake intake){
         this.intake = intake;
 
         addRequirements(intake);

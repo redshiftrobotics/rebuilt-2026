@@ -9,11 +9,11 @@ import edu.wpi.first.math.geometry.Rotation2d;
 public interface SlapdownIO {
   @AutoLog
   public class SlapdownIOInputsAutoLogged {
-    public double PositionRad = 0.0;
-    public double VelocityRadPerSec = 0.0;
+    public double positionRad = 0.0;
+    public double velocityRadPerSec = 0.0;
 
-    public double[] AppliedVolts = new double[] {};
-    public double[] SupplyCurrentAmps = new double[] {};
+    public double[] appliedVolts = new double[] {};
+    public double[] supplyCurrentAmps = new double[] {};
   }
 
   public default void updateInputs(SlapdownIOInputsAutoLogged inputs) {}
