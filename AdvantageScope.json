@@ -13,14 +13,14 @@
           ]
         },
         "tabs": {
-          "selected": 1,
+          "selected": 4,
           "tabs": [
             {
               "type": 0,
               "title": "",
               "controller": null,
               "controllerUUID": "gzx9mn46nlpciwyqfg33v0bi5kk5xmho",
-              "renderer": "#/",
+              "renderer": "",
               "controlsHeight": 0
             },
             {
@@ -73,7 +73,7 @@
                     "logType": "Pose2d",
                     "visible": false,
                     "options": {
-                      "model": "demo_8032",
+                      "model": "2026 KitBot",
                       "color": "#00ff00"
                     }
                   },
@@ -83,7 +83,7 @@
                     "logType": "Pose3d[]",
                     "visible": false,
                     "options": {
-                      "model": "demo_8032",
+                      "model": "2026 KitBot",
                       "color": "#ff00ff"
                     }
                   },
@@ -93,21 +93,21 @@
                     "logType": "Pose3d[]",
                     "visible": false,
                     "options": {
-                      "model": "demo_8032",
+                      "model": "2026 KitBot",
                       "color": "#ffff00"
                     }
                   }
                 ],
-                "game": "FRC:2026 Field"
+                "game": "FRC:2025 Field (Welded)"
               },
               "controllerUUID": "e8hgomb1yslv0cwpvfxkohzvzsz5j7n2",
               "renderer": {
-                "cameraIndex": -3,
+                "cameraIndex": -5,
                 "orbitFov": 50,
                 "cameraPosition": [
-                  -9.683390031424642,
-                  1.574799999999999,
-                  -3.602810912692994
+                  -10.28116,
+                  1.5748000000000002,
+                  -1.88861845282827e-15
                 ],
                 "cameraTarget": [
                   0,
@@ -115,7 +115,7 @@
                   0
                 ]
               },
-              "controlsHeight": 225
+              "controlsHeight": 0
             },
             {
               "type": 2,
@@ -181,12 +181,12 @@
                   }
                 ],
                 "field": "FRC:2026 Field",
-                "orientation": 0,
+                "orientation": 2,
                 "size": "large"
               },
               "controllerUUID": "rdy54xgxb86v999c510rijuebtpjrgc5",
               "renderer": null,
-              "controlsHeight": 200
+              "controlsHeight": 231
             },
             {
               "type": 9,
@@ -216,10 +216,76 @@
                     "type": "states",
                     "logKey": "/RealOutputs/SwerveStates/MeasuredWheelSpeeds",
                     "logType": "SwerveModuleState[]",
-                    "visible": true,
+                    "visible": false,
                     "options": {
                       "color": "#ff0000",
                       "arrangement": "0,1,2,3"
+                    }
+                  },
+                  {
+                    "type": "chassisSpeeds",
+                    "logKey": "/RealOutputs/ChassisStates/MeasuredRobotSpeeds",
+                    "logType": "ChassisSpeeds",
+                    "visible": false,
+                    "options": {
+                      "color": "#ff0000"
+                    }
+                  },
+                  {
+                    "type": "states",
+                    "logKey": "/RealOutputs/SwerveStates/DesiredWheelSpeeds",
+                    "logType": "SwerveModuleState[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ff00",
+                      "arrangement": "0,1,2,3"
+                    }
+                  },
+                  {
+                    "type": "chassisSpeeds",
+                    "logKey": "/RealOutputs/ChassisStates/DesiredRobotSpeeds",
+                    "logType": "ChassisSpeeds",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ff00"
+                    }
+                  },
+                  {
+                    "type": "rotation",
+                    "logKey": "/RealOutputs/Odometry/Robot/rotation",
+                    "logType": "Rotation2d",
+                    "visible": false,
+                    "options": {}
+                  }
+                ],
+                "maxSpeed": 5,
+                "sizeX": 0.65,
+                "sizeY": 0.65,
+                "orientation": 1
+              },
+              "controllerUUID": "i2gcnkyeksamfejw9625ujsvbs0gk3ke",
+              "renderer": null,
+              "controlsHeight": 200
+            },
+            {
+              "type": 9,
+              "title": "Swerve2",
+              "controller": {
+                "sources": [
+                  {
+                    "type": "rotation",
+                    "logKey": "/RealOutputs/Odometry/Robot/rotation",
+                    "logType": "Rotation2d",
+                    "visible": true,
+                    "options": {}
+                  },
+                  {
+                    "type": "chassisSpeeds",
+                    "logKey": "/RealOutputs/ChassisStates/MeasuredRobotSpeeds",
+                    "logType": "ChassisSpeeds",
+                    "visible": true,
+                    "options": {
+                      "color": "#ff0000"
                     }
                   },
                   {
@@ -233,29 +299,22 @@
                   },
                   {
                     "type": "states",
-                    "logKey": "/RealOutputs/SwerveStates/DesiredWheelSpeeds",
+                    "logKey": "/RealOutputs/SwerveStates/ModuleDesiredWheelSpeeds",
                     "logType": "SwerveModuleState[]",
-                    "visible": false,
+                    "visible": true,
                     "options": {
-                      "color": "#00ff00",
+                      "color": "#0000ff",
                       "arrangement": "0,1,2,3"
                     }
                   },
                   {
                     "type": "chassisSpeeds",
-                    "logKey": "/RealOutputs/ChassisStates/DesiredRobotSpeeds",
+                    "logKey": "/RealOutputs/ChassisStates/ModuleDesiredSpeeds",
                     "logType": "ChassisSpeeds",
-                    "visible": false,
-                    "options": {
-                      "color": "#00ff00"
-                    }
-                  },
-                  {
-                    "type": "rotation",
-                    "logKey": "/RealOutputs/Odometry/Robot/rotation",
-                    "logType": "Rotation2d",
                     "visible": true,
-                    "options": {}
+                    "options": {
+                      "color": "#0000ff"
+                    }
                   }
                 ],
                 "maxSpeed": 5,
@@ -263,7 +322,7 @@
                 "sizeY": 0.65,
                 "orientation": 1
               },
-              "controllerUUID": "i2gcnkyeksamfejw9625ujsvbs0gk3ke",
+              "controllerUUID": "0oedppswvsxwc7iakilvgkl66rlzbym5",
               "renderer": null,
               "controlsHeight": 200
             },
@@ -339,6 +398,87 @@
               "controllerUUID": "wnsaktydth5fjbshpwwfpx2zxvpz3ndd",
               "renderer": null,
               "controlsHeight": 153
+            },
+            {
+              "type": 1,
+              "title": "SlipCurrent",
+              "controller": {
+                "leftSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "/Drive/LeftBackSwerveModule/DriveSupplyCurrentAmps",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "rightSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "/Drive/LeftBackSwerveModule/DriveVelocityRadPerSec",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e5b31b",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "discreteSources": [],
+                "leftLockedRange": null,
+                "rightLockedRange": null,
+                "leftUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "rightUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "6pnon7du20liwf6ybzh51iupnxb69l3x",
+              "renderer": null,
+              "controlsHeight": 200
+            },
+            {
+              "type": 1,
+              "title": "TurnVelocity",
+              "controller": {
+                "leftSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "/Drive/LeftBackSwerveModule/TurnVelocityRadPerSec",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "rightSources": [],
+                "discreteSources": [],
+                "leftLockedRange": null,
+                "rightLockedRange": null,
+                "leftUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "rightUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "1eqm5lzmejuem5dfddpp656ky0o5cj0h",
+              "renderer": null,
+              "controlsHeight": 200
             }
           ]
         }
