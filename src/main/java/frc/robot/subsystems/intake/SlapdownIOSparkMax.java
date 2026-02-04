@@ -75,7 +75,7 @@ public class SlapdownIOSparkMax implements SlapdownIO {
 
   @Override
   public boolean slapdownIsAtSetpoint() {
-      return motorPID.isAtSetpoint();
+    return motorPID.isAtSetpoint();
   }
 
   @Override
