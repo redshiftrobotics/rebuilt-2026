@@ -126,8 +126,7 @@ public class RobotContainer {
                 new ModuleIOSim(PreseasonConstants.BackLeft),
                 new ModuleIOSim(PreseasonConstants.BackRight));
         vision =
-            new AprilTagVision(
-                drive::getRobotPose, new CameraIOSim(VisionConstants.SIM_FRONT_CAMERA));
+            new AprilTagVision(drive::getRobotPose, new CameraIOSim(VisionConstants.TOP_CAMERA));
         leds = new LEDSubsystem(new LEDStripIOSim(LEDConstants.DEFAULT_PATTERN));
         break;
 

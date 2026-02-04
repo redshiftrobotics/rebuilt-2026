@@ -43,7 +43,7 @@ To write the more complex features of our robot code, you need to advance to Ski
 
 # AI Usage Policy
 
-We only use generative AI technologies responsibly and in accordance with SAAS’s  
+We only use generative AI technologies responsibly and in accordance with SAAS’s
 academic integrity and acceptable technology use policies. Check the [Student/Family Handbook](https://www.seattleacademy.org/fs/resource-manager/view/a893d109-f384-4b79-9a3d-285b962bb16f) for more information.
 
 In short, don’t use AI to write your code. You can use it to try to explain and understand existing code, but try to understand things on your own first. Ask us for permission if you think there might be an exception.
@@ -56,30 +56,30 @@ If you are curious, here are some more details on our policies: we follow the Fe
 
 See Also: [Code Team - Knowledge Document](https://docs.google.com/document/d/1ALPDB6Npeuc7sVb0G4KXd0wBsI2w8kvfbjoE6rJeqfU/edit?tab=t.bb9te5q6y100#heading=h.34y2hglpve9k)
 
-1. Basics (variables, operators, logic, methods, etc)  
-   1. Reference: [W3 Java Tutorial](https://www.w3schools.com/java/default.asp)   
-   2. Faster pace, less in depth: [Java Programming for Beginners – Full Course](https://www.youtube.com/watch?v=A74TOX803D0)  
+1. Basics (variables, operators, logic, methods, etc)
+   1. Reference: [W3 Java Tutorial](https://www.w3schools.com/java/default.asp)
+   2. Faster pace, less in depth: [Java Programming for Beginners – Full Course](https://www.youtube.com/watch?v=A74TOX803D0)
    3. Slower pace, more in depth: [Java Full Course for free ☕ (2025)](https://www.youtube.com/watch?v=xTtL8E4LzTQ)
 
-2. OOP (Basics, Abstract classes/Interfaces, etc)  
-   1. Reference: [W3 Java OOP (Object-Oriented Programming)](https://www.w3schools.com/java/java_oop.asp)  
-   2. Best practices for OOP (encapsulation, abstraction, inheritance, and polymorphism)  
-   3. [Generic Class in Java](https://www.geeksforgeeks.org/generic-class-in-java/)  
+2. OOP (Basics, Abstract classes/Interfaces, etc)
+   1. Reference: [W3 Java OOP (Object-Oriented Programming)](https://www.w3schools.com/java/java_oop.asp)
+   2. Best practices for OOP (encapsulation, abstraction, inheritance, and polymorphism)
+   3. [Generic Class in Java](https://www.geeksforgeeks.org/generic-class-in-java/)
    4. ([OOP Slides](https://docs.google.com/presentation/d/1HXI-VUUDqB9fXZvXVRAInwOkHTVbtvdk8yyLMhUhj4U/edit?usp=sharing))
 
-3. Basic understanding of JVM: How Java works  
-   1. [JVM, JRE, and JDK - Fully Explained in 5 Minutes](https://www.youtube.com/watch?v=KctLuhwFEQ8)  
+3. Basic understanding of JVM: How Java works
+   1. [JVM, JRE, and JDK - Fully Explained in 5 Minutes](https://www.youtube.com/watch?v=KctLuhwFEQ8)
    2. WPILib: [Java Garbage Collection](https://docs.wpilib.org/en/latest/docs/software/basic-programming/java-gc.html)
 
 # Season Timeline
 
 See Also: [Code 2026 - Deliverables](https://docs.google.com/spreadsheets/d/1IQMBZGmCU9Z3YC_6GHavY7TIO-_DMlyj-AsHUvhZWEI/edit?usp=sharing)
 
-1. Onboarding  
-2. XRP checkpoints for those who need them  
-   1. Additional GitHub information  
-3. Planning  
-4. Programming  
+1. Onboarding
+2. XRP checkpoints for those who need them
+   1. Additional GitHub information
+3. Planning
+4. Programming
 5. Testing
 
 # GitHub Projects
@@ -106,7 +106,7 @@ These are the steps to developing any feature, fixing any bug, contributing any 
 
    4. Make necessary adjustments
 
-   
+
 
 **Review Process:**
 
@@ -116,10 +116,10 @@ These are the steps to developing any feature, fixing any bug, contributing any 
 
 5. Create a Pull Request (PR) to move your changes into the “main” branch.
 
-   **![][image3]**  
+   **![][image3]**
 6. Ask a teammate to review your code. If you have to make any changes, ask them again once you have.
 
-7. Ask a Programming Leader to review your PR. Update your code if necessary; 
+7. Ask a Programming Leader to review your PR. Update your code if necessary;
 
 8. Merge main into your branch again if it has updated.
 
@@ -127,8 +127,8 @@ These are the steps to developing any feature, fixing any bug, contributing any 
 
 # Gotchas
 
-* Renaming files in a way that only changes case (capitalization) causes linker errors  
-  * Windows is a case insensitive filesystem and git will not see the change  
+* Renaming files in a way that only changes case (capitalization) causes linker errors
+  * Windows is a case insensitive filesystem and git will not see the change
 * Always specifically define double literals. This can be done by including a decimal point (ex, 0.0) or with the d suffix (but this is ugly and really lets not start using this)
 
 # LVL1: Intro to Programming
@@ -145,59 +145,59 @@ In this level, you’ll get up to speed with Java, a programming language, and G
 
 # Installing Software {#installing-software}
 
-For Mac/Linux users, try to follow the instructions below, but let us know if it does not work  
+For Mac/Linux users, try to follow the instructions below, but let us know if it does not work
 WPILib VSCode – where we write our code
 
-* Follow this link: [WPILib Installation Guide — FIRST Robotics Competition documentation](https://docs.wpilib.org/en/latest/docs/zero-to-robot/step-2/wpilib-setup.html#downloading)  
-* Press the download button  
-* Open the downloaded file  
-* Open (double click) “WPILibInstaller.exe”  
-* Choose “Install for all users”  
-* Choose “Download for this computer only (fastest)  
+* Follow this link: [WPILib Installation Guide — FIRST Robotics Competition documentation](https://docs.wpilib.org/en/latest/docs/zero-to-robot/step-2/wpilib-setup.html#downloading)
+* Press the download button
+* Open the downloaded file
+* Open (double click) “WPILibInstaller.exe”
+* Choose “Install for all users”
+* Choose “Download for this computer only (fastest)
 * After it all loads, click finish, then type WPILib into your computer search bar to verify that it appears
 
 GitHub – how we store and share code
 
-* [Sign up for GitHub](https://github.com/signup?ref_cta=Sign+up&ref_loc=header+logged+out&ref_page=%2F&source=header-home)  
-  * If you think you might use this account after high school, use a professional username and a personal email address, not your school email address.  
+* [Sign up for GitHub](https://github.com/signup?ref_cta=Sign+up&ref_loc=header+logged+out&ref_page=%2F&source=header-home)
+  * If you think you might use this account after high school, use a professional username and a personal email address, not your school email address.
 * [Download GitHub Desktop](https://desktop.github.com/download/)
 
-Slack 
+Slack
 
-* Follow this link: [https://slack.com/get-started?entry\_point=nav\_menu\#/createnew](https://slack.com/get-started?entry_point=nav_menu#/createnew)  
-* Press the google button and sign in with your school account  
-* You should be invited to join the slack titled “SAASquatch Robotics”  
-* Download Slack on your computer  
-* Once you are in Slack, search at the top of the window for the code channel (“\#code”) and join it.  
+* Follow this link: [https://slack.com/get-started?entry\_point=nav\_menu\#/createnew](https://slack.com/get-started?entry_point=nav_menu#/createnew)
+* Press the google button and sign in with your school account
+* You should be invited to join the slack titled “SAASquatch Robotics”
+* Download Slack on your computer
+* Once you are in Slack, search at the top of the window for the code channel (“\#code”) and join it.
 * Show me the image to prove you are in
 
 ## Step 1: Java Programming Language: The Language of choice for FRC robotics {#step-1:-java-programming-language:-the-language-of-choice-for-frc-robotics}
 
-1. Basics (variables, operators, logic, methods, etc)  
-   1. Reference: [W3 Java Tutorial](https://www.w3schools.com/java/default.asp)   
-   2. Faster pace, less in depth: [Java Programming for Beginners – Full Course](https://www.youtube.com/watch?v=A74TOX803D0)  
+1. Basics (variables, operators, logic, methods, etc)
+   1. Reference: [W3 Java Tutorial](https://www.w3schools.com/java/default.asp)
+   2. Faster pace, less in depth: [Java Programming for Beginners – Full Course](https://www.youtube.com/watch?v=A74TOX803D0)
    3. Slower pace, more in depth: [Java Full Course for free ☕ (2025)](https://www.youtube.com/watch?v=xTtL8E4LzTQ)
 
-2. OOP (Basics, Abstract classes/Interfaces, etc)  
-   1. Reference: [W3 Java OOP (Object-Oriented Programming)](https://www.w3schools.com/java/java_oop.asp)  
-   2. Best practices for OOP (encapsulation, abstraction, inheritance, and polymorphism)  
-   3. [Generic Class in Java](https://www.geeksforgeeks.org/generic-class-in-java/)  
+2. OOP (Basics, Abstract classes/Interfaces, etc)
+   1. Reference: [W3 Java OOP (Object-Oriented Programming)](https://www.w3schools.com/java/java_oop.asp)
+   2. Best practices for OOP (encapsulation, abstraction, inheritance, and polymorphism)
+   3. [Generic Class in Java](https://www.geeksforgeeks.org/generic-class-in-java/)
    4. ([OOP Slides](https://docs.google.com/presentation/d/1HXI-VUUDqB9fXZvXVRAInwOkHTVbtvdk8yyLMhUhj4U/edit?usp=sharing))
 
-3. Basic understanding of JVM: How Java works  
-   1. [JVM, JRE, and JDK - Fully Explained in 5 Minutes](https://www.youtube.com/watch?v=KctLuhwFEQ8)  
+3. Basic understanding of JVM: How Java works
+   1. [JVM, JRE, and JDK - Fully Explained in 5 Minutes](https://www.youtube.com/watch?v=KctLuhwFEQ8)
    2. WPILib: [Java Garbage Collection](https://docs.wpilib.org/en/latest/docs/software/basic-programming/java-gc.html)
 
-4. (Optional) [Java 8 Features](https://www.geeksforgeeks.org/java-8-features/#streams)  
-   1. [Stream In Java](https://www.geeksforgeeks.org/stream-in-java/) ([Dear Functional Bros](https://www.youtube.com/watch?v=nuML9SmdbJ4))  
-   2. [Java Optional Class](https://www.geeksforgeeks.org/java-8-optional-class/)   
-   3. [Collections in Java](https://www.geeksforgeeks.org/collections-in-java-2/) (helpful to know what exists, don’t memorize)  
-   4. [Java Functional Interfaces](https://www.geeksforgeeks.org/java-functional-interfaces/) (Mainly Consumer and Supplier)  
+4. (Optional) [Java 8 Features](https://www.geeksforgeeks.org/java-8-features/#streams)
+   1. [Stream In Java](https://www.geeksforgeeks.org/stream-in-java/) ([Dear Functional Bros](https://www.youtube.com/watch?v=nuML9SmdbJ4))
+   2. [Java Optional Class](https://www.geeksforgeeks.org/java-8-optional-class/)
+   3. [Collections in Java](https://www.geeksforgeeks.org/collections-in-java-2/) (helpful to know what exists, don’t memorize)
+   4. [Java Functional Interfaces](https://www.geeksforgeeks.org/java-functional-interfaces/) (Mainly Consumer and Supplier)
    5. WPILib: [Treating Functions as Data](https://docs.wpilib.org/en/latest/docs/software/basic-programming/functions-as-data.html)
 
-5. (Optional) [Java 17 Features](https://www.geeksforgeeks.org/jdk-17-new-features-in-java-17/)  
-   1. [Switch Expressions](https://docs.oracle.com/en/java/javase/17/language/switch-expressions-and-statements.html)  
-   2. [Record Classes](https://docs.oracle.com/en/java/javase/17/language/records.html)  
+5. (Optional) [Java 17 Features](https://www.geeksforgeeks.org/jdk-17-new-features-in-java-17/)
+   1. [Switch Expressions](https://docs.oracle.com/en/java/javase/17/language/switch-expressions-and-statements.html)
+   2. [Record Classes](https://docs.oracle.com/en/java/javase/17/language/records.html)
    3. Switches on Enums work well
 
 # Version Control {#version-control}
@@ -243,13 +243,13 @@ This chapter will cover command-based programming, the design pattern used in FR
 
 # What is command-based programming? {#what-is-command-based-programming?}
 
-*See Also: [What Is “Command-Based” Programming?](https://docs.wpilib.org/en/stable/docs/software/commandbased/what-is-command-based.html)*  
-   
+*See Also: [What Is “Command-Based” Programming?](https://docs.wpilib.org/en/stable/docs/software/commandbased/what-is-command-based.html)*
+
 Command-based programming is a **design pattern** \- a way of structuring your code. It’s particularly effective, and used by most competitive FRC robotics teams. It also allows programmers to practice **declarative programming** \- that is *what to do*, not *how to do it*, making code more extensible and re-usable.
 
 The command-based paradigm is based on two key abstractions, commands & subsystems:
 
-* **Commands** are actions the robot can take. After command objects are constructed, they are scheduled to be **initialized**, before **updating** every 20ms. They will run until they are **finished** or interrupted, thus **ending**. Commands should do one simple task, so that they can be **composed** together  
+* **Commands** are actions the robot can take. After command objects are constructed, they are scheduled to be **initialized**, before **updating** every 20ms. They will run until they are **finished** or interrupted, thus **ending**. Commands should do one simple task, so that they can be **composed** together
 * **Subsystems** are mechanisms on the robot. They represent a collection of parts that can operate together \- whether that be by taking in data or executing a physical action.
 
 Both of these are base classes you can create your own objects on top of.
@@ -260,13 +260,13 @@ Commands should never be run manually \- they are handled by the [**CommandSched
 
 The command scheduler will execute a command once it is scheduled. In order to schedule a command, you must do one of the following:
 
-* **Set the Default Command:** The command scheduler can have a ‘default’ command that runs while no other command overrides its behaviour. This is typically used to handle driving: since the autonomous commands require the drivetrain they override the default command which takes input from a Human Input Device.  
-* **Set the Autonomous Command:** At the beginning of the autonomous phase of the game, you are allowed to schedule an autonomous command which controls the robot for the first 15 seconds of the game.  
+* **Set the Default Command:** The command scheduler can have a ‘default’ command that runs while no other command overrides its behaviour. This is typically used to handle driving: since the autonomous commands require the drivetrain they override the default command which takes input from a Human Input Device.
+* **Set the Autonomous Command:** At the beginning of the autonomous phase of the game, you are allowed to schedule an autonomous command which controls the robot for the first 15 seconds of the game.
 * **Triggers:** This is the primary way to take input from the drivers and make the robot respond to it.
 
 ### On Triggers {#on-triggers}
 
-*See Also: [Binding Commands to Triggers](https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html)* 
+*See Also: [Binding Commands to Triggers](https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html)*
 
 Classes representing Human Input Devices have functions which produce trigger objects when called (trigger factories). For example, to get the trigger associated with the X button on an xbox controller you would use the following code:
 
@@ -289,7 +289,7 @@ Trigger endgameStarted = new Trigger(
 
 ## Command Compositions {#command-compositions}
 
-*See Also: [Command Compositions](https://docs.wpilib.org/en/stable/docs/software/commandbased/command-compositions.html)* 
+*See Also: [Command Compositions](https://docs.wpilib.org/en/stable/docs/software/commandbased/command-compositions.html)*
 
 Every command extends from the same base class, meaning they all have access to some utility functions allowing for commands to be chained together[^1]. The result of these are Command Compositions. They can be used to implement sequences of actions, or even some more complicated actions. They read pretty similar to english, see if you can figure out what the following does:
 
@@ -299,16 +299,16 @@ endgameStarted.onTrue(new RumbleControllersCommand(0.5).withTimeout(0.5));
 
 ## Review {#review}
 
-- [ ] **Commands** are classes that represent the actions a robot can take.  
-- [ ] **Subsystems** are classes that represent the mechanisms on a robot.  
-- [ ] Commands can be **triggered** by human input, or by the **CommandScheduler**.  
+- [ ] **Commands** are classes that represent the actions a robot can take.
+- [ ] **Subsystems** are classes that represent the mechanisms on a robot.
+- [ ] Commands can be **triggered** by human input, or by the **CommandScheduler**.
 - [ ] Commands can be chained together in **compositions**.
 
 ---
 
 # Drivetrains {#drivetrains}
 
-Before starting this section, you should have been assigned an XRP. Now, we will be getting our XRPs to handle basic movement. Documentation for the XRP is available on the [FRC docs website](https://frcdocs.wpi.edu/en/latest/docs/xrp-robot/index.html). 
+Before starting this section, you should have been assigned an XRP. Now, we will be getting our XRPs to handle basic movement. Documentation for the XRP is available on the [FRC docs website](https://frcdocs.wpi.edu/en/latest/docs/xrp-robot/index.html).
 
 ## Creating an FRC project {#creating-an-frc-project}
 
@@ -322,14 +322,14 @@ You are going to *create a subsystem to control the XRP’s drivetrain.* We will
 
 First, let’s map out the problem. In order to be able to tank drive the robot using a HID, we must:
 
-1. Take input from a HID.  
-2. Use that input to update the Drivetrain subsystem’s state.  
+1. Take input from a HID.
+2. Use that input to update the Drivetrain subsystem’s state.
 3. Apply the state changes made within the subsystem.
 
 In order to get our robot moving, we need a couple more things:
 
-* A way for the DriveTrain **subsystem** to receive speed requests.  
-* A way for the DriveTrain to *periodically process* those requests, and update the motors.  
+* A way for the DriveTrain **subsystem** to receive speed requests.
+* A way for the DriveTrain to *periodically process* those requests, and update the motors.
 * A drive **command** to take input from a human input device[^3].
 
 Let’s start by implementing a subsystem.
@@ -344,11 +344,11 @@ Inside Drivetrain.java, we need to turn the generated class into a subsystem. Al
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Drivetrain extends SubsystemBase {
-	// Subsystem implementation goes here
+  // Subsystem implementation goes here
 }
 ```
 
-   
+
 We also need to make sure the subsystem class has access to all parts of the physical Drivetrain \- in this case the left-hand motor and the right-hand motor.
 
 ```java
@@ -368,28 +368,28 @@ Now, we can access the state of the controller as we wish. Now, we need a way to
 
 Create a new file in the command folder called TankDrive.java. In order to process controller input, this command must do the following:
 
-1. Store a reference to the HID & the DriveTrain  
+1. Store a reference to the HID & the DriveTrain
 2. Periodically, use the state of the HID to update the state of the DriveTrain.
 
 Put the following code in the TankDrive command:
 
 ```java
 public class TankDrive extends Command {
-	// These are our references to our controller and drivetrain.
-	private final XboxController controller;
-	private final DriveTrain drivetrain;
+  // These are our references to our controller and drivetrain.
+  private final XboxController controller;
+  private final DriveTrain drivetrain;
 
-	public TankDrive(XboxController controller, DriveTrain drivetrain) {
-		// The 'this' keyword indicates that we are refering to the FIELD (private final ...) named controller, and not the local variuble created by the constructor paramaters
-	this.controller = controller;
-	this.drivetrain = drivetrain;
+  public TankDrive(XboxController controller, DriveTrain drivetrain) {
+    // The 'this' keyword indicates that we are refering to the FIELD (private final ...) named controller, and not the local variuble created by the constructor paramaters
+  this.controller = controller;
+  this.drivetrain = drivetrain;
 
-	addRequirements(drivetrain);
+  addRequirements(drivetrain);
 }
 
 @override
 public void execute() {
-	drivetrain.setMotors(controller.getLeftY(), controller.getRightY());
+  drivetrain.setMotors(controller.getLeftY(), controller.getRightY());
 }
 }
 ```
@@ -416,8 +416,8 @@ Once you’ve gotten your code done, let Aceius know, and they’ll grab a contr
 
 ## Review {#review-1}
 
-- [ ] We created a subsystem to represent the drivetrain.  
-- [ ] We created a command to control the drivetrain.  
+- [ ] We created a subsystem to represent the drivetrain.
+- [ ] We created a command to control the drivetrain.
 - [ ] We scheduled that command by setting it as the drivetrain’s default command.
 
 ---
@@ -456,17 +456,17 @@ public class Gyro extends SubsystemBase {
 
 @Override
 public void periodic() {
-	// update gyro
+  // update gyro
 
-	// update smartdashboard
+  // update smartdashboard
 }
 }
 ```
 
 In order to get the gyro show the robot’s orientation on the dashboard, we need to:
 
-1. Register the gyro in code  
-2. Read values from the gyroscope  
+1. Register the gyro in code
+2. Read values from the gyroscope
 3. Send said values to shuffleboard
 
 The data type of the gyroscope is XRPGyro. Instantiate a new XRPGyro the same way you learned to create motors. Normally, a gyro would require a port number, but since only one gyroscope is on the XRP we can omit it here.
@@ -528,7 +528,7 @@ Good day. In this activity, we will learn about the Proportional–integral–de
 
 # What is a PID Controller? {#what-is-a-pid-controller?}
 
-A **PID controller** is a method that helps keep something steady, such as the speed or position of a motor. It works by adjusting its actions based on how far off the current state is from the desired target (the **setpoint**), as well as considering past errors and how quickly things are changing. This way, it ensures the system smoothly reaches and maintains the right level without wild swings or delays. It uses three values to calculate its output: Proportional, Integral, and Derivative. 
+A **PID controller** is a method that helps keep something steady, such as the speed or position of a motor. It works by adjusting its actions based on how far off the current state is from the desired target (the **setpoint**), as well as considering past errors and how quickly things are changing. This way, it ensures the system smoothly reaches and maintains the right level without wild swings or delays. It uses three values to calculate its output: Proportional, Integral, and Derivative.
 
 ## Uses {#uses}
 
@@ -573,39 +573,39 @@ TODO
 
 ## File Layout {#file-layout}
 
-* Import statements  
-* Package statement  
-* Class  
-  * Constants  
-  * Fields  
-  * Constructor  
+* Import statements
+* Package statement
+* Class
+  * Constants
+  * Fields
+  * Constructor
   * Methods
 
 ## Comments {#comments}
 
-* Always write javadoc documentation comments.  
-* Use `//` instead of `/* */` when writing comments.  
-* If you are doing something for a non-apparent reason, leave a comment.  
+* Always write javadoc documentation comments.
+* Use `//` instead of `/* */` when writing comments.
+* If you are doing something for a non-apparent reason, leave a comment.
 * Avoid committing commented out code.
 
 ## Naming & Grammar {#naming-&-grammar}
 
-* Types are `PascalCase.`  
-* ‘Constants’ should use uppercase `SNAKE_CASE`.  
-* Fields and local variables should use `camelCase`.  
-* **DO NOT ABBREVIATE NAMES.**  
-  * Mathematical operations (X, Y, Omega) are ok.  
+* Types are `PascalCase.`
+* ‘Constants’ should use uppercase `SNAKE_CASE`.
+* Fields and local variables should use `camelCase`.
+* **DO NOT ABBREVIATE NAMES.**
+  * Mathematical operations (X, Y, Omega) are ok.
 * Prefer Oxford comma.
 
 ## Blocks {#blocks}
 
-* Always create blocks, even for single statements, unless inside a switch case.  
-* `{` on own line.  
+* Always create blocks, even for single statements, unless inside a switch case.
+* `{` on own line.
 * `}` on own line unless followed by another closing character
 
 ## Leading Whitespace {#leading-whitespace}
 
-* Use 4 spaces for indentation.  
+* Use 4 spaces for indentation.
 * Do not use raw multiline strings, because they break indentation.
 
 ## Functions {#functions}
@@ -614,17 +614,17 @@ TODO
 
 ## Variables {#variables}
 
-* Use primitive types over Box types (for example, `nint` over `IntPtr`)  
+* Use primitive types over Box types (for example, `nint` over `IntPtr`)
 * Use static types. Do not use the `var` keyword.
 
 ## Keywords {#keywords}
 
-* Use a space after `if`, `for`, `while`, `switch` (they are not function calls).  
+* Use a space after `if`, `for`, `while`, `switch` (they are not function calls).
 * Do not use a space after the opening `(` and before the closing `)`.
 
 ## Handling Errors {#handling-errors}
 
-* All methods must catch all possible exceptions. Do not throw exceptions.  
+* All methods must catch all possible exceptions. Do not throw exceptions.
 * If it is possible that a method can fail, use the `Optional<T>` type as needed.
 
 
@@ -634,24 +634,24 @@ TODO
 
 ## Before Power
 
-- [ ] Alert an adult supervisor to your presence & plans  
-- [ ] Ensure all personnel have eye protection  
-- [ ] Ensure the robot has no loose objects resting on or within it  
-- [ ] Secure the battery  
-- [ ] Attach bumpers to the robot  
-- [ ] Fortify the the area around the robot  
-      **– OR –**   
+- [ ] Alert an adult supervisor to your presence & plans
+- [ ] Ensure all personnel have eye protection
+- [ ] Ensure the robot has no loose objects resting on or within it
+- [ ] Secure the battery
+- [ ] Attach bumpers to the robot
+- [ ] Fortify the the area around the robot
+      **– OR –**
       Ensure the robot is securely suspended above the ground
 
 *You may now power the robot.*
 
 ## Before Enable
 
-- [ ] Ensure all people are clear of the testing area  
-- [ ] Verify controllers connection integrity (if manually controlling the robot)  
-- [ ] Ensure all input devices are not caught on objects or otherwise stuck in their active state  
-- [ ] Clear the driver station area of objects hindering an E-Stop (emergency stop)  
-- [ ] Be ready to disable or E-Stop  
+- [ ] Ensure all people are clear of the testing area
+- [ ] Verify controllers connection integrity (if manually controlling the robot)
+- [ ] Ensure all input devices are not caught on objects or otherwise stuck in their active state
+- [ ] Clear the driver station area of objects hindering an E-Stop (emergency stop)
+- [ ] Be ready to disable or E-Stop
 - [ ] Loudly and clearly announce you are enabling the robot (“Enabling\!”)
 
 *You may now enable the robot*

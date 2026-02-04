@@ -695,7 +695,7 @@
             ]
           },
           {
-            "title": "front_camera",
+            "title": "top_camera",
             "x": 768.0,
             "y": 0.0,
             "width": 256.0,
@@ -713,7 +713,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/photonvision/front_camera/cameraDistortion",
+                  "topic": "/photonvision/top_camera/cameraDistortion",
                   "period": 0.06,
                   "data_type": "double[]",
                   "show_submit_button": false
@@ -727,7 +727,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/photonvision/front_camera/cameraIntrinsics",
+                  "topic": "/photonvision/top_camera/cameraIntrinsics",
                   "period": 0.06,
                   "data_type": "double[]",
                   "show_submit_button": false
@@ -741,7 +741,7 @@
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/photonvision/front_camera/driverMode",
+                  "topic": "/photonvision/top_camera/driverMode",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -758,7 +758,7 @@
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/photonvision/front_camera/driverModeRequest",
+                  "topic": "/photonvision/top_camera/driverModeRequest",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -775,7 +775,7 @@
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/photonvision/front_camera/hasTarget",
+                  "topic": "/photonvision/top_camera/hasTarget",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -792,7 +792,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/photonvision/front_camera/heartbeat",
+                  "topic": "/photonvision/top_camera/heartbeat",
                   "period": 0.06,
                   "data_type": "int",
                   "show_submit_button": false
@@ -806,7 +806,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/photonvision/front_camera/latencyMillis",
+                  "topic": "/photonvision/top_camera/latencyMillis",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": false
@@ -820,7 +820,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/photonvision/front_camera/pipelineIndexRequest",
+                  "topic": "/photonvision/top_camera/pipelineIndexRequest",
                   "period": 0.06,
                   "data_type": "int",
                   "show_submit_button": false
@@ -834,7 +834,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/photonvision/front_camera/pipelineIndexState",
+                  "topic": "/photonvision/top_camera/pipelineIndexState",
                   "period": 0.06,
                   "data_type": "int",
                   "show_submit_button": false
@@ -848,7 +848,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/photonvision/front_camera/targetArea",
+                  "topic": "/photonvision/top_camera/targetArea",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": false
@@ -862,7 +862,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/photonvision/front_camera/targetPitch",
+                  "topic": "/photonvision/top_camera/targetPitch",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": false
@@ -876,7 +876,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/photonvision/front_camera/targetPixelsX",
+                  "topic": "/photonvision/top_camera/targetPixelsX",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": false
@@ -890,7 +890,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/photonvision/front_camera/targetPixelsY",
+                  "topic": "/photonvision/top_camera/targetPixelsY",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": false
@@ -904,7 +904,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/photonvision/front_camera/targetSkew",
+                  "topic": "/photonvision/top_camera/targetSkew",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": false
@@ -918,7 +918,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/photonvision/front_camera/targetYaw",
+                  "topic": "/photonvision/top_camera/targetYaw",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": false
@@ -1056,14 +1056,14 @@
         ],
         "containers": [
           {
-            "title": "front_camera-processed",
+            "title": "top_camera-processed",
             "x": 0.0,
             "y": 0.0,
             "width": 512.0,
             "height": 384.0,
             "type": "Camera Stream",
             "properties": {
-              "topic": "/CameraPublisher/front_camera-processed",
+              "topic": "/CameraPublisher/top_camera-processed",
               "period": 0.06,
               "rotation_turns": 0
             }
@@ -1099,7 +1099,7 @@
             "properties": {
               "topic": "/SmartDashboard/Field",
               "period": 0.06,
-              "field_game": "Reefscape",
+              "field_game": "Rebuilt (No Fuel)",
               "robot_width": 0.85,
               "robot_length": 0.85,
               "show_other_objects": true,
