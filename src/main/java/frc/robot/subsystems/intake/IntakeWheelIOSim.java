@@ -26,6 +26,11 @@ public class IntakeWheelIOSim implements IntakeWheelIO {
   }
 
   @Override
+  public double getSpeed() {
+      return sim.getAngularVelocityRPM();
+  }
+
+  @Override
   public void stop() {
     sim.setAngularVelocity(0);
   }
