@@ -12,6 +12,8 @@ import frc.robot.Robot;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.controllers.DriveRotationController;
 import frc.robot.utility.AllianceMirrorUtil;
+import frc.robot.utility.tunable.TunableNumber;
+import frc.robot.utility.tunable.TunableNumberGroup;
 
 /**
  * A mutable container for drive input values. This is a simple data class that stores linear
@@ -19,13 +21,16 @@ import frc.robot.utility.AllianceMirrorUtil;
  */
 public class DriveInput {
 
+  private static final TunableNumberGroup tunables = new TunableNumberGroup("DriveInput/");
+
   public static final double JOYSTICK_DEADBAND = 0.15;
-  public static final double ANGLE_DEADBAND = 0.5;
+  public static final double ANGLE_DEADBAND = 0.8;
 
-  public static final double LINEAR_VELOCITY_EXPONENT = 2.0; // Square the joystick input
-  public static final double ANGULAR_VELOCITY_EXPONENT = 2.0; // Square the joystick input
+  public static final double LINEAR_VELOCITY_EXPONENT = 1.5;
+  public static final double ANGULAR_VELOCITY_EXPONENT = 1.5;
 
-  public static final double SKEW_COMPENSATION_SCALAR = -0.03;
+  public static final TunableNumber SKEW_COMPENSATION_SCALAR =
+      tunables.number("skewCompScalar", -0.03);
 
   private final Drive drive;
 
@@ -53,10 +58,10 @@ public class DriveInput {
     }
 
     // https://github.com/FRCTeam2910/2025CompetitionRobot-Public/blob/main/src/main/java/org/frc2910/robot/subsystems/drive/SwerveSubsystem.java#L381
-    if (SKEW_COMPENSATION_SCALAR != 0 && Robot.isReal()) {
+    if (SKEW_COMPENSATION_SCALAR.get() != 0 && Robot.isReal()) {
       Rotation2d skewCompensationFactor =
           Rotation2d.fromRadians(
-              drive.getRobotSpeeds().omegaRadiansPerSecond * SKEW_COMPENSATION_SCALAR);
+              drive.getRobotSpeeds().omegaRadiansPerSecond * SKEW_COMPENSATION_SCALAR.get());
 
       chassisSpeeds =
           ChassisSpeeds.fromRobotRelativeSpeeds(
