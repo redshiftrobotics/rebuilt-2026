@@ -63,9 +63,7 @@ public class VisionConstants {
           CameraPosition.LEFT,
           new Transform3d(
               new Translation3d(
-                  Units.inchesToMeters(-11),
-                  Units.inchesToMeters(11.5),
-                  Units.inchesToMeters(8)),
+                  Units.inchesToMeters(-11), Units.inchesToMeters(11.5), Units.inchesToMeters(8)),
               new Rotation3d(0, Units.degreesToRadians(-10), Units.degreesToRadians(120))));
   public static final CameraConfig RIGHT_CAMERA =
       new CameraConfig(
@@ -73,8 +71,6 @@ public class VisionConstants {
           CameraPosition.RIGHT,
           new Transform3d(
               new Translation3d(
-                  Units.inchesToMeters(-11),
-                  Units.inchesToMeters(-11.5),
-                  Units.inchesToMeters(8)),
+                  Units.inchesToMeters(-11), Units.inchesToMeters(-11.5), Units.inchesToMeters(8)),
               new Rotation3d(0, Units.degreesToRadians(-10), Units.degreesToRadians(-120))));
 }

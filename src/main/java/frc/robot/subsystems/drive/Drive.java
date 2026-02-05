@@ -280,10 +280,9 @@ public class Drive extends SubsystemBase {
     return getRobotPose()
         .plus(
             new Transform2d(
-                camera.getX(),
-                camera.getY(),
-                new Rotation2d(camera.getRotation().getZ())));
+                camera.getX(), camera.getY(), new Rotation2d(camera.getRotation().getZ())));
   }
+
   @AutoLogOutput(key = "Vision/FOVLeft1")
   public Pose2d getCameraLeft1() {
 
@@ -295,7 +294,8 @@ public class Drive extends SubsystemBase {
             new Transform2d(
                 camera.getX(),
                 camera.getY(),
-                new Rotation2d(camera.getRotation().getZ() + angleOffset))).plus(new Transform2d(5,0,new Rotation2d()));
+                new Rotation2d(camera.getRotation().getZ() + angleOffset)))
+        .plus(new Transform2d(5, 0, new Rotation2d()));
   }
 
   @AutoLogOutput(key = "Vision/FOVRight1")
@@ -307,8 +307,10 @@ public class Drive extends SubsystemBase {
             new Transform2d(
                 camera.getX(),
                 camera.getY(),
-                new Rotation2d(camera.getRotation().getZ() + angleOffset))).plus(new Transform2d(5,0,new Rotation2d()));
+                new Rotation2d(camera.getRotation().getZ() + angleOffset)))
+        .plus(new Transform2d(5, 0, new Rotation2d()));
   }
+
   @AutoLogOutput(key = "Vision/Camera2")
   public Pose2d getCameraPose2() {
 
@@ -317,10 +319,9 @@ public class Drive extends SubsystemBase {
     return getRobotPose()
         .plus(
             new Transform2d(
-                camera.getX(),
-                camera.getY(),
-                new Rotation2d(camera.getRotation().getZ())));
+                camera.getX(), camera.getY(), new Rotation2d(camera.getRotation().getZ())));
   }
+
   @AutoLogOutput(key = "Vision/FOVLeft2")
   public Pose2d getCameraLeft2() {
 
@@ -332,7 +333,8 @@ public class Drive extends SubsystemBase {
             new Transform2d(
                 camera.getX(),
                 camera.getY(),
-                new Rotation2d(camera.getRotation().getZ() + angleOffset))).plus(new Transform2d(5,0,new Rotation2d()));
+                new Rotation2d(camera.getRotation().getZ() + angleOffset)))
+        .plus(new Transform2d(5, 0, new Rotation2d()));
   }
 
   @AutoLogOutput(key = "Vision/FOVRight2")
@@ -344,8 +346,10 @@ public class Drive extends SubsystemBase {
             new Transform2d(
                 camera.getX(),
                 camera.getY(),
-                new Rotation2d(camera.getRotation().getZ() + angleOffset))).plus(new Transform2d(5,0,new Rotation2d()));
+                new Rotation2d(camera.getRotation().getZ() + angleOffset)))
+        .plus(new Transform2d(5, 0, new Rotation2d()));
   }
+
   @AutoLogOutput(key = "Vision/Camera3")
   public Pose2d getCameraPose3() {
 
@@ -354,10 +358,9 @@ public class Drive extends SubsystemBase {
     return getRobotPose()
         .plus(
             new Transform2d(
-                camera.getX(),
-                camera.getY(),
-                new Rotation2d(camera.getRotation().getZ())));
+                camera.getX(), camera.getY(), new Rotation2d(camera.getRotation().getZ())));
   }
+
   @AutoLogOutput(key = "Vision/FOVLeft3")
   public Pose2d getCameraLeft3() {
 
@@ -369,7 +372,8 @@ public class Drive extends SubsystemBase {
             new Transform2d(
                 camera.getX(),
                 camera.getY(),
-                new Rotation2d(camera.getRotation().getZ() + angleOffset))).plus(new Transform2d(5,0,new Rotation2d()));
+                new Rotation2d(camera.getRotation().getZ() + angleOffset)))
+        .plus(new Transform2d(5, 0, new Rotation2d()));
   }
 
   @AutoLogOutput(key = "Vision/FOVRight3")
@@ -381,8 +385,10 @@ public class Drive extends SubsystemBase {
             new Transform2d(
                 camera.getX(),
                 camera.getY(),
-                new Rotation2d(camera.getRotation().getZ() + angleOffset))).plus(new Transform2d(5,0,new Rotation2d()));
+                new Rotation2d(camera.getRotation().getZ() + angleOffset)))
+        .plus(new Transform2d(5, 0, new Rotation2d()));
   }
+
   @AutoLogOutput(key = "Vision/Camera4")
   public Pose2d getCameraPose4() {
 
@@ -391,10 +397,9 @@ public class Drive extends SubsystemBase {
     return getRobotPose()
         .plus(
             new Transform2d(
-                camera.getX(),
-                camera.getY(),
-                new Rotation2d(camera.getRotation().getZ())));
+                camera.getX(), camera.getY(), new Rotation2d(camera.getRotation().getZ())));
   }
+
   @AutoLogOutput(key = "Vision/FOVLeft4")
   public Pose2d getCameraLeft4() {
 
@@ -406,7 +411,8 @@ public class Drive extends SubsystemBase {
             new Transform2d(
                 camera.getX(),
                 camera.getY(),
-                new Rotation2d(camera.getRotation().getZ() + angleOffset))).plus(new Transform2d(5,0,new Rotation2d()));
+                new Rotation2d(camera.getRotation().getZ() + angleOffset)))
+        .plus(new Transform2d(5, 0, new Rotation2d()));
   }
 
   @AutoLogOutput(key = "Vision/FOVRight4")
@@ -418,7 +424,8 @@ public class Drive extends SubsystemBase {
             new Transform2d(
                 camera.getX(),
                 camera.getY(),
-                new Rotation2d(camera.getRotation().getZ() + angleOffset))).plus(new Transform2d(5,0,new Rotation2d()));
+                new Rotation2d(camera.getRotation().getZ() + angleOffset)))
+        .plus(new Transform2d(5, 0, new Rotation2d()));
   }
 
   /**
