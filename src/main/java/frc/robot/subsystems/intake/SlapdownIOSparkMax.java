@@ -29,7 +29,7 @@ public class SlapdownIOSparkMax implements SlapdownIO {
     this.absoluteEncoder = absoluteEncoder;
 
     SparkMaxConfig config = new SparkMaxConfig();
-    config.idleMode(IntakeConstants.SlapdownBrakeMode);
+    config.idleMode(IntakeConstants.SLAPDOWN_BRAKE_MODE);
 
     motor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
   }

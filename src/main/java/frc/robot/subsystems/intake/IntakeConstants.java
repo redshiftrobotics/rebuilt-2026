@@ -6,7 +6,8 @@ import frc.robot.Constants;
 
 public class IntakeConstants {
 
-  public static final IdleMode SlapdownBrakeMode = IdleMode.kCoast;
+  public static final IdleMode SLAPDOWN_BRAKE_MODE = IdleMode.kCoast;
+  public static final double INTAKE_WHEEL_SPEED = 0.4;
 
   public static final int WHEEL_GEAR_RATIO =
       switch (Constants.getRobot()) {
