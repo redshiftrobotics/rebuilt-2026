@@ -23,6 +23,7 @@ import frc.robot.Constants.Mode;
 import frc.robot.commands.DriveCharacterizationCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.HopperCommands;
+import frc.robot.commands.intake.DropSlapdownNoPid;
 import frc.robot.commands.pipeline.DriveInput;
 import frc.robot.commands.pipeline.DriveInputPipeline;
 import frc.robot.generated.PreseasonConstants;
@@ -59,440 +60,454 @@ import java.util.function.Supplier;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
+ * This class is where the bulk of the robot should be declared. Since
+ * Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in
+ * the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of
+ * the robot (including
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
 
-  // Subsystems
-  private final Drive drive;
-  private final AprilTagVision vision;
-  private final LEDSubsystem leds;
-  private final Hopper hopper;
-  private final Intake intake;
+    // Subsystems
+    private final Drive drive;
+    private final AprilTagVision vision;
+    private final LEDSubsystem leds;
+    private final Hopper hopper;
+    private final Intake intake;
 
-  // Controller
-  private final CommandXboxController driverController = new CommandXboxController(0);
-  private final CommandXboxController operatorController = new CommandXboxController(1);
+    // Controller
+    private final CommandXboxController driverController = new CommandXboxController(0);
+    private final CommandXboxController operatorController = new CommandXboxController(1);
 
-  // Alerts for controller disconnection
-  private final Alert driverDisconnected =
-      new Alert(
-          String.format(
-              "Driver xbox controller disconnected (port %s).",
-              driverController.getHID().getPort()),
-          AlertType.kWarning);
-  private final Alert operatorDisconnected =
-      new Alert(
-          String.format(
-              "Operator xbox controller disconnected (port %s).",
-              operatorController.getHID().getPort()),
-          AlertType.kWarning);
+    // Alerts for controller disconnection
+    private final Alert driverDisconnected = new Alert(
+            String.format(
+                    "Driver xbox controller disconnected (port %s).",
+                    driverController.getHID().getPort()),
+            AlertType.kWarning);
+    private final Alert operatorDisconnected = new Alert(
+            String.format(
+                    "Operator xbox controller disconnected (port %s).",
+                    operatorController.getHID().getPort()),
+            AlertType.kWarning);
 
-  // Dashboard inputs
-  private final LoggedDashboardChooser<Command> autoChooser;
+    // Dashboard inputs
+    private final LoggedDashboardChooser<Command> autoChooser;
 
-  // Alerts
-  private final Alert notPrimaryBotAlert =
-      new Alert("Robot type is not the primary robot type.", AlertType.kInfo);
-  private final Alert tuningModeActiveAlert =
-      new Alert("Tuning mode active, do not use in competition.", AlertType.kWarning);
+    // Alerts
+    private final Alert notPrimaryBotAlert = new Alert("Robot type is not the primary robot type.", AlertType.kInfo);
+    private final Alert tuningModeActiveAlert = new Alert("Tuning mode active, do not use in competition.",
+            AlertType.kWarning);
 
-  /** The container for the robot. Contains subsystems, IO devices, and commands. */
-  public RobotContainer() {
-    System.out.println("Initializing for robot ID: " + Constants.getRobot());
-    switch (Constants.getRobot()) {
-      case PRESEASON_2026:
-        drive =
-            new Drive(
-                new GyroIOPigeon2(DriveConstants.GYRO_CAN_ID, true),
-                new ModuleIOTalonFX(PreseasonConstants.FrontLeft),
-                new ModuleIOTalonFX(PreseasonConstants.FrontRight),
-                new ModuleIOTalonFX(PreseasonConstants.BackLeft),
-                new ModuleIOTalonFX(PreseasonConstants.BackRight));
-        vision = new AprilTagVision(drive::getRobotPose);
-        leds = new LEDSubsystem();
-        hopper = new Hopper(new HopperMotorIO() {}, new HopperMotorIO() {});
-        intake = new Intake(new IntakeWheelIO() {}, new SlapdownIO() {});
-        break;
+    /**
+     * The container for the robot. Contains subsystems, IO devices, and commands.
+     */
+    public RobotContainer() {
+        System.out.println("Initializing for robot ID: " + Constants.getRobot());
+        switch (Constants.getRobot()) {
+            case PRESEASON_2026:
+                drive = new Drive(
+                        new GyroIOPigeon2(DriveConstants.GYRO_CAN_ID, true),
+                        new ModuleIOTalonFX(PreseasonConstants.FrontLeft),
+                        new ModuleIOTalonFX(PreseasonConstants.FrontRight),
+                        new ModuleIOTalonFX(PreseasonConstants.BackLeft),
+                        new ModuleIOTalonFX(PreseasonConstants.BackRight));
+                vision = new AprilTagVision(drive::getRobotPose);
+                leds = new LEDSubsystem();
+                hopper = new Hopper(new HopperMotorIO() {
+                }, new HopperMotorIO() {
+                });
+                intake = new Intake(new IntakeWheelIO() {
+                }, new SlapdownIO() {
+                });
+                break;
 
-      case CHASSIS_CANNON:
-      case WOOD_BOT_2026:
-      case REEFSCAPE_2025:
-        drive =
-            new Drive(
-                new GyroIOPigeon2(DriveConstants.GYRO_CAN_ID, false),
-                new ModuleIOSparkMax(ModuleConstants.FRONT_LEFT_MODULE_CONFIG),
-                new ModuleIOSparkMax(ModuleConstants.FRONT_RIGHT_MODULE_CONFIG),
-                new ModuleIOSparkMax(ModuleConstants.BACK_LEFT_MODULE_CONFIG),
-                new ModuleIOSparkMax(ModuleConstants.BACK_RIGHT_MODULE_CONFIG));
-        vision = new AprilTagVision(drive::getRobotPose);
-        leds = new LEDSubsystem();
-        hopper = new Hopper(new HopperMotorIO() {}, new HopperMotorIO() {});
-        intake = new Intake(new IntakeWheelIO() {}, new SlapdownIO() {});
-        break;
+            case CHASSIS_CANNON:
+            case WOOD_BOT_2026:
+            case REEFSCAPE_2025:
+                drive = new Drive(
+                        new GyroIOPigeon2(DriveConstants.GYRO_CAN_ID, false),
+                        new ModuleIOSparkMax(ModuleConstants.FRONT_LEFT_MODULE_CONFIG),
+                        new ModuleIOSparkMax(ModuleConstants.FRONT_RIGHT_MODULE_CONFIG),
+                        new ModuleIOSparkMax(ModuleConstants.BACK_LEFT_MODULE_CONFIG),
+                        new ModuleIOSparkMax(ModuleConstants.BACK_RIGHT_MODULE_CONFIG));
+                vision = new AprilTagVision(drive::getRobotPose);
+                leds = new LEDSubsystem();
+                hopper = new Hopper(new HopperMotorIO() {
+                }, new HopperMotorIO() {
+                });
+                intake = new Intake(new IntakeWheelIO() {
+                }, new SlapdownIO() {
+                });
+                break;
 
-      case SIM_BOT:
-        drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIOSim(PreseasonConstants.FrontLeft),
-                new ModuleIOSim(PreseasonConstants.FrontRight),
-                new ModuleIOSim(PreseasonConstants.BackLeft),
-                new ModuleIOSim(PreseasonConstants.BackRight));
-        vision =
-            new AprilTagVision(
-                drive::getRobotPose, new CameraIOSim(VisionConstants.SIM_FRONT_CAMERA));
-        leds = new LEDSubsystem(new LEDStripIOSim(LEDConstants.DEFAULT_PATTERN));
-        hopper =
-            new Hopper(
-                new HopperMotorIOSim(HopperConstants.BUBBLER_GEAR_RATIO),
-                new HopperMotorIOSim(HopperConstants.FEEDER_GEAR_RATIO));
-        intake = new Intake(new IntakeWheelIOSim(), new SlapdownIOSim());
-        break;
+            case SIM_BOT:
+                drive = new Drive(
+                        new GyroIO() {
+                        },
+                        new ModuleIOSim(PreseasonConstants.FrontLeft),
+                        new ModuleIOSim(PreseasonConstants.FrontRight),
+                        new ModuleIOSim(PreseasonConstants.BackLeft),
+                        new ModuleIOSim(PreseasonConstants.BackRight));
+                vision = new AprilTagVision(
+                        drive::getRobotPose, new CameraIOSim(VisionConstants.SIM_FRONT_CAMERA));
+                leds = new LEDSubsystem(new LEDStripIOSim(LEDConstants.DEFAULT_PATTERN));
+                hopper = new Hopper(
+                        new HopperMotorIOSim(HopperConstants.BUBBLER_GEAR_RATIO),
+                        new HopperMotorIOSim(HopperConstants.FEEDER_GEAR_RATIO));
+                intake = new Intake(new IntakeWheelIOSim(), new SlapdownIOSim());
+                break;
 
-      default:
-        drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {});
-        vision = new AprilTagVision(drive::getRobotPose);
-        leds = new LEDSubsystem();
-        hopper = new Hopper(new HopperMotorIO() {}, new HopperMotorIO() {});
-        intake = new Intake(new IntakeWheelIO() {}, new SlapdownIO() {});
-        break;
+            default:
+                drive = new Drive(
+                        new GyroIO() {
+                        },
+                        new ModuleIO() {
+                        },
+                        new ModuleIO() {
+                        },
+                        new ModuleIO() {
+                        },
+                        new ModuleIO() {
+                        });
+                vision = new AprilTagVision(drive::getRobotPose);
+                leds = new LEDSubsystem();
+                hopper = new Hopper(new HopperMotorIO() {
+                }, new HopperMotorIO() {
+                });
+                intake = new Intake(new IntakeWheelIO() {
+                }, new SlapdownIO() {
+                });
+                break;
+        }
+
+        // Vision setup
+        if (Constants.isOnPlayingField()) {
+            vision.setAprilTagFieldLayout(FieldConstants.apriltagLayout);
+        }
+
+        vision.setVisionPoseConsumer(
+                (estimate) -> {
+                    if (estimate.status().isSuccess() && Constants.getMode() != Mode.SIM) {
+                        drive.addVisionMeasurement(
+                                estimate.estimatedPose().toPose2d(),
+                                estimate.timestampSeconds(),
+                                estimate.standardDeviations());
+                    }
+                });
+
+        // Can also use AutoBuilder.buildAutoChooser(); instead of SendableChooser to
+        // auto populate
+        registerNamedCommands();
+        autoChooser = new LoggedDashboardChooser<>(
+                "Auto Chooser",
+                Constants.INCLUDE_ALL_PATHPLANNER_AUTOS
+                        ? AutoBuilder.buildAutoChooser()
+                        : new SendableChooser<Command>());
+        autoChooser.addDefaultOption("None", Commands.none());
+
+        // Configure autos
+        configureAutos(autoChooser);
+
+        leds.setDefaultCommand(
+                leds.runColor(
+                        BlinkenLEDPattern.COLORWAVES_OCEAN,
+                        BlinkenLEDPattern.COLORWAVES_LAVA,
+                        BlinkenLEDPattern.WHITE)
+                        .withName("LED Alliance Color Waves"));
+
+        // Alerts for constants to avoid using them in competition
+        tuningModeActiveAlert.set(Constants.TUNING_MODE);
+        notPrimaryBotAlert.set(Constants.getRobot() != Constants.PRIMARY_ROBOT_TYPE);
+
+        // Hide controller missing warnings for sim
+        DriverStation.silenceJoystickConnectionWarning(Constants.getMode() != Mode.REAL);
+
+        initDashboard();
+
+        // Configure the button bindings
+        configureDriverControllerBindings(driverController);
+        configureOperatorControllerBindings(operatorController);
+        configureAlertTriggers();
     }
 
-    // Vision setup
-    if (Constants.isOnPlayingField()) {
-      vision.setAprilTagFieldLayout(FieldConstants.apriltagLayout);
+    /** Configure drive dashboard object */
+    private void initDashboard() {
+        SmartDashboard.putData("Auto Chooser", autoChooser.getSendableChooser());
+
+        DriverDashboard.poseSupplier = drive::getRobotPose;
+        DriverDashboard.speedsSupplier = drive::getRobotSpeeds;
+        DriverDashboard.wheelStatesSupplier = drive::getWheelSpeeds;
+        DriverDashboard.hasVisionEstimate = vision::hasSuccessfulEstimate;
+        DriverDashboard.currentHopperRunModeNameSupplier = () -> hopper.getCurrentRunMode().toString();
+        DriverDashboard.hopperBubblerVelocitySupplier = hopper::getBubblerCharacterizationVelocity;
+        DriverDashboard.hopperFeederVelocitySupplier = hopper::getFeederCharacterizationVelocity;
+
+        DriverDashboard.currentDriveModeName = () -> drive.getCurrentCommand() == null ? "Idle"
+                : drive.getCurrentCommand().getName();
+
+        DriverDashboard.addCommand("Reset Pose", () -> drive.resetPose(new Pose2d()), true);
+        DriverDashboard.addCommand(
+                "Reset Rotation",
+                drive.runOnce(
+                        () -> drive.resetPose(
+                                new Pose2d(drive.getRobotPose().getTranslation(), Rotation2d.kZero))),
+                true);
+        DriverDashboard.addCommand(
+                "Reset Centered",
+                () -> drive.resetPose(
+                        new Pose2d(
+                                new Translation2d(FieldConstants.fieldLength, FieldConstants.fieldWidth).div(2),
+                                drive.getRobotPose().getRotation())),
+                true);
     }
 
-    vision.setVisionPoseConsumer(
-        (estimate) -> {
-          if (estimate.status().isSuccess() && Constants.getMode() != Mode.SIM) {
-            drive.addVisionMeasurement(
-                estimate.estimatedPose().toPose2d(),
-                estimate.timestampSeconds(),
-                estimate.standardDeviations());
-          }
-        });
+    public void updateAlerts() {
+        // Controller disconnected alerts
+        driverDisconnected.set(
+                !DriverStation.isJoystickConnected(driverController.getHID().getPort())
+                        || !DriverStation.getJoystickIsXbox(driverController.getHID().getPort()));
+        operatorDisconnected.set(
+                !DriverStation.isJoystickConnected(operatorController.getHID().getPort())
+                        || !DriverStation.getJoystickIsXbox(operatorController.getHID().getPort()));
+    }
 
-    // Can also use AutoBuilder.buildAutoChooser(); instead of SendableChooser to
-    // auto populate
-    registerNamedCommands();
-    autoChooser =
-        new LoggedDashboardChooser<>(
-            "Auto Chooser",
-            Constants.INCLUDE_ALL_PATHPLANNER_AUTOS
-                ? AutoBuilder.buildAutoChooser()
-                : new SendableChooser<Command>());
-    autoChooser.addDefaultOption("None", Commands.none());
+    private void configureDriverControllerBindings(CommandXboxController xbox) {
 
-    // Configure autos
-    configureAutos(autoChooser);
-
-    leds.setDefaultCommand(
-        leds.runColor(
-                BlinkenLEDPattern.COLORWAVES_OCEAN,
-                BlinkenLEDPattern.COLORWAVES_LAVA,
-                BlinkenLEDPattern.WHITE)
-            .withName("LED Alliance Color Waves"));
-
-    // Alerts for constants to avoid using them in competition
-    tuningModeActiveAlert.set(Constants.TUNING_MODE);
-    notPrimaryBotAlert.set(Constants.getRobot() != Constants.PRIMARY_ROBOT_TYPE);
-
-    // Hide controller missing warnings for sim
-    DriverStation.silenceJoystickConnectionWarning(Constants.getMode() != Mode.REAL);
-
-    initDashboard();
-
-    // Configure the button bindings
-    configureDriverControllerBindings(driverController);
-    configureOperatorControllerBindings(operatorController);
-    configureAlertTriggers();
-  }
-
-  /** Configure drive dashboard object */
-  private void initDashboard() {
-    SmartDashboard.putData("Auto Chooser", autoChooser.getSendableChooser());
-
-    DriverDashboard.poseSupplier = drive::getRobotPose;
-    DriverDashboard.speedsSupplier = drive::getRobotSpeeds;
-    DriverDashboard.wheelStatesSupplier = drive::getWheelSpeeds;
-    DriverDashboard.hasVisionEstimate = vision::hasSuccessfulEstimate;
-    DriverDashboard.currentHopperRunModeNameSupplier = () -> hopper.getCurrentRunMode().toString();
-    DriverDashboard.hopperBubblerVelocitySupplier = hopper::getBubblerCharacterizationVelocity;
-    DriverDashboard.hopperFeederVelocitySupplier = hopper::getFeederCharacterizationVelocity;
-
-    DriverDashboard.currentDriveModeName =
-        () -> drive.getCurrentCommand() == null ? "Idle" : drive.getCurrentCommand().getName();
-
-    DriverDashboard.addCommand("Reset Pose", () -> drive.resetPose(new Pose2d()), true);
-    DriverDashboard.addCommand(
-        "Reset Rotation",
-        drive.runOnce(
-            () ->
-                drive.resetPose(
-                    new Pose2d(drive.getRobotPose().getTranslation(), Rotation2d.kZero))),
-        true);
-    DriverDashboard.addCommand(
-        "Reset Centered",
-        () ->
-            drive.resetPose(
-                new Pose2d(
-                    new Translation2d(FieldConstants.fieldLength, FieldConstants.fieldWidth).div(2),
-                    drive.getRobotPose().getRotation())),
-        true);
-  }
-
-  public void updateAlerts() {
-    // Controller disconnected alerts
-    driverDisconnected.set(
-        !DriverStation.isJoystickConnected(driverController.getHID().getPort())
-            || !DriverStation.getJoystickIsXbox(driverController.getHID().getPort()));
-    operatorDisconnected.set(
-        !DriverStation.isJoystickConnected(operatorController.getHID().getPort())
-            || !DriverStation.getJoystickIsXbox(operatorController.getHID().getPort()));
-  }
-
-  private void configureDriverControllerBindings(CommandXboxController xbox) {
-
-    Supplier<DriveInput> baseDrive =
-        () ->
-            new DriveInput(drive)
+        Supplier<DriveInput> baseDrive = () -> new DriveInput(drive)
                 .linearVelocityStick(-xbox.getLeftY(), -xbox.getLeftX())
                 .angularVelocityStick(-xbox.getRightX())
                 .fieldRelativeEnabled();
 
-    final DriveInputPipeline pipeline = new DriveInputPipeline(drive, baseDrive);
+        final DriveInputPipeline pipeline = new DriveInputPipeline(drive, baseDrive);
 
-    // Default command, normal joystick drive
-    drive.setDefaultCommand(
-        drive
-            .run(() -> drive.setRobotSpeeds(pipeline.getChassisSpeeds()))
-            .finallyDo(drive::stop)
-            .withName("Pipeline Drive"));
+        // Default command, normal joystick drive
+        drive.setDefaultCommand(
+                drive
+                        .run(() -> drive.setRobotSpeeds(pipeline.getChassisSpeeds()))
+                        .finallyDo(drive::stop)
+                        .withName("Pipeline Drive"));
 
-    DriverDashboard.currentDriveModeName =
-        () -> {
-          Command current = drive.getCurrentCommand();
-          if (current == drive.getDefaultCommand()) {
-            return "[" + pipeline.getLayerInfo() + "]";
-          } else if (current != null) {
-            return current.getName();
-          }
-          return "Idle";
+        DriverDashboard.currentDriveModeName = () -> {
+            Command current = drive.getCurrentCommand();
+            if (current == drive.getDefaultCommand()) {
+                return "[" + pipeline.getLayerInfo() + "]";
+            } else if (current != null) {
+                return current.getName();
+            }
+            return "Idle";
         };
 
-    // Toggle robot relative mode, used as backup if gyro fails
-    xbox.y().toggleOnTrue(pipeline.runLayer("Robot Relative", DriveInput::fieldRelativeDisabled));
+        // Toggle robot relative mode, used as backup if gyro fails
+        xbox.y().toggleOnTrue(pipeline.runLayer("Robot Relative", DriveInput::fieldRelativeDisabled));
 
-    // Secondary drive command, right stick will be used to control target angular
-    // position instead
-    // of angular velocity
-    xbox.rightBumper()
-        .whileTrue(
-            pipeline.runLayer(
-                "Heading Controlled",
-                input -> input.headingStick(-xbox.getRightY(), -xbox.getRightX())));
+        // Secondary drive command, right stick will be used to control target angular
+        // position instead
+        // of angular velocity
+        xbox.rightBumper()
+                .whileTrue(
+                        pipeline.runLayer(
+                                "Heading Controlled",
+                                input -> input.headingStick(-xbox.getRightY(), -xbox.getRightX())));
 
-    // Slow mode, reduce translation and rotation speeds for fine control
-    xbox.leftBumper()
-        .whileTrue(pipeline.runLayer("Slow Mode", input -> input.coefficients(0.3, 0.3)));
+        // Slow mode, reduce translation and rotation speeds for fine control
+        xbox.leftBumper()
+                .whileTrue(pipeline.runLayer("Slow Mode", input -> input.coefficients(0.3, 0.3)));
 
-    // Cause the robot to resist movement by forming an X shape with the swerve
-    // modules
-    // Helps prevent getting pushed around
-    xbox.x().whileTrue(drive.run(drive::stopUsingBrakeArrangement).withName("Hold Position"));
+        // Cause the robot to resist movement by forming an X shape with the swerve
+        // modules
+        // Helps prevent getting pushed around
+        xbox.x().whileTrue(drive.run(drive::stopUsingBrakeArrangement).withName("Hold Position"));
 
-    // Stop the robot and cancel any running commands
-    xbox.b()
-        .or(RobotModeTriggers.disabled())
-        .onTrue(drive.runOnce(drive::stop).withName("Cancel"))
-        .onTrue(rumbleControllers(0).withTimeout(0.02));
+        // Stop the robot and cancel any running commands
+        xbox.b()
+                .or(RobotModeTriggers.disabled())
+                .onTrue(drive.runOnce(drive::stop).withName("Cancel"))
+                .onTrue(rumbleControllers(0).withTimeout(0.02));
 
-    xbox.b()
-        .debounce(1)
-        .onTrue(rumbleController(xbox, 0.3).withTimeout(0.25))
-        .whileTrue(drive.run(drive::stopUsingForwardArrangement).withName("Stop and Orient"));
+        xbox.b()
+                .debounce(1)
+                .onTrue(rumbleController(xbox, 0.3).withTimeout(0.25))
+                .whileTrue(drive.run(drive::stopUsingForwardArrangement).withName("Stop and Orient"));
 
-    // Reset the gyro heading
-    xbox.start()
-        .debounce(0.3)
-        .onTrue(
-            drive
-                .runOnce(
-                    () ->
-                        drive.resetPose(
-                            new Pose2d(drive.getRobotPose().getTranslation(), Rotation2d.kZero)))
-                .andThen(rumbleController(xbox, 0.3).withTimeout(0.25))
-                .ignoringDisable(true)
-                .withName("Reset Gyro Heading"));
+        // Reset the gyro heading
+        xbox.start()
+                .debounce(0.3)
+                .onTrue(
+                        drive
+                                .runOnce(
+                                        () -> drive.resetPose(
+                                                new Pose2d(drive.getRobotPose().getTranslation(), Rotation2d.kZero)))
+                                .andThen(rumbleController(xbox, 0.3).withTimeout(0.25))
+                                .ignoringDisable(true)
+                                .withName("Reset Gyro Heading"));
 
-    // Configure the driving dpad
-    for (int pov = 0; pov < 360; pov += 45) {
-      Rotation2d rotation = Rotation2d.fromDegrees(-pov);
-      Translation2d translation = new Translation2d(1, rotation);
-      Command activateLayer =
-          pipeline.runLayer(
-              String.format(
-                  "Strafe %.0f", MathUtil.inputModulus(rotation.getDegrees(), -180, +180)),
-              input ->
-                  input.linearVelocity(translation).fieldRelativeDisabled().coefficients(1, 0.3));
-      xbox.pov(pov).whileTrue(activateLayer);
+        // Configure the driving dpad
+        for (int pov = 0; pov < 360; pov += 45) {
+            Rotation2d rotation = Rotation2d.fromDegrees(-pov);
+            Translation2d translation = new Translation2d(1, rotation);
+            Command activateLayer = pipeline.runLayer(
+                    String.format(
+                            "Strafe %.0f", MathUtil.inputModulus(rotation.getDegrees(), -180, +180)),
+                    input -> input.linearVelocity(translation).fieldRelativeDisabled().coefficients(1, 0.3));
+            xbox.pov(pov).whileTrue(activateLayer);
+        }
+
+        if (Constants.isDemoMode()) {
+
+            SmartDashboard.putBoolean("Slow Mode", false);
+            Trigger dashboardSlowMode = new Trigger(() -> SmartDashboard.getBoolean("Slow Mode", false));
+            dashboardSlowMode.whileTrue(
+                    pipeline.runLayer("Slow Mode", input -> input.coefficients(0.1, 0.2)));
+
+            AtomicReference<Pose2d> setpoint = new AtomicReference<>(null);
+
+            xbox.a()
+                    .whileTrue(
+                            pipeline
+                                    .runLayer(
+                                            "Face Setpoint",
+                                            input -> input.facingPoint(setpoint.get().getTranslation()))
+                                    .onlyIf(() -> setpoint.get() != null));
+
+            // Drive to pose setpoint reset
+            RobotModeTriggers.disabled()
+                    .onTrue(Commands.runOnce(() -> setpoint.set(null)).withName("Reset Pose Controller"));
+
+            // Save current pose as setpoint
+            xbox.leftTrigger()
+                    .onTrue(rumbleController(xbox, 0.4).withTimeout(0.1))
+                    .onTrue(
+                            Commands.runOnce(() -> setpoint.set(drive.getRobotPose())).withName("Save Setpoint"));
+
+            // Drive to pose setpoint
+            xbox.rightTrigger()
+                    .whileTrue(
+                            DriveCommands.driveWithPoseController(drive, setpoint::get)
+                                    .andThen(rumbleController(xbox, 1, RumbleType.kRightRumble).withTimeout(0.2))
+                                    .onlyIf(() -> setpoint.get() != null)
+                                    .withName("Drive to Setpoint"));
+        }
     }
 
-    if (Constants.isDemoMode()) {
+    private void configureOperatorControllerBindings(CommandXboxController xbox) {
+        // Start input wheel
+        xbox.leftTrigger().toggleOnTrue();
 
-      SmartDashboard.putBoolean("Slow Mode", false);
-      Trigger dashboardSlowMode = new Trigger(() -> SmartDashboard.getBoolean("Slow Mode", false));
-      dashboardSlowMode.whileTrue(
-          pipeline.runLayer("Slow Mode", input -> input.coefficients(0.1, 0.2)));
+        // Stop input wheel
+        xbox.leftTrigger().toggleOnFalse(getAutonomousCommand());
 
-      AtomicReference<Pose2d> setpoint = new AtomicReference<>(null);
+        // SlapDown
+        xbox.leftBumper().onTrue(new DropSlapdownNoPid(intake));
 
-      xbox.a()
-          .whileTrue(
-              pipeline
-                  .runLayer(
-                      "Face Setpoint", input -> input.facingPoint(setpoint.get().getTranslation()))
-                  .onlyIf(() -> setpoint.get() != null));
+        // This is the input for firing; when the shooter is added, it should be
+        // triggered by this as
+        // well
+        xbox.rightTrigger()
+                .whileTrue(HopperCommands.setHopperMode(hopper, RunMode.FIRING))
+                .onFalse(HopperCommands.setHopperMode(hopper, RunMode.STOPPED));
 
-      // Drive to pose setpoint reset
-      RobotModeTriggers.disabled()
-          .onTrue(Commands.runOnce(() -> setpoint.set(null)).withName("Reset Pose Controller"));
+        // Run the bubbler at low speed to send fuel towards the back without firing
+        xbox.b()
+                .whileTrue(HopperCommands.setHopperMode(hopper, RunMode.FUEL_STORE))
+                .onFalse(HopperCommands.setHopperMode(hopper, RunMode.STOPPED));
 
-      // Save current pose as setpoint
-      xbox.leftTrigger()
-          .onTrue(rumbleController(xbox, 0.4).withTimeout(0.1))
-          .onTrue(
-              Commands.runOnce(() -> setpoint.set(drive.getRobotPose())).withName("Save Setpoint"));
-
-      // Drive to pose setpoint
-      xbox.rightTrigger()
-          .whileTrue(
-              DriveCommands.driveWithPoseController(drive, setpoint::get)
-                  .andThen(rumbleController(xbox, 1, RumbleType.kRightRumble).withTimeout(0.2))
-                  .onlyIf(() -> setpoint.get() != null)
-                  .withName("Drive to Setpoint"));
+        // Run the hopper motors in reverse to deal with jams
+        xbox.start()
+                .whileTrue(HopperCommands.setHopperMode(hopper, RunMode.REVERSE))
+                .onFalse(HopperCommands.setHopperMode(hopper, RunMode.STOPPED));
     }
-  }
 
-  private void configureOperatorControllerBindings(CommandXboxController xbox) {
-    // This is the input for firing; when the shooter is added, it should be
-    // triggered by this as
-    // well
-    xbox.rightTrigger()
-        .whileTrue(HopperCommands.setHopperMode(hopper, RunMode.FIRING))
-        .onFalse(HopperCommands.setHopperMode(hopper, RunMode.STOPPED));
-
-    // Run the bubbler at low speed to send fuel towards the back without firing
-    xbox.b()
-        .whileTrue(HopperCommands.setHopperMode(hopper, RunMode.FUEL_STORE))
-        .onFalse(HopperCommands.setHopperMode(hopper, RunMode.STOPPED));
-
-    // Run the hopper motors in reverse to deal with jams
-    xbox.start()
-        .whileTrue(HopperCommands.setHopperMode(hopper, RunMode.REVERSE))
-        .onFalse(HopperCommands.setHopperMode(hopper, RunMode.STOPPED));
-  }
-
-  private Command rumbleController(
-      CommandXboxController controller, double rumbleIntensity, RumbleType type) {
-    return Commands.startEnd(
-            () -> controller.setRumble(type, rumbleIntensity), () -> controller.setRumble(type, 0))
-        .withName("RumbleController");
-  }
-
-  private Command rumbleController(CommandXboxController controller, double rumbleIntensity) {
-    return rumbleController(controller, rumbleIntensity, RumbleType.kBothRumble);
-  }
-
-  private Command rumbleControllers(double rumbleIntensity) {
-    return Commands.parallel(
-        rumbleController(driverController, rumbleIntensity),
-        rumbleController(operatorController, rumbleIntensity));
-  }
-
-  private void configureAlertTriggers() {
-    // Endgame alert triggers
-    new Trigger(
-            () ->
-                DriverStation.isTeleopEnabled()
-                    && DriverStation.getMatchTime() > 0
-                    && DriverStation.getMatchTime() <= 20)
-        .onTrue(rumbleControllers(0.5).withTimeout(0.5));
-
-    RobotModeTriggers.teleop()
-        .and(RobotBase::isReal)
-        .onChange(rumbleControllers(0.2).withTimeout(0.2));
-
-    Trigger isMatch = new Trigger(() -> DriverStation.getMatchTime() != -1);
-
-    RobotModeTriggers.teleop()
-        .and(isMatch)
-        .onTrue(Commands.runOnce(() -> Elastic.selectTab("Teleoperated")));
-
-    RobotModeTriggers.autonomous()
-        .and(isMatch)
-        .onTrue(Commands.runOnce(() -> Elastic.selectTab("Autonomous")));
-  }
-
-  private void registerNamedCommands() {
-    // Set up named commands for path planner auto
-    NamedCommands.registerCommand("LEDS", leds.runColor(BlinkenLEDPattern.RED));
-  }
-
-  private void configureAutos(LoggedDashboardChooser<Command> dashboardChooser) {
-
-    // Path planner Autos
-    // https://pathplanner.dev/gui-editing-paths-and-autos.html#autos
-
-    // Choreo Autos
-    // https://pathplanner.dev/pplib-choreo-interop.html#load-choreo-trajectory-as-a-pathplannerpath
-
-    if (Constants.RUNNING_TEST_PLANS) {
-      dashboardChooser.addOption(
-          "[Characterization] Drive Feed Forward",
-          DriveCharacterizationCommands.feedforwardCharacterization(drive));
-      dashboardChooser.addOption(
-          "[Characterization] Drive Wheel Radius",
-          DriveCharacterizationCommands.wheelRadiusCharacterization(drive));
-
-      dashboardChooser.addOption(
-          "[SysId] Drive Quasistatic Forward",
-          drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-      dashboardChooser.addOption(
-          "[SysId] Drive Quasistatic Reverse",
-          drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-      dashboardChooser.addOption(
-          "[SysId] Drive Dynamic Forward", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
-      dashboardChooser.addOption(
-          "[SysId] Drive Dynamic Reverse", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    private Command rumbleController(
+            CommandXboxController controller, double rumbleIntensity, RumbleType type) {
+        return Commands.startEnd(
+                () -> controller.setRumble(type, rumbleIntensity), () -> controller.setRumble(type, 0))
+                .withName("RumbleController");
     }
-  }
 
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
-  public Command getAutonomousCommand() {
-    if (Constants.isDemoMode() && !Constants.isOnPlayingField()) {
-      Elastic.sendNotification(
-          new Elastic.Notification(
-              NotificationLevel.WARNING,
-              "Demo mode off field: auto disabled",
-              "Autonomous command disabled in demo mode when not on playing field and in demo mode. Check Constants.java"));
-      return null;
+    private Command rumbleController(CommandXboxController controller, double rumbleIntensity) {
+        return rumbleController(controller, rumbleIntensity, RumbleType.kBothRumble);
     }
-    return autoChooser.get();
-  }
+
+    private Command rumbleControllers(double rumbleIntensity) {
+        return Commands.parallel(
+                rumbleController(driverController, rumbleIntensity),
+                rumbleController(operatorController, rumbleIntensity));
+    }
+
+    private void configureAlertTriggers() {
+        // Endgame alert triggers
+        new Trigger(
+                () -> DriverStation.isTeleopEnabled()
+                        && DriverStation.getMatchTime() > 0
+                        && DriverStation.getMatchTime() <= 20)
+                .onTrue(rumbleControllers(0.5).withTimeout(0.5));
+
+        RobotModeTriggers.teleop()
+                .and(RobotBase::isReal)
+                .onChange(rumbleControllers(0.2).withTimeout(0.2));
+
+        Trigger isMatch = new Trigger(() -> DriverStation.getMatchTime() != -1);
+
+        RobotModeTriggers.teleop()
+                .and(isMatch)
+                .onTrue(Commands.runOnce(() -> Elastic.selectTab("Teleoperated")));
+
+        RobotModeTriggers.autonomous()
+                .and(isMatch)
+                .onTrue(Commands.runOnce(() -> Elastic.selectTab("Autonomous")));
+    }
+
+    private void registerNamedCommands() {
+        // Set up named commands for path planner auto
+        NamedCommands.registerCommand("LEDS", leds.runColor(BlinkenLEDPattern.RED));
+    }
+
+    private void configureAutos(LoggedDashboardChooser<Command> dashboardChooser) {
+
+        // Path planner Autos
+        // https://pathplanner.dev/gui-editing-paths-and-autos.html#autos
+
+        // Choreo Autos
+        // https://pathplanner.dev/pplib-choreo-interop.html#load-choreo-trajectory-as-a-pathplannerpath
+
+        if (Constants.RUNNING_TEST_PLANS) {
+            dashboardChooser.addOption(
+                    "[Characterization] Drive Feed Forward",
+                    DriveCharacterizationCommands.feedforwardCharacterization(drive));
+            dashboardChooser.addOption(
+                    "[Characterization] Drive Wheel Radius",
+                    DriveCharacterizationCommands.wheelRadiusCharacterization(drive));
+
+            dashboardChooser.addOption(
+                    "[SysId] Drive Quasistatic Forward",
+                    drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+            dashboardChooser.addOption(
+                    "[SysId] Drive Quasistatic Reverse",
+                    drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+            dashboardChooser.addOption(
+                    "[SysId] Drive Dynamic Forward", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
+            dashboardChooser.addOption(
+                    "[SysId] Drive Dynamic Reverse", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+        }
+    }
+
+    /**
+     * Use this to pass the autonomous command to the main {@link Robot} class.
+     *
+     * @return the command to run in autonomous
+     */
+    public Command getAutonomousCommand() {
+        if (Constants.isDemoMode() && !Constants.isOnPlayingField()) {
+            Elastic.sendNotification(
+                    new Elastic.Notification(
+                            NotificationLevel.WARNING,
+                            "Demo mode off field: auto disabled",
+                            "Autonomous command disabled in demo mode when not on playing field and in demo mode. Check Constants.java"));
+            return null;
+        }
+        return autoChooser.get();
+    }
 }
