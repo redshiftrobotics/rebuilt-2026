@@ -16,7 +16,9 @@ public interface IntakeWheelIO {
 
   public default void set(double speed) {}
 
-  public default double getSpeed(){return 0;}
+  public default double getSpeed() {
+    return 0;
+  }
 
   public default void stop() {}
 }

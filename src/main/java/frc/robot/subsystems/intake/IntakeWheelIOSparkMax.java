@@ -45,7 +45,7 @@ public class IntakeWheelIOSparkMax implements IntakeWheelIO {
 
   @Override
   public double getSpeed() {
-      return motor.get();
+    return motor.get();
   }
 
   @Override

@@ -18,6 +18,9 @@ public class Intake extends SubsystemBase {
   public Intake(IntakeWheelIO wheelIO, SlapdownIO slapdownIO) {
     this.wheelIO = wheelIO;
     this.SlapdownIO = slapdownIO;
+
+    wheelInputs = new IntakeWheelIOInputsAutoLogged();
+    slapdownInputs = new SlapdownIOInputsAutoLogged();
   }
 
   @Override

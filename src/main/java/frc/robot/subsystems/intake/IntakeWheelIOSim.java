@@ -1,15 +1,19 @@
 package frc.robot.subsystems.intake;
 
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 
 public class IntakeWheelIOSim implements IntakeWheelIO {
   private final DCMotorSim sim;
+  private final DCMotor motor;
 
-  public IntakeWheelIOSim(DCMotorSim sim) {
-    // gearbox = DCMotor.getNEO(1);
-    // sim = new DCMotorSim(LinearSystemId.createDCMotorSystem(gearbox,
-    // IntakeConstants.JKgMetersSquared, IntakeConstants.gearing), gearbox);
-    this.sim = sim;
+  public IntakeWheelIOSim() {
+    motor = DCMotor.getKrakenX60(1);
+    sim =
+        new DCMotorSim(
+            LinearSystemId.createDCMotorSystem(motor, 0.004, IntakeConstants.WHEEL_GEAR_RATIO),
+            motor);
   }
 
   @Override
@@ -27,7 +31,7 @@ public class IntakeWheelIOSim implements IntakeWheelIO {
 
   @Override
   public double getSpeed() {
-      return sim.getAngularVelocityRPM();
+    return sim.getAngularVelocityRPM();
   }
 
   @Override
