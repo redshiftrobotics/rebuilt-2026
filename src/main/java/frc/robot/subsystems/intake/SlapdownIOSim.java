@@ -45,7 +45,7 @@ public class SlapdownIOSim implements SlapdownIO {
 
   @Override
   public boolean slapdownIsAtSetpoint() {
-    //setSetpoint just sets the angle so it will always be at set point in sim
+    // setSetpoint just sets the angle so it will always be at set point in sim
     return true;
   }
 
