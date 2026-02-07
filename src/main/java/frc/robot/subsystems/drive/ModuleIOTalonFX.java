@@ -246,6 +246,11 @@ public class ModuleIOTalonFX implements ModuleIO {
 
   @Override
   public void setDriveOpenLoop(double output) {
+    if (output == 0) {
+      driveTalon.stopMotor();
+      return;
+    }
+
     driveTalon.setControl(
         switch (constants.DriveMotorClosedLoopOutput) {
           case Voltage -> voltageRequest.withOutput(output);
@@ -268,6 +273,11 @@ public class ModuleIOTalonFX implements ModuleIO {
 
   @Override
   public void setDriveVelocity(double velocityRadPerSec) {
+    if (velocityRadPerSec == 0) {
+      driveTalon.stopMotor();
+      return;
+    }
+
     double velocityRotPerSec = Units.radiansToRotations(velocityRadPerSec);
     driveTalon.setControl(
         switch (constants.DriveMotorClosedLoopOutput) {
