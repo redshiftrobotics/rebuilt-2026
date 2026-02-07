@@ -26,6 +26,7 @@ import frc.robot.commands.DriveCommands;
 import frc.robot.commands.HopperCommands;
 import frc.robot.commands.pipeline.DriveInput;
 import frc.robot.commands.pipeline.DriveInputPipeline;
+import frc.robot.generated.MetalBot2Constants;
 import frc.robot.generated.PreseasonConstants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
@@ -100,6 +101,18 @@ public class RobotContainer {
   public RobotContainer() {
     System.out.println("Initializing for robot ID: " + Constants.getRobot());
     switch (Constants.getRobot()) {
+      case METAL_BOT_2:
+        drive =
+            new Drive(
+                new GyroIOPigeon2(DriveConstants.GYRO_CAN_ID, true),
+                new ModuleIOTalonFX(MetalBot2Constants.FrontLeft),
+                new ModuleIOTalonFX(MetalBot2Constants.FrontRight),
+                new ModuleIOTalonFX(MetalBot2Constants.BackLeft),
+                new ModuleIOTalonFX(MetalBot2Constants.BackRight));
+        vision = new AprilTagVision(drive::getRobotPose);
+        leds = new LEDSubsystem();
+        hopper = new Hopper(new HopperMotorIO() {}, new HopperMotorIO() {});
+        break;
       case PRESEASON_2026:
         drive =
             new Drive(

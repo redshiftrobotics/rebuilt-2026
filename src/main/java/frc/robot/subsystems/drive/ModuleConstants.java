@@ -122,7 +122,7 @@ public class ModuleConstants {
       case METAL_BOT_2:
         DRIVE_MOTOR = DCMotor.getKrakenX60Foc(1);
         DRIVE_FEEDBACK = new PIDConstants(20, 0, 0);
-        DRIVE_FEEDFORWARD = new FeedForwardConfigRecord(2.00544, 1.05719, 0);
+        DRIVE_FEEDFORWARD = new FeedForwardConfigRecord(2.08355, 0.95069, 0);
         DRIVE_MOTOR_CURRENT_LIMIT = MetalBot2Constants.FrontLeft.SlipCurrent;
         DRIVE_REDUCTION = MetalBot2Constants.FrontLeft.DriveMotorGearRatio;
 

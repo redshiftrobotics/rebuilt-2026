@@ -74,11 +74,7 @@ public class DriveConstants {
 
   private static final Translation2d BUMPER_TO_BUMPER =
       switch (Constants.getRobot()) {
-        case PRESEASON_2026, SIM_BOT -> TRACK_SIZE.plus(
-            new Translation2d(
-                Units.inchesToMeters(3.0 + 3.750), Units.inchesToMeters(3.0 + 3.750)));
-        case REEFSCAPE_2025, WOOD_BOT_2026, CHASSIS_CANNON -> TRACK_SIZE.plus(
-            new Translation2d(Units.inchesToMeters(7), Units.inchesToMeters(7)));
+        default -> new Translation2d(Units.inchesToMeters(34.0), Units.inchesToMeters(34.0));
       };
 
   public static final DriveConfig DRIVE_CONFIG =
@@ -134,7 +130,7 @@ public class DriveConstants {
 
   static {
     switch (Constants.getRobot()) {
-      case PRESEASON_2026, SIM_BOT:
+      case PRESEASON_2026, METAL_BOT_2, SIM_BOT:
         robotMassKg = 40.0; // Mass from scale
         robotMOI =
             (1.0 / 12.0)

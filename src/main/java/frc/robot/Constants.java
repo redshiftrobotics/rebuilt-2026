@@ -100,6 +100,8 @@ public final class Constants {
   private static RobotType determineRobotType() {
     if (RobotBase.isReal()) {
       switch (RobotController.getSerialNumber()) {
+        case "03238024":
+          return RobotType.METAL_BOT_2;
         case "023AC95B":
           return RobotType.PRESEASON_2026;
         case "032D2143":
