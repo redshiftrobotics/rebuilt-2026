@@ -22,11 +22,11 @@ public class SlapdownIOSparkMax implements SlapdownIO {
   public SlapdownIOSparkMax(SparkMax motor, AbsoluteEncoder absoluteEncoder) {
     this.motor = motor;
     this.absoluteEncoder = absoluteEncoder;
-    
+
     relativeEncoder = motor.getEncoder();
     relativeEncoder.setPosition(absoluteEncoder.getPosition());
-    
-    motorPID = motor.getClosedLoopController();    
+
+    motorPID = motor.getClosedLoopController();
 
     SparkMaxConfig config = new SparkMaxConfig();
     config.idleMode(IntakeConstants.SLAPDOWN_BRAKE_MODE);
