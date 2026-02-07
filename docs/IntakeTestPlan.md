@@ -8,7 +8,7 @@
 
     - `SLAPDOWN_PID` should be tuned to the appropriate values.
 
-    - `WHEEL_CAN_ID` should be the wheel motor's CAN ID.
+    - `INTAKE_WHEEL_CAN_ID` should be the wheel motor's CAN ID.
     - `SLAPDOWN_CAN_ID` should be the slapdown motor's CAN ID.
 
     - `WHEEL_GEAR_RATIO` should be the wheel motor's gear ratio.
