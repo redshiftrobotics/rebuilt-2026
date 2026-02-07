@@ -16,7 +16,7 @@ public class DropSlapdown extends Command {
 
   @Override
   public void execute() {
-    intake.splapdownSetPoint(IntakeConstants.SLAPDOWN_DOWN_SETPOINT);
+    intake.slapdownSetPoint(IntakeConstants.SLAPDOWN_DOWN_SETPOINT);
   }
 
   @Override

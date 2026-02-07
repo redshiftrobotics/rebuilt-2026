@@ -31,7 +31,7 @@ public class SlapdownIOSim implements SlapdownIO {
   public void setMotorIdleMode(IdleMode idleMode) {}
 
   @Override
-  public void setPID(double kp, double ki, double kd) {}
+  public void setPID(double kP, double kI, double kD) {}
 
   @Override
   public void setSpeed(double speed) {
@@ -45,7 +45,7 @@ public class SlapdownIOSim implements SlapdownIO {
 
   @Override
   public boolean slapdownIsAtSetpoint() {
-    // TODO Auto-generated method stub
+    //setSetpoint just sets the angle so it will always be at set point in sim
     return true;
   }
 

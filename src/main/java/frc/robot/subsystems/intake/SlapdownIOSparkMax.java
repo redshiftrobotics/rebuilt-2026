@@ -21,17 +21,17 @@ public class SlapdownIOSparkMax implements SlapdownIO {
 
   public SlapdownIOSparkMax(SparkMax motor, AbsoluteEncoder absoluteEncoder) {
     this.motor = motor;
-    relativeEncoder = motor.getEncoder();
-    motorPID = motor.getClosedLoopController();
-
-    relativeEncoder.setPosition(absoluteEncoder.getPosition());
-
     this.absoluteEncoder = absoluteEncoder;
+    
+    relativeEncoder = motor.getEncoder();
+    relativeEncoder.setPosition(absoluteEncoder.getPosition());
+    
+    motorPID = motor.getClosedLoopController();    
 
     SparkMaxConfig config = new SparkMaxConfig();
     config.idleMode(IntakeConstants.SLAPDOWN_BRAKE_MODE);
 
-    motor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+    motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
   @Override
@@ -57,9 +57,9 @@ public class SlapdownIOSparkMax implements SlapdownIO {
   }
 
   @Override
-  public void setPID(double kp, double ki, double kd) {
+  public void setPID(double kP, double kI, double kD) {
     SparkMaxConfig config = new SparkMaxConfig();
-    config.closedLoop.pid(kp, ki, kd);
+    config.closedLoop.pid(kP, kI, kD);
     motor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
   }
 

@@ -10,14 +10,14 @@ import frc.robot.subsystems.intake.SlapdownIO.SlapdownIOInputsAutoLogged;
 public class Intake extends SubsystemBase {
 
   private final IntakeWheelIO wheelIO;
-  private final SlapdownIO SlapdownIO;
+  private final SlapdownIO slapdownIO;
 
   private IntakeWheelIOInputsAutoLogged wheelInputs;
   private SlapdownIOInputsAutoLogged slapdownInputs;
 
   public Intake(IntakeWheelIO wheelIO, SlapdownIO slapdownIO) {
     this.wheelIO = wheelIO;
-    this.SlapdownIO = slapdownIO;
+    this.slapdownIO = slapdownIO;
 
     wheelInputs = new IntakeWheelIOInputsAutoLogged();
     slapdownInputs = new SlapdownIOInputsAutoLogged();
@@ -26,7 +26,7 @@ public class Intake extends SubsystemBase {
   @Override
   public void periodic() {
     wheelIO.updateInputs(wheelInputs);
-    SlapdownIO.updateInputs(slapdownInputs);
+    slapdownIO.updateInputs(slapdownInputs);
 
     SmartDashboard.putNumber("Wheel Speed", wheelIO.getSpeed());
   }
@@ -43,27 +43,27 @@ public class Intake extends SubsystemBase {
 
   // slapdown
 
-  public void setSlapdownPID(double kp, double ki, double kd) {
-    SlapdownIO.setPID(kp, ki, kd);
+  public void setSlapdownPID(double kP, double kI, double kD) {
+    slapdownIO.setPID(kP, kI, kD);
   }
 
   public void slapdownSet(double speed) {
-    SlapdownIO.setSpeed(speed);
+    slapdownIO.setSpeed(speed);
   }
 
   public void setSlapdownIdleMode(IdleMode idleMode) {
-    SlapdownIO.setMotorIdleMode(idleMode);
+    slapdownIO.setMotorIdleMode(idleMode);
   }
 
-  public void splapdownSetPoint(Rotation2d setPoint) {
-    SlapdownIO.setSetpoint(setPoint);
+  public void slapdownSetPoint(Rotation2d setPoint) {
+    slapdownIO.setSetpoint(setPoint);
   }
 
   public boolean slapdownIsAtSetpoint() {
-    return SlapdownIO.slapdownIsAtSetpoint();
+    return slapdownIO.slapdownIsAtSetpoint();
   }
 
   public void slapdownStop() {
-    SlapdownIO.stopMotor();
+    slapdownIO.stopMotor();
   }
 }

@@ -18,7 +18,7 @@ public interface SlapdownIO {
 
   public default void setMotorIdleMode(IdleMode idleMode) {}
 
-  public default void setPID(double kp, double ki, double kd) {}
+  public default void setPID(double kP, double kI, double kD) {}
 
   public default void setSpeed(double speed) {}
 

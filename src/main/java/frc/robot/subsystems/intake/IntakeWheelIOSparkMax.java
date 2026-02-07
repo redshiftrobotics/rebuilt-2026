@@ -21,7 +21,7 @@ public class IntakeWheelIOSparkMax implements IntakeWheelIO {
     config = new SparkMaxConfig();
     config.idleMode(IdleMode.kBrake);
 
-    motor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+    motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
   @Override
