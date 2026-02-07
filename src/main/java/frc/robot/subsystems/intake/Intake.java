@@ -19,6 +19,8 @@ public class Intake extends SubsystemBase {
     this.wheelIO = wheelIO;
     this.slapdownIO = slapdownIO;
 
+    setSlapdownPID(IntakeConstants.SLAPDOWN_PID.kP(), IntakeConstants.SLAPDOWN_PID.kI(), IntakeConstants.SLAPDOWN_PID.kD());
+
     wheelInputs = new IntakeWheelIOInputsAutoLogged();
     slapdownInputs = new SlapdownIOInputsAutoLogged();
   }

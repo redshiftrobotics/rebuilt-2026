@@ -23,7 +23,7 @@ import frc.robot.Constants.Mode;
 import frc.robot.commands.DriveCharacterizationCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.HopperCommands;
-import frc.robot.commands.intake.DropSlapdownNoPid;
+import frc.robot.commands.intake.IntakeCommand;
 import frc.robot.commands.pipeline.DriveInput;
 import frc.robot.commands.pipeline.DriveInputPipeline;
 import frc.robot.generated.PreseasonConstants;
@@ -42,7 +42,6 @@ import frc.robot.subsystems.hopper.HopperConstants.RunMode;
 import frc.robot.subsystems.hopper.HopperMotorIO;
 import frc.robot.subsystems.hopper.HopperMotorIOSim;
 import frc.robot.subsystems.intake.Intake;
-import frc.robot.subsystems.intake.IntakeConstants;
 import frc.robot.subsystems.intake.IntakeWheelIO;
 import frc.robot.subsystems.intake.IntakeWheelIOSim;
 import frc.robot.subsystems.intake.SlapdownIO;
@@ -388,15 +387,8 @@ public class RobotContainer {
   }
 
   private void configureOperatorControllerBindings(CommandXboxController xbox) {
-    // Start input wheel
-    xbox.leftTrigger()
-        .toggleOnTrue(Commands.runOnce(() -> intake.wheelSet(IntakeConstants.INTAKE_WHEEL_SPEED)));
 
-    // Stop input wheel
-    xbox.leftTrigger().toggleOnFalse(Commands.runOnce(() -> intake.wheelStop()));
-
-    // SlapDown
-    xbox.leftBumper().onTrue(new DropSlapdownNoPid(intake));
+    xbox.leftTrigger().whileTrue(new IntakeCommand(intake));
 
     // This is the input for firing; when the shooter is added, it should be
     // triggered by this as

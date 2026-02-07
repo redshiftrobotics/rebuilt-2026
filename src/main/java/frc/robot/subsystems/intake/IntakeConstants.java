@@ -9,7 +9,9 @@ public class IntakeConstants {
 
   public static final IdleMode SLAPDOWN_BRAKE_MODE = IdleMode.kCoast;
   public static final double INTAKE_WHEEL_SPEED = 0.4;
+
   public static final Rotation2d SLAPDOWN_DOWN_SETPOINT = Rotation2d.kZero;
+  public static final Rotation2d SLAPDOWN_UP_SETPOINT = Rotation2d.kZero;
 
   public static final double WHEEL_GEAR_RATIO =
       switch (Constants.getRobot()) {

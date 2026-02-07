@@ -4,11 +4,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeConstants;
 
-public class DropSlapdown extends Command {
+public class IntakeCommand extends Command {
 
   private final Intake intake;
 
-  public DropSlapdown(Intake intake) {
+  public IntakeCommand(Intake intake) {
     this.intake = intake;
 
     addRequirements(intake);
@@ -17,15 +17,17 @@ public class DropSlapdown extends Command {
   @Override
   public void execute() {
     intake.slapdownSetPoint(IntakeConstants.SLAPDOWN_DOWN_SETPOINT);
+    intake.wheelSet(IntakeConstants.INTAKE_WHEEL_SPEED);
   }
 
   @Override
   public boolean isFinished() {
-    return intake.slapdownIsAtSetpoint();
+    return false;
   }
 
   @Override
   public void end(boolean interrupted) {
-    intake.slapdownStop();
+    intake.slapdownSetPoint(IntakeConstants.SLAPDOWN_UP_SETPOINT);
+    intake.wheelStop();
   }
 }
