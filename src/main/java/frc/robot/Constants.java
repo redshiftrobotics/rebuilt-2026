@@ -89,6 +89,7 @@ public final class Constants {
   }
 
   public enum RobotType {
+    METALBOT_2,
     PRESEASON_2026,
     REEFSCAPE_2025,
     WOOD_BOT_2026,
