@@ -1,18 +1,50 @@
 package frc.robot.subsystems.intake;
 
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Constants;
+import frc.robot.utility.records.PIDConstants;
 
-/** Constants for the Template subsystem. */
 public class IntakeConstants {
 
-  // Example of a constant that is not dependent on the robot
-  public static final double SPEED = 0.5;
+  public static final IdleMode SLAPDOWN_BRAKE_MODE = IdleMode.kCoast;
+  public static final double INTAKE_WHEEL_SPEED = 0.4;
 
-  // Example of a constant that is dependent on the robot
-  public static final int CAN_ID =
+  public static final Rotation2d SLAPDOWN_DOWN_SETPOINT = Rotation2d.kZero;
+  public static final Rotation2d SLAPDOWN_UP_SETPOINT = Rotation2d.kZero;
+
+  public static final double WHEEL_GEAR_RATIO =
       switch (Constants.getRobot()) {
         case PRESEASON_2026 -> 1;
+        case SIM_BOT -> 1;
+        default -> 1;
+      };
+
+  public static final double SLAPDOWN_GEAR_RATIO =
+      switch (Constants.getRobot()) {
+        case PRESEASON_2026 -> 1;
+        case SIM_BOT -> 1;
+        default -> 1;
+      };
+
+  public static final int INTAKE_WHEEL_CAN_ID =
+      switch (Constants.getRobot()) {
+        case PRESEASON_2026 -> 0;
         case SIM_BOT -> 0;
         default -> 0;
+      };
+
+  public static final int SLAPDOWN_CAN_ID =
+      switch (Constants.getRobot()) {
+        case PRESEASON_2026 -> 0;
+        case SIM_BOT -> 0;
+        default -> 0;
+      };
+
+  public static final PIDConstants SLAPDOWN_PID =
+      switch (Constants.getRobot()) {
+        case PRESEASON_2026 -> new PIDConstants(0, 0, 0);
+        case SIM_BOT -> new PIDConstants(0, 0, 0);
+        default -> new PIDConstants(0, 0, 0);
       };
 }

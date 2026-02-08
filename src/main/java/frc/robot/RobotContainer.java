@@ -23,6 +23,7 @@ import frc.robot.Constants.Mode;
 import frc.robot.commands.DriveCharacterizationCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.HopperCommands;
+import frc.robot.commands.intake.IntakeCommand;
 import frc.robot.commands.pipeline.DriveInput;
 import frc.robot.commands.pipeline.DriveInputPipeline;
 import frc.robot.generated.PreseasonConstants;
@@ -40,6 +41,11 @@ import frc.robot.subsystems.hopper.HopperConstants;
 import frc.robot.subsystems.hopper.HopperConstants.RunMode;
 import frc.robot.subsystems.hopper.HopperMotorIO;
 import frc.robot.subsystems.hopper.HopperMotorIOSim;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeWheelIO;
+import frc.robot.subsystems.intake.IntakeWheelIOSim;
+import frc.robot.subsystems.intake.SlapdownIO;
+import frc.robot.subsystems.intake.SlapdownIOSim;
 import frc.robot.subsystems.led.BlinkenLEDPattern;
 import frc.robot.subsystems.led.LEDConstants;
 import frc.robot.subsystems.led.LEDStripIOSim;
@@ -66,6 +72,7 @@ public class RobotContainer {
   private final AprilTagVision vision;
   private final LEDSubsystem leds;
   private final Hopper hopper;
+  private final Intake intake;
 
   // Controller
   private final CommandXboxController driverController = new CommandXboxController(0);
@@ -109,6 +116,7 @@ public class RobotContainer {
         vision = new AprilTagVision(drive::getRobotPose);
         leds = new LEDSubsystem();
         hopper = new Hopper(new HopperMotorIO() {}, new HopperMotorIO() {});
+        intake = new Intake(new IntakeWheelIO() {}, new SlapdownIO() {});
         break;
 
       case CHASSIS_CANNON:
@@ -124,6 +132,7 @@ public class RobotContainer {
         vision = new AprilTagVision(drive::getRobotPose);
         leds = new LEDSubsystem();
         hopper = new Hopper(new HopperMotorIO() {}, new HopperMotorIO() {});
+        intake = new Intake(new IntakeWheelIO() {}, new SlapdownIO() {});
         break;
 
       case SIM_BOT:
@@ -142,6 +151,7 @@ public class RobotContainer {
             new Hopper(
                 new HopperMotorIOSim(HopperConstants.BUBBLER_GEAR_RATIO),
                 new HopperMotorIOSim(HopperConstants.FEEDER_GEAR_RATIO));
+        intake = new Intake(new IntakeWheelIOSim(), new SlapdownIOSim());
         break;
 
       default:
@@ -155,6 +165,7 @@ public class RobotContainer {
         vision = new AprilTagVision(drive::getRobotPose);
         leds = new LEDSubsystem();
         hopper = new Hopper(new HopperMotorIO() {}, new HopperMotorIO() {});
+        intake = new Intake(new IntakeWheelIO() {}, new SlapdownIO() {});
         break;
     }
 
@@ -173,7 +184,8 @@ public class RobotContainer {
           }
         });
 
-    // Can also use AutoBuilder.buildAutoChooser(); instead of SendableChooser to auto populate
+    // Can also use AutoBuilder.buildAutoChooser(); instead of SendableChooser to
+    // auto populate
     registerNamedCommands();
     autoChooser =
         new LoggedDashboardChooser<>(
@@ -283,7 +295,8 @@ public class RobotContainer {
     // Toggle robot relative mode, used as backup if gyro fails
     xbox.y().toggleOnTrue(pipeline.runLayer("Robot Relative", DriveInput::fieldRelativeDisabled));
 
-    // Secondary drive command, right stick will be used to control target angular position instead
+    // Secondary drive command, right stick will be used to control target angular
+    // position instead
     // of angular velocity
     xbox.rightBumper()
         .whileTrue(
@@ -295,7 +308,8 @@ public class RobotContainer {
     xbox.leftBumper()
         .whileTrue(pipeline.runLayer("Slow Mode", input -> input.coefficients(0.3, 0.3)));
 
-    // Cause the robot to resist movement by forming an X shape with the swerve modules
+    // Cause the robot to resist movement by forming an X shape with the swerve
+    // modules
     // Helps prevent getting pushed around
     xbox.x().whileTrue(drive.run(drive::stopUsingBrakeArrangement).withName("Hold Position"));
 
@@ -373,7 +387,11 @@ public class RobotContainer {
   }
 
   private void configureOperatorControllerBindings(CommandXboxController xbox) {
-    // This is the input for firing; when the shooter is added, it should be triggered by this as
+
+    xbox.leftTrigger().whileTrue(new IntakeCommand(intake));
+
+    // This is the input for firing; when the shooter is added, it should be
+    // triggered by this as
     // well
     xbox.rightTrigger()
         .whileTrue(HopperCommands.setHopperMode(hopper, RunMode.FIRING))
