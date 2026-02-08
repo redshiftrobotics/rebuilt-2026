@@ -4,6 +4,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeConstants;
 
+/**
+ * This command never 'isFinished', because it is canceled by the command
+ * scheduler when the trigger is lifted. (The command is executed using
+ * whileTrue)
+ */
 public class IntakeCommand extends Command {
 
   private final Intake intake;
@@ -16,18 +21,13 @@ public class IntakeCommand extends Command {
 
   @Override
   public void execute() {
-    intake.slapdownSetPoint(IntakeConstants.SLAPDOWN_DOWN_SETPOINT);
-    intake.wheelSet(IntakeConstants.INTAKE_WHEEL_SPEED);
-  }
-
-  @Override
-  public boolean isFinished() {
-    return false;
+    intake.setSlapdownSetpoint(IntakeConstants.SLAPDOWN_DOWN_SETPOINT);
+    intake.setWheelSpeed(IntakeConstants.INTAKE_WHEEL_SPEED);
   }
 
   @Override
   public void end(boolean interrupted) {
-    intake.slapdownSetPoint(IntakeConstants.SLAPDOWN_UP_SETPOINT);
-    intake.wheelStop();
+    intake.setSlapdownSetpoint(IntakeConstants.SLAPDOWN_UP_SETPOINT);
+    intake.stopWheels();
   }
 }
