@@ -44,33 +44,34 @@ public class VisionConstants {
           new Transform3d(
               new Translation3d(
                   Units.inchesToMeters(-6),
-                  Units.inchesToMeters(13.375),
-                  Units.inchesToMeters(22.4)),
+                  Units.inchesToMeters(12.5),
+                  Units.inchesToMeters(21)),
               new Rotation3d(0, Units.degreesToRadians(-10), Units.degreesToRadians(0))));
-  public static final CameraConfig BACK_CAMERA =
-      new CameraConfig(
-          "back_camera",
-          CameraPosition.BACK,
-          new Transform3d(
-              new Translation3d(
-                  Units.inchesToMeters(-6),
-                  Units.inchesToMeters(13.375),
-                  Units.inchesToMeters(22.4)),
-              new Rotation3d(0, Units.degreesToRadians(-10), Units.degreesToRadians(180))));
-  public static final CameraConfig LEFT_CAMERA =
-      new CameraConfig(
-          "left_camera",
-          CameraPosition.LEFT,
-          new Transform3d(
-              new Translation3d(
-                  Units.inchesToMeters(-11), Units.inchesToMeters(11.5), Units.inchesToMeters(8)),
-              new Rotation3d(0, Units.degreesToRadians(-10), Units.degreesToRadians(120))));
+              
   public static final CameraConfig RIGHT_CAMERA =
       new CameraConfig(
           "right_camera",
           CameraPosition.RIGHT,
           new Transform3d(
               new Translation3d(
-                  Units.inchesToMeters(-11), Units.inchesToMeters(-11.5), Units.inchesToMeters(8)),
-              new Rotation3d(0, Units.degreesToRadians(-10), Units.degreesToRadians(-120))));
+                  Units.inchesToMeters(-8), Units.inchesToMeters(-12.5), Units.inchesToMeters(8)),
+              new Rotation3d(0, Units.degreesToRadians(-20), Units.degreesToRadians(-75))));
+  public static final CameraConfig BACK_CAMERA =
+      new CameraConfig(
+          "back_camera",
+          CameraPosition.BACK,
+          new Transform3d(
+              new Translation3d(
+                  Units.inchesToMeters(-12.5),
+                  Units.inchesToMeters(-12.5),
+                  Units.inchesToMeters(8)),
+              new Rotation3d(0, Units.degreesToRadians(-10), Units.degreesToRadians(-150))));
+  public static final CameraConfig LEFT_CAMERA =
+      new CameraConfig(
+          "left_camera",
+          CameraPosition.LEFT,
+          new Transform3d(
+              new Translation3d(
+                  Units.inchesToMeters(-12.5), Units.inchesToMeters(-8), Units.inchesToMeters(8)),
+              new Rotation3d(0, Units.degreesToRadians(-20), Units.degreesToRadians(-225))));
 }
