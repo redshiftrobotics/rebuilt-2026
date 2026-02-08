@@ -5,9 +5,8 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeConstants;
 
 /**
- * This command never 'isFinished', because it is canceled by the command
- * scheduler when the trigger is lifted. (The command is executed using
- * whileTrue)
+ * This command never 'isFinished', because it is canceled by the command scheduler when the trigger
+ * is lifted. (The command is executed using whileTrue)
  */
 public class IntakeCommand extends Command {
 
