@@ -116,6 +116,34 @@ public class DriverDashboard {
         "Has Vision", hasVisionEstimateDebounce.calculate(hasVisionEstimate.getAsBoolean()));
 
     SmartDashboard.putString("Drive Mode", currentDriveModeName.get());
+
+    SmartDashboard.putString("Game Data", getStatusReadout());
+  }
+
+  private static String getStatusReadout() {
+    String gameData = DriverStation.getGameSpecificMessage();
+    String insight;
+
+    // The alliance will be provided as a single character representing the color of
+    // the alliance whose goal will go inactive first (i.e. ‘R’ = red, ‘B’ = blue).
+    // This alliance’s goal will be active in Shifts 2 and 4.
+    if (gameData.length() > 0) {
+      switch (gameData.charAt(0)) {
+        case 'B':
+          insight = "Red going first. Blue defending.";
+          break;
+        case 'R':
+          insight = "Blue going first. Red defending.";
+          break;
+        default:
+          insight = "Corrupted data received.";
+          break;
+      }
+    } else {
+      insight = "No data received.";
+    }
+
+    return insight;
   }
 
   private static void putCustomWidgets() {
