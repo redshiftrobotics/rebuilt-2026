@@ -51,12 +51,6 @@ public class SlapdownIOSparkMax implements SlapdownIO {
   }
 
   @Override
-  public void setMotorIdleMode(IdleMode idleMode) {
-    SparkMaxConfig config = new SparkMaxConfig();
-    config.idleMode(idleMode);
-  }
-
-  @Override
   public void setPID(double kP, double kI, double kD) {
     SparkMaxConfig config = new SparkMaxConfig();
     config.closedLoop.pid(kP, kI, kD);
@@ -64,18 +58,8 @@ public class SlapdownIOSparkMax implements SlapdownIO {
   }
 
   @Override
-  public void setSpeed(double speed) {
-    motor.set(speed);
-  }
-
-  @Override
   public void setSetpoint(Rotation2d setPoint) {
     motorPID.setSetpoint(setPoint.getRotations(), ControlType.kVelocity);
-  }
-
-  @Override
-  public boolean slapdownIsAtSetpoint() {
-    return motorPID.isAtSetpoint();
   }
 
   @Override

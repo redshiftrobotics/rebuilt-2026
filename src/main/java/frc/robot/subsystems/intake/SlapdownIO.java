@@ -16,17 +16,9 @@ public interface SlapdownIO {
 
   public default void updateInputs(SlapdownIOInputsAutoLogged inputs) {}
 
-  public default void setMotorIdleMode(IdleMode idleMode) {}
-
   public default void setPID(double kP, double kI, double kD) {}
 
-  public default void setSpeed(double speed) {}
-
   public default void setSetpoint(Rotation2d setPoint) {}
-
-  public default boolean slapdownIsAtSetpoint() {
-    return false;
-  }
 
   public default void stopMotor() {}
 }

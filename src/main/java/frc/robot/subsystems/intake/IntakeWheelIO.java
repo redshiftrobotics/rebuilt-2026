@@ -14,7 +14,7 @@ public interface IntakeWheelIO {
 
   public default void updateInputs(IntakeWheelIOInputsAutoLogged inputs) {}
 
-  public default void set(double speed) {}
+  public default void setSpeed(double speed) {}
 
   public default double getSpeed() {
     return 0;

@@ -28,25 +28,11 @@ public class SlapdownIOSim implements SlapdownIO {
   }
 
   @Override
-  public void setMotorIdleMode(IdleMode idleMode) {}
-
-  @Override
   public void setPID(double kP, double kI, double kD) {}
-
-  @Override
-  public void setSpeed(double speed) {
-    sim.setInput(speed);
-  }
 
   @Override
   public void setSetpoint(Rotation2d setPoint) {
     sim.setAngle(setPoint.getRadians());
-  }
-
-  @Override
-  public boolean slapdownIsAtSetpoint() {
-    // setSetpoint just sets the angle so it will always be at set point in sim
-    return true;
   }
 
   @Override

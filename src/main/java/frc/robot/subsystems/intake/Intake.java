@@ -37,7 +37,7 @@ public class Intake extends SubsystemBase {
   // wheel
 
   public void setWheelSpeed(double speed) {
-    wheelIO.set(speed);
+    wheelIO.setSpeed(speed);
   }
 
   public void stopWheels() {
