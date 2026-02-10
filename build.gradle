@@ -105,9 +105,11 @@ test {
     systemProperty 'junit.jupiter.extensions.autodetection.enabled', 'true'
 }
 
-// Simulation configuration (e.g. environment variables).
-wpi.sim.addGui().defaultEnabled = false
-wpi.sim.addDriverstation()
+// Simulation configuration (reads localsimcfg.json to get default settings)
+def simCfgFile = new File(projectDir.getAbsolutePath() + "/localsimcfg.json")
+def simCfgJson = new groovy.json.JsonSlurper().parseText(simCfgFile.exists() ? simCfgFile.text : '{"simGui": false, "niDriverStation": false}')
+wpi.sim.addGui().defaultEnabled = simCfgJson.simGui
+wpi.sim.addDriverstation().defaultEnabled = simCfgJson.niDriverStation
 
 // Setting up my Jar File. In this case, adding all libraries into the main jar ('fat jar')
 // in order to make them all available at runtime. Also adding the manifest so WPILib

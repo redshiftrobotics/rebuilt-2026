@@ -187,3 +187,4 @@ compile_commands.json
 .factorypath
 
 BuildConstants.java
+localsimcfg.json
