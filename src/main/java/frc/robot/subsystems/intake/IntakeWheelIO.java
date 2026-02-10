@@ -4,7 +4,7 @@ import org.littletonrobotics.junction.AutoLog;
 
 public interface IntakeWheelIO {
   @AutoLog
-  public class IntakeWheelIOInputsAutoLogged {
+  public class IntakeWheelIOInputs {
     public double positionRad = 0.0;
     public double velocityRadPerSec = 0.0;
 
@@ -12,7 +12,7 @@ public interface IntakeWheelIO {
     public double[] supplyCurrentAmps = new double[] {};
   }
 
-  public default void updateInputs(IntakeWheelIOInputsAutoLogged inputs) {}
+  public default void updateInputs(IntakeWheelIOInputs inputs) {}
 
   public default void setSpeed(double speed) {}
 

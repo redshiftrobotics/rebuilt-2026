@@ -19,7 +19,7 @@ public class SlapdownIOSim implements SlapdownIO {
   }
 
   @Override
-  public void updateInputs(SlapdownIOInputsAutoLogged inputs) {
+  public void updateInputs(SlapdownIOInputs inputs) {
     inputs.positionRad = sim.getAngularPositionRad();
     inputs.velocityRadPerSec = sim.getAngularVelocityRadPerSec();
     inputs.appliedVolts = new double[] {0.0};

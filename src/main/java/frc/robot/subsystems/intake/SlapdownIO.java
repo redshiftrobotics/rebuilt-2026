@@ -5,7 +5,7 @@ import org.littletonrobotics.junction.AutoLog;
 
 public interface SlapdownIO {
   @AutoLog
-  public class SlapdownIOInputsAutoLogged {
+  public class SlapdownIOInputs {
     public double positionRad = 0.0;
     public double velocityRadPerSec = 0.0;
 
@@ -13,7 +13,7 @@ public interface SlapdownIO {
     public double[] supplyCurrentAmps = new double[] {};
   }
 
-  public default void updateInputs(SlapdownIOInputsAutoLogged inputs) {}
+  public default void updateInputs(SlapdownIOInputs inputs) {}
 
   public default void setPID(double kP, double kI, double kD) {}
 
