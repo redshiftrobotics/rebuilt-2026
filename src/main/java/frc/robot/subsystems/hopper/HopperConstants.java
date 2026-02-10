@@ -31,11 +31,11 @@ public class HopperConstants {
   public static enum RunMode {
     STOPPED(0, 0),
     /** All hopper motors stopped */
-    FUEL_STORE(1, 0),
+    FUEL_STORE(30, 0),
     /** Bubbler running at low speed to push fuel to the back, feeder stopped */
-    FIRING(1, 1),
+    FIRING(60, 60),
     /** Bubbler running at high speed to send balls to the feeder, feeder running */
-    REVERSE(-1, -1);
+    REVERSE(-60, -60);
     /** All hopper motors running in reverse in case of jams */
     public int bubblerVelocityRadPerSec;
 
@@ -68,14 +68,14 @@ public class HopperConstants {
   public static final PIDConstants BUBBLER_PID =
       switch (Constants.getRobot()) {
         case PRESEASON_2026 -> new PIDConstants(0.0, 0.0, 0.0);
-        case SIM_BOT -> new PIDConstants(0.0, 0.0, 0.0);
-        default -> new PIDConstants(0.0, 0.0, 0.0);
+        case SIM_BOT -> new PIDConstants(0.85, 0.0, 0.0);
+        default -> new PIDConstants(1.0, 0.0, 0.0);
       };
   public static final PIDConstants FEEDER_PID =
       switch (Constants.getRobot()) {
         case PRESEASON_2026 -> new PIDConstants(0.0, 0.0, 0.0);
-        case SIM_BOT -> new PIDConstants(0.0, 0.0, 0.0);
-        default -> new PIDConstants(0.0, 0.0, 0.0);
+        case SIM_BOT -> new PIDConstants(0.85, 0.0, 0.0);
+        default -> new PIDConstants(1.0, 0.0, 0.0);
       };
 
   // Feedforward constants
