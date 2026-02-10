@@ -109,7 +109,7 @@ test {
 def useRealDriverStation = System.getenv("REBUILT_USE_REAL_DRIVER_STATION")
 
 wpi.sim.addGui().defaultEnabled = true
-wpi.sim.addDriverstation().defaultEnabled = (useRealDriverStation == "true" || useRealDriverStation == "1") || simCfgJson.niDriverStation
+wpi.sim.addDriverstation().defaultEnabled = (useRealDriverStation == "true" || useRealDriverStation == "1")
 
 // Setting up my Jar File. In this case, adding all libraries into the main jar ('fat jar')
 // in order to make them all available at runtime. Also adding the manifest so WPILib
