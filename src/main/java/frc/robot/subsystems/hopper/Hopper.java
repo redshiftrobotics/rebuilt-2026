@@ -30,7 +30,8 @@ public class Hopper extends SubsystemBase {
 
   /* Mechanism visualization */
   private final LoggedMechanism2d mechanism;
-  private final LoggedMechanismRoot2d mechRoot;
+  private final LoggedMechanismRoot2d bubblerRoot;
+  private final LoggedMechanismRoot2d feederRoot;
   private final LoggedMechanismLigament2d bubblerMech;
   private final LoggedMechanismLigament2d feederMech;
 
@@ -63,12 +64,12 @@ public class Hopper extends SubsystemBase {
 
     // Set up mechanism
     mechanism = new LoggedMechanism2d(256, 256);
-    mechRoot = mechanism.getRoot("Hopper", 128, 128);
-    bubblerMech = new LoggedMechanismLigament2d("Bubbler", 25, 0, 5, new Color8Bit(Color.kPurple));
-    feederMech =
-        new LoggedMechanismLigament2d("Feeder", 25, 0, 5, new Color8Bit(Color.kDarkGoldenrod));
-    mechRoot.append(bubblerMech);
-    mechRoot.append(feederMech);
+    bubblerRoot = mechanism.getRoot("Bubbler", 128, 64);
+    bubblerMech = new LoggedMechanismLigament2d("Bubbler", 25, 0, 5, new Color8Bit(Color.kViolet));
+    bubblerRoot.append(bubblerMech);
+    feederRoot = mechanism.getRoot("Feeder", 128, 192);
+    feederMech = new LoggedMechanismLigament2d("Feeder", 25, 0, 5, new Color8Bit(Color.kGoldenrod));
+    feederRoot.append(feederMech);
   }
 
   @Override
