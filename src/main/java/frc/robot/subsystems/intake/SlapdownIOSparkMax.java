@@ -34,7 +34,7 @@ public class SlapdownIOSparkMax implements SlapdownIO {
   }
 
   @Override
-  public void updateInputs(SlapdownIOInputsAutoLogged inputs) {
+  public void updateInputs(SlapdownIOInputs inputs) {
     inputs.positionRad =
         Units.rotationsToRadians(
             absoluteEncoder.getPosition() / IntakeConstants.SLAPDOWN_GEAR_RATIO);

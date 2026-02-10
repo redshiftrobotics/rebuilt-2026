@@ -17,7 +17,7 @@ public class IntakeWheelIOSim implements IntakeWheelIO {
   }
 
   @Override
-  public void updateInputs(IntakeWheelIOInputsAutoLogged inputs) {
+  public void updateInputs(IntakeWheelIOInputs inputs) {
     inputs.positionRad = sim.getAngularPositionRad();
     inputs.velocityRadPerSec = sim.getAngularVelocityRadPerSec();
     inputs.appliedVolts = new double[] {0.0};

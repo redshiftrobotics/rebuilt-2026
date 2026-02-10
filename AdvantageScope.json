@@ -1,134 +1,68 @@
 {
   "hubs": [
     {
-      "x": -8,
-      "y": -8,
-      "width": 1552,
-      "height": 832,
+      "x": 744,
+      "y": 359,
+      "width": 1100,
+      "height": 650,
       "state": {
         "sidebar": {
-          "width": 300,
+          "width": 318,
           "expanded": [
-            "/RealOutputs"
+            "/RealOutputs",
+            "/LED/strip0",
+            "/RealOutputs/Odometry",
+            "/RealOutputs/SwerveStates",
+            "/RealOutputs/ChassisStates",
+            "/DriverStation",
+            "/RealOutputs/Logger",
+            "/Tuning/Drive",
+            "/Tuning/Drive/Module",
+            "/AdvantageKit/Drive/LeftBackSwerveModule/OdometryTurnPositions/0",
+            "/AdvantageKit",
+            "/AdvantageKit/RealOutputs/SwerveStates",
+            "/Tuning/Drive/Module/Drive_PID",
+            "/Tuning/Drive/Module/Turn_PID",
+            "/Tuning/Drive/Module/Turn_FF",
+            "/AdvantageKit/Drive/LeftBackSwerveModule/TurnPosition",
+            "/AdvantageKit/Drive/LeftBackSwerveModule/TurnAbsolutePosition",
+            "/AdvantageKit/RealOutputs",
+            "/AdvantageKit/RealOutputs/Hopper"
           ]
         },
         "tabs": {
-          "selected": 1,
+          "selected": 6,
           "tabs": [
             {
               "type": 0,
               "title": "",
               "controller": null,
               "controllerUUID": "gzx9mn46nlpciwyqfg33v0bi5kk5xmho",
-              "renderer": "#/",
+              "renderer": "",
               "controlsHeight": 0
             },
             {
-              "type": 3,
-              "title": "3D Field",
-              "controller": {
-                "sources": [
-                  {
-                    "type": "robot",
-                    "logKey": "/RealOutputs/Odometry/Robot",
-                    "logType": "Pose2d",
-                    "visible": true,
-                    "options": {
-                      "model": "demo_8032"
-                    }
-                  },
-                  {
-                    "type": "swerveStates",
-                    "logKey": "/RealOutputs/SwerveStates/DesiredWheelSpeeds",
-                    "logType": "SwerveModuleState[]",
-                    "visible": true,
-                    "options": {
-                      "color": "#ff0000",
-                      "arrangement": "0,1,2,3"
-                    }
-                  },
-                  {
-                    "type": "vision",
-                    "logKey": "/RealOutputs/Vision/seenTagPoses",
-                    "logType": "Pose3d[]",
-                    "visible": false,
-                    "options": {
-                      "color": "#00ff00",
-                      "size": "normal"
-                    }
-                  },
-                  {
-                    "type": "trajectory",
-                    "logKey": "/RealOutputs/Odometry/Trajectory",
-                    "logType": "Pose2d[]",
-                    "visible": true,
-                    "options": {
-                      "color": "#00ff00",
-                      "size": "normal"
-                    }
-                  },
-                  {
-                    "type": "ghost",
-                    "logKey": "/RealOutputs/Odometry/TrajectorySetpoint",
-                    "logType": "Pose2d",
-                    "visible": false,
-                    "options": {
-                      "model": "demo_8032",
-                      "color": "#00ff00"
-                    }
-                  },
-                  {
-                    "type": "ghost",
-                    "logKey": "/RealOutputs/Vision/robotPosesAccepted",
-                    "logType": "Pose3d[]",
-                    "visible": false,
-                    "options": {
-                      "model": "demo_8032",
-                      "color": "#ff00ff"
-                    }
-                  },
-                  {
-                    "type": "ghost",
-                    "logKey": "/RealOutputs/Vision/robotPosesRejected",
-                    "logType": "Pose3d[]",
-                    "visible": false,
-                    "options": {
-                      "model": "demo_8032",
-                      "color": "#ffff00"
-                    }
-                  }
-                ],
-                "game": "FRC:2026 Field"
-              },
-              "controllerUUID": "e8hgomb1yslv0cwpvfxkohzvzsz5j7n2",
+              "type": 5,
+              "title": "Log",
+              "controller": "/RealOutputs/Console",
+              "controllerUUID": "xpy7vzckcpkdzf1iket7r2ojsx6kjvbs",
               "renderer": {
-                "cameraIndex": -3,
-                "orbitFov": 50,
-                "cameraPosition": [
-                  -9.683390031424642,
-                  1.574799999999999,
-                  -3.602810912692994
-                ],
-                "cameraTarget": [
-                  0,
-                  0.5,
-                  0
-                ]
+                "highlight": true
               },
-              "controlsHeight": 225
+              "controlsHeight": 0
             },
             {
               "type": 2,
-              "title": "Odometry",
+              "title": "2D",
               "controller": {
                 "sources": [
                   {
-                    "type": "robot",
+                    "type": "ghost",
                     "logKey": "/RealOutputs/Odometry/Robot",
                     "logType": "Pose2d",
                     "visible": true,
                     "options": {
-                      "bumpers": ""
+                      "color": "#0000ff"
                     }
                   },
                   {
@@ -189,32 +123,22 @@
               "controlsHeight": 200
             },
             {
-              "type": 9,
-              "title": "Swerve",
+              "type": 3,
+              "title": "3D",
               "controller": {
                 "sources": [
                   {
-                    "type": "states",
-                    "logKey": "/RealOutputs/SwerveStates/ModuleDesiredWheelSpeeds",
-                    "logType": "SwerveModuleState[]",
+                    "type": "robot",
+                    "logKey": "/RealOutputs/Odometry/Robot",
+                    "logType": "Pose2d",
                     "visible": true,
                     "options": {
-                      "color": "#0000ff",
-                      "arrangement": "0,1,2,3"
+                      "model": "2026 KitBot"
                     }
                   },
                   {
-                    "type": "chassisSpeeds",
-                    "logKey": "/RealOutputs/ChassisStates/ModuleDesiredSpeeds",
-                    "logType": "ChassisSpeeds",
-                    "visible": true,
-                    "options": {
-                      "color": "#0000ff"
-                    }
-                  },
-                  {
-                    "type": "states",
-                    "logKey": "/RealOutputs/SwerveStates/MeasuredWheelSpeeds",
+                    "type": "swerveStates",
+                    "logKey": "/RealOutputs/SwerveStates/DesiredWheelSpeeds",
                     "logType": "SwerveModuleState[]",
                     "visible": true,
                     "options": {
@@ -223,8 +147,83 @@
                     }
                   },
                   {
+                    "type": "vision",
+                    "logKey": "/RealOutputs/Vision/seenTagPoses",
+                    "logType": "Pose3d[]",
+                    "visible": false,
+                    "options": {
+                      "color": "#00ff00",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "trajectory",
+                    "logKey": "/RealOutputs/Odometry/Trajectory",
+                    "logType": "Pose2d[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ff00",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "/RealOutputs/Odometry/TrajectorySetpoint",
+                    "logType": "Pose2d",
+                    "visible": false,
+                    "options": {
+                      "model": "2026 KitBot",
+                      "color": "#00ff00"
+                    }
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "/RealOutputs/Vision/robotPosesAccepted",
+                    "logType": "Pose3d[]",
+                    "visible": false,
+                    "options": {
+                      "model": "2026 KitBot",
+                      "color": "#ff00ff"
+                    }
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "/RealOutputs/Vision/robotPosesRejected",
+                    "logType": "Pose3d[]",
+                    "visible": false,
+                    "options": {
+                      "model": "2026 KitBot",
+                      "color": "#ffff00"
+                    }
+                  }
+                ],
+                "game": "FRC:2026 Field"
+              },
+              "controllerUUID": "e8hgomb1yslv0cwpvfxkohzvzsz5j7n2",
+              "renderer": {
+                "cameraIndex": -1,
+                "orbitFov": 50,
+                "cameraPosition": [
+                  -3.8693372298503954,
+                  2.2433571153090037,
+                  -8.709006482534381
+                ],
+                "cameraTarget": [
+                  -2.416603442906561,
+                  0.6543979995675826,
+                  4.035299220391996
+                ]
+              },
+              "controlsHeight": 225
+            },
+            {
+              "type": 9,
+              "title": "Swerve",
+              "controller": {
+                "sources": [
+                  {
                     "type": "chassisSpeeds",
-                    "logKey": "/RealOutputs/ChassisStates/MeasuredRobotSpeeds",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/ChassisStates/MeasuredRobotSpeeds",
                     "logType": "ChassisSpeeds",
                     "visible": true,
                     "options": {
@@ -232,30 +231,33 @@
                     }
                   },
                   {
-                    "type": "states",
-                    "logKey": "/RealOutputs/SwerveStates/DesiredWheelSpeeds",
-                    "logType": "SwerveModuleState[]",
-                    "visible": false,
+                    "type": "chassisSpeeds",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/ChassisStates/DesiredRobotSpeeds",
+                    "logType": "ChassisSpeeds",
+                    "visible": true,
                     "options": {
-                      "color": "#00ff00",
+                      "color": "#0000ff"
+                    }
+                  },
+                  {
+                    "type": "states",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/SwerveStates/DesiredWheelSpeeds",
+                    "logType": "SwerveModuleState[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#ff0000",
                       "arrangement": "0,1,2,3"
                     }
                   },
                   {
-                    "type": "chassisSpeeds",
-                    "logKey": "/RealOutputs/ChassisStates/DesiredRobotSpeeds",
-                    "logType": "ChassisSpeeds",
-                    "visible": false,
-                    "options": {
-                      "color": "#00ff00"
-                    }
-                  },
-                  {
-                    "type": "rotation",
-                    "logKey": "/RealOutputs/Odometry/Robot/rotation",
-                    "logType": "Rotation2d",
+                    "type": "states",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/SwerveStates/MeasuredWheelSpeeds",
+                    "logType": "SwerveModuleState[]",
                     "visible": true,
-                    "options": {}
+                    "options": {
+                      "color": "#00ffff",
+                      "arrangement": "0,1,2,3"
+                    }
                   }
                 ],
                 "maxSpeed": 5,
@@ -265,17 +267,7 @@
               },
               "controllerUUID": "i2gcnkyeksamfejw9625ujsvbs0gk3ke",
               "renderer": null,
-              "controlsHeight": 200
-            },
-            {
-              "type": 5,
-              "title": "Console",
-              "controller": "/RealOutputs/Console",
-              "controllerUUID": "xpy7vzckcpkdzf1iket7r2ojsx6kjvbs",
-              "renderer": {
-                "highlight": true
-              },
-              "controlsHeight": 0
+              "controlsHeight": 256
             },
             {
               "type": 8,
@@ -293,52 +285,20 @@
               "controlsHeight": 85
             },
             {
-              "type": 1,
-              "title": "FL Module Turn",
-              "controller": {
-                "leftSources": [
-                  {
-                    "type": "stepped",
-                    "logKey": "/RealOutputs/SwerveStates/ModuleDesiredWheelSpeeds/0/angle/value",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#2b66a2",
-                      "size": "normal"
-                    }
-                  },
-                  {
-                    "type": "stepped",
-                    "logKey": "/RealOutputs/SwerveStates/MeasuredWheelSpeeds/0/angle/value",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#e5b31b",
-                      "size": "normal"
-                    }
-                  }
-                ],
-                "rightSources": [],
-                "discreteSources": [],
-                "leftLockedRange": [
-                  -180,
-                  180
-                ],
-                "rightLockedRange": null,
-                "leftUnitConversion": {
-                  "autoTarget": "degrees",
-                  "preset": null
-                },
-                "rightUnitConversion": {
-                  "autoTarget": null,
-                  "preset": null
-                },
-                "leftFilter": 0,
-                "rightFilter": 0
-              },
-              "controllerUUID": "wnsaktydth5fjbshpwwfpx2zxvpz3ndd",
+              "type": 10,
+              "title": "Hopper",
+              "controller": [
+                {
+                  "type": "mechanism",
+                  "logKey": "NT:/AdvantageKit/RealOutputs/Hopper/Visualization",
+                  "logType": "Mechanism2d",
+                  "visible": true,
+                  "options": {}
+                }
+              ],
+              "controllerUUID": "7rqwubwfx8kf8mdsd6es1cbtcumw5ptr",
               "renderer": null,
-              "controlsHeight": 153
+              "controlsHeight": 200
             }
           ]
         }
