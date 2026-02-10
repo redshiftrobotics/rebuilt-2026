@@ -19,7 +19,7 @@ public final class Constants {
   /** The period, in seconds, of the main robot loop */
   public static final double LOOP_PERIOD_SECONDS = Robot.defaultPeriodSecs; // 0.02
 
-  public static final RobotType PRIMARY_ROBOT_TYPE = RobotType.PRESEASON_2026;
+  public static final RobotType PRIMARY_ROBOT_TYPE = RobotType.METALBOT_2;
   private static RobotType robotType;
 
   /** If true, allows TunableNumbers to be edited from Advantage Scope */
@@ -108,6 +108,8 @@ public final class Constants {
           return RobotType.REEFSCAPE_2025;
         case "032D216B":
           return RobotType.WOOD_BOT_2026;
+        case "03238024":
+          return RobotType.METALBOT_2;
       }
     } else if (RobotBase.isSimulation()) {
       return RobotType.SIM_BOT;

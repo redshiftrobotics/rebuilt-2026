@@ -138,7 +138,8 @@ public class DriveConstants {
   public static final double ODOMETRY_FREQUENCY_HERTZ =
       switch (Constants.getRobot()) {
         case SIM_BOT -> 50.0;
-        case PRESEASON_2026 -> new CANBus(PreseasonConstants.DrivetrainConstants.CANBusName)
+        case PRESEASON_2026, METALBOT_2 -> new CANBus(
+                    PreseasonConstants.DrivetrainConstants.CANBusName)
                 .isNetworkFD()
             ? 250.0
             : 100.0;
