@@ -186,5 +186,5 @@ compile_commands.json
 # Eclipse generated file for annotation processors
 .factorypath
 
+# Ignore generated build constants
 BuildConstants.java
-localsimcfg.json

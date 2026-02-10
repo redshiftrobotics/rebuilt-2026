@@ -106,9 +106,10 @@ test {
 }
 
 // Simulation configuration (reads environment variubles)
+def useSimGui = System.getenv("REBUILT_USE_SIM_GUI")
 def useRealDriverStation = System.getenv("REBUILT_USE_REAL_DRIVER_STATION")
 
-wpi.sim.addGui().defaultEnabled = true
+wpi.sim.addGui().defaultEnabled = (useSimGui == "true" || useSimGui == "1")
 wpi.sim.addDriverstation().defaultEnabled = (useRealDriverStation == "true" || useRealDriverStation == "1")
 
 // Setting up my Jar File. In this case, adding all libraries into the main jar ('fat jar')
