@@ -17,7 +17,10 @@ public class Launcher extends SubsystemBase {
     this.channelIOs = channelIOs;
     channelInputs = new ChannelIOInputsAutoLogged[channelIOs.length];
     for (int i = 0; i < channelIOs.length; i++) {
-      this.channelIOs[i].configurePID(LauncherConstants.FLYWHEEL_KP, LauncherConstants.FLYWHEEL_KI, LauncherConstants.FLYWHEEL_KD);
+      this.channelIOs[i].configurePID(
+          LauncherConstants.FLYWHEEL_KP,
+          LauncherConstants.FLYWHEEL_KI,
+          LauncherConstants.FLYWHEEL_KD);
       channelInputs[i] = new ChannelIOInputsAutoLogged();
     }
   }
