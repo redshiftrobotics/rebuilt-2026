@@ -15,6 +15,10 @@ public class LauncherConstants {
   public static int CHANNEL_LEFT_ID;
   public static int CHANNEL_CENTER_ID;
   public static int CHANNEL_RIGHT_ID;
+  
+  public static double FLYWHEEL_KP = 1.0;
+  public static double FLYWHEEL_KI = 0.0;
+  public static double FLYWHEEL_KD = 0.0;
 
   public static Distance WHEEL_RADIUS = Inches.of(3);
 

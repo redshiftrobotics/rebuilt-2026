@@ -13,9 +13,11 @@ public class Launcher extends SubsystemBase {
   /** Creates a new Template. */
   public Launcher(HoodActuatorIO io, ChannelIO... channelIOs) {
     this.hoodIO = io;
+
     this.channelIOs = channelIOs;
     channelInputs = new ChannelIOInputsAutoLogged[channelIOs.length];
     for (int i = 0; i < channelIOs.length; i++) {
+      this.channelIOs[i].configurePID(LauncherConstants.FLYWHEEL_KP, LauncherConstants.FLYWHEEL_KI, LauncherConstants.FLYWHEEL_KD);
       channelInputs[i] = new ChannelIOInputsAutoLogged();
     }
   }
@@ -27,8 +29,8 @@ public class Launcher extends SubsystemBase {
 
     for (int i = 0; i < channelIOs.length; i++) {
       channelIOs[i].updateInputs(channelInputs[i]);
+      Logger.processInputs("Launcher/Channel" + String.valueOf(i), channelInputs[i]);
     }
-    Logger.processInputs("Launcher/Hood", hoodInputs);
   }
 
   // Function to determine if the launcher wheels and hood are at their setpoints
