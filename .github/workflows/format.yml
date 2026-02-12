@@ -1,11 +1,11 @@
-name: Build
+name: Format
 
 on:
   push
 
 jobs:
   build:
-    name: Build and Format
+    name: Apply Spotless Formatting
     runs-on: ubuntu-latest
     container: wpilib/roborio-cross-ubuntu:2025-24.04 # https://hub.docker.com/r/wpilib/roborio-cross-ubuntu
     steps:
