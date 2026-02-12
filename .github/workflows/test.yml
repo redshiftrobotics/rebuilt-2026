@@ -1,11 +1,11 @@
-name: Format
+name: Test
 
 on:
   push
 
 jobs:
   build:
-    name: Apply Spotless Formatting
+    name: Run Unit Tests
     runs-on: ubuntu-latest
     container: wpilib/roborio-cross-ubuntu:2025-24.04 # https://hub.docker.com/r/wpilib/roborio-cross-ubuntu
     steps:
