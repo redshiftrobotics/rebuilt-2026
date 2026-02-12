@@ -23,7 +23,7 @@ import frc.robot.Constants.Mode;
 import frc.robot.commands.DriveCharacterizationCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.HopperCommands;
-import frc.robot.commands.intake.IntakeCommand;
+import frc.robot.commands.IntakeCommands;
 import frc.robot.commands.pipeline.DriveInput;
 import frc.robot.commands.pipeline.DriveInputPipeline;
 import frc.robot.generated.PreseasonConstants;
@@ -388,7 +388,19 @@ public class RobotContainer {
 
   private void configureOperatorControllerBindings(CommandXboxController xbox) {
 
-    xbox.leftTrigger().whileTrue(new IntakeCommand(intake));
+    xbox.leftTrigger()
+        .onTrue(
+            Commands.parallel(
+                IntakeCommands.extendSlapdown(intake),
+                IntakeCommands.startIntake(intake)
+            )
+        )
+        .onFalse(
+            Commands.parallel(
+                IntakeCommands.retractSlapdown(intake),
+                IntakeCommands.stopIntake(intake)
+            )
+        );
 
     // This is the input for firing; when the shooter is added, it should be
     // triggered by this as
@@ -449,13 +461,25 @@ public class RobotContainer {
         .onTrue(Commands.runOnce(() -> Elastic.selectTab("Autonomous")));
   }
 
+  /** Make commands accessible to PathPlanner autos. */
   private void registerNamedCommands() {
-    // Set up named commands for path planner auto
     NamedCommands.registerCommand("LEDS", leds.runColor(BlinkenLEDPattern.RED));
-    NamedCommands.registerCommand("StopHopper", HopperCommands.setHopperMode(hopper, RunMode.STOPPED));
-    NamedCommands.registerCommand("IdleHopper", HopperCommands.setHopperMode(hopper, RunMode.FUEL_STORE));
-    NamedCommands.registerCommand("FireHopper", HopperCommands.setHopperMode(hopper, RunMode.FIRING));
-    NamedCommands.registerCommand("ReverseHopper", HopperCommands.setHopperMode(hopper, RunMode.REVERSE));
+
+    // Hopper commands
+    NamedCommands.registerCommand(
+        "StopHopper", HopperCommands.setHopperMode(hopper, RunMode.STOPPED));
+    NamedCommands.registerCommand(
+        "IdleHopper", HopperCommands.setHopperMode(hopper, RunMode.FUEL_STORE));
+    NamedCommands.registerCommand(
+        "FireHopper", HopperCommands.setHopperMode(hopper, RunMode.FIRING));
+    NamedCommands.registerCommand(
+        "ReverseHopper", HopperCommands.setHopperMode(hopper, RunMode.REVERSE));
+
+    // Intake commands
+    NamedCommands.registerCommand("ExtendSlapdown", IntakeCommands.extendSlapdown(intake));
+    NamedCommands.registerCommand("RetractSlapdown", IntakeCommands.retractSlapdown(intake));
+    NamedCommands.registerCommand("StartIntake", IntakeCommands.startIntake(intake));
+    NamedCommands.registerCommand("StopIntake", IntakeCommands.stopIntake(intake));
   }
 
   private void configureAutos(LoggedDashboardChooser<Command> dashboardChooser) {
