@@ -205,7 +205,7 @@ public class RobotContainer {
     autoChooser =
         new LoggedDashboardChooser<>(
             "Auto Chooser",
-            Constants.INCLUDE_ALL_PATHPLANNER_AUTOS
+            Constants.DEVELOPMENT_MODE
                 ? AutoBuilder.buildAutoChooser()
                 : new SendableChooser<Command>());
     autoChooser.addDefaultOption("None", Commands.none());
@@ -221,7 +221,7 @@ public class RobotContainer {
             .withName("LED Alliance Color Waves"));
 
     // Alerts for constants to avoid using them in competition
-    tuningModeActiveAlert.set(Constants.TUNING_MODE);
+    tuningModeActiveAlert.set(Constants.DEVELOPMENT_MODE);
     notPrimaryBotAlert.set(Constants.getRobot() != Constants.PRIMARY_ROBOT_TYPE);
 
     // Hide controller missing warnings for sim
@@ -499,7 +499,7 @@ public class RobotContainer {
     // Choreo Autos
     // https://pathplanner.dev/pplib-choreo-interop.html#load-choreo-trajectory-as-a-pathplannerpath
 
-    if (Constants.RUNNING_TEST_PLANS) {
+    if (Constants.DEVELOPMENT_MODE) {
       dashboardChooser.addOption(
           "[Characterization] Drive Feed Forward",
           DriveCharacterizationCommands.feedforwardCharacterization(drive));

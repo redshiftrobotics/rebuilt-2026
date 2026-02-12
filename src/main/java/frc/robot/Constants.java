@@ -22,17 +22,15 @@ public final class Constants {
   public static final RobotType PRIMARY_ROBOT_TYPE = RobotType.METALBOT_2;
   private static RobotType robotType;
 
-  /** If true, allows TunableNumbers to be edited from Advantage Scope */
-  public static final boolean TUNING_MODE = true;
-
-  /** If true, should enable cosmetic logging to Advantage Scope throughout the codebase */
-  public static final boolean ADDITIONAL_LOGGING = true;
-
-  /** If true, includes testing/diagnostic autos in auto chooser */
-  public static final boolean RUNNING_TEST_PLANS = true;
-
-  /** If true, includes all created PathPlanner autos in auto chooser */
-  public static final boolean INCLUDE_ALL_PATHPLANNER_AUTOS = true;
+  /**
+   * If true, enables several development features, such as
+   *
+   * <ul>
+   *   <li>TunableNumber editing in AdvantageScope
+   *   <li>Verbose logging in AdvantageScope
+   *   <li>Enables SysId, Diagnostic, Test Plans, and other debug autos
+   */
+  public static final boolean DEVELOPMENT_MODE = true;
 
   /**
    * If true, robot is considered to be on the playing field. Vision will look for field tags, and

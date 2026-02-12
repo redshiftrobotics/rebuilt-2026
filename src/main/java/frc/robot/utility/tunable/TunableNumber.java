@@ -59,7 +59,7 @@ public class TunableNumber implements DoubleSupplier {
     if (!hasDefault) {
       hasDefault = true;
       this.defaultValue = defaultValue;
-      if (Constants.TUNING_MODE) {
+      if (Constants.DEVELOPMENT_MODE) {
         dashboardNumber = new LoggedNetworkNumber(key, defaultValue);
       }
     }
@@ -71,7 +71,7 @@ public class TunableNumber implements DoubleSupplier {
    * @return The current value
    */
   public double get() {
-    if (!Constants.TUNING_MODE) return defaultValue;
+    if (!Constants.DEVELOPMENT_MODE) return defaultValue;
 
     if (!hasDefault) {
       return 0.0;
@@ -89,7 +89,7 @@ public class TunableNumber implements DoubleSupplier {
    *     otherwise.
    */
   public boolean hasChanged(int id) {
-    if (!Constants.TUNING_MODE) return false;
+    if (!Constants.DEVELOPMENT_MODE) return false;
 
     double currentValue = get();
     Double lastValue = lastHasChangedValues.get(id);
@@ -110,7 +110,7 @@ public class TunableNumber implements DoubleSupplier {
    * @param tunableNumbers All tunable numbers to check
    */
   public static void ifChanged(int id, Consumer<double[]> action, TunableNumber... tunableNumbers) {
-    if (!Constants.TUNING_MODE) return;
+    if (!Constants.DEVELOPMENT_MODE) return;
 
     if (Arrays.stream(tunableNumbers).anyMatch(tunableNumber -> tunableNumber.hasChanged(id))) {
       action.accept(Arrays.stream(tunableNumbers).mapToDouble(TunableNumber::get).toArray());
@@ -119,7 +119,7 @@ public class TunableNumber implements DoubleSupplier {
 
   /** Runs action if any of the tunableNumbers have changed */
   public static void ifChanged(int id, Runnable action, TunableNumber... tunableNumbers) {
-    if (!Constants.TUNING_MODE) return;
+    if (!Constants.DEVELOPMENT_MODE) return;
 
     if (Arrays.stream(tunableNumbers).anyMatch(tunableNumber -> tunableNumber.hasChanged(id))) {
       action.run();
