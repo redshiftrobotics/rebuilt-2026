@@ -29,14 +29,15 @@ public class HopperConstants {
   // Hopper run mode
   // TODO: Set real speeds
   public static enum RunMode {
-    STOPPED(0, 0),
     /** All hopper motors stopped */
-    FUEL_STORE(1, 0),
+    STOPPED(0, 0),
     /** Bubbler running at low speed to push fuel to the back, feeder stopped */
-    FIRING(1, 1),
+    FUEL_STORE(30, 0),
     /** Bubbler running at high speed to send balls to the feeder, feeder running */
-    REVERSE(-1, -1);
+    FIRING(60, 60),
     /** All hopper motors running in reverse in case of jams */
+    REVERSE(-60, -60);
+    
     public int bubblerVelocityRadPerSec;
 
     public int feederVelocityRadPerSec;
