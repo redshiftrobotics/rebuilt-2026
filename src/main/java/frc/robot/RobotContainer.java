@@ -405,10 +405,10 @@ public class RobotContainer {
 
     xbox.leftTrigger()
         .onTrue(
-            Commands.parallel(
+            Commands.sequence(
                 IntakeCommands.extendSlapdown(intake), IntakeCommands.startIntake(intake)))
         .onFalse(
-            Commands.parallel(
+            Commands.sequence(
                 IntakeCommands.retractSlapdown(intake), IntakeCommands.stopIntake(intake)));
 
     // This is the input for firing; when the shooter is added, it should be
