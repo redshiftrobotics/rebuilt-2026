@@ -452,10 +452,14 @@ public class RobotContainer {
   private void registerNamedCommands() {
     // Set up named commands for path planner auto
     NamedCommands.registerCommand("LEDS", leds.runColor(BlinkenLEDPattern.RED));
-    NamedCommands.registerCommand("StopHopper", HopperCommands.setHopperMode(hopper, RunMode.STOPPED));
-    NamedCommands.registerCommand("IdleHopper", HopperCommands.setHopperMode(hopper, RunMode.FUEL_STORE));
-    NamedCommands.registerCommand("FireHopper", HopperCommands.setHopperMode(hopper, RunMode.FIRING));
-    NamedCommands.registerCommand("ReverseHopper", HopperCommands.setHopperMode(hopper, RunMode.REVERSE));
+    NamedCommands.registerCommand(
+        "StopHopper", HopperCommands.setHopperMode(hopper, RunMode.STOPPED));
+    NamedCommands.registerCommand(
+        "IdleHopper", HopperCommands.setHopperMode(hopper, RunMode.FUEL_STORE));
+    NamedCommands.registerCommand(
+        "FireHopper", HopperCommands.setHopperMode(hopper, RunMode.FIRING));
+    NamedCommands.registerCommand(
+        "ReverseHopper", HopperCommands.setHopperMode(hopper, RunMode.REVERSE));
   }
 
   private void configureAutos(LoggedDashboardChooser<Command> dashboardChooser) {

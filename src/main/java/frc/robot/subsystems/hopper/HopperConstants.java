@@ -37,7 +37,7 @@ public class HopperConstants {
     FIRING(60, 60),
     /** All hopper motors running in reverse in case of jams */
     REVERSE(-60, -60);
-    
+
     public int bubblerVelocityRadPerSec;
 
     public int feederVelocityRadPerSec;
