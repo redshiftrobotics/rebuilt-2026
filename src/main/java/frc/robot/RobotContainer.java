@@ -417,7 +417,6 @@ public class RobotContainer {
   }
 
   private void configureAutos(LoggedDashboardChooser<Command> dashboardChooser) {
-
     // Path planner Autos
     // https://pathplanner.dev/gui-editing-paths-and-autos.html#autos
 
