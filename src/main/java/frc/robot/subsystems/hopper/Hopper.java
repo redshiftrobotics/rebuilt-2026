@@ -5,6 +5,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.RobotType;
 import frc.robot.subsystems.hopper.HopperConstants.RunMode;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -147,4 +148,18 @@ public class Hopper extends SubsystemBase {
   public double getFeederCharacterizationVelocity() {
     return feederInputs.velocityRadPerSec;
   }
+
+public static Hopper create(RobotType robotType) {
+    switch (robotType) {
+      case SIM_BOT:
+        return 
+            new Hopper(
+                new HopperMotorIOSim(HopperConstants.BUBBLER_GEAR_RATIO),
+                new HopperMotorIOSim(HopperConstants.FEEDER_GEAR_RATIO));
+    
+      default:
+   return   new Hopper(new HopperMotorIO() {}, new HopperMotorIO() {});
+   
+    }
+}
 }
