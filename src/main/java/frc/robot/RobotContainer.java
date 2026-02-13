@@ -444,6 +444,9 @@ public class RobotContainer {
           "[SysId] Drive Dynamic Forward", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
       dashboardChooser.addOption(
           "[SysId] Drive Dynamic Reverse", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+
+      dashboardChooser.addOption(
+          "[Test] Hopper Test Routine", HopperCommands.hopperTestRoutine(hopper));
     }
   }
 
