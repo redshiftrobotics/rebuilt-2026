@@ -497,6 +497,13 @@ public class RobotContainer {
     namedCommands.put("StartIntake", IntakeCommands.startIntake(intake));
     namedCommands.put("StopIntake", IntakeCommands.stopIntake(intake));
 
+    // Launcher commands
+    namedCommands.put("FireHopper", null);
+
+    // Hang commands
+    namedCommands.put("HangUp", null);
+    namedCommands.put("HangDown", null);
+
     System.out.println("Avaliable named commands:");
     namedCommands.keySet().forEach(commandName -> System.out.println("  " + commandName));
   }
