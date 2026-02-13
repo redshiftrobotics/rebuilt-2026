@@ -4,6 +4,8 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.RobotType;
+import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.vision.Camera.ProcessedEstimatedRobotPose;
 import frc.robot.utility.Elastic;
 import frc.robot.utility.Elastic.Notification;
@@ -137,4 +139,8 @@ public class AprilTagVision extends SubsystemBase {
                   command, ipString, exception.getMessage())));
     }
   }
+
+public static AprilTagVision create(RobotType robotType, Drive drivetrain) {
+  return robotType==RobotType.SIM_BOT ? new AprilTagVision(drivetrain::getRobotPose, new CameraIOSim(VisionConstants.SIM_FRONT_CAMERA)):new AprilTagVision(drivetrain::getRobotPose);
+}
 }
