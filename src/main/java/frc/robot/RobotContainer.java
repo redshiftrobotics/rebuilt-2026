@@ -1,7 +1,6 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -20,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.Mode;
+import frc.robot.Constants.RobotType;
 import frc.robot.commands.DriveCharacterizationCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.HopperCommands;
@@ -56,6 +56,8 @@ import frc.robot.subsystems.vision.CameraIOSim;
 import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.utility.Elastic;
 import frc.robot.utility.Elastic.Notification.NotificationLevel;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -102,9 +104,14 @@ public class RobotContainer {
   private final Alert tuningModeActiveAlert =
       new Alert("Tuning mode active, do not use in competition.", AlertType.kWarning);
 
+  private final RobotType robotType;
+
   /** The container for the robot. Contains subsystems, IO devices, and commands. */
   public RobotContainer() {
-    System.out.println("Initializing for robot ID: " + Constants.getRobot());
+    robotType = Constants.getRobot();
+
+    System.out.println("Initializing for robot ID: " + robotType);
+    
     switch (Constants.getRobot()) {
       case METALBOT_2:
         drive =
@@ -233,6 +240,8 @@ public class RobotContainer {
     configureDriverControllerBindings(driverController);
     configureOperatorControllerBindings(operatorController);
     configureAlertTriggers();
+
+    System.out.println(robotType + " ready.");
   }
 
   /** Configure drive dashboard object */
@@ -472,23 +481,24 @@ public class RobotContainer {
 
   /** Make commands accessible to PathPlanner autos. */
   private void registerNamedCommands() {
-    NamedCommands.registerCommand("LEDS", leds.runColor(BlinkenLEDPattern.RED));
+    Map<String, Command> namedCommands = new HashMap<String, Command>();
+
+    namedCommands.put("LEDS", leds.runColor(BlinkenLEDPattern.RED));
 
     // Hopper commands
-    NamedCommands.registerCommand(
-        "StopHopper", HopperCommands.setHopperMode(hopper, RunMode.STOPPED));
-    NamedCommands.registerCommand(
-        "IdleHopper", HopperCommands.setHopperMode(hopper, RunMode.FUEL_STORE));
-    NamedCommands.registerCommand(
-        "FireHopper", HopperCommands.setHopperMode(hopper, RunMode.FIRING));
-    NamedCommands.registerCommand(
-        "ReverseHopper", HopperCommands.setHopperMode(hopper, RunMode.REVERSE));
+    namedCommands.put("StopHopper", HopperCommands.setHopperMode(hopper, RunMode.STOPPED));
+    namedCommands.put("IdleHopper", HopperCommands.setHopperMode(hopper, RunMode.FUEL_STORE));
+    namedCommands.put("FireHopper", HopperCommands.setHopperMode(hopper, RunMode.FIRING));
+    namedCommands.put("ReverseHopper", HopperCommands.setHopperMode(hopper, RunMode.REVERSE));
 
     // Intake commands
-    NamedCommands.registerCommand("ExtendSlapdown", IntakeCommands.extendSlapdown(intake));
-    NamedCommands.registerCommand("RetractSlapdown", IntakeCommands.retractSlapdown(intake));
-    NamedCommands.registerCommand("StartIntake", IntakeCommands.startIntake(intake));
-    NamedCommands.registerCommand("StopIntake", IntakeCommands.stopIntake(intake));
+    namedCommands.put("ExtendSlapdown", IntakeCommands.extendSlapdown(intake));
+    namedCommands.put("RetractSlapdown", IntakeCommands.retractSlapdown(intake));
+    namedCommands.put("StartIntake", IntakeCommands.startIntake(intake));
+    namedCommands.put("StopIntake", IntakeCommands.stopIntake(intake));
+
+    System.out.println("Avaliable named commands:");
+    namedCommands.keySet().forEach(commandName -> System.out.println("  " + commandName));
   }
 
   private void configureAutos(LoggedDashboardChooser<Command> dashboardChooser) {
