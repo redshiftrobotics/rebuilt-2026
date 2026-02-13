@@ -112,84 +112,11 @@ public class RobotContainer {
 
     System.out.println("Initializing for robot ID: " + robotType);
 
-    switch (Constants.getRobot()) {
-      case METALBOT_2:
-        drive =
-            new Drive(
-                new GyroIOPigeon2(DriveConstants.GYRO_CAN_ID, true),
-                new ModuleIOTalonFX(MetalbotTwoConstants.FrontLeft),
-                new ModuleIOTalonFX(MetalbotTwoConstants.FrontRight),
-                new ModuleIOTalonFX(MetalbotTwoConstants.BackLeft),
-                new ModuleIOTalonFX(MetalbotTwoConstants.BackRight));
-        vision = new AprilTagVision(drive::getRobotPose);
-        leds = new LEDSubsystem();
-        hopper = new Hopper(new HopperMotorIO() {}, new HopperMotorIO() {});
-        intake = new Intake(new IntakeWheelIO() {}, new SlapdownIO() {});
-        break;
-
-      case PRESEASON_2026:
-        drive =
-            new Drive(
-                new GyroIOPigeon2(DriveConstants.GYRO_CAN_ID, true),
-                new ModuleIOTalonFX(PreseasonConstants.FrontLeft),
-                new ModuleIOTalonFX(PreseasonConstants.FrontRight),
-                new ModuleIOTalonFX(PreseasonConstants.BackLeft),
-                new ModuleIOTalonFX(PreseasonConstants.BackRight));
-        vision = new AprilTagVision(drive::getRobotPose);
-        leds = new LEDSubsystem();
-        hopper = new Hopper(new HopperMotorIO() {}, new HopperMotorIO() {});
-        intake = new Intake(new IntakeWheelIO() {}, new SlapdownIO() {});
-        break;
-
-      case CHASSIS_CANNON:
-      case WOOD_BOT_2026:
-      case REEFSCAPE_2025:
-        drive =
-            new Drive(
-                new GyroIOPigeon2(DriveConstants.GYRO_CAN_ID, false),
-                new ModuleIOSparkMax(ModuleConstants.FRONT_LEFT_MODULE_CONFIG),
-                new ModuleIOSparkMax(ModuleConstants.FRONT_RIGHT_MODULE_CONFIG),
-                new ModuleIOSparkMax(ModuleConstants.BACK_LEFT_MODULE_CONFIG),
-                new ModuleIOSparkMax(ModuleConstants.BACK_RIGHT_MODULE_CONFIG));
-        vision = new AprilTagVision(drive::getRobotPose);
-        leds = new LEDSubsystem();
-        hopper = new Hopper(new HopperMotorIO() {}, new HopperMotorIO() {});
-        intake = new Intake(new IntakeWheelIO() {}, new SlapdownIO() {});
-        break;
-
-      case SIM_BOT:
-        drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIOSim(PreseasonConstants.FrontLeft),
-                new ModuleIOSim(PreseasonConstants.FrontRight),
-                new ModuleIOSim(PreseasonConstants.BackLeft),
-                new ModuleIOSim(PreseasonConstants.BackRight));
-        vision =
-            new AprilTagVision(
-                drive::getRobotPose, new CameraIOSim(VisionConstants.SIM_FRONT_CAMERA));
-        leds = new LEDSubsystem(new LEDStripIOSim(LEDConstants.DEFAULT_PATTERN));
-        hopper =
-            new Hopper(
-                new HopperMotorIOSim(HopperConstants.BUBBLER_GEAR_RATIO),
-                new HopperMotorIOSim(HopperConstants.FEEDER_GEAR_RATIO));
-        intake = new Intake(new IntakeWheelIOSim(), new SlapdownIOSim());
-        break;
-
-      default:
-        drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {});
-        vision = new AprilTagVision(drive::getRobotPose);
-        leds = new LEDSubsystem();
-        hopper = new Hopper(new HopperMotorIO() {}, new HopperMotorIO() {});
-        intake = new Intake(new IntakeWheelIO() {}, new SlapdownIO() {});
-        break;
-    }
+    drive = Drive.create(robotType);
+    vision = AprilTagVision.create(robotType, drive);
+    leds = robotType == RobotType.SIM_BOT ? new LEDSubsystem(new LEDStripIOSim(LEDConstants.DEFAULT_PATTERN)) : new LEDSubsystem(); // TODO
+    hopper = Hopper.create(robotType);
+    intake = Intake.create(robotType);
 
     // Vision setup
     if (Constants.isOnPlayingField()) {
