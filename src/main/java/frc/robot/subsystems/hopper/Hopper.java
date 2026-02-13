@@ -149,17 +149,15 @@ public class Hopper extends SubsystemBase {
     return feederInputs.velocityRadPerSec;
   }
 
-public static Hopper create(RobotType robotType) {
+  public static Hopper create(RobotType robotType) {
     switch (robotType) {
       case SIM_BOT:
-        return 
-            new Hopper(
-                new HopperMotorIOSim(HopperConstants.BUBBLER_GEAR_RATIO),
-                new HopperMotorIOSim(HopperConstants.FEEDER_GEAR_RATIO));
-    
+        return new Hopper(
+            new HopperMotorIOSim(HopperConstants.BUBBLER_GEAR_RATIO),
+            new HopperMotorIOSim(HopperConstants.FEEDER_GEAR_RATIO));
+
       default:
-   return   new Hopper(new HopperMotorIO() {}, new HopperMotorIO() {});
-   
+        return new Hopper(new HopperMotorIO() {}, new HopperMotorIO() {});
     }
-}
+  }
 }

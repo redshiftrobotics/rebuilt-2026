@@ -54,31 +54,25 @@ public class Intake extends SubsystemBase {
     slapdownIO.setSetpoint(setPoint);
   }
 
-public static Intake create(RobotType robotType) {
-  
-  
+  public static Intake create(RobotType robotType) {
+
     switch (robotType) {
       case METALBOT_2:
         return new Intake(new IntakeWheelIO() {}, new SlapdownIO() {});
-        
 
       case PRESEASON_2026:
         return new Intake(new IntakeWheelIO() {}, new SlapdownIO() {});
-        
 
       case CHASSIS_CANNON:
       case WOOD_BOT_2026:
       case REEFSCAPE_2025:
         return new Intake(new IntakeWheelIO() {}, new SlapdownIO() {});
-        
 
       case SIM_BOT:
         return new Intake(new IntakeWheelIOSim(), new SlapdownIOSim());
-        
 
       default:
-        return  new Intake(new IntakeWheelIO() {}, new SlapdownIO() {});
-        
+        return new Intake(new IntakeWheelIO() {}, new SlapdownIO() {});
     }
-}
+  }
 }
