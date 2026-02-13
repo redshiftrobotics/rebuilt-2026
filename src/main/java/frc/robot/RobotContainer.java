@@ -25,6 +25,8 @@ import frc.robot.commands.DriveCommands;
 import frc.robot.commands.HopperCommands;
 import frc.robot.commands.IntakeCommands;
 import frc.robot.commands.pipeline.DriveInput;
+
+
 import frc.robot.commands.pipeline.DriveInputPipeline;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.hopper.Hopper;
@@ -69,12 +71,7 @@ public class RobotContainer {
               "Driver xbox controller disconnected (port %s).",
               driverController.getHID().getPort()),
           AlertType.kWarning);
-  private final Alert operatorDisconnected =
-      new Alert(
-          String.format(
-              "Operator xbox controller disconnected (port %s).",
-              operatorController.getHID().getPort()),
-          AlertType.kWarning);
+  private final Alert operatorDisconnected = new Alert(String.format("Operator xbox controller disconnected (port %s).",operatorController.getHID().getPort()),AlertType.kWarning);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
