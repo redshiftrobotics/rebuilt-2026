@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import java.util.Optional;
 
+/** https://gist.github.com/LordOfFrogs/240ba37cf696ba156d87f387c1461bd5 */
 public class HubTracker {
   /**
    * Returns an {@link Optional} containing the current {@link Shift}. Will return {@link
@@ -189,4 +190,6 @@ public class HubTracker {
     AUTO_WINNER,
     AUTO_LOSER
   }
+
+  private HubTracker() {}
 }
