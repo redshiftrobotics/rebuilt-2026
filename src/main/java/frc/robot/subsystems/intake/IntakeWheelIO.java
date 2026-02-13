@@ -12,7 +12,7 @@ public interface IntakeWheelIO {
     public double[] supplyCurrentAmps = new double[] {};
   }
 
-  public default void updateInputs(IntakeWheelIOInputs inputs) {}
+  public default void updateInputs(IntakeWheelIOInputsAutoLogged inputs) {}
 
   public default void setSpeed(double speed) {}
 

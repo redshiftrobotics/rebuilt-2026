@@ -3,13 +3,14 @@ package frc.robot.subsystems.intake;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
+import frc.robot.Constants;
 
 public class IntakeWheelIOSim implements IntakeWheelIO {
   private final DCMotorSim sim;
   private final DCMotor motor;
 
   public IntakeWheelIOSim() {
-    motor = DCMotor.getKrakenX60(1);
+    motor = DCMotor.getNEO(1);
     sim =
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(motor, 0.004, IntakeConstants.WHEEL_GEAR_RATIO),
@@ -17,10 +18,12 @@ public class IntakeWheelIOSim implements IntakeWheelIO {
   }
 
   @Override
-  public void updateInputs(IntakeWheelIOInputs inputs) {
+  public void updateInputs(IntakeWheelIOInputsAutoLogged inputs) {
+    sim.update(Constants.LOOP_PERIOD_SECONDS);
+
     inputs.positionRad = sim.getAngularPositionRad();
     inputs.velocityRadPerSec = sim.getAngularVelocityRadPerSec();
-    inputs.appliedVolts = new double[] {0.0};
+    inputs.appliedVolts = new double[] {sim.getInputVoltage()};
     inputs.supplyCurrentAmps = new double[] {sim.getCurrentDrawAmps()};
   }
 
@@ -36,6 +39,7 @@ public class IntakeWheelIOSim implements IntakeWheelIO {
 
   @Override
   public void stop() {
+    sim.setInput(0);
     sim.setAngularVelocity(0);
   }
 }
