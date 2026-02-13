@@ -36,7 +36,7 @@ public interface HoodActuatorIO {
     setPosition(position);
   }
 
-  public default Rotation2d getAngle(Rotation2d angle) {
+  public default Rotation2d getAngle() {
     double actuatorLength =
         getPosition() * LauncherConstants.ACTUATOR_EXTENSION.in(Meters)
             + LauncherConstants.ACTUATOR_LENGTH_MIN.in(Meters);
