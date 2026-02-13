@@ -3,6 +3,7 @@ package frc.robot.subsystems.intake;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.RobotType;
 
 public class Intake extends SubsystemBase {
 
@@ -52,4 +53,32 @@ public class Intake extends SubsystemBase {
   public void setSlapdownSetpoint(Rotation2d setPoint) {
     slapdownIO.setSetpoint(setPoint);
   }
+
+public static Intake create(RobotType robotType) {
+  
+  
+    switch (robotType) {
+      case METALBOT_2:
+        return new Intake(new IntakeWheelIO() {}, new SlapdownIO() {});
+        
+
+      case PRESEASON_2026:
+        return new Intake(new IntakeWheelIO() {}, new SlapdownIO() {});
+        
+
+      case CHASSIS_CANNON:
+      case WOOD_BOT_2026:
+      case REEFSCAPE_2025:
+        return new Intake(new IntakeWheelIO() {}, new SlapdownIO() {});
+        
+
+      case SIM_BOT:
+        return new Intake(new IntakeWheelIOSim(), new SlapdownIOSim());
+        
+
+      default:
+        return  new Intake(new IntakeWheelIO() {}, new SlapdownIO() {});
+        
+    }
+}
 }
