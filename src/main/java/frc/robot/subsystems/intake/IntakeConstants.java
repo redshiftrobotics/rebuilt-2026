@@ -44,7 +44,7 @@ public class IntakeConstants {
   public static final PIDConstants SLAPDOWN_PID =
       switch (Constants.getRobot()) {
         case PRESEASON_2026 -> new PIDConstants(0, 0, 0);
-        case SIM_BOT -> new PIDConstants(.3, 0, .16);
+        case SIM_BOT -> new PIDConstants(.32, 0, .14);
         default -> new PIDConstants(1, 0, 0);
       };
 }
