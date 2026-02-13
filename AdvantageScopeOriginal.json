@@ -278,22 +278,6 @@
               "controlsHeight": 0
             },
             {
-              "type": 10,
-              "title": "Hopper",
-              "controller": [
-                {
-                  "type": "mechanism",
-                  "logKey": "/RealOutputs/Hopper/Visualization",
-                  "logType": "Mechanism2d",
-                  "visible": true,
-                  "options": {}
-                }
-              ],
-              "controllerUUID": "w0x5ruft9o4qydhot3oh9co1tp1djl4u",
-              "renderer": null,
-              "controlsHeight": 200
-            },
-            {
               "type": 8,
               "title": "Joysticks",
               "controller": [
@@ -307,54 +291,6 @@
               "controllerUUID": "w9w5xc31mtb5rc0u96k48z2eieaibqfq",
               "renderer": null,
               "controlsHeight": 85
-            },
-            {
-              "type": 1,
-              "title": "FL Module Turn",
-              "controller": {
-                "leftSources": [
-                  {
-                    "type": "stepped",
-                    "logKey": "/RealOutputs/SwerveStates/ModuleDesiredWheelSpeeds/0/angle/value",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#2b66a2",
-                      "size": "normal"
-                    }
-                  },
-                  {
-                    "type": "stepped",
-                    "logKey": "/RealOutputs/SwerveStates/MeasuredWheelSpeeds/0/angle/value",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#e5b31b",
-                      "size": "normal"
-                    }
-                  }
-                ],
-                "rightSources": [],
-                "discreteSources": [],
-                "leftLockedRange": [
-                  -180,
-                  180
-                ],
-                "rightLockedRange": null,
-                "leftUnitConversion": {
-                  "autoTarget": "degrees",
-                  "preset": null
-                },
-                "rightUnitConversion": {
-                  "autoTarget": null,
-                  "preset": null
-                },
-                "leftFilter": 0,
-                "rightFilter": 0
-              },
-              "controllerUUID": "wnsaktydth5fjbshpwwfpx2zxvpz3ndd",
-              "renderer": null,
-              "controlsHeight": 153
             }
           ]
         }
