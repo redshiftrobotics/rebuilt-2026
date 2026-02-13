@@ -57,6 +57,8 @@ public class Intake extends SubsystemBase {
     wheelArm1.setAngle(Units.radiansToDegrees(wheelInputs.positionRad));
     wheelArm2.setAngle(Units.radiansToDegrees(wheelInputs.positionRad + Math.PI));
 
+    System.out.println(Units.radiansToDegrees(slapdownInputs.positionRad));
+
     SmartDashboard.putNumber("Wheel Speed", wheelIO.getSpeed());
     SmartDashboard.putData("intakeMech", mech);
   }

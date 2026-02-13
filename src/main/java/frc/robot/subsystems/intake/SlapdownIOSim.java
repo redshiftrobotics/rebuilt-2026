@@ -27,7 +27,7 @@ public class SlapdownIOSim implements SlapdownIO {
             IntakeConstants.SLAPDOWN_PID.kI(),
             IntakeConstants.SLAPDOWN_PID.kD());
 
-    pidController.setTolerance(0.2);
+    pidController.setTolerance(2);
   }
 
   @Override
