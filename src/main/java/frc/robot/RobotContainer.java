@@ -95,7 +95,10 @@ public class RobotContainer {
 
     drive = Drive.create(robotType);
     vision = AprilTagVision.create(robotType, drive);
-    leds = robotType == RobotType.SIM_BOT ? new LEDSubsystem(new LEDStripIOSim(LEDConstants.DEFAULT_PATTERN)) : new LEDSubsystem(); // TODO
+    leds =
+        robotType == RobotType.SIM_BOT
+            ? new LEDSubsystem(new LEDStripIOSim(LEDConstants.DEFAULT_PATTERN))
+            : new LEDSubsystem(); // TODO
     hopper = Hopper.create(robotType);
     intake = Intake.create(robotType);
 
@@ -417,7 +420,6 @@ public class RobotContainer {
   }
 
   private void configureAutos(LoggedDashboardChooser<Command> dashboardChooser) {
-
     // Path planner Autos
     // https://pathplanner.dev/gui-editing-paths-and-autos.html#autos
 
