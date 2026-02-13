@@ -1,5 +1,6 @@
 package frc.robot.subsystems.launcher;
 
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Radians;
 
@@ -32,18 +33,28 @@ public class ShotCalculator {
     return adjustedHubPosition;
   }
 
-  // TODO implement calculateTrajectory
   private static ShotParameters calculateTrajectory(
       Translation2d hubPosition, Translation2d robotVelocityMetersPerSecond) {
-    double velocity = 0;
-    double pitch = 75.0 * Math.PI / 180.0;
+    double distance = hubPosition.getNorm() + LauncherConstants.LAUNCHER_X_OFFSET.in(Meters);
+    // Formula acquired through experimentation
+    double pitch = 75.0 - 0.5 * distance * Math.pow(Math.tanh(distance / 10.0), 4);
+    // https://www.desmos.com/3d/enuvzskzsh
+    double velocity =
+        distance
+            * Math.sqrt(
+                9.81
+                    / (2 * distance * Math.tan(pitch)
+                        - LauncherConstants.HUB_Z_OFFSET.in(Meters)
+                        + LauncherConstants.LAUNCHER_Z_OFFSET.in(Meters)))
+            / Math.cos(pitch);
+
     return new ShotParameters(
         MetersPerSecond.of(velocity), Radians.of(pitch), hubPosition.getAngle());
   }
 
   private static double timeOfFlight(ShotParameters parameters, Translation2d hubPosition) {
     // Distance divided by horizontal shot speed
-    return hubPosition.getNorm()
+    return (hubPosition.getNorm() + LauncherConstants.LAUNCHER_X_OFFSET.in(Meters))
         / (Math.cos(parameters.pitch.in(Radians)) * parameters.velocity.in(MetersPerSecond));
   }
 

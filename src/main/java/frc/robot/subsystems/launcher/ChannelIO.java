@@ -19,5 +19,9 @@ public interface ChannelIO {
   /** Run closed loop at the given speed, specifying the linear speed of the wheel edge. */
   public default void setSpeed(AngularVelocity speed) {}
 
+  public default boolean isAtSetpoint() {
+    return false;
+  }
+
   public default void configurePID(double kP, double kI, double kD) {}
 }

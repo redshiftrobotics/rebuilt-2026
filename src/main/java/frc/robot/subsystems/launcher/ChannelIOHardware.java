@@ -47,6 +47,10 @@ public class ChannelIOHardware implements ChannelIO {
         speed.in(RotationsPerSecond) * 60, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
   }
 
+  public boolean isAtSetpoint() {
+    return controller.isAtSetpoint();
+  }
+
   public void stop() {
     motor.stopMotor();
   }

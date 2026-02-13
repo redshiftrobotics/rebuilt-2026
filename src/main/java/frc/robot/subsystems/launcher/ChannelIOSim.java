@@ -17,6 +17,11 @@ public class ChannelIOSim implements ChannelIO {
   }
 
   @Override
+  public boolean isAtSetpoint() {
+    return true;
+  }
+
+  @Override
   public void setSpeed(AngularVelocity speed) {
     this.speed = speed;
   }
