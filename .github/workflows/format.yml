@@ -10,7 +10,7 @@ jobs:
     container: wpilib/roborio-cross-ubuntu:2025-24.04 # https://hub.docker.com/r/wpilib/roborio-cross-ubuntu
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Grant execute permission
         run: chmod +x gradlew
       - name: Setup Gradle
