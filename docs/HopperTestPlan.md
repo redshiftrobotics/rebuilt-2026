@@ -25,12 +25,12 @@ As a reference:
 4. Deploy code to robot (In VS Code: `Ctrl+Shift+P` -> `WPILib: Deploy Robot Code`).
 5. Select the `[Test] Hopper Test Routine` mode in the Elastic Auto Chooser.
 
+## Execution
 > [!CAUTION]
 > ### 🛑 STOP! Did You Really Read The Instructions? 🛑
 > As a reminder, excise your best judgement while testing.
 > **If anything seems off, or the robot starts making weird noises, or something breaks, DISABLE THE ROBOT IMMEDIATELY.**
 
-## Execution
 1. Enable the robot in **Autonomous** mode.
 2. Fuel Storage Mode Test
     - Bubbler should start spinning at a low speed for **5 seconds** and then stop, with the belts moving towards the shooter.
