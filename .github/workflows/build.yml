@@ -1,11 +1,11 @@
-name: Test
+name: Build and Test
 
 on:
   push
 
 jobs:
   build:
-    name: Run Unit Tests
+    name: gradlew build
     runs-on: ubuntu-latest
     container: wpilib/roborio-cross-ubuntu:2025-24.04 # https://hub.docker.com/r/wpilib/roborio-cross-ubuntu
     steps:
@@ -15,6 +15,6 @@ jobs:
         run: chmod +x gradlew
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@417ae3ccd767c252f5661f1ace9f835f9654f2b5 # v3.1.0
-      # Spotless apply will also build:
-      - name: Run unit tests
-        run: ./gradlew test --no-daemon
+      # Build runs unit tests as well
+      - name: Run build
+        run: ./gradlew build --no-daemon
