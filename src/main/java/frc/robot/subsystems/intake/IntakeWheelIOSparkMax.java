@@ -11,15 +11,15 @@ import edu.wpi.first.math.util.Units;
 
 public class IntakeWheelIOSparkMax implements IntakeWheelIO {
   private final SparkMax motor;
-  private final SparkBaseConfig config;
   private final RelativeEncoder encoder;
 
   public IntakeWheelIOSparkMax(SparkMax motor) {
     this.motor = motor;
     encoder = motor.getEncoder();
 
-    config = new SparkMaxConfig();
-    config.idleMode(IdleMode.kBrake);
+    SparkBaseConfig config = new SparkMaxConfig()
+      .idleMode(IdleMode.kBrake)
+      .inverted(IntakeConstants.INTAKE_WHEEL_INVERTED);
 
     motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
