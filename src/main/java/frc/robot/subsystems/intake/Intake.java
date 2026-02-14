@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RobotType;
+import frc.robot.utility.records.PIDConstants;
 import frc.robot.utility.tunable.TunableNumbers.TunablePID;
 import org.littletonrobotics.junction.Logger;
 
@@ -96,6 +97,10 @@ public class Intake extends SubsystemBase {
 
   public void setSlapdownPID(double kP, double kI, double kD) {
     slapdownIO.setPID(kP, kI, kD);
+  }
+
+   private void setSlapdownPID(PIDConstants pidConstants) {
+    slapdownIO.setPID(pidConstants.kP(), pidConstants.kI(), pidConstants.kD());
   }
 
   public void setSlapdownSetpoint(Rotation2d setPoint) {
