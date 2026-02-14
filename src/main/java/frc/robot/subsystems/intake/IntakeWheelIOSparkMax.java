@@ -15,6 +15,7 @@ public class IntakeWheelIOSparkMax implements IntakeWheelIO {
 
   public IntakeWheelIOSparkMax(SparkMax motor) {
     this.motor = motor;
+    
     encoder = motor.getEncoder();
 
     SparkBaseConfig config =
@@ -23,7 +24,9 @@ public class IntakeWheelIOSparkMax implements IntakeWheelIO {
             .inverted(IntakeConstants.INTAKE_WHEEL_INVERTED)
             .voltageCompensation(12);
 
-    config.encoder.positionConversionFactor(IntakeConstants.INTAKE_WHEEL_GEAR_RATIO);
+    config.encoder
+        .positionConversionFactor(IntakeConstants.INTAKE_WHEEL_GEAR_RATIO)
+        .velocityConversionFactor(IntakeConstants.SLAPDOWN_GEAR_RATIO);
 
     motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }

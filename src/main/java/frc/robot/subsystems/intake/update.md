@@ -1,7 +1,7 @@
 ## Intake TODO
 * [x] Motor inverted
 * [x] Gear ratios
-* [ ] Absolute encoder
+* [x] Absolute encoder
 * [ ] Motor disconnect alerts
 * [ ] Tunable numbers
 * [ ] Dpad to fine tune intake
