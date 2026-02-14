@@ -29,11 +29,11 @@ public class IntakeCommands {
   }
 
   // Increments
-  public static Command IncrementUpSlapdown(Intake intake, Rotation2d amount) {
+  public static Command incrementUpSlapdown(Intake intake, Rotation2d amount) {
     return Commands.runOnce(() -> intake.setSavedUpSetpoint(intake.getSavedUpSetpoint()), intake);
   }
 
-  public static Command IncrementDownSlapdown(Intake intake, Rotation2d amount) {
+  public static Command incrementDownSlapdown(Intake intake, Rotation2d amount) {
     return Commands.runOnce(
         () -> intake.setSavedDownSetpoint(intake.getSavedDownSetpoint()), intake);
   }
