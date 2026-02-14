@@ -167,8 +167,8 @@
                 "rightSources": [],
                 "discreteSources": [],
                 "leftLockedRange": [
-                  -4,
-                  4
+                  -3.24,
+                  3.24
                 ],
                 "rightLockedRange": null,
                 "leftUnitConversion": {
@@ -215,8 +215,8 @@
                 "rightSources": [],
                 "discreteSources": [],
                 "leftLockedRange": [
-                  -4,
-                  4
+                  -3.24,
+                  3.24
                 ],
                 "rightLockedRange": null,
                 "leftUnitConversion": {
@@ -263,8 +263,8 @@
                 "rightSources": [],
                 "discreteSources": [],
                 "leftLockedRange": [
-                  -4,
-                  4
+                  -3.24,
+                  3.24
                 ],
                 "rightLockedRange": null,
                 "leftUnitConversion": {
@@ -311,8 +311,8 @@
                 "rightSources": [],
                 "discreteSources": [],
                 "leftLockedRange": [
-                  -4,
-                  4
+                  -3.24,
+                  3.24
                 ],
                 "rightLockedRange": null,
                 "leftUnitConversion": {
@@ -359,8 +359,8 @@
                 "rightSources": [],
                 "discreteSources": [],
                 "leftLockedRange": [
-                  -4,
-                  4
+                  -5.5,
+                  5.5
                 ],
                 "rightLockedRange": null,
                 "leftUnitConversion": {
@@ -407,8 +407,8 @@
                 "rightSources": [],
                 "discreteSources": [],
                 "leftLockedRange": [
-                  -4,
-                  4
+                  -5.5,
+                  5.5
                 ],
                 "rightLockedRange": null,
                 "leftUnitConversion": {
@@ -455,8 +455,8 @@
                 "rightSources": [],
                 "discreteSources": [],
                 "leftLockedRange": [
-                  -4,
-                  4
+                  -5.5,
+                  5.5
                 ],
                 "rightLockedRange": null,
                 "leftUnitConversion": {
@@ -503,8 +503,8 @@
                 "rightSources": [],
                 "discreteSources": [],
                 "leftLockedRange": [
-                  -4,
-                  4
+                  -5.5,
+                  5.5
                 ],
                 "rightLockedRange": null,
                 "leftUnitConversion": {
