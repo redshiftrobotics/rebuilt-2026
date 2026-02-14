@@ -23,9 +23,12 @@ public interface ClimbIO {
 
   /**
    * Check if the climber is all the way retracted.
+   *
    * @return True if the motor is allthe way down.
    */
-	public default boolean isAtBottom() { return false; }
+  public default boolean isAtBottom() {
+    return false;
+  }
 
   /** Stop the motor and lock the climber in place. */
   public default void stop() {}

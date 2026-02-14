@@ -11,8 +11,6 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /** Hardware implementation of the ClimbIO. */
 public class ClimbIOHardware implements ClimbIO {
@@ -23,11 +21,12 @@ public class ClimbIOHardware implements ClimbIO {
 
   public ClimbIOHardware() {
 
-    SparkBaseConfig leaderConfig = new SparkMaxConfig()
-        .voltageCompensation(12.0)
-        .smartCurrentLimit(30)
-        .inverted(ClimbConstants.MOTOR_INVERTED)
-        .idleMode(IdleMode.kCoast);
+    SparkBaseConfig leaderConfig =
+        new SparkMaxConfig()
+            .voltageCompensation(12.0)
+            .smartCurrentLimit(30)
+            .inverted(ClimbConstants.MOTOR_INVERTED)
+            .idleMode(IdleMode.kCoast);
 
     motor = new SparkMax(ClimbConstants.MOTOR_ID, MotorType.kBrushless);
     motor.configure(leaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -48,8 +47,8 @@ public class ClimbIOHardware implements ClimbIO {
 
     double appliedVolts = motor.getAppliedOutput() * motor.getBusVoltage();
 
-    inputs.appliedVolts = new double[] { appliedVolts };
-    inputs.supplyCurrentAmps = new double[] { motor.getOutputCurrent() };
+    inputs.appliedVolts = new double[] {appliedVolts};
+    inputs.supplyCurrentAmps = new double[] {motor.getOutputCurrent()};
 
     inputs.climberDown = isAtBottom();
   }
