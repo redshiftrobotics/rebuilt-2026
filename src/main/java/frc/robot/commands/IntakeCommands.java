@@ -8,12 +8,20 @@ import frc.robot.subsystems.intake.IntakeConstants;
 public class IntakeCommands {
   public static Command extendSlapdown(Intake intake) {
     return Commands.runOnce(
-        () -> intake.setSlapdownSetpoint(IntakeConstants.SLAPDOWN_DOWN_SETPOINT), intake);
+        () -> intake.setSlapdownSetpoint(intake.getSavedDownSetpoint()), intake);
   }
 
   public static Command retractSlapdown(Intake intake) {
+    return Commands.runOnce(() -> intake.setSlapdownSetpoint(intake.getSavedUpSetpoint()), intake);
+  }
+
+  public static Command IncrementUpSlapdown(Intake intake) {
+    return Commands.runOnce(() -> intake.setSavedUpSetpoint(intake.getSavedUpSetpoint()), intake);
+  }
+
+  public static Command IncrementDownSlapdown(Intake intake) {
     return Commands.runOnce(
-        () -> intake.setSlapdownSetpoint(IntakeConstants.SLAPDOWN_UP_SETPOINT), intake);
+        () -> intake.setSavedDownSetpoint(intake.getSavedDownSetpoint()), intake);
   }
 
   public static Command startIntake(Intake intake) {

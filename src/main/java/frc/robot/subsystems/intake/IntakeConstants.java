@@ -12,6 +12,7 @@ public class IntakeConstants {
   public static final boolean SLAPDOWN_WHEEL_INVERTED = false;
   public static final Rotation2d SLAPDOWN_DOWN_SETPOINT = Rotation2d.fromDegrees(0);
   public static final Rotation2d SLAPDOWN_UP_SETPOINT = Rotation2d.fromDegrees(157);
+  public static final Rotation2d SLAPDOWN_INCREMENT_SETPOINT = Rotation2d.fromDegrees(5);
 
   public static final double WHEEL_GEAR_RATIO =
       switch (Constants.getRobot()) {
