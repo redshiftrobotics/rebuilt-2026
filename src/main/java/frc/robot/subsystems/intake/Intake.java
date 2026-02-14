@@ -69,6 +69,8 @@ public class Intake extends SubsystemBase {
     Logger.processInputs(getName() + "/Wheel", wheelInputs);
     Logger.processInputs(getName() + "/Slapdown", slapdownInputs);
 
+    slapdownPidConfig.ifChanged(hashCode(), () -> setSlapdownPID(slapdownPidConfig.get()));
+
     slapdownArm.setAngle(Units.radiansToDegrees(slapdownInputs.positionRad));
     wheelArm1.setAngle(Units.radiansToDegrees(wheelInputs.positionRad));
     wheelArm2.setAngle(Units.radiansToDegrees(wheelInputs.positionRad + Math.PI));
