@@ -4,15 +4,19 @@ import frc.robot.Constants;
 
 /** Constants for the Climb subsystem. */
 public class ClimbConstants {
+  public static final int CAN_ID;
 
-  // Example of a constant that is not dependent on the robot
-  public static final double SPEED = 0.5;
+  public static final boolean MOTOR_INVERTED;
 
-  // Example of a constant that is dependent on the robot
-  public static final int CAN_ID =
-      switch (Constants.getRobot()) {
-        case PRESEASON_2026 -> 1;
-        case SIM_BOT -> 0;
-        default -> 0;
-      };
+  public static final double GEAR_RATIO;
+
+  static {
+    switch (Constants.getRobot()) {
+      default:
+        CAN_ID = 0;
+        MOTOR_INVERTED = false;
+        GEAR_RATIO = 1;
+        break;
+    }
+  }
 }

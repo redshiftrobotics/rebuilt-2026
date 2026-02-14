@@ -18,4 +18,10 @@ public class ClimbIOSim implements ClimbIO {
   public void setSpeed(double speed) {
     this.speed = speed;
   }
+
+  @Override
+  public void stop() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'stop'");
+  }
 }
