@@ -17,20 +17,21 @@ public class IntakeWheelIOSparkMax implements IntakeWheelIO {
     this.motor = motor;
     encoder = motor.getEncoder();
 
-    SparkBaseConfig config = new SparkMaxConfig()
-      .idleMode(IdleMode.kBrake)
-      .inverted(IntakeConstants.INTAKE_WHEEL_INVERTED);
+    SparkBaseConfig config =
+        new SparkMaxConfig()
+            .idleMode(IdleMode.kBrake)
+            .inverted(IntakeConstants.INTAKE_WHEEL_INVERTED)
+            .voltageCompensation(12);
+
+    config.encoder.positionConversionFactor(IntakeConstants.INTAKE_WHEEL_GEAR_RATIO);
 
     motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
   @Override
   public void updateInputs(IntakeWheelIOInputsAutoLogged inputs) {
-    inputs.positionRad =
-        Units.rotationsToRadians(encoder.getPosition() / IntakeConstants.WHEEL_GEAR_RATIO);
-    inputs.velocityRadPerSec =
-        Units.rotationsPerMinuteToRadiansPerSecond(
-            encoder.getVelocity() / IntakeConstants.WHEEL_GEAR_RATIO);
+    inputs.positionRad = Units.rotationsToRadians(encoder.getPosition());
+    inputs.velocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(encoder.getVelocity());
     inputs.appliedVolts =
         new double[] {
           motor.getAppliedOutput() * motor.getBusVoltage(),

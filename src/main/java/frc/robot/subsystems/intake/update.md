@@ -1,7 +1,11 @@
 ## Intake TODO
 * [x] Motor inverted
-* [ ] Gear rations
+* [x] Gear ratios
 * [ ] Absolute encoder
 * [ ] Motor disconnect alerts
 * [ ] Tunable numbers
 * [ ] Dpad to fine tune intake
+* [x] Voltage compensation
+  * [ ] (all subsystems)
+* [ ] smart current limits
+  * [ ] (all subsystems)

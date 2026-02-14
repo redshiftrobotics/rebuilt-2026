@@ -7,8 +7,8 @@ import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkBaseConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
@@ -29,24 +29,31 @@ public class SlapdownIOSparkMax implements SlapdownIO {
 
     motorPID = motor.getClosedLoopController();
 
-    SparkBaseConfig config = new SparkMaxConfig()
-        .idleMode(IdleMode.kBrake)
-        .inverted(IntakeConstants.SLAPDOWN_WHEEL_INVERTED);
+    SparkBaseConfig config =
+        new SparkMaxConfig()
+            .idleMode(IdleMode.kBrake)
+            .inverted(IntakeConstants.SLAPDOWN_WHEEL_INVERTED)
+            .voltageCompensation(12);
+
+    config
+        .encoder
+        .positionConversionFactor(IntakeConstants.SLAPDOWN_GEAR_RATIO)
+        .velocityConversionFactor(IntakeConstants.SLAPDOWN_GEAR_RATIO);
 
     motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
   @Override
   public void updateInputs(SlapdownIOInputsAutoLogged inputs) {
-    inputs.positionRad = Units.rotationsToRadians(
-        absoluteEncoder.getPosition() / IntakeConstants.SLAPDOWN_GEAR_RATIO);
-    inputs.velocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(
-        absoluteEncoder.getVelocity() / IntakeConstants.SLAPDOWN_GEAR_RATIO);
+    inputs.positionRad = Units.rotationsToRadians(absoluteEncoder.getPosition());
+    inputs.velocityRadPerSec =
+        Units.rotationsPerMinuteToRadiansPerSecond(absoluteEncoder.getVelocity());
 
-    inputs.appliedVolts = new double[] {
-        motor.getAppliedOutput() * motor.getBusVoltage(),
-    };
-    inputs.supplyCurrentAmps = new double[] { motor.getOutputCurrent() };
+    inputs.appliedVolts =
+        new double[] {
+          motor.getAppliedOutput() * motor.getBusVoltage(),
+        };
+    inputs.supplyCurrentAmps = new double[] {motor.getOutputCurrent()};
   }
 
   @Override
