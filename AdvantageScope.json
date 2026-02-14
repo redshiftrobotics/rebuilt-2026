@@ -9,7 +9,12 @@
         "sidebar": {
           "width": 300,
           "expanded": [
-            "/RealOutputs"
+            "/RealOutputs",
+            "/AdvantageKit/RealOutputs",
+            "/SmartDashboard",
+            "/SmartDashboard/Intake",
+            "/AdvantageKit",
+            "/AdvantageKit/RealOutputs/Intake"
           ]
         },
         "tabs": {
@@ -34,17 +39,7 @@
                     "logType": "Pose2d",
                     "visible": true,
                     "options": {
-                      "model": "demo_8032"
-                    }
-                  },
-                  {
-                    "type": "swerveStates",
-                    "logKey": "/RealOutputs/SwerveStates/DesiredWheelSpeeds",
-                    "logType": "SwerveModuleState[]",
-                    "visible": true,
-                    "options": {
-                      "color": "#ff0000",
-                      "arrangement": "0,1,2,3"
+                      "model": "2026 KitBot"
                     }
                   },
                   {
@@ -55,6 +50,16 @@
                     "options": {
                       "color": "#00ff00",
                       "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "swerveStates",
+                    "logKey": "/RealOutputs/SwerveStates/DesiredWheelSpeeds",
+                    "logType": "SwerveModuleState[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#ff0000",
+                      "arrangement": "0,1,2,3"
                     }
                   },
                   {
@@ -73,7 +78,7 @@
                     "logType": "Pose2d",
                     "visible": false,
                     "options": {
-                      "model": "demo_8032",
+                      "model": "2026 KitBot",
                       "color": "#00ff00"
                     }
                   },
@@ -83,7 +88,7 @@
                     "logType": "Pose3d[]",
                     "visible": false,
                     "options": {
-                      "model": "demo_8032",
+                      "model": "2026 KitBot",
                       "color": "#ff00ff"
                     }
                   },
@@ -93,8 +98,26 @@
                     "logType": "Pose3d[]",
                     "visible": false,
                     "options": {
-                      "model": "demo_8032",
+                      "model": "2026 KitBot",
                       "color": "#ffff00"
+                    }
+                  },
+                  {
+                    "type": "robot",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/Drive/RobotPose",
+                    "logType": "Pose2d",
+                    "visible": true,
+                    "options": {
+                      "model": "KitBot"
+                    }
+                  },
+                  {
+                    "type": "mechanism",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/Intake/Visualization",
+                    "logType": "Mechanism2d",
+                    "visible": true,
+                    "options": {
+                      "plane": "xz"
                     }
                   }
                 ],
@@ -102,12 +125,12 @@
               },
               "controllerUUID": "e8hgomb1yslv0cwpvfxkohzvzsz5j7n2",
               "renderer": {
-                "cameraIndex": -3,
+                "cameraIndex": -2,
                 "orbitFov": 50,
                 "cameraPosition": [
-                  -9.760701186975597,
-                  1.5748000000000002,
-                  -1.4750935014646167
+                  -0.8505551969317381,
+                  1.3814269186778554,
+                  -1.9363993503413683
                 ],
                 "cameraTarget": [
                   0,
