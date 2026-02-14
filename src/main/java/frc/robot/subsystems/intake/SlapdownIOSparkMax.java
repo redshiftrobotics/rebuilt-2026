@@ -24,7 +24,7 @@ public class SlapdownIOSparkMax implements SlapdownIO {
     this.motor = motor;
 
     absoluteEncoder = motor.getAbsoluteEncoder();
-    
+
     relativeEncoder = motor.getEncoder();
     relativeEncoder.setPosition(absoluteEncoder.getPosition());
 
