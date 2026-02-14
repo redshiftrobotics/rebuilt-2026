@@ -29,7 +29,7 @@ public class Climb extends SubsystemBase {
    * @param robotType The robot type to configure for.
    * @return An instance of the Climb subsystem with appropriate IO layers for the given robot.
    */
-  public Climb create(RobotType robotType) {
+  public static Climb create(RobotType robotType) {
     switch (robotType) {
       case SIM_BOT:
         return new Climb(new ClimbIOSim());

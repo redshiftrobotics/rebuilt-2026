@@ -26,6 +26,7 @@ import frc.robot.commands.HopperCommands;
 import frc.robot.commands.IntakeCommands;
 import frc.robot.commands.pipeline.DriveInput;
 import frc.robot.commands.pipeline.DriveInputPipeline;
+import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.hopper.HopperConstants.RunMode;
@@ -57,6 +58,7 @@ public class RobotContainer {
   private final LEDSubsystem leds;
   private final Hopper hopper;
   private final Intake intake;
+  private final Climb climb;
 
   // Controller
   private final CommandXboxController driverController = new CommandXboxController(0);
@@ -101,6 +103,7 @@ public class RobotContainer {
             : new LEDSubsystem(); // TODO
     hopper = Hopper.create(robotType);
     intake = Intake.create(robotType);
+    climb = Climb.create(robotType);
 
     // Vision setup
     if (Constants.isOnPlayingField()) {
@@ -199,7 +202,6 @@ public class RobotContainer {
   }
 
   private void configureDriverControllerBindings(CommandXboxController xbox) {
-
     Supplier<DriveInput> baseDrive =
         () ->
             new DriveInput(drive)
@@ -347,6 +349,9 @@ public class RobotContainer {
     xbox.start()
         .whileTrue(HopperCommands.setHopperMode(hopper, RunMode.REVERSE))
         .onFalse(HopperCommands.setHopperMode(hopper, RunMode.STOPPED));
+
+    climb.setDefaultCommand(
+        Commands.run(() -> climb.setSpeed(MathUtil.applyDeadband(xbox.getLeftY(), 0.1)), climb));
   }
 
   private Command rumbleController(
