@@ -32,8 +32,8 @@ public class Intake extends SubsystemBase {
   private IntakeWheelIOInputsAutoLogged wheelInputs;
   private SlapdownIOInputsAutoLogged slapdownInputs;
 
-  private Mechanism2d mech = new Mechanism2d(3, 3);
-  private MechanismRoot2d root = mech.getRoot("wheel", 1.5, 1.5);
+  private Mechanism2d mech = new Mechanism2d(3, 1.5);
+  private MechanismRoot2d root = mech.getRoot("wheel", 1.75, .25);
   private MechanismLigament2d slapdownArm =
       root.append(
           new MechanismLigament2d(
@@ -60,6 +60,8 @@ public class Intake extends SubsystemBase {
 
     wheelInputs = new IntakeWheelIOInputsAutoLogged();
     slapdownInputs = new SlapdownIOInputsAutoLogged();
+
+    slapdownIO.setSetpoint(IntakeConstants.SLAPDOWN_UP_SETPOINT);
   }
 
   @Override
@@ -77,7 +79,7 @@ public class Intake extends SubsystemBase {
     wheelArm2.setAngle(Units.radiansToDegrees(wheelInputs.positionRad + Math.PI));
 
     SmartDashboard.putNumber("Wheel Speed", wheelIO.getSpeed());
-    SmartDashboard.putData("intakeMech", mech);
+    SmartDashboard.putData(getName() + "/Visualization", mech);
 
     wheelMotorDisconnectedAlert.set(!wheelInputs.motorConnected);
     slapdownMotorDisconnectedAlert.set(!slapdownInputs.motorConnected);
