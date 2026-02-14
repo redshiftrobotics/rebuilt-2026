@@ -12,14 +12,21 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RobotType;
+import frc.robot.utility.tunable.TunableNumbers.TunablePID;
+import org.littletonrobotics.junction.Logger;
 
 public class Intake extends SubsystemBase {
 
   private final IntakeWheelIO wheelIO;
   private final SlapdownIO slapdownIO;
 
-  private final Alert wheelMotorDisconnectedAlert = new Alert("Sticky fault detected on intake wheel.", AlertType.kError);
-  private final Alert slapdownMotorDisconnectedAlert = new Alert("Sticky fault detected on slapdown.", AlertType.kError);
+  private final Alert wheelMotorDisconnectedAlert =
+      new Alert("Sticky fault detected on intake wheel.", AlertType.kError);
+  private final Alert slapdownMotorDisconnectedAlert =
+      new Alert("Sticky fault detected on slapdown.", AlertType.kError);
+
+  private final TunablePID slapdownPidConfig =
+      new TunablePID(getName() + "/Slapdown/Pid", IntakeConstants.SLAPDOWN_PID);
 
   private IntakeWheelIOInputsAutoLogged wheelInputs;
   private SlapdownIOInputsAutoLogged slapdownInputs;
@@ -59,6 +66,9 @@ public class Intake extends SubsystemBase {
     wheelIO.updateInputs(wheelInputs);
     slapdownIO.updateInputs(slapdownInputs);
 
+    Logger.processInputs(getName() + "/Wheel", wheelInputs);
+    Logger.processInputs(getName() + "/Slapdown", slapdownInputs);
+
     slapdownArm.setAngle(Units.radiansToDegrees(slapdownInputs.positionRad));
     wheelArm1.setAngle(Units.radiansToDegrees(wheelInputs.positionRad));
     wheelArm2.setAngle(Units.radiansToDegrees(wheelInputs.positionRad + Math.PI));
@@ -66,7 +76,7 @@ public class Intake extends SubsystemBase {
     SmartDashboard.putNumber("Wheel Speed", wheelIO.getSpeed());
     SmartDashboard.putData("intakeMech", mech);
 
-    wheelMotorDisconnectedAlert.set(!wheelInputs.motorConnected); 
+    wheelMotorDisconnectedAlert.set(!wheelInputs.motorConnected);
     slapdownMotorDisconnectedAlert.set(!slapdownInputs.motorConnected);
   }
 

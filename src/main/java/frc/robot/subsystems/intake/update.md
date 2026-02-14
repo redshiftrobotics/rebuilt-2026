@@ -3,7 +3,7 @@
 * [x] Gear ratios
 * [x] Absolute encoder
 * [x] Motor disconnect alerts
-* [ ] Tunable numbers
+* [x] Tunable numbers
 * [ ] Dpad to fine tune intake
 * [x] Voltage compensation
   * [ ] (all subsystems)
