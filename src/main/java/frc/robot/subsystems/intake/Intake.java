@@ -99,7 +99,7 @@ public class Intake extends SubsystemBase {
     slapdownIO.setPID(kP, kI, kD);
   }
 
-   private void setSlapdownPID(PIDConstants pidConstants) {
+  private void setSlapdownPID(PIDConstants pidConstants) {
     slapdownIO.setPID(pidConstants.kP(), pidConstants.kI(), pidConstants.kD());
   }
 
