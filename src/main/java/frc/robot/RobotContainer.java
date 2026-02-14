@@ -64,7 +64,7 @@ public class RobotContainer {
   private final CommandXboxController driverController = new CommandXboxController(0);
   private final CommandXboxController operatorController = new CommandXboxController(1);
 
-  // Alerts for controller disconnection
+  // Alerts
   private final Alert driverDisconnected =
       new Alert(
           String.format(
@@ -77,16 +77,15 @@ public class RobotContainer {
               "Operator xbox controller disconnected (port %s).",
               operatorController.getHID().getPort()),
           AlertType.kWarning);
-
+  private final Alert notPrimaryBotAlert =
+      new Alert("Robot type is not the primary robot type.", AlertType.kInfo);
+  private final Alert developmentModeActiveAlert =
+      new Alert("Development mode active, do not use in competition.", AlertType.kWarning);
+      
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
 
-  // Alerts
-  private final Alert notPrimaryBotAlert =
-      new Alert("Robot type is not the primary robot type.", AlertType.kInfo);
-  private final Alert tuningModeActiveAlert =
-      new Alert("Tuning mode active, do not use in competition.", AlertType.kWarning);
-
+  /** Which robot are we running on? */
   private final RobotType robotType;
 
   /** The container for the robot. Contains subsystems, IO devices, and commands. */
@@ -142,7 +141,7 @@ public class RobotContainer {
             .withName("LED Alliance Color Waves"));
 
     // Alerts for constants to avoid using them in competition
-    tuningModeActiveAlert.set(Constants.DEVELOPMENT_MODE);
+    developmentModeActiveAlert.set(Constants.DEVELOPMENT_MODE);
     notPrimaryBotAlert.set(Constants.getRobot() != Constants.PRIMARY_ROBOT_TYPE);
 
     // Hide controller missing warnings for sim
