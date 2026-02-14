@@ -109,6 +109,22 @@ public class Intake extends SubsystemBase {
     slapdownIO.setSetpoint(setPoint);
   }
 
+  public void setSavedUpSetpoint(Rotation2d setPoint) {
+    slapdownIO.setSavedUpSetpoint(setPoint);
+  }
+
+  public void setSavedDownSetpoint(Rotation2d setPoint) {
+    slapdownIO.setSavedDownSetpoint(setPoint);
+  }
+
+  public Rotation2d getSavedUpSetpoint() {
+    return slapdownIO.getSavedUpSetpoint();
+  }
+
+  public Rotation2d getSavedDownSetpoint() {
+    return slapdownIO.getSavedDownSetpoint();
+  }
+
   public static Intake create(RobotType robotType) {
 
     switch (robotType) {
