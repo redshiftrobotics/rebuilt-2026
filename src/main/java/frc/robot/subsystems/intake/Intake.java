@@ -2,6 +2,8 @@ package frc.robot.subsystems.intake;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
@@ -15,6 +17,9 @@ public class Intake extends SubsystemBase {
 
   private final IntakeWheelIO wheelIO;
   private final SlapdownIO slapdownIO;
+
+  private final Alert wheelMotorDisconnectedAlert = new Alert("Sticky fault detected on intake wheel.", AlertType.kError);
+  private final Alert slapdownMotorDisconnectedAlert = new Alert("Sticky fault detected on slapdown.", AlertType.kError);
 
   private IntakeWheelIOInputsAutoLogged wheelInputs;
   private SlapdownIOInputsAutoLogged slapdownInputs;
@@ -60,6 +65,9 @@ public class Intake extends SubsystemBase {
 
     SmartDashboard.putNumber("Wheel Speed", wheelIO.getSpeed());
     SmartDashboard.putData("intakeMech", mech);
+
+    wheelMotorDisconnectedAlert.set(!wheelInputs.motorConnected); 
+    slapdownMotorDisconnectedAlert.set(!slapdownInputs.motorConnected);
   }
 
   // wheel

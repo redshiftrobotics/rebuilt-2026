@@ -2,7 +2,7 @@
 * [x] Motor inverted
 * [x] Gear ratios
 * [x] Absolute encoder
-* [ ] Motor disconnect alerts
+* [x] Motor disconnect alerts
 * [ ] Tunable numbers
 * [ ] Dpad to fine tune intake
 * [x] Voltage compensation
