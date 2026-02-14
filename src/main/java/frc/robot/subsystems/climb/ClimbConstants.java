@@ -4,16 +4,20 @@ import frc.robot.Constants;
 
 /** Constants for the Climb subsystem. */
 public class ClimbConstants {
-  public static final int CAN_ID;
-
+  /** The CAN ID of the limit switch. */
+  public static final int SWITCH_ID;
+  /** The CAN ID of the motor. */
+  public static final int MOTOR_ID;
+  /** If the motor should be run inverted (backwards). */
   public static final boolean MOTOR_INVERTED;
-
+  /** The ratio of the gearbox on the motor. */
   public static final double GEAR_RATIO;
 
   static {
     switch (Constants.getRobot()) {
       default:
-        CAN_ID = 0;
+        SWITCH_ID = 0;
+        MOTOR_ID = 0;
         MOTOR_INVERTED = false;
         GEAR_RATIO = 1;
         break;
