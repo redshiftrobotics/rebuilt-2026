@@ -6,6 +6,8 @@ import org.littletonrobotics.junction.AutoLog;
 public interface SlapdownIO {
   @AutoLog
   public class SlapdownIOInputs {
+    public boolean motorConnected = false;
+
     public double positionRad = IntakeConstants.SLAPDOWN_UP_SETPOINT.getRadians();
     public double velocityRadPerSec = 0.0;
 

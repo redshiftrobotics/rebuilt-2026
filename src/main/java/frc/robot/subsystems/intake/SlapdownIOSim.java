@@ -38,6 +38,7 @@ public class SlapdownIOSim implements SlapdownIO {
       sim.setInput(pidController.calculate(sim.getAngularPositionRad()));
     }
 
+    inputs.motorConnected = true;
     inputs.positionRad = sim.getAngularPositionRad();
     inputs.velocityRadPerSec = sim.getAngularVelocityRadPerSec();
     inputs.appliedVolts = new double[] {sim.getInputVoltage()};

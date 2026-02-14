@@ -1,5 +1,7 @@
 package frc.robot.subsystems.intake;
 
+import java.util.function.DoubleSupplier;
+
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
@@ -10,8 +12,11 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
+
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import frc.robot.utility.SparkUtil;
 
 public class SlapdownIOSparkMax implements SlapdownIO {
 
@@ -19,6 +24,8 @@ public class SlapdownIOSparkMax implements SlapdownIO {
   private final SparkClosedLoopController motorPID;
   private final RelativeEncoder relativeEncoder;
   private final AbsoluteEncoder absoluteEncoder;
+
+  private final Debouncer connectionDebouncer = new Debouncer(0.5);
 
   public SlapdownIOSparkMax(SparkMax motor) {
     this.motor = motor;
@@ -30,14 +37,12 @@ public class SlapdownIOSparkMax implements SlapdownIO {
 
     motorPID = motor.getClosedLoopController();
 
-    SparkBaseConfig config =
-        new SparkMaxConfig()
-            .idleMode(IdleMode.kBrake)
-            .inverted(IntakeConstants.SLAPDOWN_WHEEL_INVERTED)
-            .voltageCompensation(12);
+    SparkBaseConfig config = new SparkMaxConfig()
+        .idleMode(IdleMode.kBrake)
+        .inverted(IntakeConstants.SLAPDOWN_WHEEL_INVERTED)
+        .voltageCompensation(12);
 
-    config
-        .encoder
+    config.encoder
         .positionConversionFactor(IntakeConstants.SLAPDOWN_GEAR_RATIO)
         .velocityConversionFactor(IntakeConstants.SLAPDOWN_GEAR_RATIO);
 
@@ -46,15 +51,16 @@ public class SlapdownIOSparkMax implements SlapdownIO {
 
   @Override
   public void updateInputs(SlapdownIOInputsAutoLogged inputs) {
-    inputs.positionRad = Units.rotationsToRadians(absoluteEncoder.getPosition());
-    inputs.velocityRadPerSec =
-        Units.rotationsPerMinuteToRadiansPerSecond(absoluteEncoder.getVelocity());
+    SparkUtil.clearStickyFault();
 
-    inputs.appliedVolts =
-        new double[] {
-          motor.getAppliedOutput() * motor.getBusVoltage(),
-        };
-    inputs.supplyCurrentAmps = new double[] {motor.getOutputCurrent()};
+    SparkUtil.ifOk(motor, relativeEncoder::getPosition, value -> inputs.positionRad = Units.rotationsToRadians(value));
+    SparkUtil.ifOk(motor, relativeEncoder::getVelocity,
+        value -> inputs.velocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(value));
+    SparkUtil.ifOk(motor, () -> motor.getAppliedOutput() * motor.getBusVoltage(),
+        values -> inputs.appliedVolts = new double[] { values });
+    SparkUtil.ifOk(motor, motor::getOutputCurrent, value -> inputs.supplyCurrentAmps = new double[] { value });
+
+    inputs.motorConnected = connectionDebouncer.calculate(!motor.hasStickyFault());
   }
 
   @Override

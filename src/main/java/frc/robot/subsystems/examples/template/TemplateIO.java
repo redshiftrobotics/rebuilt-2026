@@ -7,6 +7,7 @@ public interface TemplateIO {
   @AutoLog
   public static class TemplateIOInputs {
     public double velocityRadPerSec = 0.0;
+    // motor connected?
   }
 
   /** Updates the set of loggable inputs. */
