@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.intake.Intake;
@@ -15,15 +16,6 @@ public class IntakeCommands {
     return Commands.runOnce(() -> intake.setSlapdownSetpoint(intake.getSavedUpSetpoint()), intake);
   }
 
-  public static Command IncrementUpSlapdown(Intake intake) {
-    return Commands.runOnce(() -> intake.setSavedUpSetpoint(intake.getSavedUpSetpoint()), intake);
-  }
-
-  public static Command IncrementDownSlapdown(Intake intake) {
-    return Commands.runOnce(
-        () -> intake.setSavedDownSetpoint(intake.getSavedDownSetpoint()), intake);
-  }
-
   public static Command startIntake(Intake intake) {
     return Commands.runOnce(() -> intake.setWheelSpeed(IntakeConstants.INTAKE_WHEEL_SPEED), intake);
   }
@@ -34,5 +26,15 @@ public class IntakeCommands {
 
   private IntakeCommands() {
     // utility class doesn't need to be instantiated.
+  }
+
+  // Increments
+  public static Command IncrementUpSlapdown(Intake intake, Rotation2d amount) {
+    return Commands.runOnce(() -> intake.setSavedUpSetpoint(intake.getSavedUpSetpoint()), intake);
+  }
+
+  public static Command IncrementDownSlapdown(Intake intake, Rotation2d amount) {
+    return Commands.runOnce(
+        () -> intake.setSavedDownSetpoint(intake.getSavedDownSetpoint()), intake);
   }
 }
