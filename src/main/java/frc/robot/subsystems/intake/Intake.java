@@ -18,8 +18,10 @@ public class Intake extends SubsystemBase {
   private final IntakeWheelIO wheelIO;
   private final SlapdownIO slapdownIO;
 
-  private final Alert wheelMotorDisconnectedAlert = new Alert("Sticky fault detected on intake wheel.", AlertType.kError);
-  private final Alert slapdownMotorDisconnectedAlert = new Alert("Sticky fault detected on slapdown.", AlertType.kError);
+  private final Alert wheelMotorDisconnectedAlert =
+      new Alert("Sticky fault detected on intake wheel.", AlertType.kError);
+  private final Alert slapdownMotorDisconnectedAlert =
+      new Alert("Sticky fault detected on slapdown.", AlertType.kError);
 
   private IntakeWheelIOInputsAutoLogged wheelInputs;
   private SlapdownIOInputsAutoLogged slapdownInputs;
@@ -66,7 +68,7 @@ public class Intake extends SubsystemBase {
     SmartDashboard.putNumber("Wheel Speed", wheelIO.getSpeed());
     SmartDashboard.putData("intakeMech", mech);
 
-    wheelMotorDisconnectedAlert.set(!wheelInputs.motorConnected); 
+    wheelMotorDisconnectedAlert.set(!wheelInputs.motorConnected);
     slapdownMotorDisconnectedAlert.set(!slapdownInputs.motorConnected);
   }
 
