@@ -1,27 +1,50 @@
 package frc.robot.subsystems.climb;
 
-import edu.wpi.first.math.util.Units;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N2;
+import edu.wpi.first.math.system.LinearSystem;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.system.plant.LinearSystemId;
+import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 
 /** Simulation implementation of the ClimbIO. */
 public class ClimbIOSim implements ClimbIO {
+  /** Position threshold for "limit switch" (radians). */
+  private static final double IS_DOWN_THRESHOLD_RADIANS = 0.1;
 
-  private double speed = 0.0;
+  private final DCMotorSim sim;
 
-  public ClimbIOSim() {}
+  public ClimbIOSim() {
+    DCMotor motor = DCMotor.getNEO(1);
+    LinearSystem<N2, N1, N2> dcMotorSystem = LinearSystemId.createDCMotorSystem(motor, 0.004,
+        ClimbConstants.GEAR_RATIO);
+
+    sim = new DCMotorSim(dcMotorSystem, motor);
+  }
 
   @Override
   public void updateInputs(ClimbIOInputs inputs) {
-    inputs.velocityRadPerSec = speed * Units.rotationsPerMinuteToRadiansPerSecond(5676);
+    sim.update(0.02);
+
+    inputs.positionRad = sim.getAngularPositionRad();
+    inputs.velocityRadPerSec = sim.getAngularVelocityRadPerSec();
+    inputs.appliedVolts = new double[] { sim.getInputVoltage() };
+    inputs.supplyCurrentAmps = new double[] { sim.getCurrentDrawAmps() };
+    inputs.climberDown = isAtBottom();
   }
 
   @Override
   public void setSpeed(double speed) {
-    this.speed = speed;
+    sim.setInputVoltage(speed * 12.0); // robot is 12v
   }
 
   @Override
   public void stop() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'stop'");
+    sim.setInputVoltage(0.0);
+  }
+
+  @Override
+  public boolean isAtBottom() {
+    return sim.getAngularPositionRad() <= IS_DOWN_THRESHOLD_RADIANS;
   }
 }

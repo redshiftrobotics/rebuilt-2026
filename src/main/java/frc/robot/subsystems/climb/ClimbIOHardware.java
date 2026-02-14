@@ -20,7 +20,6 @@ public class ClimbIOHardware implements ClimbIO {
   DigitalInput leftLimitSwitch;
 
   public ClimbIOHardware() {
-
     SparkBaseConfig leaderConfig =
         new SparkMaxConfig()
             .voltageCompensation(12.0)
