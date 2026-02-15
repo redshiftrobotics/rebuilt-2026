@@ -52,10 +52,7 @@ public class Intake extends SubsystemBase {
     this.wheelIO = wheelIO;
     this.slapdownIO = slapdownIO;
 
-    setSlapdownPID(
-        IntakeConstants.SLAPDOWN_PID.kP(),
-        IntakeConstants.SLAPDOWN_PID.kI(),
-        IntakeConstants.SLAPDOWN_PID.kD());
+    slapdownIO.setPID(IntakeConstants.SLAPDOWN_PID);
 
     wheelInputs = new IntakeWheelIOInputsAutoLogged();
     slapdownInputs = new SlapdownIOInputsAutoLogged();
@@ -71,7 +68,7 @@ public class Intake extends SubsystemBase {
     Logger.processInputs(getName() + "/Wheel", wheelInputs);
     Logger.processInputs(getName() + "/Slapdown", slapdownInputs);
 
-    slapdownPidConfig.ifChanged(hashCode(), () -> setSlapdownPID(slapdownPidConfig.get()));
+    slapdownPidConfig.ifChanged(hashCode(), () -> slapdownIO.setPID(slapdownPidConfig.get()));
 
     visualizerSlapdownArm.setAngle(Units.radiansToDegrees(slapdownInputs.positionRad));
     wheelArm1.setAngle(Units.radiansToDegrees(wheelInputs.positionRad));
@@ -94,14 +91,6 @@ public class Intake extends SubsystemBase {
   }
 
   // slapdown
-
-  public void setSlapdownPID(double kP, double kI, double kD) {
-    slapdownIO.setPID(kP, kI, kD);
-  }
-
-  private void setSlapdownPID(PIDConstants pidConstants) {
-    slapdownIO.setPID(pidConstants.kP(), pidConstants.kI(), pidConstants.kD());
-  }
 
   public void setSlapdownSetpoint(Rotation2d setPoint) {
     slapdownIO.setSetpoint(setPoint);

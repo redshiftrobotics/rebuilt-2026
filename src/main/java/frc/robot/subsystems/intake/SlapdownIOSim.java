@@ -6,6 +6,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.Constants;
+import frc.robot.utility.records.PIDConstants;
 
 public class SlapdownIOSim implements SlapdownIO {
 
@@ -52,8 +53,8 @@ public class SlapdownIOSim implements SlapdownIO {
   }
 
   @Override
-  public void setPID(double kP, double kI, double kD) {
-    pidController.setPID(kP, kI, kD);
+  public void setPID(PIDConstants constants) {
+    pidController.setPID(constants.kP(), constants.kI(), constants.kD());
   }
 
   @Override
