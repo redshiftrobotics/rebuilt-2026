@@ -1,6 +1,7 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -33,8 +34,6 @@ import frc.robot.subsystems.hopper.HopperConstants.RunMode;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeConstants;
 import frc.robot.subsystems.led.BlinkenLEDPattern;
-import frc.robot.subsystems.led.LEDConstants;
-import frc.robot.subsystems.led.LEDStripIOSim;
 import frc.robot.subsystems.led.LEDSubsystem;
 import frc.robot.subsystems.vision.AprilTagVision;
 import frc.robot.utility.Elastic;
@@ -437,7 +436,6 @@ public class RobotContainer {
     namedCommands.put("StopIntake", IntakeCommands.stopIntake(intake));
 
     // Launcher commands
-    namedCommands.put("FireHopper", null);
 
     // Hang commands
     namedCommands.put("HangUp", null);
@@ -446,38 +444,7 @@ public class RobotContainer {
     System.out.println("Avaliable named commands:");
     namedCommands.keySet().forEach(commandName -> System.out.println("  " + commandName));
 
-    /**
-     * NamedCommands.registerCommands(namedCommands);
-     *
-     * <p>Error at java.base/java.util.Objects.requireNonNull(Objects.java:209): Unhandled
-     * exception: java.lang.NullPointerException at
-     * java.base/java.util.Objects.requireNonNull(Objects.java:209) at
-     * com.pathplanner.lib.auto.CommandUtil.wrappedEventCommand(CommandUtil.java:22) at
-     * com.pathplanner.lib.auto.NamedCommands.getCommand(NamedCommands.java:63) at
-     * com.pathplanner.lib.auto.CommandUtil.namedCommandFromData(CommandUtil.java:71) at
-     * com.pathplanner.lib.auto.CommandUtil.commandFromJson(CommandUtil.java:47) at
-     * com.pathplanner.lib.auto.CommandUtil.sequentialGroupFromData(CommandUtil.java:93) at
-     * com.pathplanner.lib.auto.CommandUtil.commandFromJson(CommandUtil.java:49) at
-     * com.pathplanner.lib.commands.PathPlannerAuto.initFromJson(PathPlannerAuto.java:648) at
-     * com.pathplanner.lib.commands.PathPlannerAuto.<init>(PathPlannerAuto.java:103) at
-     * com.pathplanner.lib.commands.PathPlannerAuto.<init>(PathPlannerAuto.java:63) at
-     * com.pathplanner.lib.auto.AutoBuilder.buildAutoChooserWithOptionsModifier(AutoBuilder.java:450)
-     * at com.pathplanner.lib.auto.AutoBuilder.buildAutoChooser(AutoBuilder.java:409) at
-     * com.pathplanner.lib.auto.AutoBuilder.buildAutoChooser(AutoBuilder.java:397) at
-     * frc.robot.RobotContainer.<init>(RobotContainer.java:131) at
-     * frc.robot.Robot.robotInit(Robot.java:116) at
-     * org.littletonrobotics.junction.LoggedRobot.startCompetition(LoggedRobot.java:75) at
-     * edu.wpi.first.wpilibj.RobotBase.runRobot(RobotBase.java:436) at
-     * edu.wpi.first.wpilibj.RobotBase.startRobot(RobotBase.java:527) at
-     * frc.robot.Main.main(Main.java:19)
-     *
-     * <p>Warning at edu.wpi.first.wpilibj.RobotBase.runRobot(RobotBase.java:450): The robot program
-     * quit unexpectedly. This is usually due to a code error. The above stacktrace can help
-     * determine where the error occurred. See https://wpilib.org/stacktrace for more information.
-     *
-     * <p>Error at edu.wpi.first.wpilibj.RobotBase.runRobot(RobotBase.java:457): The
-     * startCompetition() method (or methods called by it) should have handled the exception above.
-     */
+    NamedCommands.registerCommands(namedCommands);
   }
 
   private void configureAutos(LoggedDashboardChooser<Command> dashboardChooser) {
