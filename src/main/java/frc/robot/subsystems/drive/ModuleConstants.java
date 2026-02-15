@@ -10,7 +10,7 @@ import frc.robot.Constants;
 import frc.robot.generated.MetalbotTwoConstants;
 import frc.robot.generated.PreseasonConstants;
 import frc.robot.utility.records.FeedForwardConfigRecord;
-import frc.robot.utility.records.PIDConstants;
+import frc.robot.utility.records.PIDConfig;
 
 public class ModuleConstants {
 
@@ -106,12 +106,12 @@ public class ModuleConstants {
 
   public static final DCMotor DRIVE_MOTOR;
   public static final FeedForwardConfigRecord DRIVE_FEEDFORWARD;
-  public static final PIDConstants DRIVE_FEEDBACK;
+  public static final PIDConfig DRIVE_FEEDBACK;
   public static final double DRIVE_MOTOR_CURRENT_LIMIT;
   public static final double DRIVE_REDUCTION;
 
   public static final DCMotor TURN_MOTOR;
-  public static final PIDConstants TURN_FEEDBACK;
+  public static final PIDConfig TURN_FEEDBACK;
   public static final FeedForwardConfigRecord TURN_FEEDFORWARD;
   public static final double TURN_MOTOR_CURRENT_LIMIT;
   public static final double TURN_REDUCTION;
@@ -127,13 +127,13 @@ public class ModuleConstants {
     switch (Constants.getRobot()) {
       case METALBOT_2:
         DRIVE_MOTOR = DCMotor.getKrakenX60Foc(1);
-        DRIVE_FEEDBACK = new PIDConstants(20, 0, 0);
+        DRIVE_FEEDBACK = new PIDConfig(20, 0, 0);
         DRIVE_FEEDFORWARD = new FeedForwardConfigRecord(2.00544, 1.05719, 0);
         DRIVE_MOTOR_CURRENT_LIMIT = MetalbotTwoConstants.FrontLeft.SlipCurrent;
         DRIVE_REDUCTION = MetalbotTwoConstants.FrontLeft.DriveMotorGearRatio;
 
         TURN_MOTOR = DCMotor.getKrakenX60Foc(1);
-        TURN_FEEDBACK = new PIDConstants(1400, 0, 15);
+        TURN_FEEDBACK = new PIDConfig(1400, 0, 15);
         TURN_FEEDFORWARD = new FeedForwardConfigRecord(0.2, 0, 0);
         TURN_MOTOR_CURRENT_LIMIT = MetalbotTwoConstants.FrontLeft.SlipCurrent;
         TURN_REDUCTION = MetalbotTwoConstants.FrontLeft.SteerMotorGearRatio;
@@ -141,13 +141,13 @@ public class ModuleConstants {
 
       case PRESEASON_2026:
         DRIVE_MOTOR = DCMotor.getKrakenX60Foc(1);
-        DRIVE_FEEDBACK = new PIDConstants(20, 0, 0);
+        DRIVE_FEEDBACK = new PIDConfig(20, 0, 0);
         DRIVE_FEEDFORWARD = new FeedForwardConfigRecord(2.00544, 1.05719, 0);
         DRIVE_MOTOR_CURRENT_LIMIT = PreseasonConstants.FrontLeft.SlipCurrent;
         DRIVE_REDUCTION = PreseasonConstants.FrontLeft.DriveMotorGearRatio;
 
         TURN_MOTOR = DCMotor.getKrakenX60Foc(1);
-        TURN_FEEDBACK = new PIDConstants(1400, 0, 15);
+        TURN_FEEDBACK = new PIDConfig(1400, 0, 15);
         TURN_FEEDFORWARD = new FeedForwardConfigRecord(0.2, 0, 0);
         TURN_MOTOR_CURRENT_LIMIT = PreseasonConstants.FrontLeft.SlipCurrent;
         TURN_REDUCTION = PreseasonConstants.FrontLeft.SteerMotorGearRatio;
@@ -155,13 +155,13 @@ public class ModuleConstants {
 
       case SIM_BOT:
         DRIVE_MOTOR = DCMotor.getKrakenX60Foc(1);
-        DRIVE_FEEDBACK = new PIDConstants(0.05, 0.0, 0.0);
+        DRIVE_FEEDBACK = new PIDConfig(0.05, 0.0, 0.0);
         DRIVE_FEEDFORWARD = new FeedForwardConfigRecord(0.0, 0.144886, 0.0);
         DRIVE_MOTOR_CURRENT_LIMIT = PreseasonConstants.FrontLeft.SlipCurrent;
         DRIVE_REDUCTION = Mk4iReductions.L3.reduction;
 
         TURN_MOTOR = DCMotor.getKrakenX60Foc(1);
-        TURN_FEEDBACK = new PIDConstants(8, 0, 0);
+        TURN_FEEDBACK = new PIDConfig(8, 0, 0);
         TURN_FEEDFORWARD = new FeedForwardConfigRecord(0.0, 0.0, 0.0);
         TURN_MOTOR_CURRENT_LIMIT = 800; // No limit
         TURN_REDUCTION = PreseasonConstants.FrontLeft.SteerMotorGearRatio;
@@ -172,13 +172,13 @@ public class ModuleConstants {
       case WOOD_BOT_2026:
       default:
         DRIVE_MOTOR = DCMotor.getNEO(1);
-        DRIVE_FEEDBACK = new PIDConstants(0.0001, 0.0, 0.0);
+        DRIVE_FEEDBACK = new PIDConfig(0.0001, 0.0, 0.0);
         DRIVE_FEEDFORWARD = new FeedForwardConfigRecord(0.2, 4.35, 0);
         DRIVE_MOTOR_CURRENT_LIMIT = 50;
         DRIVE_REDUCTION = Mk4iReductions.L3.reduction;
 
         TURN_MOTOR = DCMotor.getNEO(1);
-        TURN_FEEDBACK = new PIDConstants(10, 0.0, 0.0);
+        TURN_FEEDBACK = new PIDConfig(10, 0.0, 0.0);
         TURN_FEEDFORWARD = new FeedForwardConfigRecord(0.0, 0.0, 0.0);
         TURN_MOTOR_CURRENT_LIMIT = 20;
         TURN_REDUCTION = Mk4iReductions.TURN_REDUCTION;

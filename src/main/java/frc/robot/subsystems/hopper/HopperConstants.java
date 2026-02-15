@@ -2,7 +2,7 @@ package frc.robot.subsystems.hopper;
 
 import frc.robot.Constants;
 import frc.robot.utility.records.FeedForwardConfigRecord;
-import frc.robot.utility.records.PIDConstants;
+import frc.robot.utility.records.PIDConfig;
 
 public class HopperConstants {
   /*
@@ -66,17 +66,17 @@ public class HopperConstants {
 
   // PID constants
   // TODO: Add real values
-  public static final PIDConstants BUBBLER_PID =
+  public static final PIDConfig BUBBLER_PID =
       switch (Constants.getRobot()) {
-        case PRESEASON_2026 -> new PIDConstants(0.0, 0.0, 0.0);
-        case SIM_BOT -> new PIDConstants(0.85, 0.0, 0.0);
-        default -> new PIDConstants(1.0, 0.0, 0.0);
+        case PRESEASON_2026 -> new PIDConfig(0.0, 0.0, 0.0);
+        case SIM_BOT -> new PIDConfig(0.85, 0.0, 0.0);
+        default -> new PIDConfig(1.0, 0.0, 0.0);
       };
-  public static final PIDConstants FEEDER_PID =
+  public static final PIDConfig FEEDER_PID =
       switch (Constants.getRobot()) {
-        case PRESEASON_2026 -> new PIDConstants(0.0, 0.0, 0.0);
-        case SIM_BOT -> new PIDConstants(0.85, 0.0, 0.0);
-        default -> new PIDConstants(1.0, 0.0, 0.0);
+        case PRESEASON_2026 -> new PIDConfig(0.0, 0.0, 0.0);
+        case SIM_BOT -> new PIDConfig(0.85, 0.0, 0.0);
+        default -> new PIDConfig(1.0, 0.0, 0.0);
       };
 
   // Feedforward constants

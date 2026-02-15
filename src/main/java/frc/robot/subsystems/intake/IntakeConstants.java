@@ -2,7 +2,7 @@ package frc.robot.subsystems.intake;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Constants;
-import frc.robot.utility.records.PIDConstants;
+import frc.robot.utility.records.PIDConfig;
 
 public class IntakeConstants {
   public static final double INTAKE_WHEEL_SPEED = .5;
@@ -42,10 +42,10 @@ public class IntakeConstants {
         default -> 0;
       };
 
-  public static final PIDConstants SLAPDOWN_PID =
+  public static final PIDConfig SLAPDOWN_PID =
       switch (Constants.getRobot()) {
-        case PRESEASON_2026 -> new PIDConstants(0, 0, 0);
-        case SIM_BOT -> new PIDConstants(.32, 0, .14);
-        default -> new PIDConstants(1, 0, 0);
+        case PRESEASON_2026 -> new PIDConfig(0, 0, 0);
+        case SIM_BOT -> new PIDConfig(.32, 0, .14);
+        default -> new PIDConfig(1, 0, 0);
       };
 }

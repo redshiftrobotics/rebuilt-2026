@@ -1,7 +1,7 @@
 package frc.robot.subsystems.intake;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import frc.robot.utility.records.PIDConstants;
+import frc.robot.utility.records.PIDConfig;
 
 import org.littletonrobotics.junction.AutoLog;
 
@@ -19,7 +19,7 @@ public interface SlapdownIO {
 
   public default void updateInputs(SlapdownIOInputsAutoLogged inputs) {}
 
-  public default void setPID(PIDConstants config) {}
+  public default void setPID(PIDConfig config) {}
 
   public default void setSetpoint(Rotation2d setPoint) {}
 
