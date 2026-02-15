@@ -10,12 +10,12 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.utility.SparkUtil;
+import frc.robot.utility.records.PIDConfig;
 
 public class SlapdownIOSparkMax implements SlapdownIO {
 
@@ -76,13 +76,14 @@ public class SlapdownIOSparkMax implements SlapdownIO {
         motor, motor::getOutputCurrent, value -> inputs.supplyCurrentAmps = new double[] {value});
 
     inputs.motorConnected = connectionDebouncer.calculate(!motor.hasStickyFault());
-    inputs.encodersAligned = MathUtil.isNear(relativeEncoder.getVelocity(),  absoluteEncoder.getPosition() , 0.1);
+    inputs.encodersAligned =
+        MathUtil.isNear(relativeEncoder.getVelocity(), absoluteEncoder.getPosition(), 0.1);
   }
 
   @Override
-  public void setPID(double kP, double kI, double kD) {
+  public void setPID(PIDConfig pid) {
     SparkMaxConfig config = new SparkMaxConfig();
-    config.closedLoop.pid(kP, kI, kD);
+    config.closedLoop.pid(pid.kP(), pid.kI(), pid.kD());
     motor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
   }
 
