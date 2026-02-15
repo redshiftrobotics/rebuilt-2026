@@ -1,6 +1,8 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -448,6 +450,8 @@ public class RobotContainer {
 
     System.out.println("Avaliable named commands:");
     namedCommands.keySet().forEach(commandName -> System.out.println("  " + commandName));
+
+    NamedCommands.registerCommands(namedCommands);
   }
 
   private void configureAutos(LoggedDashboardChooser<Command> dashboardChooser) {
