@@ -82,7 +82,7 @@ public class RobotContainer {
       new Alert("Robot type is not the primary robot type.", AlertType.kInfo);
   private final Alert developmentModeActiveAlert =
       new Alert("Development mode active, do not use in competition.", AlertType.kWarning);
-      
+
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
 
