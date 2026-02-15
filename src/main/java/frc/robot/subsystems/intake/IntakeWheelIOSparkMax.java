@@ -37,7 +37,7 @@ public class IntakeWheelIOSparkMax implements IntakeWheelIO {
 
   @Override
   public void updateInputs(IntakeWheelIOInputsAutoLogged inputs) {
-    SparkUtil.clearStickyFault();
+    SparkUtil.clearError();
 
     SparkUtil.ifOk(
         motor,

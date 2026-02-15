@@ -56,7 +56,7 @@ public class SlapdownIOSparkMax implements SlapdownIO {
 
   @Override
   public void updateInputs(SlapdownIOInputsAutoLogged inputs) {
-    SparkUtil.clearStickyFault();
+    SparkUtil.clearError();
 
     SparkUtil.ifOk(
         motor,

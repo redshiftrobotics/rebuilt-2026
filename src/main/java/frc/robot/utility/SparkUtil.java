@@ -24,13 +24,13 @@ public class SparkUtil {
   /** Stores whether any error was has been detected by other utility methods. */
   private static boolean sparkStickyFault = false;
 
-  /** Returns whether any error has been detected by other utility methods. */
-  public static boolean hasStickyFault() {
+  /** Returns whether any error has been detected by other SparkUtil methods. */
+  public static boolean hasError() {
     return sparkStickyFault;
   }
 
-  /** Clears the sticky fault flag. */
-  public static void clearStickyFault() {
+  /** Clears the flag storing if another SparkUtil method has errored. */
+  public static void clearError() {
     sparkStickyFault = false;
   }
 
