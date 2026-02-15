@@ -9,6 +9,7 @@ public interface SlapdownIO {
   @AutoLog
   public class SlapdownIOInputs {
     public boolean motorConnected = false;
+    public boolean encodersAligned = true;
 
     public double positionRad = IntakeConstants.SLAPDOWN_UP_SETPOINT.getRadians();
     public double velocityRadPerSec = 0.0;

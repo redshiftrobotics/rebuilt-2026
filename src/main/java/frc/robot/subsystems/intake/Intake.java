@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RobotType;
-import frc.robot.utility.records.PIDConfig;
 import frc.robot.utility.tunable.TunableNumbers.TunablePID;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
@@ -21,9 +20,10 @@ public class Intake extends SubsystemBase {
   private final SlapdownIO slapdownIO;
 
   private final Alert wheelMotorDisconnectedAlert =
-      new Alert("Sticky fault detected on intake wheel.", AlertType.kError);
+      new Alert("Hardware error detected on intake wheel.", AlertType.kError);
   private final Alert slapdownMotorDisconnectedAlert =
-      new Alert("Sticky fault detected on slapdown.", AlertType.kError);
+      new Alert("Hardware error detected on slapdown.", AlertType.kError);
+  private final Alert encodersMisalignedAlert = new Alert("Absolute & relative encoders on slapdown misaligned.", AlertType.kWarning);
 
   private final TunablePID slapdownPidConfig =
       new TunablePID(getName() + "/Slapdown/Pid", IntakeConstants.SLAPDOWN_PID);
@@ -78,6 +78,7 @@ public class Intake extends SubsystemBase {
 
     wheelMotorDisconnectedAlert.set(!wheelInputs.motorConnected);
     slapdownMotorDisconnectedAlert.set(!slapdownInputs.motorConnected);
+    encodersMisalignedAlert.set(!slapdownInputs.encodersAligned);
   }
 
   // wheel
