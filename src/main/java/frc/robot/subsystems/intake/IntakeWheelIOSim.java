@@ -21,6 +21,7 @@ public class IntakeWheelIOSim implements IntakeWheelIO {
   public void updateInputs(IntakeWheelIOInputsAutoLogged inputs) {
     sim.update(Constants.LOOP_PERIOD_SECONDS);
 
+    inputs.motorConnected = true;
     inputs.positionRad = sim.getAngularPositionRad();
     inputs.velocityRadPerSec = sim.getAngularVelocityRadPerSec();
     inputs.appliedVolts = new double[] {sim.getInputVoltage()};

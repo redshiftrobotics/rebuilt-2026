@@ -9,12 +9,18 @@ import frc.robot.Constants;
 
 public class SlapdownIOSim implements SlapdownIO {
 
+  private Rotation2d slapdownUpPosition;
+  private Rotation2d slapdownDownPosition;
+
   private final DCMotorSim sim;
   private final DCMotor motor;
 
   private final PIDController pidController;
 
   public SlapdownIOSim() {
+    slapdownUpPosition = IntakeConstants.SLAPDOWN_UP_SETPOINT;
+    slapdownDownPosition = IntakeConstants.SLAPDOWN_DOWN_SETPOINT;
+
     motor = DCMotor.getNEO(1);
     sim =
         new DCMotorSim(
@@ -38,6 +44,7 @@ public class SlapdownIOSim implements SlapdownIO {
       sim.setInput(pidController.calculate(sim.getAngularPositionRad()));
     }
 
+    inputs.motorConnected = true;
     inputs.positionRad = sim.getAngularPositionRad();
     inputs.velocityRadPerSec = sim.getAngularVelocityRadPerSec();
     inputs.appliedVolts = new double[] {sim.getInputVoltage()};
@@ -52,6 +59,30 @@ public class SlapdownIOSim implements SlapdownIO {
   @Override
   public void setSetpoint(Rotation2d setPoint) {
     pidController.setSetpoint(setPoint.getRadians());
+  }
+
+  @Override
+  public void setSavedUpSetpoint(Rotation2d setPoint) {
+    pidController.setSetpoint(setPoint.getRadians());
+
+    slapdownUpPosition = setPoint;
+  }
+
+  @Override
+  public void setSavedDownSetpoint(Rotation2d setPoint) {
+    pidController.setSetpoint(setPoint.getRadians());
+
+    slapdownDownPosition = setPoint;
+  }
+
+  @Override
+  public Rotation2d getSavedUpSetpoint() {
+    return slapdownUpPosition;
+  }
+
+  @Override
+  public Rotation2d getSavedDownSetpoint() {
+    return slapdownDownPosition;
   }
 
   @Override

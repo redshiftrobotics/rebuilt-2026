@@ -31,6 +31,7 @@ import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.hopper.HopperConstants.RunMode;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeConstants;
 import frc.robot.subsystems.led.BlinkenLEDPattern;
 import frc.robot.subsystems.led.LEDConstants;
 import frc.robot.subsystems.led.LEDStripIOSim;
@@ -81,7 +82,7 @@ public class RobotContainer {
       new Alert("Robot type is not the primary robot type.", AlertType.kInfo);
   private final Alert developmentModeActiveAlert =
       new Alert("Development mode active, do not use in competition.", AlertType.kWarning);
-      
+
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
 
@@ -331,6 +332,32 @@ public class RobotContainer {
         .onFalse(
             Commands.sequence(
                 IntakeCommands.retractSlapdown(intake), IntakeCommands.stopIntake(intake)));
+
+    // down pos
+    xbox.leftTrigger()
+        .and(xbox.pov(0))
+        .onTrue(
+            IntakeCommands.incrementDownSlapdown(
+                intake, IntakeConstants.SLAPDOWN_INCREMENT_SETPOINT));
+    xbox.leftTrigger()
+        .and(xbox.pov(180))
+        .onTrue(
+            IntakeCommands.incrementDownSlapdown(
+                intake, IntakeConstants.SLAPDOWN_INCREMENT_SETPOINT.unaryMinus()));
+
+    // up pos
+    xbox.leftTrigger()
+        .negate()
+        .and(xbox.pov(0))
+        .onTrue(
+            IntakeCommands.incrementUpSlapdown(
+                intake, IntakeConstants.SLAPDOWN_INCREMENT_SETPOINT));
+    xbox.leftTrigger()
+        .negate()
+        .and(xbox.pov(180))
+        .onTrue(
+            IntakeCommands.incrementUpSlapdown(
+                intake, IntakeConstants.SLAPDOWN_INCREMENT_SETPOINT.unaryMinus()));
 
     // This is the input for firing; when the shooter is added, it should be
     // triggered by this as

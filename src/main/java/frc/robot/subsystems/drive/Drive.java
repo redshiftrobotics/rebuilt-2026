@@ -216,6 +216,8 @@ public class Drive extends SubsystemBase {
     Logger.recordOutput(
         "ChassisStates/ModuleDesiredSpeeds", kinematics.toChassisSpeeds(getDesiredWheelSpeeds()));
 
+    Logger.recordOutput("Drive/RobotPose", robotPose);
+
     // Update odometry
     double[] sampleTimestamps =
         modules[0].getOdometryTimestamps(); // All signals are sampled together, use first
