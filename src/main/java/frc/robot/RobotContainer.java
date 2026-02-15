@@ -449,34 +449,37 @@ public class RobotContainer {
     System.out.println("Avaliable named commands:");
     namedCommands.keySet().forEach(commandName -> System.out.println("  " + commandName));
 
-    /** NamedCommands.registerCommands(namedCommands);
-    
-    Error at java.base/java.util.Objects.requireNonNull(Objects.java:209): Unhandled exception: java.lang.NullPointerException
-        at java.base/java.util.Objects.requireNonNull(Objects.java:209)
-        at com.pathplanner.lib.auto.CommandUtil.wrappedEventCommand(CommandUtil.java:22)
-        at com.pathplanner.lib.auto.NamedCommands.getCommand(NamedCommands.java:63)
-        at com.pathplanner.lib.auto.CommandUtil.namedCommandFromData(CommandUtil.java:71)
-        at com.pathplanner.lib.auto.CommandUtil.commandFromJson(CommandUtil.java:47)
-        at com.pathplanner.lib.auto.CommandUtil.sequentialGroupFromData(CommandUtil.java:93)
-        at com.pathplanner.lib.auto.CommandUtil.commandFromJson(CommandUtil.java:49)
-        at com.pathplanner.lib.commands.PathPlannerAuto.initFromJson(PathPlannerAuto.java:648)
-        at com.pathplanner.lib.commands.PathPlannerAuto.<init>(PathPlannerAuto.java:103)
-        at com.pathplanner.lib.commands.PathPlannerAuto.<init>(PathPlannerAuto.java:63)
-        at com.pathplanner.lib.auto.AutoBuilder.buildAutoChooserWithOptionsModifier(AutoBuilder.java:450)
-        at com.pathplanner.lib.auto.AutoBuilder.buildAutoChooser(AutoBuilder.java:409)
-        at com.pathplanner.lib.auto.AutoBuilder.buildAutoChooser(AutoBuilder.java:397)
-        at frc.robot.RobotContainer.<init>(RobotContainer.java:131)
-        at frc.robot.Robot.robotInit(Robot.java:116)
-        at org.littletonrobotics.junction.LoggedRobot.startCompetition(LoggedRobot.java:75)
-        at edu.wpi.first.wpilibj.RobotBase.runRobot(RobotBase.java:436)
-        at edu.wpi.first.wpilibj.RobotBase.startRobot(RobotBase.java:527)
-        at frc.robot.Main.main(Main.java:19)
-
-    Warning at edu.wpi.first.wpilibj.RobotBase.runRobot(RobotBase.java:450): The robot program quit unexpectedly. This is usually due to a code error.
-        The above stacktrace can help determine where the error occurred.
-        See https://wpilib.org/stacktrace for more information.
-
-    Error at edu.wpi.first.wpilibj.RobotBase.runRobot(RobotBase.java:457): The startCompetition() method (or methods called by it) should have handled the exception above.
+    /**
+     * NamedCommands.registerCommands(namedCommands);
+     *
+     * <p>Error at java.base/java.util.Objects.requireNonNull(Objects.java:209): Unhandled
+     * exception: java.lang.NullPointerException at
+     * java.base/java.util.Objects.requireNonNull(Objects.java:209) at
+     * com.pathplanner.lib.auto.CommandUtil.wrappedEventCommand(CommandUtil.java:22) at
+     * com.pathplanner.lib.auto.NamedCommands.getCommand(NamedCommands.java:63) at
+     * com.pathplanner.lib.auto.CommandUtil.namedCommandFromData(CommandUtil.java:71) at
+     * com.pathplanner.lib.auto.CommandUtil.commandFromJson(CommandUtil.java:47) at
+     * com.pathplanner.lib.auto.CommandUtil.sequentialGroupFromData(CommandUtil.java:93) at
+     * com.pathplanner.lib.auto.CommandUtil.commandFromJson(CommandUtil.java:49) at
+     * com.pathplanner.lib.commands.PathPlannerAuto.initFromJson(PathPlannerAuto.java:648) at
+     * com.pathplanner.lib.commands.PathPlannerAuto.<init>(PathPlannerAuto.java:103) at
+     * com.pathplanner.lib.commands.PathPlannerAuto.<init>(PathPlannerAuto.java:63) at
+     * com.pathplanner.lib.auto.AutoBuilder.buildAutoChooserWithOptionsModifier(AutoBuilder.java:450)
+     * at com.pathplanner.lib.auto.AutoBuilder.buildAutoChooser(AutoBuilder.java:409) at
+     * com.pathplanner.lib.auto.AutoBuilder.buildAutoChooser(AutoBuilder.java:397) at
+     * frc.robot.RobotContainer.<init>(RobotContainer.java:131) at
+     * frc.robot.Robot.robotInit(Robot.java:116) at
+     * org.littletonrobotics.junction.LoggedRobot.startCompetition(LoggedRobot.java:75) at
+     * edu.wpi.first.wpilibj.RobotBase.runRobot(RobotBase.java:436) at
+     * edu.wpi.first.wpilibj.RobotBase.startRobot(RobotBase.java:527) at
+     * frc.robot.Main.main(Main.java:19)
+     *
+     * <p>Warning at edu.wpi.first.wpilibj.RobotBase.runRobot(RobotBase.java:450): The robot program
+     * quit unexpectedly. This is usually due to a code error. The above stacktrace can help
+     * determine where the error occurred. See https://wpilib.org/stacktrace for more information.
+     *
+     * <p>Error at edu.wpi.first.wpilibj.RobotBase.runRobot(RobotBase.java:457): The
+     * startCompetition() method (or methods called by it) should have handled the exception above.
      */
   }
 
