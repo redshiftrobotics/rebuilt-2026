@@ -7,21 +7,28 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.launcher.ShotCalculator.ShotParameters;
+import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 /** The subsystem that the person will actually use for the Template. */
 public class Launcher extends SubsystemBase {
-  private final HoodActuatorIO hoodIO;
-  private final HoodActuatorIOInputsAutoLogged hoodInputs = new HoodActuatorIOInputsAutoLogged();
+  private final HoodIO hoodIO;
+  private final HoodIOInputsAutoLogged hoodInputs = new HoodIOInputsAutoLogged();
   private final ChannelIO[] channelIOs;
   private final ChannelIOInputsAutoLogged[] channelInputs;
 
-  private Translation2d hubPosition;
-  private Translation2d robotVelocity;
+  private Supplier<Translation2d> hubPosition = null;
+  private Supplier<Translation2d> robotVelocity = null;
+
+  private boolean running = false;
 
   /** Creates a new Template. */
-  public Launcher(HoodActuatorIO io, ChannelIO... channelIOs) {
-    this.hoodIO = io;
+  public Launcher(ChannelIO... channelIOs) {
+    hoodIO =
+        switch (LauncherConstants.HOOD_TYPE) {
+          case FIXED -> new HoodIOFixed() {};
+          case ACTUATOR -> new HoodIOActuator();
+        };
 
     this.channelIOs = channelIOs;
     channelInputs = new ChannelIOInputsAutoLogged[channelIOs.length];
@@ -34,20 +41,41 @@ public class Launcher extends SubsystemBase {
     }
   }
 
+  public void stop() {
+    this.running = false;
+  }
+
+  public void start() {
+    this.running = true;
+  }
+
+  public void setRunning(boolean enabled) {
+    this.running = enabled;
+  }
+
+  public void configure(
+      Supplier<Translation2d> hubPositionSupplier, Supplier<Translation2d> robotVelocitySupplier) {
+    hubPosition = hubPositionSupplier;
+    robotVelocity = robotVelocitySupplier;
+  }
+
   @Override
   public void periodic() {
+    if (running) {
+      ShotParameters parameters = ShotCalculator.method1(hubPosition.get(), robotVelocity.get());
 
-    ShotParameters parameters = ShotCalculator.method1(hubPosition, robotVelocity);
-
-    for (ChannelIO channel : channelIOs) {
-      // Give flywheel additional velocity to account for velocity lost in momentum transfer
-      // Give flywheel double  velocity to account for spin. It rolls the ball, rather than pushing
-
-      channel.setSpeed(
-          RadiansPerSecond.of(
-              parameters.velocity().in(MetersPerSecond)
-                  / LauncherConstants.LAUNCHER_WHEEL_RADIUS.in(Meters)
-                  * LauncherConstants.LAUNCHER_VELOCITY_MULTIPLIER));
+      hoodIO.setLaunchAngle(parameters.pitch());
+      for (ChannelIO channel : channelIOs) {
+        channel.setSpeed(
+            RadiansPerSecond.of(
+                parameters.velocity().in(MetersPerSecond)
+                    / LauncherConstants.LAUNCHER_WHEEL_RADIUS.in(Meters)
+                    * LauncherConstants.LAUNCHER_VELOCITY_MULTIPLIER));
+      }
+    } else {
+      for (ChannelIO channel : channelIOs) {
+        channel.stop();
+      }
     }
 
     hoodIO.updateInputs(hoodInputs);
@@ -61,7 +89,10 @@ public class Launcher extends SubsystemBase {
 
   // Function to determine if the launcher wheels and hood are at their setpoints
   public boolean isReady() {
-    return false;
-    // TODO
+    boolean ready = true;
+    for (ChannelIO channelIO : channelIOs) {
+      ready = ready && channelIO.isAtSetpoint();
+    }
+    return ready;
   }
 }

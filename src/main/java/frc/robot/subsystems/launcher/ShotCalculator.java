@@ -1,23 +1,28 @@
 package frc.robot.subsystems.launcher;
 
+import static edu.wpi.first.units.Units.Feet;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.Radians;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 
 public class ShotCalculator {
-  public record ShotParameters(LinearVelocity velocity, Angle pitch, Rotation2d yaw) {}
+  public record ShotParameters(LinearVelocity velocity, Rotation2d pitch, Rotation2d yaw) {}
 
+  // Adjust distance, then Calculate pitch, then calculate velocity based on pitch
   public static ShotParameters method1(
       Translation2d hubPosition, Translation2d robotVelocityMetersPerSecond) {
-    // TODO implement using hub position for angle & adjusted hub position for velocity and yaw
-    return calculateTrajectory(
-        adjustedHubPosition(hubPosition, robotVelocityMetersPerSecond),
-        robotVelocityMetersPerSecond);
+
+    Translation2d adjustedHub = adjustedHubPosition(hubPosition, robotVelocityMetersPerSecond);
+    Distance adjustedDistance =
+        Meters.of(adjustedHub.getNorm() - LauncherConstants.LAUNCHER_X_OFFSET.in(Meters));
+
+    Rotation2d pitch = calculatePitch(adjustedDistance);
+    LinearVelocity velocity = calculateVelocity(adjustedDistance, pitch);
+    return new ShotParameters(velocity, pitch, adjustedHub.getAngle());
   }
 
   private static Translation2d adjustedHubPosition(
@@ -35,27 +40,40 @@ public class ShotCalculator {
 
   private static ShotParameters calculateTrajectory(
       Translation2d hubPosition, Translation2d robotVelocityMetersPerSecond) {
-    double distance = hubPosition.getNorm() + LauncherConstants.LAUNCHER_X_OFFSET.in(Meters);
+    Distance distance =
+        Meters.of(hubPosition.getNorm() - LauncherConstants.LAUNCHER_X_OFFSET.in(Meters));
     // Formula acquired through experimentation
-    double pitch = 75.0 - 0.5 * distance * Math.pow(Math.tanh(distance / 10.0), 4);
+    Rotation2d pitch = calculatePitch(distance);
+
+    return new ShotParameters(calculateVelocity(distance, pitch), pitch, hubPosition.getAngle());
+  }
+
+  static Rotation2d calculatePitch(Distance distance) {
+    return switch (LauncherConstants.HOOD_TYPE) {
+      case FIXED -> LauncherConstants.FIXED_LAUNCH_ANGLE;
+        // Formula from experimentation
+      case ACTUATOR -> Rotation2d.fromDegrees(
+          75.0 - 15.0 * Math.tanh(2.0 * distance.in(Feet) / 25.0));
+    };
+  }
+
+  static LinearVelocity calculateVelocity(Distance distance, Rotation2d pitch) {
     // https://www.desmos.com/3d/enuvzskzsh
     double velocity =
-        distance
+        distance.in(Meters)
             * Math.sqrt(
                 9.81
-                    / (2 * distance * Math.tan(pitch)
+                    / (2 * distance.in(Meters) * pitch.getTan()
                         - LauncherConstants.HUB_Z_OFFSET.in(Meters)
                         + LauncherConstants.LAUNCHER_Z_OFFSET.in(Meters)))
-            / Math.cos(pitch);
-
-    return new ShotParameters(
-        MetersPerSecond.of(velocity), Radians.of(pitch), hubPosition.getAngle());
+            / pitch.getCos();
+    return MetersPerSecond.of(velocity);
   }
 
   private static double timeOfFlight(ShotParameters parameters, Translation2d hubPosition) {
     // Distance divided by horizontal shot speed
     return (hubPosition.getNorm() + LauncherConstants.LAUNCHER_X_OFFSET.in(Meters))
-        / (Math.cos(parameters.pitch.in(Radians)) * parameters.velocity.in(MetersPerSecond));
+        / (parameters.pitch.getCos() * parameters.velocity.in(MetersPerSecond));
   }
 
   private static Translation2d shiftHubPosition(

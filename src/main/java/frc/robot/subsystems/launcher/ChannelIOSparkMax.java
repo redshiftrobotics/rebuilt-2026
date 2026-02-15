@@ -12,17 +12,18 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
 
 /** Hardware implementation of the TemplateIO. */
-public class ChannelIOHardware implements ChannelIO {
+public class ChannelIOSparkMax implements ChannelIO {
   private final SparkMax motor;
   private final SparkClosedLoopController controller;
 
   private final RelativeEncoder encoder;
 
-  public ChannelIOHardware(int motorID) {
+  public ChannelIOSparkMax(int motorID) {
 
     SparkMaxConfig leaderConfig = new SparkMaxConfig();
 
@@ -32,7 +33,6 @@ public class ChannelIOHardware implements ChannelIO {
     motor = new SparkMax(motorID, MotorType.kBrushless);
     encoder = motor.getEncoder();
     controller = motor.getClosedLoopController();
-
     motor.configure(leaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
@@ -48,7 +48,8 @@ public class ChannelIOHardware implements ChannelIO {
   }
 
   public boolean isAtSetpoint() {
-    return controller.isAtSetpoint();
+    // Tolerance of +/- 30 RPM
+    return MathUtil.isNear(controller.getSetpoint(), encoder.getVelocity(), 30);
   }
 
   public void stop() {

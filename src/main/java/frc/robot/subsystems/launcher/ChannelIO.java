@@ -16,6 +16,8 @@ public interface ChannelIO {
   /** Updates the set of loggable inputs. */
   public default void updateInputs(ChannelIOInputs inputs) {}
 
+  public default void stop() {}
+
   /** Run closed loop at the given speed, specifying the linear speed of the wheel edge. */
   public default void setSpeed(AngularVelocity speed) {}
 

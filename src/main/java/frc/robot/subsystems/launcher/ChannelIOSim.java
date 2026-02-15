@@ -1,6 +1,7 @@
 package frc.robot.subsystems.launcher;
 
 import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import edu.wpi.first.units.measure.AngularVelocity;
 
@@ -14,6 +15,11 @@ public class ChannelIOSim implements ChannelIO {
   @Override
   public void updateInputs(ChannelIOInputs inputs) {
     inputs.velocityRadPerSec = speed.in(RadiansPerSecond);
+  }
+
+  @Override
+  public void stop() {
+    this.speed = RotationsPerSecond.of(0);
   }
 
   @Override
