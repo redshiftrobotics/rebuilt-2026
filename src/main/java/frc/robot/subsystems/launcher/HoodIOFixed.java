@@ -10,9 +10,9 @@ public class HoodIOFixed implements HoodIO {
     inputs.angleRadians = LauncherConstants.FIXED_LAUNCH_ANGLE.getRadians();
   }
 
-  public void setLaunchAngle(Rotation2d angle) {}
+  public void setAngle(Rotation2d angle) {}
 
-  public Rotation2d getLaunchAngle() {
+  public Rotation2d getAngle() {
     return LauncherConstants.FIXED_LAUNCH_ANGLE;
   }
 }

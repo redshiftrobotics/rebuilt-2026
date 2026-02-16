@@ -4,9 +4,12 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.launcher.ShotCalculator.ShotParameters;
+
+import java.util.Optional;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
@@ -21,14 +24,11 @@ public class Launcher extends SubsystemBase {
   private Supplier<Translation2d> robotVelocity = null;
 
   private boolean running = false;
+  private Optional<Rotation2d> robotYaw = Optional.empty();
 
   /** Creates a new Template. */
-  public Launcher(ChannelIO... channelIOs) {
-    hoodIO =
-        switch (LauncherConstants.HOOD_TYPE) {
-          case FIXED -> new HoodIOFixed() {};
-          case ACTUATOR -> new HoodIOActuator();
-        };
+  public Launcher(HoodIO hoodIO, ChannelIO... channelIOs) {
+    this.hoodIO = hoodIO;
 
     this.channelIOs = channelIOs;
     channelInputs = new ChannelIOInputsAutoLogged[channelIOs.length];
@@ -62,9 +62,9 @@ public class Launcher extends SubsystemBase {
   @Override
   public void periodic() {
     if (running) {
-      ShotParameters parameters = ShotCalculator.method1(hubPosition.get(), robotVelocity.get());
+      ShotParameters parameters = ShotCalculator.method1(hubPosition.get(), robotVelocity.get(), hoodIO.hoodType());
 
-      hoodIO.setLaunchAngle(parameters.pitch());
+      hoodIO.setAngle(parameters.pitch());
       for (ChannelIO channel : channelIOs) {
         channel.setSpeed(
             RadiansPerSecond.of(
@@ -72,10 +72,12 @@ public class Launcher extends SubsystemBase {
                     / LauncherConstants.LAUNCHER_WHEEL_RADIUS.in(Meters)
                     * LauncherConstants.LAUNCHER_VELOCITY_MULTIPLIER));
       }
+      robotYaw = Optional.of(parameters.yaw());
     } else {
       for (ChannelIO channel : channelIOs) {
         channel.stop();
       }
+      robotYaw = Optional.empty();
     }
 
     hoodIO.updateInputs(hoodInputs);
@@ -85,6 +87,10 @@ public class Launcher extends SubsystemBase {
       channelIOs[i].updateInputs(channelInputs[i]);
       Logger.processInputs("Launcher/Channel" + String.valueOf(i), channelInputs[i]);
     }
+  }
+
+  public Optional<Rotation2d> getRobotYaw() {
+    return robotYaw;
   }
 
   // Function to determine if the launcher wheels and hood are at their setpoints

@@ -12,25 +12,25 @@ import edu.wpi.first.units.measure.LinearVelocity;
 public class ShotCalculator {
   public record ShotParameters(LinearVelocity velocity, Rotation2d pitch, Rotation2d yaw) {}
 
-  // Adjust distance, then Calculate pitch, then calculate velocity based on pitch
+  // Adjust distance, then calculate pitch, then calculate velocity based on pitch
   public static ShotParameters method1(
-      Translation2d hubPosition, Translation2d robotVelocityMetersPerSecond) {
+      Translation2d hubPosition, Translation2d robotVelocityMetersPerSecond, HoodType hoodType) {
 
-    Translation2d adjustedHub = adjustedHubPosition(hubPosition, robotVelocityMetersPerSecond);
+    Translation2d adjustedHub = adjustedHubPosition(hubPosition, robotVelocityMetersPerSecond, hoodType);
     Distance adjustedDistance =
         Meters.of(adjustedHub.getNorm() - LauncherConstants.LAUNCHER_X_OFFSET.in(Meters));
 
-    Rotation2d pitch = calculatePitch(adjustedDistance);
+    Rotation2d pitch = calculatePitch(adjustedDistance, hoodType);
     LinearVelocity velocity = calculateVelocity(adjustedDistance, pitch);
     return new ShotParameters(velocity, pitch, adjustedHub.getAngle());
   }
 
   private static Translation2d adjustedHubPosition(
-      Translation2d hubPosition, Translation2d robotVelocityMetersPerSecond) {
+      Translation2d hubPosition, Translation2d robotVelocityMetersPerSecond, HoodType hoodType) {
     Translation2d adjustedHubPosition = hubPosition;
     for (int i = 0; i < 5; i++) {
       ShotParameters parameters =
-          calculateTrajectory(adjustedHubPosition, robotVelocityMetersPerSecond);
+          calculateTrajectory(adjustedHubPosition, robotVelocityMetersPerSecond, hoodType);
       double time = timeOfFlight(parameters, adjustedHubPosition);
       // Shift hubPosition, not adjustedHubPosition, to avoid positive feedback
       adjustedHubPosition = shiftHubPosition(hubPosition, robotVelocityMetersPerSecond, time);
@@ -39,17 +39,17 @@ public class ShotCalculator {
   }
 
   private static ShotParameters calculateTrajectory(
-      Translation2d hubPosition, Translation2d robotVelocityMetersPerSecond) {
+      Translation2d hubPosition, Translation2d robotVelocityMetersPerSecond, HoodType hoodType) {
     Distance distance =
         Meters.of(hubPosition.getNorm() - LauncherConstants.LAUNCHER_X_OFFSET.in(Meters));
     // Formula acquired through experimentation
-    Rotation2d pitch = calculatePitch(distance);
+    Rotation2d pitch = calculatePitch(distance, hoodType);
 
     return new ShotParameters(calculateVelocity(distance, pitch), pitch, hubPosition.getAngle());
   }
 
-  static Rotation2d calculatePitch(Distance distance) {
-    return switch (LauncherConstants.HOOD_TYPE) {
+  static Rotation2d calculatePitch(Distance distance, HoodType hoodType) {
+    return switch (hoodType) {
       case FIXED -> LauncherConstants.FIXED_LAUNCH_ANGLE;
         // Formula from experimentation
       case ACTUATOR -> Rotation2d.fromDegrees(
