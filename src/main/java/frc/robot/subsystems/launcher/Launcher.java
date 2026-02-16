@@ -8,7 +8,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.launcher.ShotCalculator.ShotParameters;
-
 import java.util.Optional;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
@@ -62,7 +61,8 @@ public class Launcher extends SubsystemBase {
   @Override
   public void periodic() {
     if (running) {
-      ShotParameters parameters = ShotCalculator.method1(hubPosition.get(), robotVelocity.get(), hoodIO.hoodType());
+      ShotParameters parameters =
+          ShotCalculator.method1(hubPosition.get(), robotVelocity.get(), hoodIO.hoodType());
 
       hoodIO.setAngle(parameters.pitch());
       for (ChannelIO channel : channelIOs) {

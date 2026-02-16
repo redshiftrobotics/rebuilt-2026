@@ -16,7 +16,8 @@ public class ShotCalculator {
   public static ShotParameters method1(
       Translation2d hubPosition, Translation2d robotVelocityMetersPerSecond, HoodType hoodType) {
 
-    Translation2d adjustedHub = adjustedHubPosition(hubPosition, robotVelocityMetersPerSecond, hoodType);
+    Translation2d adjustedHub =
+        adjustedHubPosition(hubPosition, robotVelocityMetersPerSecond, hoodType);
     Distance adjustedDistance =
         Meters.of(adjustedHub.getNorm() - LauncherConstants.LAUNCHER_X_OFFSET.in(Meters));
 

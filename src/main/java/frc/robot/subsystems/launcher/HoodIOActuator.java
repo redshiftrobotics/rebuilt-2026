@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.Servo;
 
 /** Hardware implementation of the TemplateIO. */
 public class HoodIOActuator implements HoodIO {
-  
+
   private final Servo actuatorLeft = new Servo(LauncherConstants.ACTUATOR_LEFT_ID);
   private final Servo actuatorRight = new Servo(LauncherConstants.ACTUATOR_RIGHT_ID);
 
@@ -55,11 +55,11 @@ public class HoodIOActuator implements HoodIO {
     Rotation2d relativeAngle =
         new Rotation2d(
             2 * Math.PI
-            - Math.acos(
-                (radius * radius
-                + actuatorDistance * actuatorDistance
-                - (actuatorLength * actuatorDistance))
-                / (2 * radius * actuatorDistance)));
+                - Math.acos(
+                    (radius * radius
+                            + actuatorDistance * actuatorDistance
+                            - (actuatorLength * actuatorDistance))
+                        / (2 * radius * actuatorDistance)));
     // Convert from relative angle to absolute angle, then to launch angle
     return relativeAngle
         .plus(LauncherConstants.ACTUATOR_LOCATION.getAngle())
@@ -67,7 +67,10 @@ public class HoodIOActuator implements HoodIO {
   }
 
   @Override
-  public HoodType hoodType() {return HoodType.FIXED;};
+  public HoodType hoodType() {
+    return HoodType.FIXED;
+  }
+  ;
 
   @Override
   public void updateInputs(HoodIOInputs inputs) {
