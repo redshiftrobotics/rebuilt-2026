@@ -27,13 +27,5 @@ public interface SlapdownIO {
 
   public default void setSavedDownSetpoint(Rotation2d setPoint) {}
 
-  public default Rotation2d getSavedUpSetpoint() {
-    return IntakeConstants.SLAPDOWN_UP_SETPOINT;
-  }
-
-  public default Rotation2d getSavedDownSetpoint() {
-    return IntakeConstants.SLAPDOWN_DOWN_SETPOINT;
-  }
-
   public default void stopMotor() {}
 }
