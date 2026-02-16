@@ -13,6 +13,9 @@ public class Intake extends SubsystemBase {
   private final IntakeWheelIO wheelIO;
   private final SlapdownIO slapdownIO;
 
+  private Rotation2d slapdownUpPosition;
+  private Rotation2d slapdownDownPosition;
+
   private final Alert wheelMotorDisconnectedAlert =
       new Alert("Hardware error detected on intake wheel.", AlertType.kError);
   private final Alert slapdownMotorDisconnectedAlert =
@@ -42,6 +45,9 @@ public class Intake extends SubsystemBase {
     visualizer =
         new IntakeVisualizer(
             getName(), () -> slapdownInputs.positionRad, () -> wheelInputs.positionRad);
+
+    slapdownUpPosition = IntakeConstants.SLAPDOWN_UP_SETPOINT;
+    slapdownDownPosition = IntakeConstants.SLAPDOWN_DOWN_SETPOINT;
   }
 
   @Override
@@ -76,19 +82,23 @@ public class Intake extends SubsystemBase {
   }
 
   public void setSavedUpSetpoint(Rotation2d setPoint) {
-    slapdownIO.setSavedUpSetpoint(setPoint);
+    setSlapdownSetpoint(setPoint);
+
+    slapdownUpPosition = setPoint;
   }
 
   public void setSavedDownSetpoint(Rotation2d setPoint) {
-    slapdownIO.setSavedDownSetpoint(setPoint);
+    setSlapdownSetpoint(setPoint);
+
+    slapdownDownPosition = setPoint;
   }
 
   public Rotation2d getSavedUpSetpoint() {
-    return slapdownIO.getSavedUpSetpoint();
+    return slapdownUpPosition;
   }
 
   public Rotation2d getSavedDownSetpoint() {
-    return slapdownIO.getSavedDownSetpoint();
+    return slapdownDownPosition;
   }
 
   public static Intake create(RobotType robotType) {

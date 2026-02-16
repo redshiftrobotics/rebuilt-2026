@@ -19,9 +19,6 @@ import frc.robot.utility.records.PIDConfig;
 
 public class SlapdownIOSparkMax implements SlapdownIO {
 
-  private Rotation2d slapdownUpPosition;
-  private Rotation2d slapdownDownPosition;
-
   private final SparkMax motor;
   private final SparkClosedLoopController motorPID;
   private final RelativeEncoder relativeEncoder;
@@ -30,8 +27,6 @@ public class SlapdownIOSparkMax implements SlapdownIO {
   private final Debouncer connectionDebouncer = new Debouncer(0.5);
 
   public SlapdownIOSparkMax(SparkMax motor) {
-    slapdownUpPosition = IntakeConstants.SLAPDOWN_UP_SETPOINT;
-    slapdownDownPosition = IntakeConstants.SLAPDOWN_DOWN_SETPOINT;
 
     this.motor = motor;
 
@@ -90,30 +85,6 @@ public class SlapdownIOSparkMax implements SlapdownIO {
   @Override
   public void setSetpoint(Rotation2d setPoint) {
     motorPID.setSetpoint(setPoint.getRotations(), ControlType.kVelocity);
-  }
-
-  @Override
-  public void setSavedUpSetpoint(Rotation2d setPoint) {
-    motorPID.setSetpoint(setPoint.getRotations(), ControlType.kVelocity);
-
-    slapdownUpPosition = setPoint;
-  }
-
-  @Override
-  public void setSavedDownSetpoint(Rotation2d setPoint) {
-    motorPID.setSetpoint(setPoint.getRotations(), ControlType.kVelocity);
-
-    slapdownDownPosition = setPoint;
-  }
-
-  @Override
-  public Rotation2d getSavedUpSetpoint() {
-    return slapdownUpPosition;
-  }
-
-  @Override
-  public Rotation2d getSavedDownSetpoint() {
-    return slapdownDownPosition;
   }
 
   @Override
