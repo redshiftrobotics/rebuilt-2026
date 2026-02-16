@@ -70,7 +70,6 @@ public class HoodIOActuator implements HoodIO {
   public HoodType hoodType() {
     return HoodType.FIXED;
   }
-  ;
 
   @Override
   public void updateInputs(HoodIOInputs inputs) {
