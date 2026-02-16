@@ -6,6 +6,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -38,6 +39,11 @@ import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.hopper.HopperConstants;
 import frc.robot.subsystems.hopper.HopperConstants.RunMode;
+import frc.robot.subsystems.launcher.ChannelIO;
+import frc.robot.subsystems.launcher.ChannelIOSim;
+import frc.robot.subsystems.launcher.HoodIO;
+import frc.robot.subsystems.launcher.HoodIOFixed;
+import frc.robot.subsystems.launcher.Launcher;
 import frc.robot.subsystems.hopper.HopperMotorIO;
 import frc.robot.subsystems.hopper.HopperMotorIOSim;
 import frc.robot.subsystems.led.BlinkenLEDPattern;
@@ -66,6 +72,7 @@ public class RobotContainer {
   private final AprilTagVision vision;
   private final LEDSubsystem leds;
   private final Hopper hopper;
+  private final Launcher launcher;
 
   // Controller
   private final CommandXboxController driverController = new CommandXboxController(0);
@@ -109,6 +116,7 @@ public class RobotContainer {
         vision = new AprilTagVision(drive::getRobotPose);
         leds = new LEDSubsystem();
         hopper = new Hopper(new HopperMotorIO() {}, new HopperMotorIO() {});
+        launcher = new Launcher(new HoodIO() {}, new ChannelIO() {});
         break;
 
       case CHASSIS_CANNON:
@@ -124,6 +132,7 @@ public class RobotContainer {
         vision = new AprilTagVision(drive::getRobotPose);
         leds = new LEDSubsystem();
         hopper = new Hopper(new HopperMotorIO() {}, new HopperMotorIO() {});
+        launcher = new Launcher(new HoodIO() {}, new ChannelIO() {});
         break;
 
       case SIM_BOT:
@@ -142,20 +151,22 @@ public class RobotContainer {
             new Hopper(
                 new HopperMotorIOSim(HopperConstants.BUBBLER_GEAR_RATIO),
                 new HopperMotorIOSim(HopperConstants.FEEDER_GEAR_RATIO));
+        launcher = new Launcher(new HoodIOFixed(), new ChannelIOSim(), new ChannelIOSim(), new ChannelIOSim());
         break;
-
-      default:
+        
+        default:
         drive =
-            new Drive(
+        new Drive(
                 new GyroIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
-        vision = new AprilTagVision(drive::getRobotPose);
-        leds = new LEDSubsystem();
-        hopper = new Hopper(new HopperMotorIO() {}, new HopperMotorIO() {});
-        break;
+                vision = new AprilTagVision(drive::getRobotPose);
+                leds = new LEDSubsystem();
+                hopper = new Hopper(new HopperMotorIO() {}, new HopperMotorIO() {});
+            launcher = new Launcher(new HoodIO() {}, new ChannelIO() {});
+            break;
     }
 
     // Vision setup
@@ -192,6 +203,16 @@ public class RobotContainer {
                 BlinkenLEDPattern.COLORWAVES_LAVA,
                 BlinkenLEDPattern.WHITE)
             .withName("LED Alliance Color Waves"));
+
+    launcher.configure(
+        drive::getRobotPose,
+        () -> {
+          Rotation2d robotAngle = drive.getRobotPose().getRotation();
+          // Robot relative to field relative;
+          ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(drive.getRobotSpeeds(), robotAngle.unaryMinus());
+          return (new Translation2d(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond));
+        
+        });
 
     // Alerts for constants to avoid using them in competition
     tuningModeActiveAlert.set(Constants.TUNING_MODE);

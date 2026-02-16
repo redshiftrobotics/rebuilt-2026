@@ -4,9 +4,11 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.FieldConstants;
 import frc.robot.subsystems.launcher.ShotCalculator.ShotParameters;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -19,14 +21,14 @@ public class Launcher extends SubsystemBase {
   private final ChannelIO[] channelIOs;
   private final ChannelIOInputsAutoLogged[] channelInputs;
 
-  private Supplier<Translation2d> hubPosition = null;
+  private Supplier<Pose2d> robotPose = null;
   private Supplier<Translation2d> robotVelocity = null;
 
   private boolean running = false;
   private Optional<Rotation2d> robotYaw = Optional.empty();
 
   /** Creates a new Template. */
-  public Launcher(HoodIO hoodIO, ChannelIO... channelIOs) {
+  public Launcher(HoodIO hoodIO, ChannelIO ...channelIOs) {
     this.hoodIO = hoodIO;
 
     this.channelIOs = channelIOs;
@@ -53,16 +55,17 @@ public class Launcher extends SubsystemBase {
   }
 
   public void configure(
-      Supplier<Translation2d> hubPositionSupplier, Supplier<Translation2d> robotVelocitySupplier) {
-    hubPosition = hubPositionSupplier;
+      Supplier<Pose2d> robotPoseSupplier, Supplier<Translation2d> robotVelocitySupplier) {
+    robotPose = robotPoseSupplier;
     robotVelocity = robotVelocitySupplier;
   }
 
   @Override
   public void periodic() {
     if (running) {
+      Translation2d hubTranslation = FieldConstants.Hub.topCenterPoint.toTranslation2d().minus(robotPose.get().getTranslation());
       ShotParameters parameters =
-          ShotCalculator.method1(hubPosition.get(), robotVelocity.get(), hoodIO.hoodType());
+          ShotCalculator.method1(hubTranslation, robotVelocity.get(), hoodIO.hoodType());
 
       hoodIO.setAngle(parameters.pitch());
       for (ChannelIO channel : channelIOs) {
