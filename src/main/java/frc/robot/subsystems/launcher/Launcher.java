@@ -28,7 +28,7 @@ public class Launcher extends SubsystemBase {
   private Optional<Rotation2d> robotYaw = Optional.empty();
 
   /** Creates a new Template. */
-  public Launcher(HoodIO hoodIO, ChannelIO ...channelIOs) {
+  public Launcher(HoodIO hoodIO, ChannelIO... channelIOs) {
     this.hoodIO = hoodIO;
 
     this.channelIOs = channelIOs;
@@ -63,7 +63,10 @@ public class Launcher extends SubsystemBase {
   @Override
   public void periodic() {
     if (running) {
-      Translation2d hubTranslation = FieldConstants.Hub.topCenterPoint.toTranslation2d().minus(robotPose.get().getTranslation());
+      Translation2d hubTranslation =
+          FieldConstants.Hub.topCenterPoint
+              .toTranslation2d()
+              .minus(robotPose.get().getTranslation());
       ShotParameters parameters =
           ShotCalculator.method1(hubTranslation, robotVelocity.get(), hoodIO.hoodType());
 
