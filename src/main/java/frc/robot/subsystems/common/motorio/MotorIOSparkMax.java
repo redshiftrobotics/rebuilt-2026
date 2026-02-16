@@ -1,8 +1,5 @@
 package frc.robot.subsystems.common.motorio;
 
-import static frc.robot.subsystems.examples.flywheel.FlywheelConstants.FLYWHEEL_CONFIG;
-import static frc.robot.subsystems.examples.flywheel.FlywheelConstants.GEAR_RATIO;
-
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
@@ -14,7 +11,9 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import frc.robot.utility.records.PIDConfig;
 
 /**
  * NOTE: To use the Spark Flex / NEO Vortex, replace all instances of "SparkMax" with
@@ -24,15 +23,18 @@ public class MotorIOSparkMax implements MotorIO {
   private final SparkMax motor;
   private final RelativeEncoder encoder;
   private final SparkClosedLoopController pid;
+  private final double gearRatio;
 
-  public MotorIOSparkMax() {
+  public MotorIOSparkMax(int motorId, boolean inverted, double gearRatio) {
 
     // --- Save config ---
-    motor = new SparkMax(FLYWHEEL_CONFIG.motorID(), MotorType.kBrushless);
+    motor = new SparkMax(motorId, MotorType.kBrushless);
 
     // --- Set up leader controller ---
     encoder = motor.getEncoder();
     pid = motor.getClosedLoopController();
+
+    this.gearRatio = gearRatio;
 
     // --- Configure Hardware ---
 
@@ -40,7 +42,7 @@ public class MotorIOSparkMax implements MotorIO {
     leaderConfig
         .voltageCompensation(12.0)
         .smartCurrentLimit(30)
-        .inverted(FLYWHEEL_CONFIG.inverted())
+        .inverted(inverted)
         .idleMode(IdleMode.kCoast);
 
     motor.configure(leaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -48,9 +50,9 @@ public class MotorIOSparkMax implements MotorIO {
 
   @Override
   public void updateInputs(MotorIOInputs inputs) {
-    inputs.positionRad = Units.rotationsToRadians(encoder.getPosition() / GEAR_RATIO);
+    inputs.positionRad = Units.rotationsToRadians(encoder.getPosition() / gearRatio);
     inputs.velocityRadPerSec =
-        Units.rotationsPerMinuteToRadiansPerSecond(encoder.getVelocity() / GEAR_RATIO);
+        Units.rotationsPerMinuteToRadiansPerSecond(encoder.getVelocity() / gearRatio);
     inputs.appliedVolts = motor.getAppliedOutput() * motor.getBusVoltage();
     inputs.supplyCurrentAmps = motor.getOutputCurrent();
   }
@@ -61,12 +63,12 @@ public class MotorIOSparkMax implements MotorIO {
   }
 
   @Override
-  public void setVelocity(double velocityRadPerSec, double ffVolts) {
+  public void setTargetPosition(Rotation2d targetPosition) {
     pid.setSetpoint(
-        Units.radiansPerSecondToRotationsPerMinute(velocityRadPerSec) * GEAR_RATIO,
-        ControlType.kVelocity,
+        targetPosition.getRotations() * gearRatio,
+        ControlType.kPosition,
         ClosedLoopSlot.kSlot0,
-        ffVolts,
+        0,
         ArbFFUnits.kVoltage);
   }
 
@@ -80,5 +82,12 @@ public class MotorIOSparkMax implements MotorIO {
     SparkMaxConfig config = new SparkMaxConfig();
     config.closedLoop.pid(kP, kI, kD);
     motor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+  }
+  
+  @Override
+  public void configurePID(PIDConfig config) {
+    SparkMaxConfig motorConfig = new SparkMaxConfig();
+    motorConfig.closedLoop.pid(config.kP(), config.kI(), config.kD());
+    motor.configure(motorConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
   }
 }

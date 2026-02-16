@@ -2,28 +2,34 @@ package frc.robot.subsystems.common.motorio;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N2;
+import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
-import frc.robot.subsystems.intake.IntakeConstants;
+import frc.robot.utility.records.PIDConfig;
 
 public class MotorIOSim implements MotorIO {
-  private static final DCMotor MOTOR = DCMotor.getNEO(1);
-  private DCMotorSim sim =
-      new DCMotorSim(
-          LinearSystemId.createDCMotorSystem(MOTOR, 0.004, IntakeConstants.WHEEL_GEAR_RATIO),
-          MOTOR);
-  private PIDController pid = new PIDController(0.1, 0.0, 0.0);
+  private final DCMotor motor = DCMotor.getNEO(1);
+  private final LinearSystem<N2, N1, N2> simSysId;
+  private final DCMotorSim sim;
+  private final PIDController pid;
+
+  public MotorIOSim(double gearing) {
+    simSysId = LinearSystemId.createDCMotorSystem(motor, 0.004, gearing);
+    sim = new DCMotorSim(simSysId, motor);
+    pid = new PIDController(0.1, 0.0, 0.0);
+  }
 
   private boolean closedLoop = false;
-  private double ffVolts = 0.0;
   private double appliedVolts = 0.0;
 
   @Override
   public void updateInputs(MotorIOInputs inputs) {
     if (closedLoop) {
-      appliedVolts =
-          MathUtil.clamp(pid.calculate(sim.getAngularVelocityRadPerSec()) + ffVolts, -12.0, 12.0);
+      appliedVolts = MathUtil.clamp(pid.calculate(sim.getAngularPositionRotations()), -12.0, 12.0);
       sim.setInputVoltage(appliedVolts);
     }
 
@@ -43,10 +49,9 @@ public class MotorIOSim implements MotorIO {
   }
 
   @Override
-  public void setVelocity(double velocityRadPerSec, double ffVolts) {
+  public void setTargetPosition(Rotation2d targetPosition) {
     closedLoop = true;
-    pid.setSetpoint(velocityRadPerSec);
-    this.ffVolts = ffVolts;
+    pid.setSetpoint(targetPosition.getRotations());
   }
 
   @Override
@@ -57,5 +62,10 @@ public class MotorIOSim implements MotorIO {
   @Override
   public void configurePID(double Kp, double Ki, double Kd) {
     pid.setPID(Kp, Ki, Kd);
+  }
+
+  @Override
+  public void configurePID(PIDConfig config) {
+    pid.setPID(config.kP(), config.kI(), config.kD());
   }
 }

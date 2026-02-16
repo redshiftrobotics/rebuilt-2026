@@ -1,6 +1,8 @@
 package frc.robot.subsystems.common.motorio;
 
 import org.littletonrobotics.junction.AutoLog;
+import edu.wpi.first.math.geometry.Rotation2d;
+import frc.robot.utility.records.PIDConfig;
 
 public interface MotorIO {
   @AutoLog
@@ -19,11 +21,14 @@ public interface MotorIO {
   public default void setVoltage(double volts) {}
 
   /** Run closed loop at the specified velocity. */
-  public default void setVelocity(double velocityRadPerSec, double ffVolts) {}
+  public default void setTargetPosition(Rotation2d targetPosition) {}
 
   /** Stop in open loop. */
   public default void stop() {}
 
-  /** Set velocity PID constants. */
+  /** Set PID configuration. */
   public default void configurePID(double Kp, double Ki, double Kd) {}
+  
+  /** Set PID configuration. */
+  public default void configurePID(PIDConfig config) {}
 }
