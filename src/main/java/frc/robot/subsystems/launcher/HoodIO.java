@@ -13,15 +13,14 @@ public interface HoodIO {
 
   /** Updates the set of loggable inputs. */
   public default void updateInputs(HoodIOInputs inputs) {}
-  
+
   public default void setAngle(Rotation2d angle) {}
-  
+
   public default Rotation2d getAngle() {
     return Rotation2d.kZero;
   }
-  
+
   public default HoodType hoodType() {
     return HoodType.FIXED;
   }
-
 }
