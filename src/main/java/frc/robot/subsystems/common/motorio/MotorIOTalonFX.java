@@ -25,7 +25,7 @@ public class MotorIOTalonFX implements MotorIO {
   private final StatusSignal<Voltage> appliedVolts;
 
   private final StatusSignal<Current> current;
-  
+
   private final double gearRatio;
 
   public MotorIOTalonFX(int motorId, boolean inverted, double gearRatio) {
@@ -40,9 +40,8 @@ public class MotorIOTalonFX implements MotorIO {
     config.CurrentLimits.SupplyCurrentLimit = 30.0;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-    config.MotorOutput.Inverted = inverted
-        ? InvertedValue.Clockwise_Positive
-        : InvertedValue.Clockwise_Positive;
+    config.MotorOutput.Inverted =
+        inverted ? InvertedValue.Clockwise_Positive : InvertedValue.Clockwise_Positive;
     motor.getConfigurator().apply(config);
 
     BaseStatusSignal.setUpdateFrequencyForAll(50.0, position, velocity, appliedVolts, current);

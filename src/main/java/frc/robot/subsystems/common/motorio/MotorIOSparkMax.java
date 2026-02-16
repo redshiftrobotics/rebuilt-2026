@@ -83,7 +83,7 @@ public class MotorIOSparkMax implements MotorIO {
     config.closedLoop.pid(kP, kI, kD);
     motor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
   }
-  
+
   @Override
   public void configurePID(PIDConfig config) {
     SparkMaxConfig motorConfig = new SparkMaxConfig();

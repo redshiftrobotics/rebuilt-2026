@@ -1,8 +1,8 @@
 package frc.robot.subsystems.common.motorio;
 
-import org.littletonrobotics.junction.AutoLog;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.utility.records.PIDConfig;
+import org.littletonrobotics.junction.AutoLog;
 
 public interface MotorIO {
   @AutoLog
@@ -28,7 +28,7 @@ public interface MotorIO {
 
   /** Set PID configuration. */
   public default void configurePID(double Kp, double Ki, double Kd) {}
-  
+
   /** Set PID configuration. */
   public default void configurePID(PIDConfig config) {}
 }
