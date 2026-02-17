@@ -39,13 +39,13 @@ import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.hopper.HopperConstants;
 import frc.robot.subsystems.hopper.HopperConstants.RunMode;
+import frc.robot.subsystems.hopper.HopperMotorIO;
+import frc.robot.subsystems.hopper.HopperMotorIOSim;
 import frc.robot.subsystems.launcher.ChannelIO;
 import frc.robot.subsystems.launcher.ChannelIOSim;
 import frc.robot.subsystems.launcher.HoodIO;
 import frc.robot.subsystems.launcher.HoodIOFixed;
 import frc.robot.subsystems.launcher.Launcher;
-import frc.robot.subsystems.hopper.HopperMotorIO;
-import frc.robot.subsystems.hopper.HopperMotorIOSim;
 import frc.robot.subsystems.led.BlinkenLEDPattern;
 import frc.robot.subsystems.led.LEDConstants;
 import frc.robot.subsystems.led.LEDStripIOSim;
@@ -151,22 +151,24 @@ public class RobotContainer {
             new Hopper(
                 new HopperMotorIOSim(HopperConstants.BUBBLER_GEAR_RATIO),
                 new HopperMotorIOSim(HopperConstants.FEEDER_GEAR_RATIO));
-        launcher = new Launcher(new HoodIOFixed(), new ChannelIOSim(), new ChannelIOSim(), new ChannelIOSim());
+        launcher =
+            new Launcher(
+                new HoodIOFixed(), new ChannelIOSim(), new ChannelIOSim(), new ChannelIOSim());
         break;
-        
-        default:
+
+      default:
         drive =
-        new Drive(
+            new Drive(
                 new GyroIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
-                vision = new AprilTagVision(drive::getRobotPose);
-                leds = new LEDSubsystem();
-                hopper = new Hopper(new HopperMotorIO() {}, new HopperMotorIO() {});
-            launcher = new Launcher(new HoodIO() {}, new ChannelIO() {});
-            break;
+        vision = new AprilTagVision(drive::getRobotPose);
+        leds = new LEDSubsystem();
+        hopper = new Hopper(new HopperMotorIO() {}, new HopperMotorIO() {});
+        launcher = new Launcher(new HoodIO() {}, new ChannelIO() {});
+        break;
     }
 
     // Vision setup
@@ -209,9 +211,10 @@ public class RobotContainer {
         () -> {
           Rotation2d robotAngle = drive.getRobotPose().getRotation();
           // Robot relative to field relative;
-          ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(drive.getRobotSpeeds(), robotAngle.unaryMinus());
+          ChassisSpeeds speeds =
+              ChassisSpeeds.fromFieldRelativeSpeeds(
+                  drive.getRobotSpeeds(), robotAngle.unaryMinus());
           return (new Translation2d(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond));
-        
         });
 
     // Alerts for constants to avoid using them in competition
