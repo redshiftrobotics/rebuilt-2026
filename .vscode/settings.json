@@ -58,5 +58,7 @@
     "edu.wpi.first.math.**.struct.*",
   ],
   "java.dependency.enableDependencyCheckup": false,
+  "editor.tabSize": 2,
+  "editor.detectIndentation": false,
   "chat.disableAIFeatures": true
 }

@@ -10,7 +10,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.FieldConstants;
 import frc.robot.subsystems.launcher.ShotCalculator.ShotParameters;
-import java.util.Optional;
+import frc.robot.utility.AllianceMirrorUtil;
+
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
@@ -25,7 +26,7 @@ public class Launcher extends SubsystemBase {
   private Supplier<Translation2d> robotVelocity = null;
 
   private boolean running = false;
-  private Optional<Rotation2d> robotYaw = Optional.empty();
+  private Rotation2d robotYaw = AllianceMirrorUtil.apply(Rotation2d.kZero);
 
   /** Creates a new Template. */
   public Launcher(HoodIO hoodIO, ChannelIO ...channelIOs) {
@@ -75,12 +76,11 @@ public class Launcher extends SubsystemBase {
                     / LauncherConstants.LAUNCHER_WHEEL_RADIUS.in(Meters)
                     * LauncherConstants.LAUNCHER_VELOCITY_MULTIPLIER));
       }
-      robotYaw = Optional.of(parameters.yaw());
+      robotYaw = parameters.yaw();
     } else {
       for (ChannelIO channel : channelIOs) {
         channel.stop();
       }
-      robotYaw = Optional.empty();
     }
 
     hoodIO.updateInputs(hoodInputs);
@@ -92,7 +92,7 @@ public class Launcher extends SubsystemBase {
     }
   }
 
-  public Optional<Rotation2d> getRobotYaw() {
+  public Rotation2d getRobotYaw() {
     return robotYaw;
   }
 
