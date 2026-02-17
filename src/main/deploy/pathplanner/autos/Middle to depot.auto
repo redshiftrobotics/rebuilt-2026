@@ -47,15 +47,22 @@
                 }
               },
               {
-                "type": "named",
+                "type": "sequential",
                 "data": {
-                  "name": "ExtendSlapdown"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "StartIntake"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "ExtendSlapdown"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "StartIntake"
+                      }
+                    }
+                  ]
                 }
               }
             ]
