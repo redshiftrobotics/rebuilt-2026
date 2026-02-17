@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.FieldConstants;
 import frc.robot.subsystems.launcher.ShotCalculator.ShotParameters;
 import frc.robot.utility.AllianceMirrorUtil;
-
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
