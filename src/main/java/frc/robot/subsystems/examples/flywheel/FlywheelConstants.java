@@ -2,7 +2,7 @@ package frc.robot.subsystems.examples.flywheel;
 
 import frc.robot.Constants;
 import frc.robot.utility.records.FeedForwardConfigRecord;
-import frc.robot.utility.records.PIDConstants;
+import frc.robot.utility.records.PIDConfig;
 
 public class FlywheelConstants {
 
@@ -16,9 +16,9 @@ public class FlywheelConstants {
         default -> new FlywheelConfig(0, false);
       };
 
-  public static final PIDConstants PID_CONFIG =
+  public static final PIDConfig PID_CONFIG =
       switch (Constants.getRobot()) {
-        default -> new PIDConstants(1.0, 0, 0);
+        default -> new PIDConfig(1.0, 0, 0);
       };
 
   public static final FeedForwardConfigRecord FEEDFORWARD_CONFIG =

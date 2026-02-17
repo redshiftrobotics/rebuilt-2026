@@ -2,7 +2,7 @@ package frc.robot.subsystems.hopper;
 
 import frc.robot.Constants;
 import frc.robot.utility.records.FeedForwardConfigRecord;
-import frc.robot.utility.records.PIDConstants;
+import frc.robot.utility.records.PIDConfig;
 
 public class HopperConstants {
   /*
@@ -29,14 +29,15 @@ public class HopperConstants {
   // Hopper run mode
   // TODO: Set real speeds
   public static enum RunMode {
-    STOPPED(0, 0),
     /** All hopper motors stopped */
-    FUEL_STORE(1, 0),
+    STOPPED(0, 0),
     /** Bubbler running at low speed to push fuel to the back, feeder stopped */
-    FIRING(1, 1),
+    FUEL_STORE(30, 0),
     /** Bubbler running at high speed to send balls to the feeder, feeder running */
-    REVERSE(-1, -1);
+    FIRING(60, 60),
     /** All hopper motors running in reverse in case of jams */
+    REVERSE(-60, -60);
+
     public int bubblerVelocityRadPerSec;
 
     public int feederVelocityRadPerSec;
@@ -65,17 +66,17 @@ public class HopperConstants {
 
   // PID constants
   // TODO: Add real values
-  public static final PIDConstants BUBBLER_PID =
+  public static final PIDConfig BUBBLER_PID =
       switch (Constants.getRobot()) {
-        case PRESEASON_2026 -> new PIDConstants(0.0, 0.0, 0.0);
-        case SIM_BOT -> new PIDConstants(0.0, 0.0, 0.0);
-        default -> new PIDConstants(0.0, 0.0, 0.0);
+        case PRESEASON_2026 -> new PIDConfig(0.0, 0.0, 0.0);
+        case SIM_BOT -> new PIDConfig(0.85, 0.0, 0.0);
+        default -> new PIDConfig(1.0, 0.0, 0.0);
       };
-  public static final PIDConstants FEEDER_PID =
+  public static final PIDConfig FEEDER_PID =
       switch (Constants.getRobot()) {
-        case PRESEASON_2026 -> new PIDConstants(0.0, 0.0, 0.0);
-        case SIM_BOT -> new PIDConstants(0.0, 0.0, 0.0);
-        default -> new PIDConstants(0.0, 0.0, 0.0);
+        case PRESEASON_2026 -> new PIDConfig(0.0, 0.0, 0.0);
+        case SIM_BOT -> new PIDConfig(0.85, 0.0, 0.0);
+        default -> new PIDConfig(1.0, 0.0, 0.0);
       };
 
   // Feedforward constants

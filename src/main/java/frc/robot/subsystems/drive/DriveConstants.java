@@ -9,8 +9,9 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
+import frc.robot.generated.MetalbotTwoConstants;
 import frc.robot.generated.PreseasonConstants;
-import frc.robot.utility.records.PIDConstants;
+import frc.robot.utility.records.PIDConfig;
 
 /**
  * Constants for drivetrain/chassis. All constants should be in meters and radians (m/s, m/s^2,
@@ -61,7 +62,10 @@ public class DriveConstants {
   /** Center of wheel to center of wheel size */
   private static final Translation2d TRACK_SIZE =
       switch (Constants.getRobot()) {
-        case PRESEASON_2026, SIM_BOT -> new Translation2d(
+        case METALBOT_2, SIM_BOT -> new Translation2d(
+            MetalbotTwoConstants.FrontLeft.LocationX - MetalbotTwoConstants.BackRight.LocationX,
+            MetalbotTwoConstants.FrontLeft.LocationY - MetalbotTwoConstants.BackRight.LocationY);
+        case PRESEASON_2026 -> new Translation2d(
             PreseasonConstants.FrontLeft.LocationX - PreseasonConstants.BackRight.LocationX,
             PreseasonConstants.FrontLeft.LocationY - PreseasonConstants.BackRight.LocationY);
         case REEFSCAPE_2025, WOOD_BOT_2026, CHASSIS_CANNON -> new Translation2d(
@@ -70,13 +74,12 @@ public class DriveConstants {
 
   private static final Translation2d BUMPER_TO_BUMPER =
       switch (Constants.getRobot()) {
-        case PRESEASON_2026, SIM_BOT -> new Translation2d(3.0 + 3.750, 3.0 + 3.750);
-        case REEFSCAPE_2025, WOOD_BOT_2026, CHASSIS_CANNON -> new Translation2d(7, 7);
+        default -> new Translation2d(Units.inchesToMeters(34), Units.inchesToMeters(34));
       };
 
   public static final DriveConfig DRIVE_CONFIG =
       switch (Constants.getRobot()) {
-        case PRESEASON_2026, SIM_BOT -> new DriveConfig(
+        case METALBOT_2, PRESEASON_2026, SIM_BOT -> new DriveConfig(
             TRACK_SIZE,
             BUMPER_TO_BUMPER,
             PreseasonConstants.kSpeedAt12Volts.in(MetersPerSecond),
@@ -103,6 +106,7 @@ public class DriveConstants {
   public static final int GYRO_CAN_ID =
       switch (Constants.getRobot()) {
         case REEFSCAPE_2025, CHASSIS_CANNON, WOOD_BOT_2026 -> 40;
+        case METALBOT_2 -> MetalbotTwoConstants.DrivetrainConstants.Pigeon2Id;
         case PRESEASON_2026 -> PreseasonConstants.DrivetrainConstants.Pigeon2Id;
         case SIM_BOT -> -1;
       };
@@ -112,6 +116,7 @@ public class DriveConstants {
   public static final CANBus CAN_BUS =
       switch (Constants.getRobot()) {
         case PRESEASON_2026 -> PreseasonConstants.kCANBus;
+        case METALBOT_2 -> MetalbotTwoConstants.kCANBus;
         case REEFSCAPE_2025, CHASSIS_CANNON, WOOD_BOT_2026 -> CANBus.roboRIO();
         case SIM_BOT -> new CANBus();
       };
@@ -133,7 +138,8 @@ public class DriveConstants {
   public static final double ODOMETRY_FREQUENCY_HERTZ =
       switch (Constants.getRobot()) {
         case SIM_BOT -> 50.0;
-        case PRESEASON_2026 -> new CANBus(PreseasonConstants.DrivetrainConstants.CANBusName)
+        case PRESEASON_2026, METALBOT_2 -> new CANBus(
+                    PreseasonConstants.DrivetrainConstants.CANBusName)
                 .isNetworkFD()
             ? 250.0
             : 100.0;
@@ -142,20 +148,19 @@ public class DriveConstants {
 
   // --- Movement Controller Config ---
 
-  public static final PIDConstants TRANSLATION_CONTROLLER_CONSTANTS_TRAJECTORY =
-      new PIDConstants(5.0, 0.0, 0.0);
-  public static final PIDConstants ROTATION_CONTROLLER_CONSTANTS_TRAJECTORY =
-      new PIDConstants(5.0, 0, 0.4);
+  public static final PIDConfig TRANSLATION_CONTROLLER_CONSTANTS_TRAJECTORY =
+      new PIDConfig(5.0, 0.0, 0.0);
+  public static final PIDConfig ROTATION_CONTROLLER_CONSTANTS_TRAJECTORY =
+      new PIDConfig(5.0, 0, 0.4);
 
-  public static final PIDConstants TRANSLATION_CONTROLLER_CONSTANTS =
-      new PIDConstants(5.0, 0.0, 0.0);
-  public static final PIDConstants ROTATION_CONTROLLER_CONSTANTS = new PIDConstants(5, 0.0, 0.0);
+  public static final PIDConfig TRANSLATION_CONTROLLER_CONSTANTS = new PIDConfig(5.0, 0.0, 0.0);
+  public static final PIDConfig ROTATION_CONTROLLER_CONSTANTS = new PIDConfig(5, 0.0, 0.0);
   public static final double TRANSLATION_TOLERANCE = Units.inchesToMeters(0.5);
   public static final Rotation2d ROTATION_TOLERANCE = Rotation2d.fromDegrees(1);
 
   // --- Heading Controller Config ---
 
-  public record HeadingControllerConfig(PIDConstants pid, double toleranceRadians) {}
+  public record HeadingControllerConfig(PIDConfig pid, double toleranceRadians) {}
 
   public static final HeadingControllerConfig HEADING_CONTROLLER_CONFIG =
       new HeadingControllerConfig(ROTATION_CONTROLLER_CONSTANTS, Units.degreesToRadians(1));

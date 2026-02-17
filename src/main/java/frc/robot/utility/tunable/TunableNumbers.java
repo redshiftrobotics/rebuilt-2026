@@ -1,7 +1,7 @@
 package frc.robot.utility.tunable;
 
 import frc.robot.utility.records.FeedForwardConfigRecord;
-import frc.robot.utility.records.PIDConstants;
+import frc.robot.utility.records.PIDConfig;
 import java.util.function.Consumer;
 
 /**
@@ -11,8 +11,8 @@ import java.util.function.Consumer;
  */
 public abstract class TunableNumbers<T> {
 
-  public static class TunablePID extends TunableNumbers<PIDConstants> {
-    public TunablePID(String keyPrefix, PIDConstants defaultValues) {
+  public static class TunablePID extends TunableNumbers<PIDConfig> {
+    public TunablePID(String keyPrefix, PIDConfig defaultValues) {
       super(
           new String[] {
             keyPrefix + "/kP", keyPrefix + "/kI", keyPrefix + "/kD",
@@ -23,9 +23,9 @@ public abstract class TunableNumbers<T> {
     }
 
     @Override
-    public PIDConstants get() {
+    public PIDConfig get() {
       double[] values = getValues();
-      return new PIDConstants(values[0], values[1], values[2]);
+      return new PIDConfig(values[0], values[1], values[2]);
     }
   }
 

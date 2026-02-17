@@ -3,16 +3,18 @@
     {
       "x": -8,
       "y": -8,
-      "width": 1296,
-      "height": 688,
+      "width": 1552,
+      "height": 832,
       "state": {
         "sidebar": {
-          "width": 210,
+          "width": 300,
           "expanded": [
+            "/RealOutputs",
+            "/RealOutputs/SwerveStates"
           ]
         },
         "tabs": {
-          "selected": 4,
+          "selected": 1,
           "tabs": [
             {
               "type": 0,
@@ -23,27 +25,141 @@
               "controlsHeight": 0
             },
             {
+              "type": 9,
+              "title": "Swerve",
+              "controller": {
+                "sources": [
+                  {
+                    "type": "states",
+                    "logKey": "/RealOutputs/SwerveStates/ModuleDesiredWheelSpeeds",
+                    "logType": "SwerveModuleState[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#0000ff",
+                      "arrangement": "0,1,2,3"
+                    }
+                  },
+                  {
+                    "type": "chassisSpeeds",
+                    "logKey": "/RealOutputs/ChassisStates/ModuleDesiredSpeeds",
+                    "logType": "ChassisSpeeds",
+                    "visible": true,
+                    "options": {
+                      "color": "#0000ff"
+                    }
+                  },
+                  {
+                    "type": "states",
+                    "logKey": "/RealOutputs/SwerveStates/MeasuredWheelSpeeds",
+                    "logType": "SwerveModuleState[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#ff0000",
+                      "arrangement": "0,1,2,3"
+                    }
+                  },
+                  {
+                    "type": "chassisSpeeds",
+                    "logKey": "/RealOutputs/ChassisStates/MeasuredRobotSpeeds",
+                    "logType": "ChassisSpeeds",
+                    "visible": true,
+                    "options": {
+                      "color": "#ff0000"
+                    }
+                  },
+                  {
+                    "type": "states",
+                    "logKey": "/RealOutputs/SwerveStates/DesiredWheelSpeeds",
+                    "logType": "SwerveModuleState[]",
+                    "visible": false,
+                    "options": {
+                      "color": "#00ff00",
+                      "arrangement": "0,1,2,3"
+                    }
+                  },
+                  {
+                    "type": "chassisSpeeds",
+                    "logKey": "/RealOutputs/ChassisStates/DesiredRobotSpeeds",
+                    "logType": "ChassisSpeeds",
+                    "visible": false,
+                    "options": {
+                      "color": "#00ff00"
+                    }
+                  },
+                  {
+                    "type": "rotation",
+                    "logKey": "/RealOutputs/Odometry/Robot/rotation",
+                    "logType": "Rotation2d",
+                    "visible": true,
+                    "options": {}
+                  }
+                ],
+                "maxSpeed": 6,
+                "sizeX": 0.65,
+                "sizeY": 0.65,
+                "orientation": 1
+              },
+              "controllerUUID": "i2gcnkyeksamfejw9625ujsvbs0gk3ke",
+              "renderer": null,
+              "controlsHeight": 200
+            },
+            {
+              "type": 9,
+              "title": "Swerve 2",
+              "controller": {
+                "sources": [
+                  {
+                    "type": "states",
+                    "logKey": "/RealOutputs/SwerveStates/MeasuredWheelSpeeds",
+                    "logType": "SwerveModuleState[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#ff0000",
+                      "arrangement": "0,1,2,3"
+                    }
+                  },
+                  {
+                    "type": "states",
+                    "logKey": "/RealOutputs/SwerveStates/ModuleDesiredWheelSpeeds",
+                    "logType": "SwerveModuleState[]",
+                    "visible": false,
+                    "options": {
+                      "color": "#0000ff",
+                      "arrangement": "0,1,2,3"
+                    }
+                  }
+                ],
+                "maxSpeed": 5,
+                "sizeX": 0.65,
+                "sizeY": 0.65,
+                "orientation": 1
+              },
+              "controllerUUID": "x05qannrzd7o8p6jgwban1ryrxv6dsth",
+              "renderer": null,
+              "controlsHeight": 200
+            },
+            {
               "type": 1,
-              "title": "FL",
+              "title": "FL-0 T",
               "controller": {
                 "leftSources": [
                   {
                     "type": "stepped",
-                    "logKey": "/Drive/LeftFrontSwerveModule/TurnPosition/value",
+                    "logKey": "/RealOutputs/SwerveStates/ModuleDesiredWheelSpeeds/0/angle/value",
                     "logType": "Number",
                     "visible": true,
                     "options": {
-                      "color": "#e5b31b",
+                      "color": "#2b66a2",
                       "size": "normal"
                     }
                   },
                   {
                     "type": "stepped",
-                    "logKey": "/Drive/LeftFrontSwerveModule/TurnAbsolutePosition/value",
+                    "logKey": "/RealOutputs/SwerveStates/MeasuredWheelSpeeds/0/angle/value",
                     "logType": "Number",
                     "visible": true,
                     "options": {
-                      "color": "#2b66a2",
+                      "color": "#e5b31b",
                       "size": "normal"
                     }
                   }
@@ -51,8 +167,8 @@
                 "rightSources": [],
                 "discreteSources": [],
                 "leftLockedRange": [
-                  -4,
-                  4
+                  -3.24,
+                  3.24
                 ],
                 "rightLockedRange": null,
                 "leftUnitConversion": {
@@ -68,30 +184,30 @@
               },
               "controllerUUID": "oyngr9jkq1n6wurcxm7343riremuu97o",
               "renderer": null,
-              "controlsHeight": 242
+              "controlsHeight": 200
             },
             {
               "type": 1,
-              "title": "FR",
+              "title": "FR-1 T",
               "controller": {
                 "leftSources": [
                   {
                     "type": "stepped",
-                    "logKey": "/Drive/RightFrontSwerveModule/TurnPosition/value",
+                    "logKey": "/RealOutputs/SwerveStates/ModuleDesiredWheelSpeeds/1/angle/value",
                     "logType": "Number",
                     "visible": true,
                     "options": {
-                      "color": "#e5b31b",
+                      "color": "#2b66a2",
                       "size": "normal"
                     }
                   },
                   {
                     "type": "stepped",
-                    "logKey": "/Drive/RightFrontSwerveModule/TurnAbsolutePosition/value",
+                    "logKey": "/RealOutputs/SwerveStates/MeasuredWheelSpeeds/1/angle/value",
                     "logType": "Number",
                     "visible": true,
                     "options": {
-                      "color": "#2b66a2",
+                      "color": "#e5b31b",
                       "size": "normal"
                     }
                   }
@@ -99,8 +215,8 @@
                 "rightSources": [],
                 "discreteSources": [],
                 "leftLockedRange": [
-                  -4,
-                  4
+                  -3.24,
+                  3.24
                 ],
                 "rightLockedRange": null,
                 "leftUnitConversion": {
@@ -116,30 +232,30 @@
               },
               "controllerUUID": "ktimozr65k0cknzoqjo18fb28rvz59zt",
               "renderer": null,
-              "controlsHeight": 193
+              "controlsHeight": 200
             },
             {
               "type": 1,
-              "title": "BR",
+              "title": "BL-2 T",
               "controller": {
                 "leftSources": [
                   {
                     "type": "stepped",
-                    "logKey": "/Drive/RightBackSwerveModule/TurnPosition/value",
+                    "logKey": "/RealOutputs/SwerveStates/ModuleDesiredWheelSpeeds/2/angle/value",
                     "logType": "Number",
                     "visible": true,
                     "options": {
-                      "color": "#e5b31b",
+                      "color": "#2b66a2",
                       "size": "normal"
                     }
                   },
                   {
                     "type": "stepped",
-                    "logKey": "/Drive/RightBackSwerveModule/TurnAbsolutePosition/value",
+                    "logKey": "/RealOutputs/SwerveStates/MeasuredWheelSpeeds/2/angle/value",
                     "logType": "Number",
                     "visible": true,
                     "options": {
-                      "color": "#2b66a2",
+                      "color": "#e5b31b",
                       "size": "normal"
                     }
                   }
@@ -147,56 +263,8 @@
                 "rightSources": [],
                 "discreteSources": [],
                 "leftLockedRange": [
-                  -4,
-                  4
-                ],
-                "rightLockedRange": null,
-                "leftUnitConversion": {
-                  "autoTarget": null,
-                  "preset": null
-                },
-                "rightUnitConversion": {
-                  "autoTarget": null,
-                  "preset": null
-                },
-                "leftFilter": 0,
-                "rightFilter": 0
-              },
-              "controllerUUID": "v18b9c7nlnqj5rbc2p3091urk740g5tn",
-              "renderer": null,
-              "controlsHeight": 170
-            },
-            {
-              "type": 1,
-              "title": "BL",
-              "controller": {
-                "leftSources": [
-                  {
-                    "type": "stepped",
-                    "logKey": "/Drive/LeftBackSwerveModule/TurnPosition/value",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#e5b31b",
-                      "size": "normal"
-                    }
-                  },
-                  {
-                    "type": "stepped",
-                    "logKey": "/Drive/LeftBackSwerveModule/TurnAbsolutePosition/value",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#2b66a2",
-                      "size": "normal"
-                    }
-                  }
-                ],
-                "rightSources": [],
-                "discreteSources": [],
-                "leftLockedRange": [
-                  -4,
-                  4
+                  -3.24,
+                  3.24
                 ],
                 "rightLockedRange": null,
                 "leftUnitConversion": {
@@ -212,16 +280,40 @@
               },
               "controllerUUID": "5kywsmg84yji41368d6lpzawlw7fvoy7",
               "renderer": null,
-              "controlsHeight": 168
+              "controlsHeight": 200
             },
             {
               "type": 1,
-              "title": "Line Graph",
+              "title": "BR-3 T",
               "controller": {
-                "leftSources": [],
+                "leftSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/SwerveStates/ModuleDesiredWheelSpeeds/3/angle/value",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/SwerveStates/MeasuredWheelSpeeds/3/angle/value",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e5b31b",
+                      "size": "normal"
+                    }
+                  }
+                ],
                 "rightSources": [],
                 "discreteSources": [],
-                "leftLockedRange": null,
+                "leftLockedRange": [
+                  -3.24,
+                  3.24
+                ],
                 "rightLockedRange": null,
                 "leftUnitConversion": {
                   "autoTarget": null,
@@ -234,7 +326,199 @@
                 "leftFilter": 0,
                 "rightFilter": 0
               },
-              "controllerUUID": "mh8duef021ve2cpgly8jdpypsvntggdn",
+              "controllerUUID": "v18b9c7nlnqj5rbc2p3091urk740g5tn",
+              "renderer": null,
+              "controlsHeight": 200
+            },
+            {
+              "type": 1,
+              "title": "FL-0 D",
+              "controller": {
+                "leftSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/SwerveStates/ModuleDesiredWheelSpeeds/0/speed",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/SwerveStates/MeasuredWheelSpeeds/0/speed",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e5b31b",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "rightSources": [],
+                "discreteSources": [],
+                "leftLockedRange": [
+                  -5.5,
+                  5.5
+                ],
+                "rightLockedRange": null,
+                "leftUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "rightUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "oyngr9jkq1n6wurcxm7343riremuu97o",
+              "renderer": null,
+              "controlsHeight": 200
+            },
+            {
+              "type": 1,
+              "title": "FR-1 D",
+              "controller": {
+                "leftSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/SwerveStates/ModuleDesiredWheelSpeeds/1/speed",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/SwerveStates/MeasuredWheelSpeeds/1/speed",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e5b31b",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "rightSources": [],
+                "discreteSources": [],
+                "leftLockedRange": [
+                  -5.5,
+                  5.5
+                ],
+                "rightLockedRange": null,
+                "leftUnitConversion": {
+                  "autoTarget": "radians",
+                  "preset": null
+                },
+                "rightUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "ktimozr65k0cknzoqjo18fb28rvz59zt",
+              "renderer": null,
+              "controlsHeight": 200
+            },
+            {
+              "type": 1,
+              "title": "BL-2 D",
+              "controller": {
+                "leftSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/SwerveStates/ModuleDesiredWheelSpeeds/2/speed",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/SwerveStates/MeasuredWheelSpeeds/2/speed",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e5b31b",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "rightSources": [],
+                "discreteSources": [],
+                "leftLockedRange": [
+                  -5.5,
+                  5.5
+                ],
+                "rightLockedRange": null,
+                "leftUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "rightUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "5kywsmg84yji41368d6lpzawlw7fvoy7",
+              "renderer": null,
+              "controlsHeight": 200
+            },
+            {
+              "type": 1,
+              "title": "BR-3 D",
+              "controller": {
+                "leftSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/SwerveStates/ModuleDesiredWheelSpeeds/3/speed",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/SwerveStates/MeasuredWheelSpeeds/3/speed",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e5b31b",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "rightSources": [],
+                "discreteSources": [],
+                "leftLockedRange": [
+                  -5.5,
+                  5.5
+                ],
+                "rightLockedRange": null,
+                "leftUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "rightUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "v18b9c7nlnqj5rbc2p3091urk740g5tn",
               "renderer": null,
               "controlsHeight": 200
             }

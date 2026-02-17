@@ -1,25 +1,24 @@
-name: Build
+name: Format
 
 on:
-  push
+  pull_request
 
 jobs:
   build:
-    name: Build and Format
+    name: Apply Spotless Formatting
     runs-on: ubuntu-latest
     container: wpilib/roborio-cross-ubuntu:2025-24.04 # https://hub.docker.com/r/wpilib/roborio-cross-ubuntu
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Grant execute permission
         run: chmod +x gradlew
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@417ae3ccd767c252f5661f1ace9f835f9654f2b5 # v3.1.0
-      # Spotless apply will also build:
       - name: Run spotlessApply
         run: ./gradlew spotlessApply --no-daemon
       - name: Make repository safe
-        run: git config --global --add safe.directory /__w/rebuilt-2026/rebuilt-2026 
+        run: git config --global --add safe.directory $GITHUB_WORKSPACE
       # Debug Step: show any changes made by spotless apply
       - name: Check Git Status
         run: git status --porcelain
@@ -28,9 +27,9 @@ jobs:
         id: check_changes
         run: |
           if [ -n "$(git status --porcelain)" ]; then
-            echo "::set-output name=changed::true"
+            echo "changed=true" >> $GITHUB_OUTPUT
           else
-            echo "::set-output name=changed::false"
+            echo "changed=false" >> $GITHUB_OUTPUT
           fi
       - name: Commit and push formatting changes
         if: ${{ steps.check_changes.outputs.changed == 'true' }}
