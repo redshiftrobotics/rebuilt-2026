@@ -23,9 +23,7 @@ public class VisionConstants {
     TOP,
     BACK,
     LEFT,
-    RIGHT;
-    BACK,
-    UNKNOWN;
+    RIGHT
   }
 
   public record CameraConfig(
