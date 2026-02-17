@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.4222502345194803,
-        "y": 4.0
+        "x": 2.1092071652957074,
+        "y": 4.482287283990138
       },
       "isLocked": false,
       "linkedName": "Middle After firing preload"
     },
     {
       "anchor": {
-        "x": 0.5,
-        "y": 4.9
+        "x": 1.1638878955093086,
+        "y": 5.9178959379009175
       },
       "prevControl": {
-        "x": 2.2094165027842805,
-        "y": 5.0927781826842065
+        "x": 1.610844604839384,
+        "y": 5.1835365142832925
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 90.0
+    "rotation": 180.0
   },
   "reversed": false,
   "folder": "Start Middle",

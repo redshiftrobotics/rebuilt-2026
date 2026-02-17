@@ -5,21 +5,47 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Prefire backup"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Fire Preload"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Fire Preload"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.4
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "FireHopper"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
           }
         },
         {
           "type": "parallel",
           "data": {
             "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Goto depot"
+                }
+              },
               {
                 "type": "named",
                 "data": {
@@ -38,13 +64,50 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Goto depot"
+            "pathName": "drive over depot"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "RetractSlapdown"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "StopIntake"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Backout of depot"
+                }
+              }
+            ]
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "drive over depot"
+            "pathName": "midstart score second"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "FireHopper"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Goto Hang"
           }
         }
       ]
