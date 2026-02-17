@@ -3,32 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.0,
-        "y": 0.5
+        "x": 3.5,
+        "y": 4.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.2401252236135956,
-        "y": 0.43381037567084024
+        "x": 3.9222502345194803,
+        "y": 4.0
       },
       "isLocked": false,
-      "linkedName": "South Trench"
+      "linkedName": "StartMiddle"
     },
     {
       "anchor": {
-        "x": 2.5,
-        "y": 2.0
+        "x": 2.0,
+        "y": 4.0
       },
       "prevControl": {
-        "x": 2.7695885509838996,
-        "y": 1.5444007155635062
+        "x": 1.75,
+        "y": 4.0
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "South Intermediate"
+      "linkedName": "Middle After firing preload"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.0,
+      "rotationDegrees": 0.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -42,10 +47,10 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 45.0
+    "rotation": 0.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Start Middle",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0
