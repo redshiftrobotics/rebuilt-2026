@@ -141,9 +141,17 @@ public class AprilTagVision extends SubsystemBase {
   }
 
   public static AprilTagVision create(RobotType robotType, Drive drivetrain) {
-    return robotType == RobotType.SIM_BOT
-        ? new AprilTagVision(
-            drivetrain::getRobotPose, new CameraIOSim(VisionConstants.SIM_FRONT_CAMERA))
-        : new AprilTagVision(drivetrain::getRobotPose);
+    switch (robotType) {
+      case METALBOT_2:
+        return new AprilTagVision(
+            drivetrain::getRobotPose,
+            new CameraIOPhotonVision(VisionConstants.METAL_BOT_2_FRONT),
+            new CameraIOPhotonVision(VisionConstants.METAL_BOT_2_BACK));
+      case SIM_BOT:
+        return new AprilTagVision(
+            drivetrain::getRobotPose, new CameraIOSim(VisionConstants.SIM_FRONT_CAMERA));
+      default:
+        return new AprilTagVision(drivetrain::getRobotPose);
+    }
   }
 }
