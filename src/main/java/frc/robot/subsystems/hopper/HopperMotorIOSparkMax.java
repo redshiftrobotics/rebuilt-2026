@@ -9,6 +9,7 @@ import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkClosedLoopController.ArbFFUnits;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.util.Units;
 
@@ -39,7 +40,7 @@ public class HopperMotorIOSparkMax implements HopperMotorIO {
   @Override
   public void configurePID(double kP, double kI, double kD) {
     // Setup config object
-    SparkMaxConfig config = new SparkMaxConfig();
+    SparkBaseConfig config = new SparkMaxConfig().voltageCompensation(12.0).smartCurrentLimit(30);
     config.closedLoop.pid(kP, kI, kD);
 
     // Apply config

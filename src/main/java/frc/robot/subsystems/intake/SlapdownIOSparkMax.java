@@ -41,7 +41,8 @@ public class SlapdownIOSparkMax implements SlapdownIO {
         new SparkMaxConfig()
             .idleMode(IdleMode.kBrake)
             .inverted(IntakeConstants.SLAPDOWN_WHEEL_INVERTED)
-            .voltageCompensation(12);
+            .voltageCompensation(12)
+            .smartCurrentLimit(30);
 
     config
         .encoder
