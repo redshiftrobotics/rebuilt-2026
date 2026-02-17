@@ -16,6 +16,7 @@ public class VisionConstants {
 
   enum CameraPosition {
     FRONT,
+    BACK,
     UNKNOWN;
   }
 
@@ -28,5 +29,20 @@ public class VisionConstants {
           CameraPosition.FRONT,
           new Transform3d(
               new Translation3d(Units.inchesToMeters(27.5 / 2.0 + 1.0), 0, Units.inchesToMeters(6)),
+              new Rotation3d(0, Units.degreesToRadians(0), 0)));
+
+  public static final CameraConfig METAL_BOT_2_FRONT =
+      new CameraConfig(
+          "neilcam",
+          CameraPosition.FRONT,
+          new Transform3d(
+              new Translation3d(Units.inchesToMeters(28.5 / 2.0), 0, Units.inchesToMeters(7.6)),
+              new Rotation3d(0, Units.degreesToRadians(0), 0)));
+  public static final CameraConfig METAL_BOT_2_BACK =
+      new CameraConfig(
+          "geraldcam",
+          CameraPosition.BACK,
+          new Transform3d(
+              new Translation3d(-Units.inchesToMeters(28.5 / 2.0), 0, Units.inchesToMeters(7.6)),
               new Rotation3d(0, Units.degreesToRadians(0), 0)));
 }
