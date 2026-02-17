@@ -24,6 +24,8 @@ public class VisionConstants {
     BACK,
     LEFT,
     RIGHT;
+    BACK,
+    UNKNOWN;
   }
 
   public record CameraConfig(
@@ -72,4 +74,18 @@ public class VisionConstants {
               new Translation3d(
                   Units.inchesToMeters(-12.5), Units.inchesToMeters(-8), Units.inchesToMeters(8)),
               new Rotation3d(0, Units.degreesToRadians(-20), Units.degreesToRadians(-225))));
+  public static final CameraConfig METAL_BOT_2_FRONT =
+      new CameraConfig(
+          "neilcam",
+          CameraPosition.FRONT,
+          new Transform3d(
+              new Translation3d(Units.inchesToMeters(28.5 / 2.0), 0, Units.inchesToMeters(7.6)),
+              new Rotation3d(0, Units.degreesToRadians(0), 0)));
+  public static final CameraConfig METAL_BOT_2_BACK =
+      new CameraConfig(
+          "geraldcam",
+          CameraPosition.BACK,
+          new Transform3d(
+              new Translation3d(-Units.inchesToMeters(28.5 / 2.0), 0, Units.inchesToMeters(7.6)),
+              new Rotation3d(0, Units.degreesToRadians(0), 0)));
 }

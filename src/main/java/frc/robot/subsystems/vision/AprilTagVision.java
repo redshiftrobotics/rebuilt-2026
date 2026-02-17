@@ -142,6 +142,7 @@ public class AprilTagVision extends SubsystemBase {
 
   public static AprilTagVision create(RobotType robotType, Drive drivetrain) {
     switch (robotType) {
+<<<<<<< vision
       case SIM_BOT:
         return new AprilTagVision(
             drivetrain::getRobotPose, new CameraIOSim(VisionConstants.SIM_FRONT_CAMERA));
@@ -155,6 +156,18 @@ public class AprilTagVision extends SubsystemBase {
       default:
         System.err.println("Default vision built");
         return new AprilTagVision(drivetrain::getRobotPose, new CameraIO() {});
+=======
+      case METALBOT_2:
+        return new AprilTagVision(
+            drivetrain::getRobotPose,
+            new CameraIOPhotonVision(VisionConstants.METAL_BOT_2_FRONT),
+            new CameraIOPhotonVision(VisionConstants.METAL_BOT_2_BACK));
+      case SIM_BOT:
+        return new AprilTagVision(
+            drivetrain::getRobotPose, new CameraIOSim(VisionConstants.SIM_FRONT_CAMERA));
+      default:
+        return new AprilTagVision(drivetrain::getRobotPose);
+>>>>>>> main
     }
   }
 }
