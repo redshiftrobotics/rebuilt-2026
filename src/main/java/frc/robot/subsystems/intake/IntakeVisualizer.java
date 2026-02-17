@@ -25,10 +25,10 @@ public class IntakeVisualizer extends VirtualSubsystem {
               new Color8Bit(Color.kOrange)));
   private final LoggedMechanismLigament2d wheelArm1 =
       visualizerSlapdownArm.append(
-          new LoggedMechanismLigament2d("wheelArm1", 0.09, 90, 10, new Color8Bit(Color.kRed)));
+          new LoggedMechanismLigament2d("wheelArm1", 0.09, 90, 9, new Color8Bit(Color.kRed)));
   private final LoggedMechanismLigament2d wheelArm2 =
       visualizerSlapdownArm.append(
-          new LoggedMechanismLigament2d("wheelArm2", 0.09, 180, 10, new Color8Bit(Color.kRed)));
+          new LoggedMechanismLigament2d("wheelArm2", 0.09, 180, 9, new Color8Bit(Color.kRed)));
 
   private final String name;
   private DoubleSupplier slapdownPositionRadSupplier;

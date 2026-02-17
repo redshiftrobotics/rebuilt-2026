@@ -31,10 +31,10 @@ public class Hopper extends SubsystemBase {
 
   /* Mechanism visualization */
   private final LoggedMechanism2d mechanism;
-  private final LoggedMechanismRoot2d bubblerRoot;
   private final LoggedMechanismRoot2d feederRoot;
-  private final LoggedMechanismLigament2d bubblerMech;
+  private final LoggedMechanismRoot2d lifterRoot;
   private final LoggedMechanismLigament2d feederMech;
+  private final LoggedMechanismLigament2d lifterMech;
 
   public Hopper(HopperMotorIO bubblerIO, HopperMotorIO feederIO) {
     // Set IO layers
@@ -64,13 +64,15 @@ public class Hopper extends SubsystemBase {
         HopperConstants.FEEDER_PID.kD());
 
     // Set up mechanism
-    mechanism = new LoggedMechanism2d(256, 256);
-    bubblerRoot = mechanism.getRoot("Bubbler", 128, 64);
-    bubblerMech = new LoggedMechanismLigament2d("Bubbler", 25, 0, 5, new Color8Bit(Color.kViolet));
-    bubblerRoot.append(bubblerMech);
-    feederRoot = mechanism.getRoot("Feeder", 128, 192);
-    feederMech = new LoggedMechanismLigament2d("Feeder", 25, 0, 5, new Color8Bit(Color.kGoldenrod));
+    // TODO Move to new class
+    mechanism = new LoggedMechanism2d(.256, .256);
+    feederRoot = mechanism.getRoot("Bubbler", .1, .2);
+    feederMech = new LoggedMechanismLigament2d("Bubbler", .1, 0, 5, new Color8Bit(Color.kGreen));
     feederRoot.append(feederMech);
+
+    lifterRoot = mechanism.getRoot("Feeder", -.2, .6);
+    lifterMech = new LoggedMechanismLigament2d("Feeder", .1, 0, 5, new Color8Bit(Color.kGoldenrod));
+    lifterRoot.append(lifterMech);
   }
 
   @Override
@@ -82,8 +84,8 @@ public class Hopper extends SubsystemBase {
     Logger.processInputs("Hopper/Feeder", feederInputs);
 
     // Update and log mechanisms
-    bubblerMech.setAngle(Units.radiansToDegrees(bubblerInputs.positionRad));
-    feederMech.setAngle(Units.radiansToDegrees(feederInputs.positionRad));
+    feederMech.setAngle(Units.radiansToDegrees(bubblerInputs.positionRad));
+    lifterMech.setAngle(Units.radiansToDegrees(feederInputs.positionRad));
     Logger.recordOutput("Hopper/Visualization", mechanism);
   }
 
