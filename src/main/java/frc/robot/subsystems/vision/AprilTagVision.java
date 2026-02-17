@@ -29,10 +29,9 @@ public class AprilTagVision extends SubsystemBase {
   private boolean hasSuccessfulEstimation = false;
 
   public AprilTagVision(Supplier<Pose2d> robotPoseSupplier, CameraIO... camerasIO) {
-    this.cameras =
-        Arrays.stream(camerasIO)
-            .map(io -> new Camera(io, robotPoseSupplier))
-            .toArray(Camera[]::new);
+    this.cameras = Arrays.stream(camerasIO)
+        .map(io -> new Camera(io, robotPoseSupplier))
+        .toArray(Camera[]::new);
   }
 
   /** Set a consumer to receive all vision poses as they are processed */
@@ -47,7 +46,10 @@ public class AprilTagVision extends SubsystemBase {
     }
   }
 
-  /** Enable pose filtering for all cameras. Only enable if you are providing a good robot pose */
+  /**
+   * Enable pose filtering for all cameras. Only enable if you are providing a
+   * good robot pose
+   */
   public void enablePoseFiltering(boolean filterBasedOnLastPose, boolean filterBasedOnGyro) {
     for (Camera camera : cameras) {
       camera.enablePoseFiltering(filterBasedOnLastPose, filterBasedOnGyro);
@@ -110,7 +112,9 @@ public class AprilTagVision extends SubsystemBase {
     return hasSuccessfulEstimation;
   }
 
-  /** Send a command to restart the PhotonVision program on the given IP address */
+  /**
+   * Send a command to restart the PhotonVision program on the given IP address
+   */
   public static void restartPhotonVision(String ipString) {
     sendPhotonVisionCommand(ipString, "restartProgram");
   }
@@ -123,11 +127,10 @@ public class AprilTagVision extends SubsystemBase {
   private static void sendPhotonVisionCommand(String ipString, String command) {
     try {
       HttpClient httpClient = HttpClient.newHttpClient();
-      HttpRequest request =
-          HttpRequest.newBuilder()
-              .uri(new URI("http://" + ipString + ":5800/api/utils/" + command))
-              .POST(HttpRequest.BodyPublishers.noBody())
-              .build();
+      HttpRequest request = HttpRequest.newBuilder()
+          .uri(new URI("http://" + ipString + ":5800/api/utils/" + command))
+          .POST(HttpRequest.BodyPublishers.noBody())
+          .build();
       httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString());
     } catch (Exception exception) {
       Elastic.sendNotification(
@@ -141,9 +144,18 @@ public class AprilTagVision extends SubsystemBase {
   }
 
   public static AprilTagVision create(RobotType robotType, Drive drivetrain) {
-    return robotType == RobotType.SIM_BOT
-        ? new AprilTagVision(
-            drivetrain::getRobotPose, new CameraIOSim(VisionConstants.SIM_FRONT_CAMERA))
-        : new AprilTagVision(drivetrain::getRobotPose);
+    switch (robotType) {
+      case SIM_BOT:
+        return new AprilTagVision(drivetrain::getRobotPose, new CameraIOSim(VisionConstants.SIM_FRONT_CAMERA));
+      case REBUILT_2026:
+        return new AprilTagVision(drivetrain::getRobotPose, new CameraIOPhotonVision(VisionConstants.TOP_CAMERA),
+            new CameraIOPhotonVision(VisionConstants.LEFT_CAMERA),
+            new CameraIOPhotonVision(VisionConstants.RIGHT_CAMERA),
+            new CameraIOPhotonVision(VisionConstants.BACK_CAMERA));
+      default:
+        System.err.println("Default vision built");
+        return new AprilTagVision(drivetrain::getRobotPose, new CameraIO() {
+        });
+    }
   }
 }
