@@ -97,6 +97,7 @@ public final class Constants {
 
   private static RobotType determineRobotType() {
     if (RobotBase.isReal()) {
+      unrecognizedRobotType.set(false);
       switch (RobotController.getSerialNumber()) {
         case "023AC95B":
           return RobotType.PRESEASON_2026;
@@ -108,6 +109,9 @@ public final class Constants {
           return RobotType.WOOD_BOT_2026;
         case "03238024":
           return RobotType.METALBOT_2;
+        default:
+          unrecognizedRobotType.set(true);
+          return PRIMARY_ROBOT_TYPE;
       }
     } else if (RobotBase.isSimulation()) {
       return RobotType.SIM_BOT;
@@ -133,6 +137,9 @@ public final class Constants {
 
   private static final Alert demoMode =
       new Alert("Robot is in demo mode according to Constants.java", AlertType.kInfo);
+
+  private static final Alert unrecognizedRobotType =
+      new Alert("RoboRIO serial number unrecognized!", AlertType.kWarning);
 
   static {
     notOnField.set(!isOnPlayingField());
