@@ -46,7 +46,7 @@ public class LauncherConstants {
   public static final MomentOfInertia TOTAL_MOI = LAUNCHER_WHEEL_MOI.plus(FLYWHEEL_MOI);
   public static final Mass FUEL_MASS = Pounds.of(0.5);
 
-  public static final TunableNumber LAUNCHER_TUNING_PARAMETER = 
+  public static final TunableNumber LAUNCHER_TUNING_PARAMETER =
       new TunableNumber("Launcher/VelocityMultiplier", 1);
 
   // Give flywheel additional velocity to account for velocity lost in momentum transfer
@@ -68,7 +68,8 @@ public class LauncherConstants {
   public static final Distance HOOD_RADIUS = Inches.of(20);
 
   // TODO Add real actuator values
-  public static final Translation2d ACTUATOR_LOCATION = new Translation2d(Inches.of(-12), Inches.of(-4));
+  public static final Translation2d ACTUATOR_LOCATION =
+      new Translation2d(Inches.of(-12), Inches.of(-4));
   public static final Distance ACTUATOR_LENGTH_MIN = Inches.of(12);
   public static final Distance ACTUATOR_EXTENSION = Inches.of(24);
 

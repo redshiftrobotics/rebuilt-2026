@@ -370,10 +370,14 @@ public class RobotContainer {
       AtomicReference<Pose2d> setpoint = new AtomicReference<>(null);
 
       xbox.a()
-          .toggleOnTrue(Commands.parallel(
-            pipeline.runLayer("Aim at Hub", input -> input.headingTarget(launcher.getRobotYaw())),
-            Commands.runEnd(() -> launcher.setRunning(true), () -> launcher.setRunning(false), launcher))
-          );
+          .toggleOnTrue(
+              Commands.parallel(
+                  pipeline.runLayer(
+                      "Aim at Hub", input -> input.headingTarget(launcher.getRobotYaw())),
+                  Commands.runEnd(
+                      () -> launcher.setRunning(true),
+                      () -> launcher.setRunning(false),
+                      launcher)));
 
       // Drive to pose setpoint reset
       RobotModeTriggers.disabled()
