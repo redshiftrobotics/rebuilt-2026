@@ -14,13 +14,6 @@ public class IntakeConstants {
   public static final Rotation2d SLAPDOWN_UP_SETPOINT = Rotation2d.fromDegrees(157);
   public static final Rotation2d SLAPDOWN_INCREMENT_SETPOINT = Rotation2d.fromDegrees(5);
 
-  public static final double WHEEL_GEAR_RATIO =
-      switch (Constants.getRobot()) {
-        case PRESEASON_2026 -> 1;
-        case SIM_BOT -> 1;
-        default -> 1;
-      };
-
   public static final double SLAPDOWN_GEAR_RATIO =
       switch (Constants.getRobot()) {
         case PRESEASON_2026 -> 1;
@@ -28,12 +21,7 @@ public class IntakeConstants {
         default -> 1;
       };
 
-  public static final int INTAKE_WHEEL_CAN_ID =
-      switch (Constants.getRobot()) {
-        case PRESEASON_2026 -> 0;
-        case SIM_BOT -> 0;
-        default -> 0;
-      };
+  public static final int INTAKE_WHEEL_CAN_ID = 5;
 
   public static final int SLAPDOWN_CAN_ID =
       switch (Constants.getRobot()) {
