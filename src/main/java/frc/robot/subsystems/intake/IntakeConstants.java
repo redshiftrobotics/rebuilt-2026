@@ -7,7 +7,7 @@ import frc.robot.utility.records.PIDConfig;
 public class IntakeConstants {
   public static final double INTAKE_WHEEL_SPEED = .5;
   public static final boolean INTAKE_WHEEL_INVERTED = false;
-  public static final double INTAKE_WHEEL_GEAR_RATIO = 1;
+  public static final double INTAKE_WHEEL_GEAR_RATIO = 0.03125;
 
   public static final boolean SLAPDOWN_WHEEL_INVERTED = false;
   public static final Rotation2d SLAPDOWN_DOWN_SETPOINT = Rotation2d.fromDegrees(0);

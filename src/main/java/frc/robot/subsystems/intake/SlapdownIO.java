@@ -13,6 +13,9 @@ public interface SlapdownIO {
     public double positionRad = IntakeConstants.SLAPDOWN_UP_SETPOINT.getRadians();
     public double velocityRadPerSec = 0.0;
 
+    public double absolutePositionRad = 0.0;
+    public double absoluteVelocityRadPerSec = 0.0;
+
     public double[] appliedVolts = new double[] {};
     public double[] supplyCurrentAmps = new double[] {};
   }
