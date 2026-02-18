@@ -80,7 +80,11 @@ public class DriveConstants {
 
   public static final DriveConfig DRIVE_CONFIG =
       switch (Constants.getRobot()) {
-        case REBUILT_2026 -> throw new UnsupportedOperationException(); // TODO
+        case REBUILT_2026 ->  new DriveConfig(
+            TRACK_SIZE,
+            BUMPER_TO_BUMPER,
+            PreseasonConstants.kSpeedAt12Volts.in(MetersPerSecond),
+            22.0); // TODO: Update for new generated constants
         case METALBOT_2, PRESEASON_2026, SIM_BOT -> new DriveConfig(
             TRACK_SIZE,
             BUMPER_TO_BUMPER,
