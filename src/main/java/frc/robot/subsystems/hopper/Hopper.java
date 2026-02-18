@@ -67,6 +67,7 @@ public class Hopper extends SubsystemBase {
     Logger.processInputs("Hopper/lifter", lifterInputs);
 
     // Update and log mechanisms
+    visualizer.think(feederInputs, lifterInputs);
   }
 
   private void runfeederAtVelocity(double velocityRPM) {
@@ -118,7 +119,7 @@ public class Hopper extends SubsystemBase {
     return Units.radiansPerSecondToRotationsPerMinute(feederInputs.velocityRadPerSec);
   }
 
-  public double getfeederCharacterizationVelocity() {
+  public double getFeederCharacterizationVelocity() {
     return feederInputs.velocityRadPerSec;
   }
 
@@ -127,7 +128,7 @@ public class Hopper extends SubsystemBase {
     return Units.radiansPerSecondToRotationsPerMinute(lifterInputs.velocityRadPerSec);
   }
 
-  public double getlifterCharacterizationVelocity() {
+  public double getLifterCharacterizationVelocity() {
     return lifterInputs.velocityRadPerSec;
   }
 
