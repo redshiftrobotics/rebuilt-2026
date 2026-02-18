@@ -7,14 +7,9 @@
       "height": 832,
       "state": {
         "sidebar": {
-          "width": 300,
+          "width": 261,
           "expanded": [
-            "/RealOutputs",
-            "/AdvantageKit/RealOutputs",
-            "/SmartDashboard",
-            "/SmartDashboard/Intake",
-            "/AdvantageKit",
-            "/AdvantageKit/RealOutputs/Intake"
+            "/RealOutputs"
           ]
         },
         "tabs": {
@@ -39,7 +34,7 @@
                     "logType": "Pose2d",
                     "visible": true,
                     "options": {
-                      "model": "2026 KitBot"
+                      "model": "comp_2026_8032"
                     }
                   },
                   {
@@ -63,6 +58,15 @@
                     }
                   },
                   {
+                    "type": "mechanism",
+                    "logKey": "/RealOutputs/Intake/Visualization",
+                    "logType": "Mechanism2d",
+                    "visible": true,
+                    "options": {
+                      "plane": "xz"
+                    }
+                  },
+                  {
                     "type": "trajectory",
                     "logKey": "/RealOutputs/Odometry/Trajectory",
                     "logType": "Pose2d[]",
@@ -78,7 +82,7 @@
                     "logType": "Pose2d",
                     "visible": false,
                     "options": {
-                      "model": "2026 KitBot",
+                      "model": "KitBot",
                       "color": "#00ff00"
                     }
                   },
@@ -88,7 +92,7 @@
                     "logType": "Pose3d[]",
                     "visible": false,
                     "options": {
-                      "model": "2026 KitBot",
+                      "model": "KitBot",
                       "color": "#ff00ff"
                     }
                   },
@@ -98,26 +102,8 @@
                     "logType": "Pose3d[]",
                     "visible": false,
                     "options": {
-                      "model": "2026 KitBot",
+                      "model": "KitBot",
                       "color": "#ffff00"
-                    }
-                  },
-                  {
-                    "type": "robot",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/Drive/RobotPose",
-                    "logType": "Pose2d",
-                    "visible": true,
-                    "options": {
-                      "model": "KitBot"
-                    }
-                  },
-                  {
-                    "type": "mechanism",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/Intake/Visualization",
-                    "logType": "Mechanism2d",
-                    "visible": true,
-                    "options": {
-                      "plane": "xz"
                     }
                   }
                 ],
