@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.7047897291847964,
-        "y": 7.5
+        "x": 3.4018396570745293,
+        "y": 7.270077084489706
       },
       "isLocked": false,
       "linkedName": "North Trench"
@@ -20,8 +20,8 @@
         "y": 6.0
       },
       "prevControl": {
-        "x": 2.5,
-        "y": 5.398783698265489
+        "x": 2.3445610903754583,
+        "y": 5.772674711550378
       },
       "nextControl": null,
       "isLocked": false,
