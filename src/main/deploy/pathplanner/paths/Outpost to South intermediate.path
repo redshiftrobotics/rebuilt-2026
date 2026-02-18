@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.5,
-        "y": 2.0
+        "x": 0.776528917574415,
+        "y": 0.6865159569534602
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.8036728529157773,
-        "y": 2.047007007165598
+        "x": 1.776528917574415,
+        "y": 0.6865159569534605
       },
       "isLocked": false,
-      "linkedName": "South Bump"
+      "linkedName": "Finished outpost"
     },
     {
       "anchor": {
@@ -20,8 +20,8 @@
         "y": 2.0
       },
       "prevControl": {
-        "x": 3.233397659316987,
-        "y": 2.0315108174815437
+        "x": 1.5,
+        "y": 2.0
       },
       "nextControl": null,
       "isLocked": false,
@@ -48,7 +48,7 @@
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }
