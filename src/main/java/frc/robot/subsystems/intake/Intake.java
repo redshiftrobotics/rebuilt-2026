@@ -3,6 +3,7 @@ package frc.robot.subsystems.intake;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RobotType;
 import frc.robot.utility.tunable.TunableNumbers.TunablePID;
@@ -30,6 +31,7 @@ public class Intake extends SubsystemBase {
   private SlapdownIOInputsAutoLogged slapdownInputs;
 
   private final IntakeVisualizer visualizer;
+  private final IntakeVisualizer absoluteVisualizer;
 
   public Intake(IntakeWheelIO wheelIO, SlapdownIO slapdownIO) {
     this.wheelIO = wheelIO;
@@ -44,7 +46,18 @@ public class Intake extends SubsystemBase {
 
     visualizer =
         new IntakeVisualizer(
-            getName(), () -> slapdownInputs.positionRad, () -> wheelInputs.positionRad);
+            getName(),
+            () -> slapdownInputs.positionRad,
+            () -> wheelInputs.positionRad,
+            Color.kOrange,
+            Color.kRed);
+    absoluteVisualizer =
+        new IntakeVisualizer(
+            getName() + "/Absolute",
+            () -> slapdownInputs.absolutePositionRad,
+            () -> wheelInputs.positionRad,
+            Color.kLightSalmon,
+            Color.kPink);
 
     slapdownUpPosition = IntakeConstants.SLAPDOWN_UP_SETPOINT;
     slapdownDownPosition = IntakeConstants.SLAPDOWN_DOWN_SETPOINT;

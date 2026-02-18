@@ -62,7 +62,7 @@ public class DriveConstants {
   /** Center of wheel to center of wheel size */
   private static final Translation2d TRACK_SIZE =
       switch (Constants.getRobot()) {
-        case REBUILT_2026 ->  new Translation2d(22.75, 21.75); // Verify 21.75
+        case REBUILT_2026 -> new Translation2d(22.75, 21.75); // Verify 21.75
         case METALBOT_2, SIM_BOT -> new Translation2d(
             MetalbotTwoConstants.FrontLeft.LocationX - MetalbotTwoConstants.BackRight.LocationX,
             MetalbotTwoConstants.FrontLeft.LocationY - MetalbotTwoConstants.BackRight.LocationY);
@@ -80,7 +80,7 @@ public class DriveConstants {
 
   public static final DriveConfig DRIVE_CONFIG =
       switch (Constants.getRobot()) {
-        case REBUILT_2026 ->  new DriveConfig(
+        case REBUILT_2026 -> new DriveConfig(
             TRACK_SIZE,
             BUMPER_TO_BUMPER,
             PreseasonConstants.kSpeedAt12Volts.in(MetersPerSecond),
@@ -121,7 +121,8 @@ public class DriveConstants {
 
   public static final CANBus CAN_BUS =
       switch (Constants.getRobot()) {
-        case REBUILT_2026 ->  new CANBus("", "./logs/example.hoot"); // TODO Switch to generated canbus constant
+        case REBUILT_2026 -> new CANBus(
+            "", "./logs/example.hoot"); // TODO Switch to generated canbus constant
         case PRESEASON_2026 -> PreseasonConstants.kCANBus;
         case METALBOT_2 -> MetalbotTwoConstants.kCANBus;
         case REEFSCAPE_2025, CHASSIS_CANNON, WOOD_BOT_2026 -> CANBus.roboRIO();
