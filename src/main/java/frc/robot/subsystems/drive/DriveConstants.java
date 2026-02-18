@@ -62,7 +62,7 @@ public class DriveConstants {
   /** Center of wheel to center of wheel size */
   private static final Translation2d TRACK_SIZE =
       switch (Constants.getRobot()) {
-        case REBUILT_2026 -> throw new UnsupportedOperationException(); // TODO get track size (L:22.75-H:21.75)
+        case REBUILT_2026 ->  new Translation2d(22.75, 21.75); // Verify 21.75
         case METALBOT_2, SIM_BOT -> new Translation2d(
             MetalbotTwoConstants.FrontLeft.LocationX - MetalbotTwoConstants.BackRight.LocationX,
             MetalbotTwoConstants.FrontLeft.LocationY - MetalbotTwoConstants.BackRight.LocationY);
