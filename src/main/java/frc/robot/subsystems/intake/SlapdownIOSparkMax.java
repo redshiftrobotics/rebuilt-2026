@@ -78,7 +78,8 @@ public class SlapdownIOSparkMax implements SlapdownIO {
     SparkUtil.ifOk(
         motor,
         absoluteEncoder::getVelocity,
-        value -> inputs.absoluteVelocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(value));
+        value ->
+            inputs.absoluteVelocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(value));
 
     inputs.motorConnected = connectionDebouncer.calculate(!motor.hasStickyFault());
     inputs.encodersAligned =
