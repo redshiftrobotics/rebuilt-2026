@@ -122,7 +122,7 @@ public class DriveConstants {
 
   public static final CANBus CAN_BUS =
       switch (Constants.getRobot()) {
-        case REBUILT_2026 -> throw new UnsupportedOperationException(); // TODO get can bus
+        case REBUILT_2026 ->  new CANBus("", "./logs/example.hoot"); // TODO Switch to generated canbus constant
         case PRESEASON_2026 -> PreseasonConstants.kCANBus;
         case METALBOT_2 -> MetalbotTwoConstants.kCANBus;
         case REEFSCAPE_2025, CHASSIS_CANNON, WOOD_BOT_2026 -> CANBus.roboRIO();
