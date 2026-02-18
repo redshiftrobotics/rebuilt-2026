@@ -111,8 +111,7 @@ public class DriveConstants {
 
   public static final int GYRO_CAN_ID =
       switch (Constants.getRobot()) {
-        case REBUILT_2026 -> throw new UnsupportedOperationException(); // TODO Get gyro can id
-        case REEFSCAPE_2025, CHASSIS_CANNON, WOOD_BOT_2026 -> 40;
+        case REBUILT_2026, REEFSCAPE_2025, CHASSIS_CANNON, WOOD_BOT_2026 -> 40;
         case METALBOT_2 -> MetalbotTwoConstants.DrivetrainConstants.Pigeon2Id;
         case PRESEASON_2026 -> PreseasonConstants.DrivetrainConstants.Pigeon2Id;
         case SIM_BOT -> -1;
