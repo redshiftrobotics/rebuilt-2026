@@ -75,8 +75,9 @@ public class Launcher extends SubsystemBase {
         channel.setSpeed(
             RadiansPerSecond.of(
                 parameters.velocity().in(MetersPerSecond)
-                    / LauncherConstants.LAUNCHER_WHEEL_RADIUS.in(Meters)
-                    * LauncherConstants.LAUNCHER_VELOCITY_MULTIPLIER));
+                    * LauncherConstants.LAUNCHER_VELOCITY_MULTIPLIER
+                    * LauncherConstants.LAUNCHER_TUNING_PARAMETER.get()
+                    / LauncherConstants.LAUNCHER_WHEEL_RADIUS.in(Meters)));
       }
       robotYaw = parameters.yaw();
     } else {
