@@ -1,0 +1,31 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "South - Bump to Intermediate"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "FireHopper"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "South Intermediate to Hang"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}
