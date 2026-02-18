@@ -47,15 +47,22 @@
                 }
               },
               {
-                "type": "named",
+                "type": "sequential",
                 "data": {
-                  "name": "ExtendSlapdown"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "StartIntake"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "ExtendSlapdown"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "StartIntake"
+                      }
+                    }
+                  ]
                 }
               }
             ]
@@ -72,21 +79,28 @@
           "data": {
             "commands": [
               {
-                "type": "named",
-                "data": {
-                  "name": "RetractSlapdown"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "StopIntake"
-                }
-              },
-              {
                 "type": "path",
                 "data": {
                   "pathName": "Backout of depot"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "RetractSlapdown"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "StopIntake"
+                      }
+                    }
+                  ]
                 }
               }
             ]

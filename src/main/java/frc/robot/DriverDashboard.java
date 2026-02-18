@@ -125,7 +125,7 @@ public class DriverDashboard {
     String insight;
 
     // The alliance will be provided as a single character representing the color of
-    // the alliance whose goal will go inactive first (i.e. ‘R’ = red, ‘B’ = blue).
+    // the alliance whose goal will go inactive first (i.e. 'R' = red, 'B' = blue).
     // This alliance’s goal will be active in Shifts 2 and 4.
     if (gameData.length() > 0) {
       switch (gameData.charAt(0)) {
