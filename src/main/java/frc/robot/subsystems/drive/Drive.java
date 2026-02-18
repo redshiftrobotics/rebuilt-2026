@@ -32,6 +32,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.Constants.RobotType;
 import frc.robot.DriverDashboard;
+import frc.robot.generated.CompetitionConstants;
 import frc.robot.generated.MetalbotTwoConstants;
 import frc.robot.generated.PreseasonConstants;
 import frc.robot.utility.AllianceMirrorUtil;
@@ -509,6 +510,13 @@ public class Drive extends SubsystemBase {
 
   public static Drive create(RobotType robotType) {
     switch (robotType) {
+      case REBUILT_2026:
+        return new Drive(
+            new GyroIOPigeon2(DriveConstants.GYRO_CAN_ID, true),
+            new ModuleIOTalonFX(CompetitionConstants.FrontLeft),
+            new ModuleIOTalonFX(CompetitionConstants.FrontRight),
+            new ModuleIOTalonFX(CompetitionConstants.BackLeft),
+            new ModuleIOTalonFX(CompetitionConstants.BackRight));
       case METALBOT_2:
         return new Drive(
             new GyroIOPigeon2(DriveConstants.GYRO_CAN_ID, true),
