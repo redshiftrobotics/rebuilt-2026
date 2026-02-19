@@ -547,7 +547,6 @@ public class Drive extends SubsystemBase {
             new ModuleIOSim(PreseasonConstants.FrontRight),
             new ModuleIOSim(PreseasonConstants.BackLeft),
             new ModuleIOSim(PreseasonConstants.BackRight));
-      case REBUILT_2026: // Drive should remain disabled for inital test
       default:
         return new Drive(
             new GyroIO() {},
