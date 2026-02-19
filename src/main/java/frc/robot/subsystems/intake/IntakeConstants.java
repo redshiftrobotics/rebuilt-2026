@@ -5,29 +5,32 @@ import frc.robot.Constants;
 import frc.robot.utility.records.PIDConfig;
 
 public class IntakeConstants {
-  public static final double INTAKE_WHEEL_SPEED = -1;
-  public static final boolean INTAKE_WHEEL_INVERTED = false;
-  public static final double INTAKE_WHEEL_GEAR_RATIO = 1;
 
-  public static final double SLAPDOWN_GEAR_RATIO = 0.03125;
-  public static final boolean SLAPDOWN_WHEEL_INVERTED = false;
-  public static final Rotation2d SLAPDOWN_DOWN_SETPOINT = Rotation2d.fromDegrees(0);
-  public static final Rotation2d SLAPDOWN_UP_SETPOINT = Rotation2d.fromDegrees(157);
-  public static final Rotation2d SLAPDOWN_INCREMENT_SETPOINT = Rotation2d.fromDegrees(5);
+  public class IntakeWheelConstants {
+    public static final int CAN_ID = 5;
+    public static final double GEAR_RATIO = 1.0 / 3.0;
+    public static final boolean INVERTED = false;
+    public static final boolean BRAKE_MODE = true;
 
-  public static final int INTAKE_WHEEL_CAN_ID = 5;
+    public static final double SPEED_INTAKING = 1.0;
+  }
 
-  public static final int SLAPDOWN_CAN_ID =
-      switch (Constants.getRobot()) {
-        case PRESEASON_2026 -> 0;
-        case SIM_BOT -> 0;
-        default -> 0;
-      };
+  public class SlapdownConstants {
+    public static final int CAN_ID = 14;
+    public static final double GEAR_RATIO = (1.0 / 4.0) * (1.0 / 4.0) * (1.0 / 2.0);
+    public static final boolean INVERTED = false;
 
-  public static final PIDConfig SLAPDOWN_PID =
-      switch (Constants.getRobot()) {
-        case PRESEASON_2026 -> new PIDConfig(0, 0, 0);
-        case SIM_BOT -> new PIDConfig(.32, 0, .14);
-        default -> new PIDConfig(1, 0, 0);
-      };
+    public static final Rotation2d ABSOLUTE_ENCODER_ZERO = Rotation2d.fromRotations(0);
+
+    public static final Rotation2d DOWN_SETPOINT = Rotation2d.fromDegrees(0);
+    public static final Rotation2d UP_SETPOINT = Rotation2d.fromDegrees(157);
+    public static final Rotation2d INCREMENT_SETPOINT = Rotation2d.fromDegrees(5);
+
+    public static final PIDConfig PID =
+        switch (Constants.getRobot()) {
+          case REBUILT_2026 -> new PIDConfig(3, 0, 0);
+          case SIM_BOT -> new PIDConfig(3, 0, 1);
+          default -> new PIDConfig(0, 0, 0);
+        };
+  }
 }

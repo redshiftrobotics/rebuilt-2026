@@ -6,6 +6,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.Constants;
+import frc.robot.utility.records.PIDConfig;
 
 public class HopperMotorIOSim implements HopperMotorIO {
   /* Motor and sim */
@@ -28,9 +29,9 @@ public class HopperMotorIOSim implements HopperMotorIO {
   }
 
   @Override
-  public void configurePID(double kP, double kI, double kD) {
+  public void setPID(PIDConfig pid) {
     // Apply values to PID controller
-    pidController.setPID(kP, kI, kD);
+    pidController.setPID(pid.kP(), pid.kI(), pid.kD());
   }
 
   @Override
@@ -62,7 +63,7 @@ public class HopperMotorIOSim implements HopperMotorIO {
     // Fetch new values
     inputs.positionRad = sim.getAngularPositionRad();
     inputs.velocityRadPerSec = sim.getAngularVelocityRadPerSec();
-    inputs.appliedVolts = new double[] {appliedVolts};
-    inputs.supplyCurrentAmps = new double[] {sim.getCurrentDrawAmps()};
+    inputs.appliedVolts = appliedVolts;
+    inputs.supplyCurrentAmps = sim.getCurrentDrawAmps();
   }
 }

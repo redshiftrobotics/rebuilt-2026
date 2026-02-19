@@ -6,6 +6,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -14,42 +15,42 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import frc.robot.subsystems.intake.IntakeConstants.SlapdownConstants;
 import frc.robot.utility.SparkUtil;
 import frc.robot.utility.records.PIDConfig;
 
 public class SlapdownIOSparkMax implements SlapdownIO {
 
   private final SparkMax motor;
-  private final SparkClosedLoopController motorPID;
+  private final SparkClosedLoopController pid;
   private final RelativeEncoder relativeEncoder;
   private final AbsoluteEncoder absoluteEncoder;
 
   private final Debouncer connectionDebouncer = new Debouncer(0.5);
 
-  public SlapdownIOSparkMax(SparkMax motor) {
+  public SlapdownIOSparkMax() {
 
-    this.motor = motor;
+    this.motor = new SparkMax(SlapdownConstants.CAN_ID, MotorType.kBrushless);
 
     absoluteEncoder = motor.getAbsoluteEncoder();
-
     relativeEncoder = motor.getEncoder();
-    relativeEncoder.setPosition(absoluteEncoder.getPosition());
-
-    motorPID = motor.getClosedLoopController();
+    pid = motor.getClosedLoopController();
 
     SparkBaseConfig config =
         new SparkMaxConfig()
             .idleMode(IdleMode.kBrake)
-            .inverted(IntakeConstants.SLAPDOWN_WHEEL_INVERTED)
-            .voltageCompensation(12)
-            .smartCurrentLimit(30);
+            .inverted(SlapdownConstants.INVERTED)
+            .smartCurrentLimit(30)
+            .voltageCompensation(12);
 
     config
         .encoder
-        .positionConversionFactor(IntakeConstants.SLAPDOWN_GEAR_RATIO)
-        .velocityConversionFactor(IntakeConstants.SLAPDOWN_GEAR_RATIO);
+        .positionConversionFactor(SlapdownConstants.GEAR_RATIO)
+        .velocityConversionFactor(SlapdownConstants.GEAR_RATIO);
 
     motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+    relativeEncoder.setPosition(absoluteEncoder.getPosition());
   }
 
   @Override
@@ -67,9 +68,8 @@ public class SlapdownIOSparkMax implements SlapdownIO {
     SparkUtil.ifOk(
         motor,
         () -> motor.getAppliedOutput() * motor.getBusVoltage(),
-        values -> inputs.appliedVolts = new double[] {values});
-    SparkUtil.ifOk(
-        motor, motor::getOutputCurrent, value -> inputs.supplyCurrentAmps = new double[] {value});
+        value -> inputs.appliedVolts = value);
+    SparkUtil.ifOk(motor, motor::getOutputCurrent, value -> inputs.supplyCurrentAmps = value);
 
     SparkUtil.ifOk(
         motor,
@@ -81,7 +81,7 @@ public class SlapdownIOSparkMax implements SlapdownIO {
         value ->
             inputs.absoluteVelocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(value));
 
-    inputs.motorConnected = connectionDebouncer.calculate(!motor.hasStickyFault());
+    inputs.motorConnected = connectionDebouncer.calculate(!SparkUtil.hasError());
     inputs.encodersAligned =
         MathUtil.isNear(relativeEncoder.getVelocity(), absoluteEncoder.getPosition(), 0.1);
   }
@@ -94,8 +94,8 @@ public class SlapdownIOSparkMax implements SlapdownIO {
   }
 
   @Override
-  public void setSetpoint(Rotation2d setPoint) {
-    motorPID.setSetpoint(setPoint.getRotations(), ControlType.kVelocity);
+  public void setSetpoint(Rotation2d setpoint) {
+    pid.setSetpoint(setpoint.getRotations(), ControlType.kPosition);
   }
 
   @Override

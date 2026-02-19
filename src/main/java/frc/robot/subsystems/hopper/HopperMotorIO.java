@@ -1,5 +1,6 @@
 package frc.robot.subsystems.hopper;
 
+import frc.robot.utility.records.PIDConfig;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface HopperMotorIO {
@@ -7,15 +8,18 @@ public interface HopperMotorIO {
   public static class HopperMotorIOInputs {
     public double positionRad = 0.0;
     public double velocityRadPerSec = 0.0;
-    public double[] appliedVolts = new double[] {};
-    public double[] supplyCurrentAmps = new double[] {};
+
+    public double appliedVolts;
+    public double supplyCurrentAmps;
+
+    public boolean motorConnected = true;
   }
 
   /** Updates the set of loggable inputs */
   public default void updateInputs(HopperMotorIOInputs inputs) {}
 
   /** Configure the PID constants */
-  public default void configurePID(double kP, double kI, double kD) {}
+  public default void setPID(PIDConfig pid) {}
 
   /** Stop the motor */
   public default void stop() {}

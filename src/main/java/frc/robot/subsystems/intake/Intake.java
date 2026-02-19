@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RobotType;
+import frc.robot.subsystems.intake.IntakeConstants.SlapdownConstants;
 import frc.robot.utility.tunable.TunableNumbers.TunablePID;
 import org.littletonrobotics.junction.Logger;
 
@@ -14,8 +15,14 @@ public class Intake extends SubsystemBase {
   private final IntakeWheelIO wheelIO;
   private final SlapdownIO slapdownIO;
 
+  private IntakeWheelIOInputsAutoLogged wheelInputs = new IntakeWheelIOInputsAutoLogged();
+  private SlapdownIOInputsAutoLogged slapdownInputs = new SlapdownIOInputsAutoLogged();
+
   private Rotation2d slapdownUpPosition;
   private Rotation2d slapdownDownPosition;
+
+  private Rotation2d setpointPosition = Rotation2d.kZero;
+  private double setpointWheelSpeed;
 
   private final Alert wheelMotorDisconnectedAlert =
       new Alert("Hardware error detected on intake wheel.", AlertType.kError);
@@ -25,42 +32,28 @@ public class Intake extends SubsystemBase {
       new Alert("Absolute & relative encoders on slapdown misaligned.", AlertType.kWarning);
 
   private final TunablePID slapdownPidConfig =
-      new TunablePID(getName() + "/Slapdown/Pid", IntakeConstants.SLAPDOWN_PID);
-
-  private IntakeWheelIOInputsAutoLogged wheelInputs;
-  private SlapdownIOInputsAutoLogged slapdownInputs;
+      new TunablePID(getName() + "/SlapdownPID", SlapdownConstants.PID);
 
   private final IntakeVisualizer visualizer;
   private final IntakeVisualizer absoluteVisualizer;
+  private final IntakeVisualizer setpointVisualizer;
 
   public Intake(IntakeWheelIO wheelIO, SlapdownIO slapdownIO) {
     this.wheelIO = wheelIO;
     this.slapdownIO = slapdownIO;
 
-    slapdownIO.setPID(IntakeConstants.SLAPDOWN_PID);
+    slapdownIO.setPID(SlapdownConstants.PID);
 
-    wheelInputs = new IntakeWheelIOInputsAutoLogged();
-    slapdownInputs = new SlapdownIOInputsAutoLogged();
-
-    slapdownIO.setSetpoint(IntakeConstants.SLAPDOWN_UP_SETPOINT);
-
-    visualizer =
-        new IntakeVisualizer(
-            getName(),
-            () -> slapdownInputs.positionRad,
-            () -> wheelInputs.positionRad,
-            Color.kOrange,
-            Color.kRed);
+    visualizer = new IntakeVisualizer(getName() + "/Visuization/Measured", Color.kRed);
     absoluteVisualizer =
-        new IntakeVisualizer(
-            getName() + "/Absolute",
-            () -> slapdownInputs.absolutePositionRad,
-            () -> wheelInputs.positionRad,
-            Color.kLightSalmon,
-            Color.kPink);
+        new IntakeVisualizer(getName() + "/Visuization/AbsoluteMeasured", Color.kOrange);
+    setpointVisualizer = new IntakeVisualizer(getName() + "/Visuization/Setpoint", Color.kBlue);
 
-    slapdownUpPosition = IntakeConstants.SLAPDOWN_UP_SETPOINT;
-    slapdownDownPosition = IntakeConstants.SLAPDOWN_DOWN_SETPOINT;
+    slapdownUpPosition = SlapdownConstants.UP_SETPOINT;
+    slapdownDownPosition = SlapdownConstants.DOWN_SETPOINT;
+
+    setSlapdownSetpoint(slapdownUpPosition);
+    stopWheels();
   }
 
   @Override
@@ -71,7 +64,12 @@ public class Intake extends SubsystemBase {
     Logger.processInputs(getName() + "/Wheel", wheelInputs);
     Logger.processInputs(getName() + "/Slapdown", slapdownInputs);
 
-    slapdownPidConfig.ifChanged(hashCode(), () -> slapdownIO.setPID(slapdownPidConfig.get()));
+    slapdownPidConfig.ifChanged(hashCode(), slapdownIO::setPID);
+
+    visualizer.update(slapdownInputs.positionRad, wheelInputs.positionRad);
+    absoluteVisualizer.update(slapdownInputs.absolutePositionRad, wheelInputs.positionRad);
+    setpointVisualizer.update(
+        setpointPosition.getRadians(), -setpointWheelSpeed * System.currentTimeMillis() * 0.001);
 
     wheelMotorDisconnectedAlert.set(!wheelInputs.motorConnected);
     slapdownMotorDisconnectedAlert.set(!slapdownInputs.motorConnected);
@@ -82,27 +80,28 @@ public class Intake extends SubsystemBase {
 
   public void setWheelSpeed(double speed) {
     wheelIO.setSpeed(speed);
+    this.setpointWheelSpeed = speed;
   }
 
   public void stopWheels() {
     wheelIO.stop();
+    this.setpointWheelSpeed = 0;
   }
 
   // slapdown
 
-  public void setSlapdownSetpoint(Rotation2d setPoint) {
-    slapdownIO.setSetpoint(setPoint);
+  public void setSlapdownSetpoint(Rotation2d setpoint) {
+    slapdownIO.setSetpoint(setpoint);
+    this.setpointPosition = setpoint;
   }
 
   public void setSavedUpSetpoint(Rotation2d setPoint) {
     setSlapdownSetpoint(setPoint);
-
     slapdownUpPosition = setPoint;
   }
 
   public void setSavedDownSetpoint(Rotation2d setPoint) {
     setSlapdownSetpoint(setPoint);
-
     slapdownDownPosition = setPoint;
   }
 
@@ -117,16 +116,8 @@ public class Intake extends SubsystemBase {
   public static Intake create(RobotType robotType) {
 
     switch (robotType) {
-      case METALBOT_2:
-        return new Intake(new IntakeWheelIO() {}, new SlapdownIO() {});
-
-      case PRESEASON_2026:
-        return new Intake(new IntakeWheelIO() {}, new SlapdownIO() {});
-
-      case CHASSIS_CANNON:
-      case WOOD_BOT_2026:
-      case REEFSCAPE_2025:
-        return new Intake(new IntakeWheelIO() {}, new SlapdownIO() {});
+      case REBUILT_2026:
+        return new Intake(new IntakeWheelIOSparkMax(), new SlapdownIOSparkMax());
 
       case SIM_BOT:
         return new Intake(new IntakeWheelIOSim(), new SlapdownIOSim());

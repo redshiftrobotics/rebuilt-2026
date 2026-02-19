@@ -6,6 +6,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.Constants;
+import frc.robot.subsystems.intake.IntakeConstants.SlapdownConstants;
 import frc.robot.utility.records.PIDConfig;
 
 public class SlapdownIOSim implements SlapdownIO {
@@ -20,15 +21,13 @@ public class SlapdownIOSim implements SlapdownIO {
     motor = DCMotor.getNEO(1);
     sim =
         new DCMotorSim(
-            LinearSystemId.createDCMotorSystem(motor, 0.004, IntakeConstants.SLAPDOWN_GEAR_RATIO),
+            LinearSystemId.createSingleJointedArmSystem(
+                motor, 0.0004, SlapdownConstants.GEAR_RATIO),
             motor);
 
-    pidController =
-        new PIDController(
-            IntakeConstants.SLAPDOWN_PID.kP(),
-            IntakeConstants.SLAPDOWN_PID.kI(),
-            IntakeConstants.SLAPDOWN_PID.kD());
+    sim.setAngle(SlapdownConstants.UP_SETPOINT.getRadians());
 
+    pidController = new PIDController(0, 0, 0);
     pidController.setTolerance(0);
   }
 
@@ -46,8 +45,8 @@ public class SlapdownIOSim implements SlapdownIO {
     inputs.velocityRadPerSec = sim.getAngularVelocityRadPerSec();
     inputs.absolutePositionRad = sim.getAngularPositionRad();
     inputs.absoluteVelocityRadPerSec = sim.getAngularVelocityRadPerSec();
-    inputs.appliedVolts = new double[] {sim.getInputVoltage()};
-    inputs.supplyCurrentAmps = new double[] {sim.getCurrentDrawAmps()};
+    inputs.appliedVolts = sim.getInputVoltage();
+    inputs.supplyCurrentAmps = sim.getCurrentDrawAmps();
   }
 
   @Override

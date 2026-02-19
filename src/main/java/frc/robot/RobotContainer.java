@@ -32,12 +32,14 @@ import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.hopper.HopperConstants.RunMode;
 import frc.robot.subsystems.intake.Intake;
-import frc.robot.subsystems.intake.IntakeConstants;
+import frc.robot.subsystems.intake.IntakeConstants.SlapdownConstants;
 import frc.robot.subsystems.led.BlinkenLEDPattern;
 import frc.robot.subsystems.led.LEDSubsystem;
+import frc.robot.subsystems.outtake.Outtake;
 import frc.robot.subsystems.vision.AprilTagVision;
 import frc.robot.utility.Elastic;
 import frc.robot.utility.Elastic.Notification.NotificationLevel;
+import frc.robot.utility.JoystickUtil;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
@@ -58,6 +60,7 @@ public class RobotContainer {
   private final LEDSubsystem leds;
   private final Hopper hopper;
   private final Intake intake;
+  private final Outtake outtake;
   private final Climb climb;
 
   // Controller
@@ -100,6 +103,7 @@ public class RobotContainer {
     hopper = Hopper.create(robotType);
     intake = Intake.create(robotType);
     climb = Climb.create(robotType);
+    outtake = new Outtake(robotType);
 
     // Vision setup
     if (Constants.isOnPlayingField()) {
@@ -332,28 +336,12 @@ public class RobotContainer {
     // down pos
     xbox.leftTrigger()
         .and(xbox.pov(0))
-        .onTrue(
-            IntakeCommands.incrementDownSlapdown(
-                intake, IntakeConstants.SLAPDOWN_INCREMENT_SETPOINT));
+        .onTrue(IntakeCommands.incrementDownSlapdown(intake, SlapdownConstants.INCREMENT_SETPOINT));
     xbox.leftTrigger()
         .and(xbox.pov(180))
         .onTrue(
             IntakeCommands.incrementDownSlapdown(
-                intake, IntakeConstants.SLAPDOWN_INCREMENT_SETPOINT.unaryMinus()));
-
-    // up pos
-    xbox.leftTrigger()
-        .negate()
-        .and(xbox.pov(0))
-        .onTrue(
-            IntakeCommands.incrementUpSlapdown(
-                intake, IntakeConstants.SLAPDOWN_INCREMENT_SETPOINT));
-    xbox.leftTrigger()
-        .negate()
-        .and(xbox.pov(180))
-        .onTrue(
-            IntakeCommands.incrementUpSlapdown(
-                intake, IntakeConstants.SLAPDOWN_INCREMENT_SETPOINT.unaryMinus()));
+                intake, SlapdownConstants.INCREMENT_SETPOINT.unaryMinus()));
 
     // This is the input for firing; when the shooter is added, it should be
     // triggered by this as
@@ -372,8 +360,11 @@ public class RobotContainer {
         .whileTrue(HopperCommands.setHopperMode(hopper, RunMode.REVERSE))
         .onFalse(HopperCommands.setHopperMode(hopper, RunMode.STOPPED));
 
-    climb.setDefaultCommand(
-        Commands.run(() -> climb.setSpeed(MathUtil.applyDeadband(xbox.getLeftY(), 0.1)), climb));
+    outtake.setDefaultCommand(
+        outtake.run(() -> outtake.setSpeed(JoystickUtil.applyDeadband(-xbox.getLeftX()))));
+
+    // climb.setDefaultCommand(
+    //     Commands.run(() -> climb.setSpeed(MathUtil.applyDeadband(xbox.getLeftY(), 0.1)), climb));
   }
 
   private Command rumbleController(

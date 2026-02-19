@@ -1,97 +1,98 @@
 package frc.robot.subsystems.hopper;
 
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RobotType;
 import frc.robot.subsystems.hopper.HopperConstants.RunMode;
+import frc.robot.utility.tunable.TunableNumbers.TunablePID;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Hopper extends SubsystemBase {
   /* IO layers */
-  private final HopperMotorIO feeder;
-  private final HopperMotorIO lifter;
+  private final HopperMotorIO feederIO;
+  private final HopperMotorIO lifterIO;
 
   /* Loggable inputs */
   private final HopperMotorIOInputsAutoLogged feederInputs = new HopperMotorIOInputsAutoLogged();
   private final HopperMotorIOInputsAutoLogged lifterInputs = new HopperMotorIOInputsAutoLogged();
 
-  /* Feedforward models */
-  private final SimpleMotorFeedforward feederFF;
-  private final SimpleMotorFeedforward lifterFF;
+  private final Alert feederDisconnectedAlert =
+      new Alert("Hardware error detected on feeder.", AlertType.kError);
+  private final Alert lifterMotorDisconnectedAlert =
+      new Alert("Hardware error detected lifter.", AlertType.kError);
+
+  private final TunablePID feederPidConfig =
+      new TunablePID(getName() + "/FeederPID", HopperConstants.FEEDER_PID);
+  private final TunablePID lifterPidConfig =
+      new TunablePID(getName() + "/LifterPID", HopperConstants.LIFTER_PID);
+
+  /* Mechanism visualization */
+  private final HopperVisualizer measuredVisualizer;
+  private final HopperVisualizer setpointVisualizer;
 
   /* Run mode storage */
   private HopperConstants.RunMode runMode = RunMode.STOPPED;
 
-  /* Mechanism visualization */
-  private final HopperVisualizer visualizer;
+  private double setpointFeederRPM;
+  private double setpointLifterRPM;
 
   public Hopper(HopperMotorIO feederIO, HopperMotorIO lifterIO) {
-    // Set IO layers
-    feeder = feederIO;
-    lifter = lifterIO;
+    this.feederIO = feederIO;
+    this.lifterIO = lifterIO;
 
-    // Configure feedforward models
-    feederFF =
-        new SimpleMotorFeedforward(
-            HopperConstants.FEEDER_FF.kS(),
-            HopperConstants.FEEDER_FF.kV(),
-            HopperConstants.FEEDER_FF.kA());
-    lifterFF =
-        new SimpleMotorFeedforward(
-            HopperConstants.LIFTER_FF.kS(),
-            HopperConstants.LIFTER_FF.kV(),
-            HopperConstants.LIFTER_FF.kA());
+    feederIO.setPID(HopperConstants.FEEDER_PID);
+    lifterIO.setPID(HopperConstants.LIFTER_PID);
 
-    // Apply PID constants
-    feeder.configurePID(
-        HopperConstants.FEEDER_PID.kP(),
-        HopperConstants.FEEDER_PID.kI(),
-        HopperConstants.FEEDER_PID.kD());
-    lifter.configurePID(
-        HopperConstants.LIFTER_PID.kP(),
-        HopperConstants.LIFTER_PID.kI(),
-        HopperConstants.LIFTER_PID.kD());
-
-    visualizer = new HopperVisualizer(Color.kGray, Color.kGreen);
+    measuredVisualizer = new HopperVisualizer(getName() + "/Visuization/Measured", Color.kRed);
+    setpointVisualizer = new HopperVisualizer(getName() + "/Visuization/Setpoint", Color.kBlue);
   }
 
   @Override
   public void periodic() {
-    // Update and log inputs
-    feeder.updateInputs(feederInputs);
-    lifter.updateInputs(lifterInputs);
-    Logger.processInputs("Hopper/feeder", feederInputs);
-    Logger.processInputs("Hopper/lifter", lifterInputs);
+    feederIO.updateInputs(feederInputs);
+    lifterIO.updateInputs(lifterInputs);
 
-    // Update and log mechanisms
-    visualizer.think(feederInputs, lifterInputs);
+    Logger.processInputs(getName() + "/Feeder", feederInputs);
+    Logger.processInputs(getName() + "/Lifter", lifterInputs);
+
+    feederPidConfig.ifChanged(hashCode(), feederIO::setPID);
+    lifterPidConfig.ifChanged(hashCode(), lifterIO::setPID);
+
+    measuredVisualizer.update(getfeederVelocityRPM(), getlifterVelocityRPM());
+    setpointVisualizer.update(setpointFeederRPM, setpointLifterRPM);
+
+    feederDisconnectedAlert.set(!feederInputs.motorConnected);
+    lifterMotorDisconnectedAlert.set(!lifterInputs.motorConnected);
   }
 
   private void runfeederAtVelocity(double velocityRPM) {
     double velocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(velocityRPM);
-    feeder.setVelocity(velocityRadPerSec, feederFF.calculate(velocityRadPerSec));
+    feederIO.setVelocity(velocityRadPerSec, 0);
 
-    Logger.recordOutput("Hopper/feeder/SetpointRPM", velocityRPM);
+    setpointFeederRPM = velocityRPM;
+    Logger.recordOutput(getName() + "/Feeder/SetpointRPM", velocityRPM);
   }
 
   private void runlifterAtVelocity(double velocityRPM) {
     double velocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(velocityRPM);
-    lifter.setVelocity(velocityRadPerSec, lifterFF.calculate(velocityRadPerSec));
+    lifterIO.setVelocity(velocityRadPerSec, 0);
 
-    Logger.recordOutput("Hopper/lifter/SetpointRPM", velocityRPM);
+    setpointLifterRPM = velocityRPM;
+    Logger.recordOutput(getName() + "/Lifter/SetpointRPM", velocityRPM);
   }
 
   public void stopfeeder() {
     runfeederAtVelocity(0);
-    feeder.stop();
+    feederIO.stop();
   }
 
   public void stoplifter() {
     runlifterAtVelocity(0);
-    lifter.stop();
+    lifterIO.stop();
   }
 
   public void stopAll() {
@@ -134,6 +135,13 @@ public class Hopper extends SubsystemBase {
 
   public static Hopper create(RobotType robotType) {
     switch (robotType) {
+      case REBUILT_2026:
+        return new Hopper(
+            new HopperMotorIOSparkMax(
+                HopperConstants.FEEDER_CAN_ID, HopperConstants.FEEDER_GEAR_RATIO),
+            new HopperMotorIOSparkMax(
+                HopperConstants.LIFTER_CAN_ID, HopperConstants.LIFTER_GEAR_RATIO));
+
       case SIM_BOT:
         return new Hopper(
             new HopperMotorIOSim(HopperConstants.FEEDER_GEAR_RATIO),

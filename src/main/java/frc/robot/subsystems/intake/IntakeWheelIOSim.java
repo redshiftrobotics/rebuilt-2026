@@ -4,6 +4,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.Constants;
+import frc.robot.subsystems.intake.IntakeConstants.IntakeWheelConstants;
 
 public class IntakeWheelIOSim implements IntakeWheelIO {
   private final DCMotorSim sim;
@@ -13,8 +14,7 @@ public class IntakeWheelIOSim implements IntakeWheelIO {
     motor = DCMotor.getNEO(1);
     sim =
         new DCMotorSim(
-            LinearSystemId.createDCMotorSystem(
-                motor, 0.004, IntakeConstants.INTAKE_WHEEL_GEAR_RATIO),
+            LinearSystemId.createDCMotorSystem(motor, 0.00004, IntakeWheelConstants.GEAR_RATIO),
             motor);
   }
 
@@ -25,13 +25,13 @@ public class IntakeWheelIOSim implements IntakeWheelIO {
     inputs.motorConnected = true;
     inputs.positionRad = sim.getAngularPositionRad();
     inputs.velocityRadPerSec = sim.getAngularVelocityRadPerSec();
-    inputs.appliedVolts = new double[] {sim.getInputVoltage()};
-    inputs.supplyCurrentAmps = new double[] {sim.getCurrentDrawAmps()};
+    inputs.appliedVolts = sim.getInputVoltage();
+    inputs.supplyCurrentAmps = sim.getCurrentDrawAmps();
   }
 
   @Override
   public void setSpeed(double speed) {
-    sim.setInput(speed);
+    sim.setInputVoltage(speed);
   }
 
   @Override
