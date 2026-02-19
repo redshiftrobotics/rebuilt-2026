@@ -8,12 +8,10 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.util.Units;
-import frc.robot.Robot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.controllers.DriveRotationController;
 import frc.robot.utility.AllianceMirrorUtil;
-import frc.robot.utility.tunable.TunableNumber;
-import frc.robot.utility.tunable.TunableNumberGroup;
 
 /**
  * A mutable container for drive input values. This is a simple data class that stores linear
@@ -21,16 +19,13 @@ import frc.robot.utility.tunable.TunableNumberGroup;
  */
 public class DriveInput {
 
-  private static final TunableNumberGroup tunables = new TunableNumberGroup("DriveInput/");
-
   public static final double JOYSTICK_DEADBAND = 0.15;
   public static final double ANGLE_DEADBAND = 0.8;
 
-  public static final double LINEAR_VELOCITY_EXPONENT = 1.5;
-  public static final double ANGULAR_VELOCITY_EXPONENT = 1.5;
+  public static final double LOCUST_ANGLE_DEADBAND = 0.23;
 
-  public static final TunableNumber SKEW_COMPENSATION_SCALAR =
-      tunables.number("skewCompScalar", -0.03);
+  public static final double LINEAR_VELOCITY_EXPONENT = 1.75;
+  public static final double ANGULAR_VELOCITY_EXPONENT = 2;
 
   private final Drive drive;
 
@@ -55,19 +50,6 @@ public class DriveInput {
 
     if (headingTargeted) {
       chassisSpeeds.omegaRadiansPerSecond = headingController.calculate();
-    }
-
-    // https://github.com/FRCTeam2910/2025CompetitionRobot-Public/blob/main/src/main/java/org/frc2910/robot/subsystems/drive/SwerveSubsystem.java#L381
-    if (SKEW_COMPENSATION_SCALAR.get() != 0 && Robot.isReal()) {
-      Rotation2d skewCompensationFactor =
-          Rotation2d.fromRadians(
-              drive.getRobotSpeeds().omegaRadiansPerSecond * SKEW_COMPENSATION_SCALAR.get());
-
-      chassisSpeeds =
-          ChassisSpeeds.fromRobotRelativeSpeeds(
-              ChassisSpeeds.fromFieldRelativeSpeeds(
-                  chassisSpeeds, drive.getRobotPose().getRotation()),
-              drive.getRobotPose().getRotation().plus(skewCompensationFactor));
     }
 
     if (fieldRelative) {
@@ -176,6 +158,31 @@ public class DriveInput {
     }
 
     return headingTarget(translation.getAngle(), true);
+  }
+
+  /**
+   * Tries to aim the drive in the direction of linear motion. Scales linear velocity to help with
+   * this.
+   *
+   * @return This DriveInput for chaining
+   */
+  public DriveInput locust() {
+
+    Rotation2d targetAngle = linearVelocity.getAngle();
+
+    if (linearVelocity.getNorm() < LOCUST_ANGLE_DEADBAND) {
+      return headingTarget(null);
+    }
+
+    // If already facing the right way: cosine = 1, scale = 1
+    // If sideways: cosine = 0, scale = 0
+    // If backwards: cosine = -1, scale = -0.05
+    double cosign = targetAngle.minus(drive.getRobotPose().getRotation()).getCos();
+
+    double scale = Math.max(cosign, cosign * 0.05);
+    // double scale = Math.max(cosign - min, cosign * min) + min;
+
+    return coefficients(scale, 1).headingTarget(targetAngle, true);
   }
 
   /**
