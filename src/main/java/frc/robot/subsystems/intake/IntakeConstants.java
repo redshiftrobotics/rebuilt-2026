@@ -5,7 +5,7 @@ import frc.robot.Constants;
 import frc.robot.utility.records.PIDConfig;
 
 public class IntakeConstants {
-  public static final double INTAKE_WHEEL_SPEED = .5;
+  public static final double INTAKE_WHEEL_SPEED = -1;
   public static final boolean INTAKE_WHEEL_INVERTED = false;
   public static final double INTAKE_WHEEL_GEAR_RATIO = 1;
 
