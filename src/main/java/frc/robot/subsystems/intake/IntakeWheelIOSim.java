@@ -13,7 +13,8 @@ public class IntakeWheelIOSim implements IntakeWheelIO {
     motor = DCMotor.getNEO(1);
     sim =
         new DCMotorSim(
-            LinearSystemId.createDCMotorSystem(motor, 0.004, IntakeConstants.WHEEL_GEAR_RATIO),
+            LinearSystemId.createDCMotorSystem(
+                motor, 0.004, IntakeConstants.INTAKE_WHEEL_GEAR_RATIO),
             motor);
   }
 

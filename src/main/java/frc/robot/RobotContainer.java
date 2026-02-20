@@ -161,8 +161,8 @@ public class RobotContainer {
     DriverDashboard.wheelStatesSupplier = drive::getWheelSpeeds;
     DriverDashboard.hasVisionEstimate = vision::hasSuccessfulEstimate;
     DriverDashboard.currentHopperRunModeNameSupplier = () -> hopper.getCurrentRunMode().toString();
-    DriverDashboard.hopperBubblerVelocitySupplier = hopper::getBubblerCharacterizationVelocity;
-    DriverDashboard.hopperFeederVelocitySupplier = hopper::getFeederCharacterizationVelocity;
+    DriverDashboard.hopperLifterVelocitySupplier = hopper::getFeederCharacterizationVelocity;
+    DriverDashboard.hopperLifterVelocitySupplier = hopper::getLifterCharacterizationVelocity;
 
     DriverDashboard.currentDriveModeName =
         () -> drive.getCurrentCommand() == null ? "Idle" : drive.getCurrentCommand().getName();

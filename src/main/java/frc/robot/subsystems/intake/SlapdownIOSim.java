@@ -44,6 +44,8 @@ public class SlapdownIOSim implements SlapdownIO {
     inputs.encodersAligned = true;
     inputs.positionRad = sim.getAngularPositionRad();
     inputs.velocityRadPerSec = sim.getAngularVelocityRadPerSec();
+    inputs.absolutePositionRad = sim.getAngularPositionRad();
+    inputs.absoluteVelocityRadPerSec = sim.getAngularVelocityRadPerSec();
     inputs.appliedVolts = new double[] {sim.getInputVoltage()};
     inputs.supplyCurrentAmps = new double[] {sim.getCurrentDrawAmps()};
   }
