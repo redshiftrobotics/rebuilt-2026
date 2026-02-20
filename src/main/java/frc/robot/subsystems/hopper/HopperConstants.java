@@ -3,17 +3,19 @@ package frc.robot.subsystems.hopper;
 import frc.robot.Constants;
 import frc.robot.utility.records.PIDConfig;
 
+/*
+ * All constants related to the hopper (FEEDER and LIFTER) should go here.
+ * Don't make a separate file for the components.
+ */
 public class HopperConstants {
-  /*
-   * All constants related to the hopper (FEEDER and LIFTER) should go here.
-   * Don't make a separate file for the components.
-   */
-
-  // FEEDER motor CAN ID
   public static final int FEEDER_CAN_ID = 17;
+  public static final int LIFTER_CAN_ID = 13;
 
-  // LIFTER motor CAN ID
-  public static final int LIFTER_CAN_ID = 0; // TODO
+  public static final double FEEDER_GEAR_RATIO = (1.0 / 3.0) * (1.0 / 3.0);
+  public static final double LIFTER_GEAR_RATIO = (1.0 / 3.0) * (1.0 / 3.0) * (1.0 / 3.0);
+
+  public static final boolean FEEDER_INVERTED = true;
+  public static final boolean LIFTER_INVERTED = true;
 
   // Hopper run mode
   // TODO: Set real speeds
@@ -56,18 +58,11 @@ public class HopperConstants {
   // PID constants
   // TODO: Add real values
   public static final PIDConfig FEEDER_PID =
-      Constants.isSimulation()
-          ? new PIDConfig(0.85, 0.0, 0.0)
-          : new PIDConfig(1, 0.0, 0.0);
+      Constants.isSimulation() ? new PIDConfig(0.85, 0.0, 0.0) : new PIDConfig(1, 0.0, 0.0);
   public static final PIDConfig LIFTER_PID =
       switch (Constants.getRobot()) {
         case PRESEASON_2026 -> new PIDConfig(0.0, 0.0, 0.0);
         case SIM_BOT -> new PIDConfig(0.85, 0.0, 0.0);
         default -> new PIDConfig(1.0, 0.0, 0.0);
       };
-
-  // Gear ratios
-  // TODO: Add real values
-  public static final double FEEDER_GEAR_RATIO = 1.0;
-  public static final double LIFTER_GEAR_RATIO = 1.0;
 }
