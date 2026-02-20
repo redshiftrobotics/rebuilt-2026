@@ -8,7 +8,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.controllers.DriveRotationController;
 import frc.robot.utility.AllianceMirrorUtil;
@@ -20,12 +19,12 @@ import frc.robot.utility.AllianceMirrorUtil;
 public class DriveInput {
 
   public static final double JOYSTICK_DEADBAND = 0.15;
-  public static final double ANGLE_DEADBAND = 0.8;
-
-  public static final double LOCUST_ANGLE_DEADBAND = 0.23;
+  public static final double JOYSTICK_ANGLE_DEADBAND = 0.8;
 
   public static final double LINEAR_VELOCITY_EXPONENT = 1.75;
   public static final double ANGULAR_VELOCITY_EXPONENT = 2;
+
+  public static final double LOCUST_ANGLE_DEADBAND = 0.23;
 
   private final Drive drive;
 
@@ -50,6 +49,9 @@ public class DriveInput {
 
     if (headingTargeted) {
       chassisSpeeds.omegaRadiansPerSecond = headingController.calculate();
+      if (headingController.atGoal()) {
+        chassisSpeeds.omegaRadiansPerSecond = 0;
+      }
     }
 
     if (fieldRelative) {
@@ -153,7 +155,7 @@ public class DriveInput {
   public DriveInput headingStick(double x, double y) {
     Translation2d translation = new Translation2d(x, y);
 
-    if (translation.getNorm() < ANGLE_DEADBAND) {
+    if (translation.getNorm() < JOYSTICK_ANGLE_DEADBAND) {
       return headingTarget(null);
     }
 
