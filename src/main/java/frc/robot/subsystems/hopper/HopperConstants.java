@@ -1,7 +1,6 @@
 package frc.robot.subsystems.hopper;
 
 import frc.robot.Constants;
-import frc.robot.utility.records.FeedForwardConfigRecord;
 import frc.robot.utility.records.PIDConfig;
 
 public class HopperConstants {
@@ -56,40 +55,19 @@ public class HopperConstants {
 
   // PID constants
   // TODO: Add real values
-  public static final PIDConfig FEEDER_PID = switch (Constants.getRobot()) {
-    case PRESEASON_2026 -> new PIDConfig(0.0, 0.0, 0.0);
-    case SIM_BOT -> new PIDConfig(0.85, 0.0, 0.0);
-    default -> new PIDConfig(1.0, 0.0, 0.0);
-  };
-  public static final PIDConfig LIFTER_PID = switch (Constants.getRobot()) {
-    case PRESEASON_2026 -> new PIDConfig(0.0, 0.0, 0.0);
-    case SIM_BOT -> new PIDConfig(0.85, 0.0, 0.0);
-    default -> new PIDConfig(1.0, 0.0, 0.0);
-  };
-
-  // Feedforward constants
-  // TODO: Add real values
-  public static final FeedForwardConfigRecord FEEDER_FF = switch (Constants.getRobot()) {
-    case PRESEASON_2026 -> new FeedForwardConfigRecord(0.0, 0.0, 0.0);
-    case SIM_BOT -> new FeedForwardConfigRecord(0.0, 0.0, 0.0);
-    default -> new FeedForwardConfigRecord(0.0, 0.0, 0.0);
-  };
-  public static final FeedForwardConfigRecord LIFTER_FF = switch (Constants.getRobot()) {
-    case PRESEASON_2026 -> new FeedForwardConfigRecord(0.0, 0.0, 0.0);
-    case SIM_BOT -> new FeedForwardConfigRecord(0.0, 0.0, 0.0);
-    default -> new FeedForwardConfigRecord(0.0, 0.0, 0.0);
-  };
+  public static final PIDConfig FEEDER_PID =
+      Constants.isSimulation()
+          ? new PIDConfig(0.85, 0.0, 0.0)
+          : new PIDConfig(1, 0.0, 0.0);
+  public static final PIDConfig LIFTER_PID =
+      switch (Constants.getRobot()) {
+        case PRESEASON_2026 -> new PIDConfig(0.0, 0.0, 0.0);
+        case SIM_BOT -> new PIDConfig(0.85, 0.0, 0.0);
+        default -> new PIDConfig(1.0, 0.0, 0.0);
+      };
 
   // Gear ratios
-  // TODO: Add real values (thank you design team)
-  public static final double FEEDER_GEAR_RATIO = switch (Constants.getRobot()) {
-    case PRESEASON_2026 -> 1.0;
-    case SIM_BOT -> 1.0;
-    default -> 1.0;
-  };
-  public static final double LIFTER_GEAR_RATIO = switch (Constants.getRobot()) {
-    case PRESEASON_2026 -> 1.0;
-    case SIM_BOT -> 1.0;
-    default -> 1.0;
-  };
+  // TODO: Add real values
+  public static final double FEEDER_GEAR_RATIO = 1.0;
+  public static final double LIFTER_GEAR_RATIO = 1.0;
 }

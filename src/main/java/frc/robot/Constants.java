@@ -75,6 +75,10 @@ public final class Constants {
     return DEMO_MODE && !DriverStation.isFMSAttached();
   }
 
+  public static boolean isSimulation() {
+    return getRobot() == RobotType.SIM_BOT;
+  }
+
   public enum Mode {
     /** Running on a real robot. */
     REAL,
