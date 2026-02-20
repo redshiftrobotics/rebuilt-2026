@@ -16,6 +16,9 @@ public class HopperConstants {
   public static final double FEEDER_GEAR_RATIO = (1.0 / 3.0) * (1.0 / 3.0);
   public static final double LIFTER_GEAR_RATIO = (1.0 / 3.0) * (1.0 / 3.0) * (1.0 / 3.0);
 
+  public static final boolean FEEDER_INVERTED = true;
+  public static final boolean LIFTER_INVERTED = true;
+
   // Hopper run mode
   // TODO: Set real speeds
   public static enum RunMode {

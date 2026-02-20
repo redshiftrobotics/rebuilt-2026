@@ -9,8 +9,8 @@ public class IntakeConstants {
   public class IntakeWheelConstants {
     public static final int CAN_ID = 5;
     public static final double GEAR_RATIO = 1.0 / 3.0;
-    public static final boolean INVERTED = false;
-    public static final boolean BRAKE_MODE = true;
+    public static final boolean INVERTED = true;
+    public static final boolean BRAKE_MODE = false;
 
     public static final double SPEED_INTAKING = 1.0;
   }
@@ -18,12 +18,14 @@ public class IntakeConstants {
   public class SlapdownConstants {
     public static final int CAN_ID = 14;
     public static final double GEAR_RATIO = (1.0 / 4.0) * (1.0 / 4.0) * (1.0 / 2.0);
-    public static final boolean INVERTED = false;
+    public static final boolean MOTOR_INVERTED = false;
 
-    public static final Rotation2d ABSOLUTE_ENCODER_ZERO = Rotation2d.fromRotations(0);
+    public static final Rotation2d ABSOLUTE_ENCODER_ZERO =
+        Rotation2d.fromRadians(3.414031536391377);
+    public static final boolean ABSOLUTE_ENCODER_INVERTED = true;
 
-    public static final Rotation2d DOWN_SETPOINT = Rotation2d.fromDegrees(0);
-    public static final Rotation2d UP_SETPOINT = Rotation2d.fromDegrees(157);
+    public static final Rotation2d DOWN_SETPOINT = Rotation2d.fromDegrees(10);
+    public static final Rotation2d UP_SETPOINT = Rotation2d.fromDegrees(90);
     public static final Rotation2d INCREMENT_SETPOINT = Rotation2d.fromDegrees(1);
 
     public static final PIDConfig PID =

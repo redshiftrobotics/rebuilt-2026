@@ -1,6 +1,5 @@
 package frc.robot;
 
-import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -120,17 +119,18 @@ public class RobotContainer {
 
     // Can also use AutoBuilder.buildAutoChooser(); instead of SendableChooser to
     // auto populate
-    registerNamedCommands();
-    autoChooser =
-        new LoggedDashboardChooser<>(
-            "Auto Chooser",
-            Constants.DEVELOPMENT_MODE
-                ? AutoBuilder.buildAutoChooser()
-                : new SendableChooser<Command>());
+    // registerNamedCommands();
+    // autoChooser =
+    //     new LoggedDashboardChooser<>(
+    //         "Auto Chooser",
+    //         Constants.DEVELOPMENT_MODE
+    //             ? AutoBuilder.buildAutoChooser()
+    //             : new SendableChooser<Command>());
+    autoChooser = new LoggedDashboardChooser<>("Auto Chooser", new SendableChooser<Command>());
     autoChooser.addDefaultOption("None", Commands.none());
 
     // Configure autos
-    configureAutos(autoChooser);
+    // configureAutos(autoChooser);
 
     leds.setDefaultCommand(
         leds.runColor(

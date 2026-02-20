@@ -11,25 +11,19 @@ import frc.robot.Constants.RobotType;
 import org.littletonrobotics.junction.Logger;
 
 public class Outtake extends SubsystemBase {
-  private final TalonFX motor1;
-  private final TalonFX motor2;
-  private final TalonFX motor3;
-
   private final TalonFX[] motors;
-  private final boolean[] inverts = {false, false, false};
+  private final boolean[] inverts = {false, false, true};
 
   public Outtake(RobotType robotType) {
 
     if (robotType != RobotType.REBUILT_2026) {
-      motor1 = null;
-      motor2 = null;
-      motor3 = null;
       motors = new TalonFX[] {};
     } else {
-      motor1 = new TalonFX(0);
-      motor2 = new TalonFX(0);
-      motor3 = new TalonFX(0);
-      motors = new TalonFX[] {motor1, motor2, motor3};
+      motors = new TalonFX[] {
+        new TalonFX(3), // left
+        new TalonFX(4), // middle
+        new TalonFX(15) // right
+      };
     }
 
     for (int i = 0; i < motors.length; i++) {

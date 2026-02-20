@@ -13,8 +13,10 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.intake.IntakeConstants.SlapdownConstants;
 import frc.robot.utility.SparkUtil;
 import frc.robot.utility.records.PIDConfig;
@@ -27,19 +29,21 @@ public class SlapdownIOSparkMax implements SlapdownIO {
   private final AbsoluteEncoder absoluteEncoder;
 
   private final Debouncer connectionDebouncer = new Debouncer(0.5);
+  private final Debouncer encoderIsGood = new Debouncer(0.5, DebounceType.kBoth);
 
   public SlapdownIOSparkMax() {
 
     this.motor = new SparkMax(SlapdownConstants.CAN_ID, MotorType.kBrushless);
 
-    absoluteEncoder = motor.getAbsoluteEncoder();
     relativeEncoder = motor.getEncoder();
+    absoluteEncoder = motor.getAbsoluteEncoder();
+
     pid = motor.getClosedLoopController();
 
     SparkBaseConfig config =
         new SparkMaxConfig()
             .idleMode(IdleMode.kBrake)
-            .inverted(SlapdownConstants.INVERTED)
+            .inverted(SlapdownConstants.MOTOR_INVERTED)
             .smartCurrentLimit(30)
             .voltageCompensation(12);
 
@@ -47,6 +51,11 @@ public class SlapdownIOSparkMax implements SlapdownIO {
         .encoder
         .positionConversionFactor(SlapdownConstants.GEAR_RATIO)
         .velocityConversionFactor(SlapdownConstants.GEAR_RATIO);
+
+    config
+        .absoluteEncoder
+        .inverted(SlapdownConstants.ABSOLUTE_ENCODER_INVERTED)
+        .zeroOffset(SlapdownConstants.ABSOLUTE_ENCODER_ZERO.getRotations());
 
     motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
@@ -83,18 +92,22 @@ public class SlapdownIOSparkMax implements SlapdownIO {
 
     inputs.motorConnected = connectionDebouncer.calculate(!SparkUtil.hasError());
     inputs.encodersAligned =
-        MathUtil.isNear(relativeEncoder.getVelocity(), absoluteEncoder.getPosition(), 0.1);
+        encoderIsGood.calculate(
+            MathUtil.isNear(relativeEncoder.getPosition(), absoluteEncoder.getPosition(), 0.1));
   }
 
   @Override
   public void setPID(PIDConfig pid) {
     SparkMaxConfig config = new SparkMaxConfig();
     config.closedLoop.pid(pid.kP(), pid.kI(), pid.kD());
+    SmartDashboard.putString("PIDString", "p=" + pid.kP() + " i" + pid.kI() + " d" + pid.kD());
     motor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
   }
 
   @Override
   public void setSetpoint(Rotation2d setpoint) {
+    SmartDashboard.putString("PIDString", "sp Rot=" + setpoint.getRotations());
+
     pid.setSetpoint(setpoint.getRotations(), ControlType.kPosition);
   }
 

@@ -3,10 +3,7 @@ package frc.robot.subsystems.hopper;
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
-import com.revrobotics.spark.ClosedLoopSlot;
-import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
-import com.revrobotics.spark.SparkClosedLoopController.ArbFFUnits;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig;
@@ -14,7 +11,6 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.util.Units;
-import frc.robot.subsystems.intake.IntakeConstants.SlapdownConstants;
 import frc.robot.utility.SparkUtil;
 import frc.robot.utility.records.PIDConfig;
 
@@ -26,16 +22,16 @@ public class HopperMotorIOSparkMax implements HopperMotorIO {
 
   private final Debouncer connectionDebouncer = new Debouncer(0.5);
 
-  public HopperMotorIOSparkMax(int motorID, double gearRatio) {
-    this.motor = new SparkMax(SlapdownConstants.CAN_ID, MotorType.kBrushless);
+  public HopperMotorIOSparkMax(int motorID, double gearRatio, boolean inverted) {
+    this.motor = new SparkMax(motorID, MotorType.kBrushless);
 
     encoder = motor.getEncoder();
     pid = motor.getClosedLoopController();
 
     SparkBaseConfig config =
         new SparkMaxConfig()
-            .idleMode(IdleMode.kBrake)
-            .inverted(SlapdownConstants.INVERTED)
+            .idleMode(IdleMode.kCoast)
+            .inverted(inverted)
             .smartCurrentLimit(37)
             .voltageCompensation(12);
 

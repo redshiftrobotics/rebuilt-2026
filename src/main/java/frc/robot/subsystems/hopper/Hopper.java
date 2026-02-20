@@ -138,9 +138,13 @@ public class Hopper extends SubsystemBase {
       case REBUILT_2026:
         return new Hopper(
             new HopperMotorIOSparkMax(
-                HopperConstants.FEEDER_CAN_ID, HopperConstants.FEEDER_GEAR_RATIO),
+                HopperConstants.FEEDER_CAN_ID,
+                HopperConstants.FEEDER_GEAR_RATIO,
+                HopperConstants.FEEDER_INVERTED),
             new HopperMotorIOSparkMax(
-                HopperConstants.LIFTER_CAN_ID, HopperConstants.LIFTER_GEAR_RATIO));
+                HopperConstants.LIFTER_CAN_ID,
+                HopperConstants.LIFTER_GEAR_RATIO,
+                HopperConstants.LIFTER_INVERTED));
 
       case SIM_BOT:
         return new Hopper(
