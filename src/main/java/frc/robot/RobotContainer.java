@@ -255,6 +255,11 @@ public class RobotContainer {
         .onTrue(drive.runOnce(drive::stop).withName("Cancel"))
         .onTrue(rumbleControllers(0).withTimeout(0.02));
 
+    xbox.b()
+        .debounce(1)
+        .onTrue(rumbleController(xbox, 0.3).withTimeout(0.25))
+        .whileTrue(drive.run(drive::stopUsingForwardArrangement).withName("Stop and Orient"));
+
     // Reset the gyro heading
     xbox.start()
         .debounce(0.3)
