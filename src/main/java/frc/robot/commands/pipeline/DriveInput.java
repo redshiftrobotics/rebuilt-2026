@@ -3,14 +3,15 @@ package frc.robot.commands.pipeline;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.util.Units;
-import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.controllers.DriveRotationController;
 import frc.robot.utility.AllianceMirrorUtil;
+import java.util.Optional;
 
 /**
  * A mutable container for drive input values. This is a simple data class that stores linear
@@ -24,40 +25,32 @@ public class DriveInput {
   public static final double LINEAR_VELOCITY_EXPONENT = 1.75;
   public static final double ANGULAR_VELOCITY_EXPONENT = 2;
 
-  public static final double LOCUST_ANGLE_DEADBAND = 0.23;
-
-  private final Drive drive;
-
   private Translation2d linearVelocity = Translation2d.kZero;
   private double angularVelocity = 0.0;
-  private boolean fieldRelative = true;
-  private boolean headingTargeted = false;
-  private Rotation2d headingTarget = null;
+  private Optional<Rotation2d> headingTarget = Optional.empty();
+  private boolean holdHeading = false;
 
-  public DriveInput(Drive drive) {
-    this.drive = drive;
-  }
+  private boolean fieldRelative = false;
+  private boolean locustMode = false;
 
-  public ChassisSpeeds getChassisSpeeds(DriveRotationController headingController) {
+  public ChassisSpeeds getChassisSpeeds(
+      Rotation2d robotHeading, DriveRotationController headingController) {
 
-    if (headingTarget != null) {
-      headingController.setGoal(headingTarget);
-    }
+    applyLocustMode(robotHeading);
 
     ChassisSpeeds chassisSpeeds =
         new ChassisSpeeds(linearVelocity.getX(), linearVelocity.getY(), angularVelocity);
 
-    if (headingTargeted) {
-      chassisSpeeds.omegaRadiansPerSecond = headingController.calculate();
-      if (headingController.atGoal()) {
-        chassisSpeeds.omegaRadiansPerSecond = 0;
-      }
+    headingTarget.ifPresent(headingController::setGoal);
+    if (headingTarget.isPresent() || holdHeading) {
+      double raw = headingController.calculate(); // must call calculate to update atGoal()
+      chassisSpeeds.omegaRadiansPerSecond = headingController.atGoal() ? 0 : raw;
     }
 
     if (fieldRelative) {
       chassisSpeeds =
           ChassisSpeeds.fromFieldRelativeSpeeds(
-              chassisSpeeds, AllianceMirrorUtil.apply(drive.getRobotPose().getRotation()));
+              chassisSpeeds, AllianceMirrorUtil.apply(robotHeading));
     }
 
     return chassisSpeeds;
@@ -67,7 +60,7 @@ public class DriveInput {
    * Sets the linear velocity.
    *
    * @param linearVelocity The linear velocity in meters per second
-   * @return This DriveInput for chaining
+   * @return this
    */
   public DriveInput linearVelocity(Translation2d linearVelocity) {
     this.linearVelocity = linearVelocity;
@@ -79,14 +72,14 @@ public class DriveInput {
    *
    * @param x The x-axis joystick value (-1 to 1)
    * @param y The y-axis joystick value (-1 to 1)
-   * @return This DriveInput for chaining
+   * @return this
    */
-  public DriveInput linearVelocityStick(double x, double y) {
+  public DriveInput linearVelocityStick(double x, double y, double maxSpeed) {
     Vector<N2> linearVelocityVec = VecBuilder.fill(x, y);
 
     linearVelocityVec = MathUtil.applyDeadband(linearVelocityVec, JOYSTICK_DEADBAND);
     linearVelocityVec = MathUtil.copyDirectionPow(linearVelocityVec, LINEAR_VELOCITY_EXPONENT);
-    linearVelocityVec = linearVelocityVec.times(drive.getMaxLinearSpeedMetersPerSec());
+    linearVelocityVec = linearVelocityVec.times(maxSpeed);
 
     return linearVelocity(new Translation2d(linearVelocityVec));
   }
@@ -95,11 +88,12 @@ public class DriveInput {
    * Sets the angular velocity. This clears any heading target.
    *
    * @param angularVelocity The angular velocity in radians per second
-   * @return This DriveInput for chaining
+   * @return this
    */
   public DriveInput angularVelocity(double angularVelocity) {
     this.angularVelocity = angularVelocity;
-    this.headingTargeted = false;
+    this.headingTarget = Optional.empty();
+    this.holdHeading = false;
     return this;
   }
 
@@ -107,13 +101,13 @@ public class DriveInput {
    * Sets the angular velocity based on a joystick input. This clears any heading target.
    *
    * @param omega The rotation joystick value (-1 to 1)
-   * @return This DriveInput for chaining
+   * @return this
    */
-  public DriveInput angularVelocityStick(double omega) {
+  public DriveInput angularVelocityStick(double omega, double maxSpeed) {
 
     omega = MathUtil.applyDeadband(omega, JOYSTICK_DEADBAND);
     omega = MathUtil.copyDirectionPow(omega, ANGULAR_VELOCITY_EXPONENT);
-    omega = omega * drive.getMaxAngularSpeedRadPerSec();
+    omega = omega * maxSpeed;
 
     return angularVelocity(omega);
   }
@@ -122,11 +116,21 @@ public class DriveInput {
    * Sets a heading target for the robot to face. This clears any angular velocity.
    *
    * @param headingTarget The desired heading angle, or null to clear the target
-   * @return This DriveInput for chaining
+   * @return this
    */
   public DriveInput headingTarget(Rotation2d headingTarget) {
-    this.headingTarget = headingTarget;
-    this.headingTargeted = true;
+    this.headingTarget = Optional.of(headingTarget);
+    this.angularVelocity = 0.0;
+    return this;
+  }
+
+  /**
+   * Clears the heading target and stops any angular velocity.
+   *
+   * @return this
+   */
+  public DriveInput holdHeading() {
+    this.holdHeading = true;
     return this;
   }
 
@@ -135,10 +139,10 @@ public class DriveInput {
    *
    * @param headingTarget The desired heading angle, or null to clear the target
    * @param allianceRelative Whether the heading target is relative to the alliance color
-   * @return This DriveInput for chaining
+   * @return this
    */
   public DriveInput headingTarget(Rotation2d headingTarget, boolean allianceRelative) {
-    if (allianceRelative && headingTarget != null) {
+    if (allianceRelative) {
       headingTarget = AllianceMirrorUtil.apply(headingTarget);
     }
     return headingTarget(headingTarget);
@@ -150,61 +154,43 @@ public class DriveInput {
    *
    * @param x The x-axis joystick value (-1 to 1)
    * @param y The y-axis joystick value (-1 to 1)
-   * @return This DriveInput for chaining
+   * @return this
    */
   public DriveInput headingStick(double x, double y) {
     Translation2d translation = new Translation2d(x, y);
 
     if (translation.getNorm() < JOYSTICK_ANGLE_DEADBAND) {
-      return headingTarget(null);
+      return holdHeading();
     }
 
     return headingTarget(translation.getAngle(), true);
   }
 
   /**
-   * Tries to aim the drive in the direction of linear motion. Scales linear velocity to help with
-   * this.
-   *
-   * @return This DriveInput for chaining
-   */
-  public DriveInput locust() {
-
-    Rotation2d targetAngle = linearVelocity.getAngle();
-
-    if (linearVelocity.getNorm() < LOCUST_ANGLE_DEADBAND) {
-      return headingTarget(null);
-    }
-
-    // If already facing the right way: cosine = 1, scale = 1
-    // If sideways: cosine = 0, scale = 0
-    // If backwards: cosine = -1, scale = -0.05
-    double cosign = targetAngle.minus(drive.getRobotPose().getRotation()).getCos();
-
-    double scale = Math.max(cosign, cosign * 0.05);
-    // double scale = Math.max(cosign - min, cosign * min) + min;
-
-    return coefficients(scale, 1).headingTarget(targetAngle, true);
-  }
-
-  /**
    * Sets a heading target to face a specific point on the field.
    *
    * @param point The point to face
-   * @return This DriveInput for chaining
+   * @return this
    */
-  public DriveInput facingPoint(Translation2d point) {
-    if (point == null) {
-      return this;
-    }
-
-    Translation2d diff = point.minus(drive.getRobotPose().getTranslation());
+  public DriveInput facingPoint(Translation2d point, Pose2d robotPose) {
+    Translation2d diff = point.minus(robotPose.getTranslation());
 
     if (diff.getNorm() < Units.inchesToMeters(1)) {
-      return this;
+      return angularVelocity(0);
     }
 
     return headingTarget(diff.getAngle());
+  }
+
+  /**
+   * Tries to aim the drive in the direction of linear motion. Scales linear velocity to help with
+   * this.
+   *
+   * @return this
+   */
+  public DriveInput locustMode() {
+    this.locustMode = true;
+    return this;
   }
 
   /**
@@ -228,15 +214,56 @@ public class DriveInput {
   }
 
   /**
+   * Scales the linear velocities by the given coefficients.
+   *
+   * @param The coefficient to scale the linear velocity
+   * @return this
+   */
+  public DriveInput linearCoefficient(double scaler) {
+    linearVelocity = linearVelocity.times(scaler);
+    return this;
+  }
+
+  /**
    * Scales the linear and angular velocities by the given coefficients.
    *
-   * @param linearCoeff The coefficient to scale the linear velocity
-   * @param angularCoeff The coefficient to scale the angular velocity
-   * @return This DriveInput for chaining
+   * @param scaler The coefficient to scale the angular velocity
+   * @return this
    */
-  public DriveInput coefficients(double linearCoeff, double angularCoeff) {
-    this.linearVelocity = this.linearVelocity.times(linearCoeff);
-    this.angularVelocity *= angularCoeff;
+  public DriveInput angularCoefficient(double scaler) {
+    angularVelocity = angularVelocity * scaler;
     return this;
+  }
+
+  // --- Mode Specific Methods ---
+
+  private DriveInput applyLocustMode(Rotation2d robotHeading) {
+
+    if (!locustMode) {
+      return this;
+    }
+
+    if (!fieldRelative) {
+      Translation2d translation = linearVelocity;
+      return linearVelocity(new Translation2d(translation.getNorm(), 0))
+          .angularVelocity(translation.getY());
+    }
+
+    Rotation2d targetAngle = linearVelocity.getAngle();
+
+    if (linearVelocity.getNorm() < 0.25) {
+      return angularVelocity(0);
+    }
+
+    // If already facing the right way: cosine = 1, scale = 1
+    // If sideways: cosine = 0, scale = 0
+    // If backwards: cosine = -1, scale = -0.05
+    double cosign = targetAngle.minus(robotHeading).getCos();
+
+    double scale = Math.max(cosign, cosign * 0.05);
+
+    linearVelocity = linearVelocity.times(scale);
+
+    return headingTarget(targetAngle);
   }
 }

@@ -198,9 +198,10 @@ public class RobotContainer {
   private void configureDriverControllerBindings(CommandXboxController xbox) {
     Supplier<DriveInput> baseDrive =
         () ->
-            new DriveInput(drive)
-                .linearVelocityStick(-xbox.getLeftY(), -xbox.getLeftX())
-                .angularVelocityStick(-xbox.getRightX())
+            new DriveInput()
+                .linearVelocityStick(
+                    -xbox.getLeftY(), -xbox.getLeftX(), drive.getMaxLinearSpeedMetersPerSec())
+                .angularVelocityStick(-xbox.getRightX(), drive.getMaxAngularSpeedRadPerSec())
                 .fieldRelativeEnabled();
 
     final DriveInputPipeline pipeline = new DriveInputPipeline(drive, baseDrive);
@@ -228,18 +229,18 @@ public class RobotContainer {
 
     // Secondary drive command, right stick will be used to control target angular
     // position instead of angular velocity
-    // xbox.rightBumper()
-    //     .whileTrue(
-    //         pipeline.runLayer(
-    //             "Heading Controlled",
-    //             input -> input.headingStick(-xbox.getRightY(), -xbox.getRightX())));
+    xbox.leftBumper()
+        .whileTrue(
+            pipeline.runLayer(
+                "Heading Controlled",
+                input -> input.headingStick(-xbox.getRightY(), -xbox.getRightX())));
 
     // Secondary drive command, use driving stick to control angle as well
-    xbox.rightBumper().whileTrue(pipeline.runLayer("Locust", DriveInput::locust));
+    xbox.rightBumper().whileTrue(pipeline.runLayer("Locust", DriveInput::locustMode));
 
     // Slow mode, reduce translation and rotation speeds for fine control
-    xbox.leftBumper()
-        .whileTrue(pipeline.runLayer("Slow Mode", input -> input.coefficients(0.3, 0.3)));
+    // xbox.leftBumper()
+    //     .whileTrue(pipeline.runLayer("Slow Mode", input -> input.coefficients(0.3, 0.3)));
 
     // Cause the robot to resist movement by forming an X shape with the swerve
     // modules. Helps prevent getting pushed around
@@ -278,7 +279,10 @@ public class RobotContainer {
               String.format(
                   "Strafe %.0f", MathUtil.inputModulus(rotation.getDegrees(), -180, +180)),
               input ->
-                  input.linearVelocity(translation).fieldRelativeDisabled().coefficients(1, 0.3));
+                  input
+                      .linearVelocity(translation)
+                      .fieldRelativeDisabled()
+                      .angularCoefficient(0.3));
       xbox.pov(pov).whileTrue(activateLayer);
     }
   }
