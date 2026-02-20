@@ -19,11 +19,12 @@ public class Outtake extends SubsystemBase {
     if (robotType != RobotType.REBUILT_2026) {
       motors = new TalonFX[] {};
     } else {
-      motors = new TalonFX[] {
-        new TalonFX(3), // left
-        new TalonFX(4), // middle
-        new TalonFX(15) // right
-      };
+      motors =
+          new TalonFX[] {
+            new TalonFX(3), // left
+            new TalonFX(4), // middle
+            new TalonFX(15) // right
+          };
     }
 
     for (int i = 0; i < motors.length; i++) {
