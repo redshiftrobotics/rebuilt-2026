@@ -1,7 +1,8 @@
-package frc.robot.subsystems.drive.controllers;
+package frc.robot.commands.pipeline;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.controllers.DriveRotationController;
 import frc.robot.utility.VirtualSubsystem;
 import java.util.function.Supplier;
 
