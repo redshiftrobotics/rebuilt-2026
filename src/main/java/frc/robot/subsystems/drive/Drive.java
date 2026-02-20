@@ -32,7 +32,6 @@ import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.Constants.RobotType;
 import frc.robot.DriverDashboard;
-import frc.robot.generated.CompetitionConstants;
 import frc.robot.generated.MetalbotTwoConstants;
 import frc.robot.generated.PreseasonConstants;
 import frc.robot.utility.AllianceMirrorUtil;
@@ -510,13 +509,13 @@ public class Drive extends SubsystemBase {
 
   public static Drive create(RobotType robotType) {
     switch (robotType) {
-      case REBUILT_2026:
-        return new Drive(
-            new GyroIOPigeon2(DriveConstants.GYRO_CAN_ID, true),
-            new ModuleIOTalonFX(CompetitionConstants.FrontLeft),
-            new ModuleIOTalonFX(CompetitionConstants.FrontRight),
-            new ModuleIOTalonFX(CompetitionConstants.BackLeft),
-            new ModuleIOTalonFX(CompetitionConstants.BackRight));
+        // case REBUILT_2026:
+        //   return new Drive(
+        //       new GyroIOPigeon2(DriveConstants.GYRO_CAN_ID, true),
+        //       new ModuleIOTalonFX(CompetitionConstants.FrontLeft),
+        //       new ModuleIOTalonFX(CompetitionConstants.FrontRight),
+        //       new ModuleIOTalonFX(CompetitionConstants.BackLeft),
+        //       new ModuleIOTalonFX(CompetitionConstants.BackRight));
       case METALBOT_2:
         return new Drive(
             new GyroIOPigeon2(DriveConstants.GYRO_CAN_ID, true),
@@ -531,16 +530,14 @@ public class Drive extends SubsystemBase {
             new ModuleIOTalonFX(PreseasonConstants.FrontRight),
             new ModuleIOTalonFX(PreseasonConstants.BackLeft),
             new ModuleIOTalonFX(PreseasonConstants.BackRight));
-      case CHASSIS_CANNON:
-      case WOOD_BOT_2026:
-      case REEFSCAPE_2025:
+      case CHASSIS_CANNON, WOOD_BOT_2026, REEFSCAPE_2025:
         return new Drive(
             new GyroIOPigeon2(DriveConstants.GYRO_CAN_ID, false),
             new ModuleIOSparkMax(ModuleConstants.FRONT_LEFT_MODULE_CONFIG),
             new ModuleIOSparkMax(ModuleConstants.FRONT_RIGHT_MODULE_CONFIG),
             new ModuleIOSparkMax(ModuleConstants.BACK_LEFT_MODULE_CONFIG),
             new ModuleIOSparkMax(ModuleConstants.BACK_RIGHT_MODULE_CONFIG));
-      case SIM_BOT:
+      case SIM_BOT, REBUILT_2026:
         return new Drive(
             new GyroIO() {},
             new ModuleIOSim(PreseasonConstants.FrontLeft),

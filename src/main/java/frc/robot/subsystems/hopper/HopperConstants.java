@@ -11,7 +11,7 @@ public class HopperConstants {
    */
 
   public static final int FEEDER_CAN_ID = 17;
-  public static final int LIFTER_CAN_ID = 0;
+  public static final int LIFTER_CAN_ID = 13;
 
   public static final double FEEDER_GEAR_RATIO = (1.0 / 3.0) * (1.0 / 3.0);
   public static final double LIFTER_GEAR_RATIO = (1.0 / 3.0) * (1.0 / 3.0) * (1.0 / 3.0);

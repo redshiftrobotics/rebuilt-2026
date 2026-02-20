@@ -53,12 +53,13 @@ public class HopperMotorIOSparkMax implements HopperMotorIO {
 
   @Override
   public void setVelocity(double velocityRadPerSec, double ffVolts) {
-    pid.setSetpoint(
-        Units.radiansPerSecondToRotationsPerMinute(velocityRadPerSec),
-        ControlType.kVelocity,
-        ClosedLoopSlot.kSlot0,
-        ffVolts,
-        ArbFFUnits.kVoltage);
+    motor.set(Math.signum(velocityRadPerSec));
+    // pid.setSetpoint(
+    //     Units.radiansPerSecondToRotationsPerMinute(velocityRadPerSec),
+    //     ControlType.kVelocity,
+    //     ClosedLoopSlot.kSlot0,
+    //     ffVolts,
+    //     ArbFFUnits.kVoltage);
   }
 
   @Override

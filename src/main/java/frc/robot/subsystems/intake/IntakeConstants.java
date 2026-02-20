@@ -24,7 +24,7 @@ public class IntakeConstants {
 
     public static final Rotation2d DOWN_SETPOINT = Rotation2d.fromDegrees(0);
     public static final Rotation2d UP_SETPOINT = Rotation2d.fromDegrees(157);
-    public static final Rotation2d INCREMENT_SETPOINT = Rotation2d.fromDegrees(5);
+    public static final Rotation2d INCREMENT_SETPOINT = Rotation2d.fromDegrees(1);
 
     public static final PIDConfig PID =
         switch (Constants.getRobot()) {
