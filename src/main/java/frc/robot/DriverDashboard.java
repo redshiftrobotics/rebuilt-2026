@@ -165,7 +165,9 @@ public class DriverDashboard {
                   null);
               builder.addDoubleProperty(
                   moduleNames[i] + " Velocity",
-                  () -> wheelStatesSupplier.get()[index].speedMetersPerSecond,
+                  () ->
+                      (AllianceMirrorUtil.shouldFlip() ? -1 : +1)
+                          * wheelStatesSupplier.get()[index].speedMetersPerSecond,
                   null);
             }
 
