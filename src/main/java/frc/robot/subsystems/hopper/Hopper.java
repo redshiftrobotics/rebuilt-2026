@@ -1,6 +1,5 @@
 package frc.robot.subsystems.hopper;
 
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -10,6 +9,7 @@ import frc.robot.subsystems.common.motorio.MotorIOInputsAutoLogged;
 import frc.robot.subsystems.common.motorio.MotorIOSim;
 import frc.robot.subsystems.common.motorio.MotorIOSparkMax;
 import frc.robot.subsystems.hopper.HopperConstants.RunMode;
+import frc.robot.utility.tunable.TunableNumbers.TunablePID;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -28,6 +28,8 @@ public class Hopper extends SubsystemBase {
   /* Mechanism visualization */
   private final HopperVisualizer visualizer;
 
+  private final TunablePID pidConfig = new TunablePID(getName() + "/Lifter/Pid", HopperConstants.LIFTER_PID);
+
   public Hopper(MotorIO feederIO, HopperMotorIO lifterIO) {
     // Set IO layers
     feeder = feederIO;
@@ -43,11 +45,13 @@ public class Hopper extends SubsystemBase {
 
   @Override
   public void periodic() {
+    pidConfig.ifChanged(hashCode(), () ->feeder.configurePID(pidConfig.get()));
+
     // Update and log inputs
     feeder.updateInputs(feederInputs);
     lifter.updateInputs(lifterInputs);
     Logger.processInputs("Hopper/feeder", feederInputs);
-    Logger.processInputs("Hopper/lifter", lifterInputs);
+    Logger.processInputs("Hopper/Lifter", lifterInputs);
 
     // Update and log mechanisms
     visualizer.think(feederInputs, lifterInputs);
@@ -57,7 +61,7 @@ public class Hopper extends SubsystemBase {
     double velocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(velocityRPM);
     lifter.setVelocity(velocityRadPerSec, HopperConstants.LIFTER_FF_VOLTS);
 
-    Logger.recordOutput("Hopper/lifter/SetpointRPM", velocityRPM);
+    Logger.recordOutput("Hopper/Lifter/SetpointRPM", velocityRPM);
   }
 
   public void stopfeeder() {
