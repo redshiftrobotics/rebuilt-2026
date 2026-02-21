@@ -16,6 +16,7 @@ import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.intake.IntakeConstants.SlapdownConstants;
 import frc.robot.utility.SparkUtil;
@@ -65,6 +66,10 @@ public class SlapdownIOSparkMax implements SlapdownIO {
   @Override
   public void updateInputs(SlapdownIOInputsAutoLogged inputs) {
     SparkUtil.clearError();
+
+    if (DriverStation.isDisabled()) {
+      relativeEncoder.setPosition(absoluteEncoder.getPosition());
+    }
 
     SparkUtil.ifOk(
         motor,

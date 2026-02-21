@@ -36,8 +36,7 @@ public class MotorIOSim implements MotorIO {
   public void updateInputs(MotorIOInputs inputs) {
 
     if (closedLoop) {
-      appliedVolts =
-          feedback.calculate(sim.getAngularVelocityRadPerSec()) + FFVolts;
+      appliedVolts = feedback.calculate(sim.getAngularVelocityRadPerSec()) + FFVolts;
     } else {
       feedback.reset();
     }

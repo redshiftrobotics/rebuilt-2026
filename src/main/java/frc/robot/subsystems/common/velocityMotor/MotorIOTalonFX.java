@@ -71,8 +71,7 @@ public class MotorIOTalonFX implements MotorIO {
     brakeMode = constants.brakeMode();
     this.outputType = outputType;
 
-    config.MotorOutput.NeutralMode =
-        brakeMode ? NeutralModeValue.Brake : NeutralModeValue.Coast;
+    config.MotorOutput.NeutralMode = brakeMode ? NeutralModeValue.Brake : NeutralModeValue.Coast;
     config.Slot0 = new Slot0Configs();
     config.Feedback.SensorToMechanismRatio = constants.gearRatio();
     config.TorqueCurrent.PeakForwardTorqueCurrent = constants.stallCurrent();
@@ -91,15 +90,13 @@ public class MotorIOTalonFX implements MotorIO {
     appliedVolts = motor.getMotorVoltage();
     current = motor.getStatorCurrent();
 
-    BaseStatusSignal.setUpdateFrequencyForAll(
-        50.0, position, veclity, appliedVolts, current);
+    BaseStatusSignal.setUpdateFrequencyForAll(50.0, position, veclity, appliedVolts, current);
     ParentDevice.optimizeBusUtilizationForAll(motor);
   }
 
   @Override
   public void updateInputs(MotorIOInputs inputs) {
-    var status =
-        BaseStatusSignal.refreshAll(position, veclity, appliedVolts, current);
+    var status = BaseStatusSignal.refreshAll(position, veclity, appliedVolts, current);
 
     inputs.motorConnected = connectedDebouncer.calculate(status.isOK());
     inputs.positionRad = Units.rotationsToRadians(position.getValueAsDouble());
