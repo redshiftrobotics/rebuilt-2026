@@ -16,7 +16,6 @@ package frc.robot.subsystems.common.velocityMotor;
 import static frc.robot.utility.PhoenixUtil.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
-import com.ctre.phoenix6.Orchestra;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -35,6 +34,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants;
+import frc.robot.subsystems.music.TalonOrchestra;
 import frc.robot.utility.records.FeedForwardConfigRecord;
 import frc.robot.utility.records.PIDConfig;
 
@@ -55,6 +55,7 @@ public class MotorIOTalonFX implements MotorIO {
   private final StatusSignal<AngularVelocity> veclity;
   private final StatusSignal<Voltage> appliedVolts;
   private final StatusSignal<Current> current;
+  private final StatusSignal<Double> dutyCycle;
 
   public enum OutputType {
     Voltage,
@@ -92,6 +93,7 @@ public class MotorIOTalonFX implements MotorIO {
             : InvertedValue.CounterClockwise_Positive;
     config.Audio.BeepOnBoot = Constants.TALON_BEEP_ON_BOOT;
     config.Audio.BeepOnConfig = Constants.TALON_BEEP_ON_CONFIG;
+    config.Audio.AllowMusicDurDisable = true;
     tryUntilOk(5, () -> motor.getConfigurator().apply(config, 0.25));
     tryUntilOk(5, () -> motor.setPosition(0.0, 0.25));
 
@@ -99,6 +101,9 @@ public class MotorIOTalonFX implements MotorIO {
     veclity = motor.getVelocity();
     appliedVolts = motor.getMotorVoltage();
     current = motor.getStatorCurrent();
+    dutyCycle = motor.getDutyCycle();
+
+    TalonOrchestra.getInstance().addInstrument(motor);
 
     ParentDevice.optimizeBusUtilizationForAll(motor);
   }
@@ -113,6 +118,7 @@ public class MotorIOTalonFX implements MotorIO {
         Units.rotationsPerMinuteToRadiansPerSecond(veclity.getValueAsDouble());
     inputs.appliedVolts = appliedVolts.getValueAsDouble();
     inputs.supplyCurrentAmps = current.getValueAsDouble();
+    inputs.appliedDutycycle = dutyCycle.getValueAsDouble();
   }
 
   @Override
@@ -174,12 +180,5 @@ public class MotorIOTalonFX implements MotorIO {
 
   private void pushConfig() {
     tryUntilOk(5, () -> motor.getConfigurator().apply(config, 0.25));
-  }
-
-  @Override
-  public void joinTheOrchestra(Orchestra orchestra) {
-    config.Audio.AllowMusicDurDisable = true;
-    orchestra.addInstrument(motor);
-    pushConfig();
   }
 }

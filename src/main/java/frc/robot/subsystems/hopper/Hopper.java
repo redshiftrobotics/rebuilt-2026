@@ -64,6 +64,10 @@ public class Hopper extends SubsystemBase {
                 "Feeder Velocity (rad per sec)", () -> feederInputs.velocityRadPerSec, null);
             builder.addDoubleProperty(
                 "Lifter Velocity (rad per sec)", () -> lifterInputs.velocityRadPerSec, null);
+            builder.addDoubleProperty(
+                "Feeder Dutycycle", () -> feederInputs.appliedDutycycle, null);
+            builder.addDoubleProperty(
+                "Lifter Dutycycle", () -> lifterInputs.appliedDutycycle, null);
           }
         });
   }

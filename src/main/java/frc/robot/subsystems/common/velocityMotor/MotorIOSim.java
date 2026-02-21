@@ -60,6 +60,7 @@ public class MotorIOSim implements MotorIO {
     inputs.velocityRadPerSec = sim.getAngularVelocityRadPerSec();
     inputs.appliedVolts = appliedVolts;
     inputs.supplyCurrentAmps = Math.abs(sim.getCurrentDrawAmps());
+    inputs.appliedDutycycle = appliedVolts / 12.0;
   }
 
   @Override

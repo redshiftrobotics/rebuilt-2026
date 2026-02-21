@@ -33,6 +33,7 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeConstants.SlapdownConstants;
 import frc.robot.subsystems.led.BlinkenLEDPattern;
 import frc.robot.subsystems.led.LEDSubsystem;
+import frc.robot.subsystems.music.TalonOrchestra;
 import frc.robot.subsystems.outtake.Outtake;
 import frc.robot.subsystems.vision.AprilTagVision;
 import frc.robot.utility.Elastic;
@@ -310,7 +311,11 @@ public class RobotContainer {
     xbox.rightTrigger(0.2).whileTrue(outtake.runFlywheelsCommand().withName("Flywheels 0.2"));
 
     xbox.rightBumper()
-        .toggleOnTrue(hopper.runModeCommand(HopperRunMode.PREP_SHOT).until(xbox.rightTrigger(0.2)).withName("Hopper Prep RB"))
+        .toggleOnTrue(
+            hopper
+                .runModeCommand(HopperRunMode.PREP_SHOT)
+                .until(xbox.rightTrigger(0.2))
+                .withName("Hopper Prep RB"))
         .toggleOnTrue(outtake.runFlywheelsCommand().withName("Flywheels RB"));
 
     // This is the input for firing; when the shooter is added, it should be
@@ -321,12 +326,18 @@ public class RobotContainer {
         .whileTrue(outtake.runFlywheelsCommand().withName("Flywheels Firing"));
 
     // Run the bubbler at low speed to send fuel towards the back without firing
-    xbox.b().whileTrue(hopper.runModeCommand(HopperRunMode.FUEL_STORE).withName("Hopper Fuel Store"));
+    xbox.b()
+        .whileTrue(hopper.runModeCommand(HopperRunMode.FUEL_STORE).withName("Hopper Fuel Store"));
 
     // Run the hopper motors in reverse to deal with jams
     xbox.start().whileTrue(hopper.runModeCommand(HopperRunMode.REVERSE).withName("Hopper Reverse"));
 
-    xbox.back().toggleOnTrue(outtake.playSong().alongWith(Commands.print("ORCHESTRA")).withName("Play Song"));
+    xbox.back()
+        .toggleOnTrue(
+            TalonOrchestra.getInstance()
+                .playSong()
+                .alongWith(Commands.print("ORCHESTRA"))
+                .withName("Play Song!"));
 
     xbox.pov(90)
         .onTrue(

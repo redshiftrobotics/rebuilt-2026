@@ -1,6 +1,5 @@
 package frc.robot.subsystems.common.velocityMotor;
 
-import com.ctre.phoenix6.Orchestra;
 import frc.robot.utility.records.FeedForwardConfigRecord;
 import frc.robot.utility.records.PIDConfig;
 import org.littletonrobotics.junction.AutoLog;
@@ -15,6 +14,7 @@ public interface MotorIO {
     public double velocityRadPerSec = 0.0;
     public double appliedVolts = 0.0;
     public double supplyCurrentAmps = 0.0;
+    public double appliedDutycycle = 0.0;
   }
 
   /** Updates the set of loggable inputs. */
@@ -45,8 +45,4 @@ public interface MotorIO {
 
   /** Disable output to brake and turn motor */
   public default void stop() {}
-
-  /** DO NOT TELL JESSIE */
-  public default void joinTheOrchestra(Orchestra orchestra) {}
-  ;
 }

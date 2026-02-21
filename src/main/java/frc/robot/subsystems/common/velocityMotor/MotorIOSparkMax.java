@@ -79,6 +79,7 @@ public class MotorIOSparkMax implements MotorIO {
         () -> motor.getAppliedOutput() * motor.getBusVoltage(),
         value -> inputs.appliedVolts = value);
     ifOk(motor, motor::getOutputCurrent, value -> inputs.supplyCurrentAmps = value);
+    ifOk(motor, motor::getAppliedOutput, value -> inputs.appliedDutycycle = value);
     inputs.motorConnected = connectedDebouncer.calculate(!SparkUtil.hasError());
   }
 

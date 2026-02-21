@@ -1,13 +1,11 @@
 package frc.robot.subsystems.outtake;
 
-import com.ctre.phoenix6.Orchestra;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RobotType;
 import frc.robot.subsystems.common.velocityMotor.MotorIO;
@@ -30,8 +28,6 @@ public class Outtake extends SubsystemBase {
   private final MotorIOInputsAutoLogged middleInputs = new MotorIOInputsAutoLogged();
   private final MotorIOInputsAutoLogged rightInputs = new MotorIOInputsAutoLogged();
 
-  private final Orchestra orchestra;
-
   private final Alert leftMotorDisconnectedAlert =
       new Alert("Left motor disconnected, ", AlertType.kError);
   private final Alert middleMotorDisconnectedAlert =
@@ -50,11 +46,6 @@ public class Outtake extends SubsystemBase {
     this.right = right;
 
     motors = List.of(left, middle, right);
-
-    orchestra = new Orchestra();
-    motors.forEach(m -> m.joinTheOrchestra(orchestra));
-    orchestra.loadMusic("pirate.chrp");
-
     updatePID();
 
     SmartDashboard.putData(
@@ -73,6 +64,10 @@ public class Outtake extends SubsystemBase {
                 "Middle Velocity (rad per sec)", () -> middleInputs.velocityRadPerSec, null);
             builder.addDoubleProperty(
                 "Right Velocity (rad per sec)", () -> rightInputs.velocityRadPerSec, null);
+            builder.addDoubleProperty("Left Dutycycle", () -> leftInputs.appliedDutycycle, null);
+            builder.addDoubleProperty(
+                "Middle Dutycycle", () -> middleInputs.appliedDutycycle, null);
+            builder.addDoubleProperty("Right Dutycycle", () -> rightInputs.appliedDutycycle, null);
           }
         });
   }
@@ -92,10 +87,6 @@ public class Outtake extends SubsystemBase {
     leftMotorDisconnectedAlert.set(!leftInputs.motorConnected);
     middleMotorDisconnectedAlert.set(!middleInputs.motorConnected);
     rightMotorDisconnectedAlert.set(!rightInputs.motorConnected);
-  }
-
-  public Command playSong() {
-    return Commands.startEnd(orchestra::play, orchestra::stop).ignoringDisable(true);
   }
 
   public Command runFlywheelsCommand() {
