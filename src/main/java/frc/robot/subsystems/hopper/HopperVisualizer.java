@@ -3,6 +3,7 @@ package frc.robot.subsystems.hopper;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
+import frc.robot.subsystems.common.motorio.MotorIO.MotorIOInputs;
 import frc.robot.subsystems.hopper.HopperMotorIO.HopperMotorIOInputs;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
@@ -27,7 +28,7 @@ public class HopperVisualizer {
     lifterRoot.append(lifterMech);
   }
 
-  public void think(HopperMotorIOInputs feederInputs, HopperMotorIOInputs lifterInputs) {
+  public void think(MotorIOInputs feederInputs, HopperMotorIOInputs lifterInputs) {
     feederMech.setAngle(Units.radiansToDegrees(feederInputs.positionRad));
     lifterMech.setAngle(Units.radiansToDegrees(lifterInputs.positionRad));
     Logger.recordOutput("Hopper/Visualization", mechanism);

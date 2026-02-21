@@ -38,14 +38,14 @@ public class MotorIOSparkMax implements MotorIO {
 
     // --- Configure Hardware ---
 
-    SparkMaxConfig leaderConfig = new SparkMaxConfig();
-    leaderConfig
+    SparkMaxConfig config = new SparkMaxConfig();
+    config
         .voltageCompensation(12.0)
         .smartCurrentLimit(30)
         .inverted(inverted)
         .idleMode(IdleMode.kCoast);
 
-    motor.configure(leaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
   @Override

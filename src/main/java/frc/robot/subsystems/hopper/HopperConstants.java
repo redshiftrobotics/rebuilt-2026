@@ -17,25 +17,36 @@ public class HopperConstants {
   public static final boolean FEEDER_INVERTED = true;
   public static final boolean LIFTER_INVERTED = true;
 
+  // PID constants
+  // TODO: Add real values
+  public static final PIDConfig LIFTER_PID =
+      switch (Constants.getRobot()) {
+        case PRESEASON_2026 -> new PIDConfig(0.0, 0.0, 0.0);
+        case SIM_BOT -> new PIDConfig(0.85, 0.0, 0.0);
+        default -> new PIDConfig(1.0, 0.0, 0.0);
+      };
+
+      public static final double LIFTER_FF_VOLTS = 12;
+
   // Hopper run mode
   // TODO: Set real speeds
   public static enum RunMode {
     /** All hopper motors stopped */
     STOPPED(0, 0),
     /** FEEDER running at low speed to push fuel to the back, LIFTER stopped */
-    FUEL_STORE(30, 0),
+    FUEL_STORE(1, 0),
     /** FEEDER running at high speed to send balls to the LIFTER, LIFTER running */
-    FIRING(60, 60),
+    FIRING(1, 60),
     /** All hopper motors running in reverse in case of jams */
     REVERSE(-60, -60);
 
-    public int feederVelocityRadPerSec;
+    public int feederVolts;
 
-    public int lifterVelocityRadPerSec;
+    public double lifterVelocityRadPerSec;
 
-    private RunMode(int FEEDERVelocity, int LIFTERVelocity) {
-      feederVelocityRadPerSec = FEEDERVelocity;
-      lifterVelocityRadPerSec = LIFTERVelocity;
+    private RunMode(int feederVoltage, double lifterVelocity) {
+      feederVolts = feederVoltage;
+      lifterVelocityRadPerSec = lifterVelocity;
     }
 
     @Override
@@ -54,15 +65,4 @@ public class HopperConstants {
       }
     }
   }
-
-  // PID constants
-  // TODO: Add real values
-  public static final PIDConfig FEEDER_PID =
-      Constants.isSimulation() ? new PIDConfig(0.85, 0.0, 0.0) : new PIDConfig(1, 0.0, 0.0);
-  public static final PIDConfig LIFTER_PID =
-      switch (Constants.getRobot()) {
-        case PRESEASON_2026 -> new PIDConfig(0.0, 0.0, 0.0);
-        case SIM_BOT -> new PIDConfig(0.85, 0.0, 0.0);
-        default -> new PIDConfig(1.0, 0.0, 0.0);
-      };
 }
