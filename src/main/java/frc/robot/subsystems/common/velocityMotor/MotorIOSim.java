@@ -2,11 +2,14 @@ package frc.robot.subsystems.common.velocityMotor;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.Constants;
+import frc.robot.utility.records.FeedForwardConfigRecord;
+import frc.robot.utility.records.PIDConfig;
 
 /** Physics sim implementation of motor IO. */
 public class MotorIOSim implements MotorIO {
@@ -15,20 +18,22 @@ public class MotorIOSim implements MotorIO {
 
   private double appliedVolts = 0.0;
 
-  private final PIDController feedback;
+  private final PIDController feedback =
+      new PIDController(0.0, 0.0, 0.0, Constants.LOOP_PERIOD_SECONDS);
+  private final SimpleMotorFeedforward feedfoward =
+      new SimpleMotorFeedforward(0.0, 0.0, 0.0, Constants.LOOP_PERIOD_SECONDS);
 
   private boolean closedLoop = false;
   private double FFVolts = 0;
 
-  private MotorIOSim(DCMotorSim motor) {
-    this.sim = motor;
-    this.feedback = new PIDController(0.0, 0.0, 0.0, Constants.LOOP_PERIOD_SECONDS);
+  public MotorIOSim(DCMotorSim sim) {
+    this.sim = sim;
   }
 
-  public MotorIOSim(DCMotor motor, VelocityMotorConstants config, double JKgMetersSquared) {
+  public MotorIOSim(DCMotor motor, MotorConstants config, double JKgMetersSquared) {
     this(
         new DCMotorSim(
-            LinearSystemId.createDCMotorSystem(motor, JKgMetersSquared, config.gearRatio()),
+            LinearSystemId.createDCMotorSystem(motor, JKgMetersSquared, 1.0 / config.gearRatio()),
             motor));
   }
 
@@ -58,21 +63,33 @@ public class MotorIOSim implements MotorIO {
   }
 
   @Override
+  public void setDutyCycle(double output) {
+    setOpenLoop(output * 12);
+  }
+
+  @Override
   public void setOpenLoop(double volts) {
     closedLoop = false;
     appliedVolts = volts;
   }
 
   @Override
-  public void setVelocity(double velocityRadsPerSec, double feedforward) {
+  public void setVelocity(double velocityRadsPerSec, double arbFeedforward) {
     closedLoop = true;
-    FFVolts = feedforward;
+    FFVolts = feedfoward.calculate(velocityRadsPerSec) + arbFeedforward;
     feedback.setSetpoint(velocityRadsPerSec);
   }
 
   @Override
-  public void setPID(double kP, double kI, double kD) {
-    feedback.setPID(kP, kI, kD);
+  public void setPID(PIDConfig pidConfig) {
+    feedback.setPID(pidConfig.kP(), pidConfig.kI(), pidConfig.kD());
+  }
+
+  @Override
+  public void setFF(FeedForwardConfigRecord ffConfig) {
+    feedfoward.setKs(ffConfig.kS());
+    feedfoward.setKv(ffConfig.kV());
+    feedfoward.setKa(ffConfig.kA());
   }
 
   @Override

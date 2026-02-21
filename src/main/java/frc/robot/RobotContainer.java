@@ -28,7 +28,7 @@ import frc.robot.commands.pipeline.DriveInputPipeline;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.hopper.Hopper;
-import frc.robot.subsystems.hopper.HopperConstants.RunMode;
+import frc.robot.subsystems.hopper.HopperConstants.HopperRunMode;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeConstants.SlapdownConstants;
 import frc.robot.subsystems.led.BlinkenLEDPattern;
@@ -37,7 +37,6 @@ import frc.robot.subsystems.outtake.Outtake;
 import frc.robot.subsystems.vision.AprilTagVision;
 import frc.robot.utility.Elastic;
 import frc.robot.utility.Elastic.Notification.NotificationLevel;
-import frc.robot.utility.JoystickUtil;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -100,7 +99,7 @@ public class RobotContainer {
     hopper = Hopper.create(robotType);
     intake = Intake.create(robotType);
     climb = Climb.create(robotType);
-    outtake = new Outtake(robotType);
+    outtake = Outtake.create(robotType);
 
     // Vision setup
     if (Constants.isOnPlayingField()) {
@@ -164,9 +163,6 @@ public class RobotContainer {
     DriverDashboard.speedsSupplier = drive::getRobotSpeeds;
     DriverDashboard.wheelStatesSupplier = drive::getWheelSpeeds;
     DriverDashboard.hasVisionEstimate = vision::hasSuccessfulEstimate;
-    DriverDashboard.currentHopperRunModeNameSupplier = () -> hopper.getCurrentRunMode().toString();
-    DriverDashboard.hopperLifterVelocitySupplier = hopper::getFeederCharacterizationVelocity;
-    DriverDashboard.hopperLifterVelocitySupplier = hopper::getLifterCharacterizationVelocity;
 
     DriverDashboard.currentDriveModeName =
         () -> drive.getCurrentCommand() == null ? "Idle" : drive.getCurrentCommand().getName();
@@ -311,25 +307,37 @@ public class RobotContainer {
             IntakeCommands.incrementDownSlapdown(
                 intake, SlapdownConstants.INCREMENT_SETPOINT.unaryMinus()));
 
+    xbox.rightTrigger(0.2).whileTrue(outtake.runFlywheelsCommand().withName("Flywheels 0.2"));
+
+    xbox.rightBumper()
+        .toggleOnTrue(hopper.runModeCommand(HopperRunMode.PREP_SHOT).until(xbox.rightTrigger(0.2)).withName("Hopper Prep RB"))
+        .toggleOnTrue(outtake.runFlywheelsCommand().withName("Flywheels RB"));
+
     // This is the input for firing; when the shooter is added, it should be
     // triggered by this as
     // well
-    xbox.rightTrigger()
-        .whileTrue(HopperCommands.setHopperMode(hopper, RunMode.FIRING))
-        .onFalse(HopperCommands.setHopperMode(hopper, RunMode.STOPPED));
+    xbox.rightTrigger(0.8)
+        .whileTrue(hopper.runModeCommand(HopperRunMode.FIRING).withName("Hopper Firing"))
+        .whileTrue(outtake.runFlywheelsCommand().withName("Flywheels Firing"));
 
     // Run the bubbler at low speed to send fuel towards the back without firing
-    xbox.b()
-        .whileTrue(HopperCommands.setHopperMode(hopper, RunMode.FUEL_STORE))
-        .onFalse(HopperCommands.setHopperMode(hopper, RunMode.STOPPED));
+    xbox.b().whileTrue(hopper.runModeCommand(HopperRunMode.FUEL_STORE).withName("Hopper Fuel Store"));
 
     // Run the hopper motors in reverse to deal with jams
-    xbox.start()
-        .whileTrue(HopperCommands.setHopperMode(hopper, RunMode.REVERSE))
-        .onFalse(HopperCommands.setHopperMode(hopper, RunMode.STOPPED));
+    xbox.start().whileTrue(hopper.runModeCommand(HopperRunMode.REVERSE).withName("Hopper Reverse"));
 
-    outtake.setDefaultCommand(
-        outtake.run(() -> outtake.setSpeed(JoystickUtil.applyDeadband(-xbox.getLeftX()))));
+    xbox.back().toggleOnTrue(outtake.playSong().alongWith(Commands.print("ORCHESTRA")).withName("Play Song"));
+
+    xbox.pov(90)
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    outtake.setRunningDesiredRadPerSec(outtake.getRunningDesiredRadPerSec() + 1)));
+    xbox.pov(270)
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    outtake.setRunningDesiredRadPerSec(outtake.getRunningDesiredRadPerSec() - 1)));
 
     // climb.setDefaultCommand(
     //     Commands.run(() -> climb.setSpeed(MathUtil.applyDeadband(xbox.getLeftY(), 0.1)), climb));
@@ -383,10 +391,10 @@ public class RobotContainer {
     namedCommands.put("LEDS", leds.runColor(BlinkenLEDPattern.RED));
 
     // Hopper commands
-    namedCommands.put("StopHopper", HopperCommands.setHopperMode(hopper, RunMode.STOPPED));
-    namedCommands.put("IdleHopper", HopperCommands.setHopperMode(hopper, RunMode.FUEL_STORE));
-    namedCommands.put("FireHopper", HopperCommands.setHopperMode(hopper, RunMode.FIRING));
-    namedCommands.put("ReverseHopper", HopperCommands.setHopperMode(hopper, RunMode.REVERSE));
+    namedCommands.put("StopHopper", HopperCommands.setHopperMode(hopper, HopperRunMode.STOPPED));
+    namedCommands.put("IdleHopper", HopperCommands.setHopperMode(hopper, HopperRunMode.FUEL_STORE));
+    namedCommands.put("FireHopper", HopperCommands.setHopperMode(hopper, HopperRunMode.FIRING));
+    namedCommands.put("ReverseHopper", HopperCommands.setHopperMode(hopper, HopperRunMode.REVERSE));
 
     // Intake commands
     namedCommands.put("ExtendSlapdown", IntakeCommands.extendSlapdown(intake));

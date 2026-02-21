@@ -1,53 +1,146 @@
 package frc.robot.subsystems.outtake;
 
-import static frc.robot.utility.PhoenixUtil.tryUntilOk;
-
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.InvertedValue;
-import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.Orchestra;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RobotType;
+import frc.robot.subsystems.common.velocityMotor.MotorIO;
+import frc.robot.subsystems.common.velocityMotor.MotorIOInputsAutoLogged;
+import frc.robot.subsystems.common.velocityMotor.MotorIOSim;
+import frc.robot.subsystems.common.velocityMotor.MotorIOSparkMax;
+import frc.robot.utility.tunable.TunableNumbers.TunablePID;
+import java.util.List;
 import org.littletonrobotics.junction.Logger;
 
 public class Outtake extends SubsystemBase {
-  private final TalonFX[] motors;
-  private final boolean[] inverts = {false, false, true};
 
-  public Outtake(RobotType robotType) {
+  public final TunablePID pidConfig = new TunablePID(getName() + "/PID", OuttakeConstants.PID);
 
-    if (robotType != RobotType.REBUILT_2026) {
-      motors = new TalonFX[] {};
-    } else {
-      motors =
-          new TalonFX[] {
-            new TalonFX(3), // left
-            new TalonFX(4), // middle
-            new TalonFX(15) // right
-          };
-    }
+  private final MotorIO left;
+  private final MotorIO middle;
+  private final MotorIO right;
 
-    for (int i = 0; i < motors.length; i++) {
-      final TalonFX motor = motors[i];
-      final TalonFXConfiguration config = new TalonFXConfiguration();
+  private final MotorIOInputsAutoLogged leftInputs = new MotorIOInputsAutoLogged();
+  private final MotorIOInputsAutoLogged middleInputs = new MotorIOInputsAutoLogged();
+  private final MotorIOInputsAutoLogged rightInputs = new MotorIOInputsAutoLogged();
 
-      config.TorqueCurrent.PeakForwardTorqueCurrent = 120;
-      config.TorqueCurrent.PeakReverseTorqueCurrent = -120;
+  private final Orchestra orchestra;
 
-      config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+  private final Alert leftMotorDisconnectedAlert =
+      new Alert("Left motor disconnected, ", AlertType.kError);
+  private final Alert middleMotorDisconnectedAlert =
+      new Alert("Middle motor disconnected", AlertType.kError);
+  private final Alert rightMotorDisconnectedAlert =
+      new Alert("Right motor disconnected", AlertType.kError);
+  private final List<MotorIO> motors;
 
-      config.MotorOutput.Inverted =
-          inverts[i] ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
+  private boolean running = false;
+  private double desiredRadPerSec = 15;
 
-      tryUntilOk(5, () -> motor.getConfigurator().apply(config, 0.25));
+  public Outtake(MotorIO left, MotorIO middle, MotorIO right) {
+
+    this.left = left;
+    this.middle = middle;
+    this.right = right;
+
+    motors = List.of(left, middle, right);
+
+    orchestra = new Orchestra();
+    motors.forEach(m -> m.joinTheOrchestra(orchestra));
+    orchestra.loadMusic("pirate.chrp");
+
+    updatePID();
+
+    SmartDashboard.putData(
+        "Outtake State",
+        new Sendable() {
+          @Override
+          public void initSendable(SendableBuilder builder) {
+            builder.addBooleanProperty("Run", () -> running, null);
+            builder.addDoubleProperty(
+                "Desired Velocity (rad per sec)",
+                () -> desiredRadPerSec,
+                v -> setRunningDesiredRadPerSec(v));
+            builder.addDoubleProperty(
+                "Left Velocity (rad per sec)", () -> leftInputs.velocityRadPerSec, null);
+            builder.addDoubleProperty(
+                "Middle Velocity (rad per sec)", () -> middleInputs.velocityRadPerSec, null);
+            builder.addDoubleProperty(
+                "Right Velocity (rad per sec)", () -> rightInputs.velocityRadPerSec, null);
+          }
+        });
+  }
+
+  @Override
+  public void periodic() {
+    left.updateInputs(leftInputs);
+    middle.updateInputs(middleInputs);
+    right.updateInputs(rightInputs);
+
+    Logger.processInputs(getName() + "/Left", leftInputs);
+    Logger.processInputs(getName() + "/Middle", middleInputs);
+    Logger.processInputs(getName() + "/Right", rightInputs);
+
+    pidConfig.ifChanged(hashCode(), this::updatePID);
+
+    leftMotorDisconnectedAlert.set(!leftInputs.motorConnected);
+    middleMotorDisconnectedAlert.set(!middleInputs.motorConnected);
+    rightMotorDisconnectedAlert.set(!rightInputs.motorConnected);
+  }
+
+  public Command playSong() {
+    return Commands.startEnd(orchestra::play, orchestra::stop).ignoringDisable(true);
+  }
+
+  public Command runFlywheelsCommand() {
+    return startEnd(this::runFlywheels, this::stopFlywheels);
+  }
+
+  public void stopFlywheels() {
+    running = false;
+    motors.forEach(MotorIO::stop);
+  }
+
+  public void runFlywheels() {
+    running = true;
+    motors.forEach(m -> m.setVelocity(desiredRadPerSec));
+  }
+
+  public double getRunningDesiredRadPerSec() {
+    return desiredRadPerSec;
+  }
+
+  public void setRunningDesiredRadPerSec(double desiredRadPerSec) {
+    this.desiredRadPerSec = desiredRadPerSec;
+    if (running) {
+      motors.forEach(m -> m.setVelocity(desiredRadPerSec));
     }
   }
 
-  public void setSpeed(double speed) {
-    Logger.recordOutput(getName() + "/Speed", speed);
+  private void updatePID() {
+    motors.forEach(m -> m.setPID(pidConfig.get()));
+  }
 
-    for (int i = 0; i < motors.length; i++) {
-      motors[i].set(speed);
+  public static Outtake create(RobotType robotType) {
+    switch (robotType) {
+      case REBUILT_2026:
+        return new Outtake(
+            new MotorIOSparkMax(OuttakeConstants.LEFT_CONSTANTS),
+            new MotorIOSparkMax(OuttakeConstants.MIDDLE_CONSTANTS),
+            new MotorIOSparkMax(OuttakeConstants.RIGHT_CONSTANTS));
+      case SIM_BOT:
+        return new Outtake(
+            new MotorIOSim(OuttakeConstants.MOTOR, OuttakeConstants.MIDDLE_CONSTANTS, 0.1),
+            new MotorIOSim(OuttakeConstants.MOTOR, OuttakeConstants.MIDDLE_CONSTANTS, 0.1),
+            new MotorIOSim(OuttakeConstants.MOTOR, OuttakeConstants.MIDDLE_CONSTANTS, 0.1));
+      default:
+        return new Outtake(new MotorIO() {}, new MotorIO() {}, new MotorIO() {});
     }
   }
 }

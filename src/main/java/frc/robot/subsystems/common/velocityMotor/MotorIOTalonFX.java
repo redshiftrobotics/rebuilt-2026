@@ -16,6 +16,7 @@ package frc.robot.subsystems.common.velocityMotor;
 import static frc.robot.utility.PhoenixUtil.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.Orchestra;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -25,7 +26,6 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveModule.ClosedLoopOutputType;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.filter.Debouncer;
@@ -34,6 +34,9 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
+import frc.robot.Constants;
+import frc.robot.utility.records.FeedForwardConfigRecord;
+import frc.robot.utility.records.PIDConfig;
 
 /** Motor IO implementation for Talon FX motor controller. */
 public class MotorIOTalonFX implements MotorIO {
@@ -53,18 +56,23 @@ public class MotorIOTalonFX implements MotorIO {
   private final StatusSignal<Voltage> appliedVolts;
   private final StatusSignal<Current> current;
 
-  private final ClosedLoopOutputType outputType;
+  public enum OutputType {
+    Voltage,
+    TorqueCurrentFOC,
+  }
+
+  private final OutputType outputType;
 
   private boolean brakeMode = true;
 
   // Connection debouncers
   private final Debouncer connectedDebouncer = new Debouncer(0.5);
 
-  public MotorIOTalonFX(VelocityMotorConstants constants) {
-    this(constants, ClosedLoopOutputType.TorqueCurrentFOC);
+  public MotorIOTalonFX(MotorConstants constants) {
+    this(constants, OutputType.TorqueCurrentFOC);
   }
 
-  public MotorIOTalonFX(VelocityMotorConstants constants, ClosedLoopOutputType outputType) {
+  public MotorIOTalonFX(MotorConstants constants, OutputType outputType) {
 
     motor = new TalonFX(constants.deviceId());
 
@@ -82,6 +90,8 @@ public class MotorIOTalonFX implements MotorIO {
         constants.inverted()
             ? InvertedValue.Clockwise_Positive
             : InvertedValue.CounterClockwise_Positive;
+    config.Audio.BeepOnBoot = Constants.TALON_BEEP_ON_BOOT;
+    config.Audio.BeepOnConfig = Constants.TALON_BEEP_ON_CONFIG;
     tryUntilOk(5, () -> motor.getConfigurator().apply(config, 0.25));
     tryUntilOk(5, () -> motor.setPosition(0.0, 0.25));
 
@@ -90,7 +100,6 @@ public class MotorIOTalonFX implements MotorIO {
     appliedVolts = motor.getMotorVoltage();
     current = motor.getStatorCurrent();
 
-    BaseStatusSignal.setUpdateFrequencyForAll(50.0, position, veclity, appliedVolts, current);
     ParentDevice.optimizeBusUtilizationForAll(motor);
   }
 
@@ -100,18 +109,19 @@ public class MotorIOTalonFX implements MotorIO {
 
     inputs.motorConnected = connectedDebouncer.calculate(status.isOK());
     inputs.positionRad = Units.rotationsToRadians(position.getValueAsDouble());
-    inputs.velocityRadPerSec = Units.rotationsToRadians(veclity.getValueAsDouble());
+    inputs.velocityRadPerSec =
+        Units.rotationsPerMinuteToRadiansPerSecond(veclity.getValueAsDouble());
     inputs.appliedVolts = appliedVolts.getValueAsDouble();
     inputs.supplyCurrentAmps = current.getValueAsDouble();
   }
 
   @Override
-  public void setOpenLoop(double output) {
-    if (output == 0) {
-      motor.stopMotor();
-      return;
-    }
+  public void setDutyCycle(double dutyCycle) {
+    motor.set(dutyCycle);
+  }
 
+  @Override
+  public void setOpenLoop(double output) {
     motor.setControl(
         switch (outputType) {
           case Voltage -> voltageRequest.withOutput(output);
@@ -120,21 +130,16 @@ public class MotorIOTalonFX implements MotorIO {
   }
 
   @Override
-  public void setVelocity(double velocityRadPerSec, double feedfowrad) {
-    if (velocityRadPerSec == 0) {
-      motor.stopMotor();
-      return;
-    }
-
+  public void setVelocity(double velocityRadPerSec, double arbFeedforward) {
     double velocityRotPerSec = Units.radiansToRotations(velocityRadPerSec);
     motor.setControl(
         switch (outputType) {
           case Voltage -> velocityVoltageRequest
               .withVelocity(velocityRotPerSec)
-              .withFeedForward(feedfowrad);
+              .withFeedForward(arbFeedforward);
           case TorqueCurrentFOC -> velocityTorqueCurrentRequest
               .withVelocity(velocityRotPerSec)
-              .withFeedForward(feedfowrad);
+              .withFeedForward(arbFeedforward);
         });
   }
 
@@ -147,15 +152,34 @@ public class MotorIOTalonFX implements MotorIO {
   }
 
   @Override
-  public void setPID(double kP, double kI, double kD) {
-    config.Slot0.kP = kP;
-    config.Slot0.kI = kI;
-    config.Slot0.kD = kD;
-    tryUntilOk(5, () -> motor.getConfigurator().apply(config, 0.25));
+  public void setPID(PIDConfig pidConfig) {
+    config.Slot0.kP = pidConfig.kP();
+    config.Slot0.kI = pidConfig.kI();
+    config.Slot0.kD = pidConfig.kD();
+    pushConfig();
+  }
+
+  @Override
+  public void setFF(FeedForwardConfigRecord ffConfig) {
+    config.Slot0.kS = ffConfig.kS();
+    config.Slot0.kV = ffConfig.kV();
+    config.Slot0.kA = ffConfig.kA();
+    pushConfig();
   }
 
   @Override
   public void stop() {
     motor.stopMotor();
+  }
+
+  private void pushConfig() {
+    tryUntilOk(5, () -> motor.getConfigurator().apply(config, 0.25));
+  }
+
+  @Override
+  public void joinTheOrchestra(Orchestra orchestra) {
+    config.Audio.AllowMusicDurDisable = true;
+    orchestra.addInstrument(motor);
+    pushConfig();
   }
 }

@@ -1,8 +1,12 @@
 package frc.robot.subsystems.intake;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RobotType;
@@ -54,6 +58,25 @@ public class Intake extends SubsystemBase {
 
     setSlapdownSetpoint(slapdownUpPosition);
     stopWheels();
+
+    SmartDashboard.putData(
+        "Intake State",
+        new Sendable() {
+          @Override
+          public void initSendable(SendableBuilder builder) {
+            builder.addDoubleProperty(
+                "Slapdown Setpoint (deg)", () -> setpointPosition.getDegrees(), null);
+            builder.addDoubleProperty(
+                "Slapdown Position (deg)",
+                () -> Units.radiansToDegrees(slapdownInputs.positionRad),
+                null);
+            builder.addDoubleProperty(
+                "Slapdown Absolute Position (deg)",
+                () -> Units.radiansToDegrees(slapdownInputs.absolutePositionRad),
+                null);
+            builder.addDoubleProperty("Wheel Dutycycle", () -> setpointWheelSpeed, null);
+          }
+        });
   }
 
   @Override

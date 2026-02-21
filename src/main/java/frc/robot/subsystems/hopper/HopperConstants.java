@@ -1,85 +1,52 @@
 package frc.robot.subsystems.hopper;
 
+import edu.wpi.first.math.system.plant.DCMotor;
 import frc.robot.Constants;
-import frc.robot.utility.records.FeedForwardConfigRecord;
+import frc.robot.subsystems.common.velocityMotor.MotorConstants;
 import frc.robot.utility.records.PIDConfig;
 
 public class HopperConstants {
-  /*
-   * All constants related to the hopper (FEEDER and LIFTER) should go here.
-   * Don't make a separate file for the components.
-   */
 
-  public static final int FEEDER_CAN_ID = 17;
-  public static final int LIFTER_CAN_ID = 13;
+  public static final MotorConstants FEEDER_CONSTANTS =
+      new MotorConstants(17, (1.0 / 3.0) * (1.0 / 3.0), false, false, 30);
+  public static final MotorConstants LIFTER_CONSTANTS =
+      new MotorConstants(13, (1.0 / 3.0) * (1.0 / 3.0) * (1.0 / 3.0), false, false, 40);
 
-  public static final double FEEDER_GEAR_RATIO = (1.0 / 3.0) * (1.0 / 3.0);
-  public static final double LIFTER_GEAR_RATIO = (1.0 / 3.0) * (1.0 / 3.0) * (1.0 / 3.0);
+  public static final DCMotor FEEDER_MOTOR = DCMotor.getNEO(1);
+  public static final DCMotor LIFTER_MOTOR = DCMotor.getNEO(1);
 
-  public static final boolean FEEDER_INVERTED = true;
-  public static final boolean LIFTER_INVERTED = true;
+  public static final double MAX_FEEDER_SPEED =
+      FEEDER_MOTOR.withReduction(1.0 / FEEDER_CONSTANTS.gearRatio()).freeSpeedRadPerSec;
+  public static final double MAX_LIFTER_SPEED =
+      LIFTER_MOTOR.withReduction(1.0 / LIFTER_CONSTANTS.gearRatio()).freeSpeedRadPerSec;
 
   // Hopper run mode
-  // TODO: Set real speeds
-  public static enum RunMode {
-    /** All hopper motors stopped */
+  public static enum HopperRunMode {
     STOPPED(0, 0),
-    /** FEEDER running at low speed to push fuel to the back, LIFTER stopped */
-    FUEL_STORE(30, 0),
-    /** FEEDER running at high speed to send balls to the LIFTER, LIFTER running */
-    FIRING(60, 60),
-    /** All hopper motors running in reverse in case of jams */
-    REVERSE(-60, -60);
+    FUEL_STORE(0.5, 0.0),
+    FIRING(1, 15),
+    REVERSE(-1, -10),
+    PREP_SHOT(0.2, -4);
 
-    public int feederVelocityRadPerSec;
+    public double feederDutyCycle;
+    public double lifterVelocityRadPerSec;
 
-    public int lifterVelocityRadPerSec;
-
-    private RunMode(int FEEDERVelocity, int LIFTERVelocity) {
-      feederVelocityRadPerSec = FEEDERVelocity;
-      lifterVelocityRadPerSec = LIFTERVelocity;
+    private HopperRunMode(double feederDutyCycle, double lifterRadPerSec) {
+      this.feederDutyCycle = feederDutyCycle;
+      this.lifterVelocityRadPerSec = lifterRadPerSec;
     }
 
     @Override
     public String toString() {
-      switch (this) {
-        case STOPPED:
-          return "Stopped";
-        case FUEL_STORE:
-          return "Fuel Storing";
-        case FIRING:
-          return "Firing";
-        case REVERSE:
-          return "Reverse";
-        default:
-          return "Unknown";
-      }
+      return String.format(
+          "%s(feeder=%s, lifterRadPerSec=%s)", name(), feederDutyCycle, lifterVelocityRadPerSec);
     }
   }
 
-  public static final PIDConfig FEEDER_PID =
-      switch (Constants.getRobot()) {
-        case PRESEASON_2026 -> new PIDConfig(0.0, 0.0, 0.0);
-        case SIM_BOT -> new PIDConfig(1.0, 0.0, 0.0);
-        default -> new PIDConfig(0.0, 0.0, 0.0);
-      };
   public static final PIDConfig LIFTER_PID =
       switch (Constants.getRobot()) {
-        case PRESEASON_2026 -> new PIDConfig(0.0, 0.0, 0.0);
+        case REBUILT_2026 -> new PIDConfig(1.0, 0.0, 0.0);
         case SIM_BOT -> new PIDConfig(1.0, 0.0, 0.0);
         default -> new PIDConfig(0.0, 0.0, 0.0);
-      };
-
-  public static final FeedForwardConfigRecord FEEDER_FF =
-      switch (Constants.getRobot()) {
-        case PRESEASON_2026 -> new FeedForwardConfigRecord(0.0, 0.0, 0.0);
-        case SIM_BOT -> new FeedForwardConfigRecord(0.0, 0.0, 0.0);
-        default -> new FeedForwardConfigRecord(0.0, 0.0, 0.0);
-      };
-  public static final FeedForwardConfigRecord LIFTER_FF =
-      switch (Constants.getRobot()) {
-        case PRESEASON_2026 -> new FeedForwardConfigRecord(0.0, 0.0, 0.0);
-        case SIM_BOT -> new FeedForwardConfigRecord(0.0, 0.0, 0.0);
-        default -> new FeedForwardConfigRecord(0.0, 0.0, 0.0);
       };
 }

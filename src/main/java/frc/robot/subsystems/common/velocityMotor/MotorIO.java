@@ -1,24 +1,30 @@
 package frc.robot.subsystems.common.velocityMotor;
 
+import com.ctre.phoenix6.Orchestra;
+import frc.robot.utility.records.FeedForwardConfigRecord;
+import frc.robot.utility.records.PIDConfig;
 import org.littletonrobotics.junction.AutoLog;
 
 /** IO layer interface for motor hardware */
 public interface MotorIO {
   @AutoLog
   public static class MotorIOInputs {
-    boolean motorConnected = true;
+    public boolean motorConnected = true;
 
-    double positionRad = 0.0;
-    double velocityRadPerSec = 0.0;
-    double appliedVolts = 0.0;
-    double supplyCurrentAmps = 0.0;
+    public double positionRad = 0.0;
+    public double velocityRadPerSec = 0.0;
+    public double appliedVolts = 0.0;
+    public double supplyCurrentAmps = 0.0;
   }
 
   /** Updates the set of loggable inputs. */
-  public void updateInputs(MotorIOInputs inputs);
+  public default void updateInputs(MotorIOInputs inputs) {}
 
-  /** Run the motor at the specified amount. */
-  public void setOpenLoop(double output);
+  /** Run the motor at duty cycle. */
+  public default void setDutyCycle(double dutyCycle) {}
+
+  /** Run the motor at the specified amount. Either voltage or torque current. */
+  public default void setOpenLoop(double output) {}
 
   /** Run to velocity setpoint */
   public default void setVelocity(double velocityRadsPerSec) {
@@ -26,14 +32,21 @@ public interface MotorIO {
   }
 
   /** Run to velocity setpoint with feedforward */
-  public void setVelocity(double velocityRadsPerSec, double feedforward);
+  public default void setVelocity(double velocityRadsPerSec, double arbFeedforward) {}
 
   /** Configure PID */
-  public void setPID(double kP, double kI, double kD);
+  public default void setPID(PIDConfig pidConfig) {}
+
+  /** Configure FF */
+  public default void setFF(FeedForwardConfigRecord ffConfig) {}
 
   /** Enable or disable brake mode on the motor. */
-  public void setBrakeMode(boolean enable);
+  public default void setBrakeMode(boolean enable) {}
 
   /** Disable output to brake and turn motor */
-  public void stop();
+  public default void stop() {}
+
+  /** DO NOT TELL JESSIE */
+  public default void joinTheOrchestra(Orchestra orchestra) {}
+  ;
 }

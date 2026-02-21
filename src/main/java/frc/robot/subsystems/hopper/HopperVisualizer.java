@@ -16,24 +16,24 @@ public class HopperVisualizer {
 
   private final String name;
 
-  public HopperVisualizer(String name, Color color) {
+  public HopperVisualizer(String name, Color color, double shift) {
 
     this.name = name;
 
     mechanism = new LoggedMechanism2d(1, 1);
 
-    feederRoot = mechanism.getRoot("Feeder", .1, .1);
+    feederRoot = mechanism.getRoot("Feeder", .1, .1 + shift);
     feederMech = new LoggedMechanismLigament2d("Feeder", 0, 0, 5, new Color8Bit(color));
     feederRoot.append(feederMech);
 
-    lifterRoot = mechanism.getRoot("Lifter", .9, .1);
+    lifterRoot = mechanism.getRoot("Lifter", .9 + shift, .1);
     lifterMech = new LoggedMechanismLigament2d("Lifter", 0, 90, 5, new Color8Bit(color));
     lifterRoot.append(lifterMech);
   }
 
-  public void update(double feedVelocityRPM, double lifterVelocityRPM) {
-    feederMech.setLength(feedVelocityRPM / 100.0);
-    lifterMech.setLength(lifterVelocityRPM / 100.0);
+  public void update(double feedVelocityRadPerSec, double lifterVelocityRadPerSecond) {
+    feederMech.setLength(feedVelocityRadPerSec / HopperConstants.MAX_FEEDER_SPEED * 0.8);
+    lifterMech.setLength(lifterVelocityRadPerSecond / HopperConstants.MAX_LIFTER_SPEED * 0.8);
     Logger.recordOutput(name, mechanism);
   }
 }

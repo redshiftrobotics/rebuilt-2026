@@ -1,32 +1,37 @@
 package frc.robot.subsystems.hopper;
 
-import edu.wpi.first.math.util.Units;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RobotType;
-import frc.robot.subsystems.hopper.HopperConstants.RunMode;
+import frc.robot.subsystems.common.velocityMotor.MotorIO;
+import frc.robot.subsystems.common.velocityMotor.MotorIOInputsAutoLogged;
+import frc.robot.subsystems.common.velocityMotor.MotorIOSim;
+import frc.robot.subsystems.common.velocityMotor.MotorIOSparkMax;
+import frc.robot.subsystems.hopper.HopperConstants.HopperRunMode;
 import frc.robot.utility.tunable.TunableNumbers.TunablePID;
-import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Hopper extends SubsystemBase {
   /* IO layers */
-  private final HopperMotorIO feederIO;
-  private final HopperMotorIO lifterIO;
+  private final MotorIO feederIO;
+  private final MotorIO lifterIO;
 
   /* Loggable inputs */
-  private final HopperMotorIOInputsAutoLogged feederInputs = new HopperMotorIOInputsAutoLogged();
-  private final HopperMotorIOInputsAutoLogged lifterInputs = new HopperMotorIOInputsAutoLogged();
+  private final MotorIOInputsAutoLogged feederInputs = new MotorIOInputsAutoLogged();
+  private final MotorIOInputsAutoLogged lifterInputs = new MotorIOInputsAutoLogged();
 
   private final Alert feederDisconnectedAlert =
-      new Alert("Hardware error detected on feeder.", AlertType.kError);
+      new Alert("Feeder motor disconnected, ", AlertType.kError);
   private final Alert lifterMotorDisconnectedAlert =
-      new Alert("Hardware error detected lifter.", AlertType.kError);
+      new Alert("Lifter motor disconnected", AlertType.kError);
 
-  private final TunablePID feederPidConfig =
-      new TunablePID(getName() + "/FeederPID", HopperConstants.FEEDER_PID);
   private final TunablePID lifterPidConfig =
       new TunablePID(getName() + "/LifterPID", HopperConstants.LIFTER_PID);
 
@@ -35,20 +40,32 @@ public class Hopper extends SubsystemBase {
   private final HopperVisualizer setpointVisualizer;
 
   /* Run mode storage */
-  private HopperConstants.RunMode runMode = RunMode.STOPPED;
+  private HopperConstants.HopperRunMode runMode = HopperRunMode.STOPPED;
 
-  private double setpointFeederRPM;
-  private double setpointLifterRPM;
-
-  public Hopper(HopperMotorIO feederIO, HopperMotorIO lifterIO) {
+  public Hopper(MotorIO feederIO, MotorIO lifterIO) {
     this.feederIO = feederIO;
     this.lifterIO = lifterIO;
 
-    feederIO.setPID(HopperConstants.FEEDER_PID);
     lifterIO.setPID(HopperConstants.LIFTER_PID);
 
-    measuredVisualizer = new HopperVisualizer(getName() + "/Visuization/Measured", Color.kRed);
-    setpointVisualizer = new HopperVisualizer(getName() + "/Visuization/Setpoint", Color.kBlue);
+    measuredVisualizer = new HopperVisualizer(getName() + "/Visuization/Measured", Color.kRed, 0);
+    setpointVisualizer =
+        new HopperVisualizer(getName() + "/Visuization/Setpoint", Color.kBlue, 0.01);
+
+    stopAll();
+
+    SmartDashboard.putData(
+        "Hopper State",
+        new Sendable() {
+          @Override
+          public void initSendable(SendableBuilder builder) {
+            builder.addStringProperty("Run Mode", () -> runMode.toString(), null);
+            builder.addDoubleProperty(
+                "Feeder Velocity (rad per sec)", () -> feederInputs.velocityRadPerSec, null);
+            builder.addDoubleProperty(
+                "Lifter Velocity (rad per sec)", () -> lifterInputs.velocityRadPerSec, null);
+          }
+        });
   }
 
   @Override
@@ -59,100 +76,56 @@ public class Hopper extends SubsystemBase {
     Logger.processInputs(getName() + "/Feeder", feederInputs);
     Logger.processInputs(getName() + "/Lifter", lifterInputs);
 
-    feederPidConfig.ifChanged(hashCode(), feederIO::setPID);
     lifterPidConfig.ifChanged(hashCode(), lifterIO::setPID);
-
-    measuredVisualizer.update(getfeederVelocityRPM(), getlifterVelocityRPM());
-    setpointVisualizer.update(setpointFeederRPM, setpointLifterRPM);
 
     feederDisconnectedAlert.set(!feederInputs.motorConnected);
     lifterMotorDisconnectedAlert.set(!lifterInputs.motorConnected);
+
+    measuredVisualizer.update(feederInputs.velocityRadPerSec, lifterInputs.velocityRadPerSec);
   }
 
-  private void runfeederAtVelocity(double velocityRPM) {
-    double velocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(velocityRPM);
-    feederIO.setVelocity(velocityRadPerSec, 0);
-
-    setpointFeederRPM = velocityRPM;
-    Logger.recordOutput(getName() + "/Feeder/SetpointRPM", velocityRPM);
-  }
-
-  private void runlifterAtVelocity(double velocityRPM) {
-    double velocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(velocityRPM);
-    lifterIO.setVelocity(velocityRadPerSec, 0);
-
-    setpointLifterRPM = velocityRPM;
-    Logger.recordOutput(getName() + "/Lifter/SetpointRPM", velocityRPM);
-  }
-
-  public void stopfeeder() {
-    runfeederAtVelocity(0);
-    feederIO.stop();
-  }
-
-  public void stoplifter() {
-    runlifterAtVelocity(0);
-    lifterIO.stop();
+  public Command runModeCommand(HopperConstants.HopperRunMode mode) {
+    return startEnd(() -> setMode(mode), this::stopAll);
   }
 
   public void stopAll() {
-    runMode = HopperConstants.RunMode.STOPPED;
-    stopfeeder();
-    stoplifter();
+    runMode = HopperConstants.HopperRunMode.STOPPED;
+    setpointVisualizer.update(0.0, 0.0);
+    feederIO.stop();
+    lifterIO.stop();
   }
 
-  public void runInMode(HopperConstants.RunMode mode) {
+  public void setMode(HopperConstants.HopperRunMode mode) {
     runMode = mode;
-    if (mode == HopperConstants.RunMode.STOPPED) {
+    if (mode == HopperConstants.HopperRunMode.STOPPED) {
       stopAll();
       return;
     }
-    runfeederAtVelocity(mode.feederVelocityRadPerSec);
-    runlifterAtVelocity(mode.lifterVelocityRadPerSec);
+    feederIO.setDutyCycle(mode.feederDutyCycle);
+    lifterIO.setVelocity(mode.lifterVelocityRadPerSec);
+
+    setpointVisualizer.update(
+        mode.feederDutyCycle * HopperConstants.MAX_FEEDER_SPEED, mode.lifterVelocityRadPerSec);
   }
 
-  public HopperConstants.RunMode getCurrentRunMode() {
+  public HopperConstants.HopperRunMode getCurrentRunMode() {
     return runMode;
-  }
-
-  @AutoLogOutput
-  public double getfeederVelocityRPM() {
-    return Units.radiansPerSecondToRotationsPerMinute(feederInputs.velocityRadPerSec);
-  }
-
-  public double getFeederCharacterizationVelocity() {
-    return feederInputs.velocityRadPerSec;
-  }
-
-  @AutoLogOutput
-  public double getlifterVelocityRPM() {
-    return Units.radiansPerSecondToRotationsPerMinute(lifterInputs.velocityRadPerSec);
-  }
-
-  public double getLifterCharacterizationVelocity() {
-    return lifterInputs.velocityRadPerSec;
   }
 
   public static Hopper create(RobotType robotType) {
     switch (robotType) {
       case REBUILT_2026:
         return new Hopper(
-            new HopperMotorIOSparkMax(
-                HopperConstants.FEEDER_CAN_ID,
-                HopperConstants.FEEDER_GEAR_RATIO,
-                HopperConstants.FEEDER_INVERTED),
-            new HopperMotorIOSparkMax(
-                HopperConstants.LIFTER_CAN_ID,
-                HopperConstants.LIFTER_GEAR_RATIO,
-                HopperConstants.LIFTER_INVERTED));
+            new MotorIOSparkMax(HopperConstants.FEEDER_CONSTANTS),
+            new MotorIOSparkMax(HopperConstants.LIFTER_CONSTANTS));
 
       case SIM_BOT:
         return new Hopper(
-            new HopperMotorIOSim(HopperConstants.FEEDER_GEAR_RATIO),
-            new HopperMotorIOSim(HopperConstants.LIFTER_GEAR_RATIO));
+            new MotorIOSim(DCMotor.getNEO(1), HopperConstants.FEEDER_CONSTANTS, 0.1),
+            new MotorIOSim(DCMotor.getNEO(1), HopperConstants.LIFTER_CONSTANTS, 0.1));
 
       default:
-        return new Hopper(new HopperMotorIO() {}, new HopperMotorIO() {});
+        return new Hopper(new MotorIO() {}, new MotorIO() {});
     }
   }
 }
