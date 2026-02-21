@@ -18,74 +18,72 @@ import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.util.Units;
 import frc.robot.utility.SparkUtil;
 
-/** Module IO implementation for SparkMax drive motor controller */
+/** Motor IO implementation for SparkMax motor controller */
 public class MotorIOSparkMax implements MotorIO {
 
-  private final SparkMax driveSpark;
-  private final RelativeEncoder driveRelativeEncoder;
-  private final SparkClosedLoopController driveFeedback;
+  private final SparkMax motor;
+  private final RelativeEncoder relativeEncoder;
+  private final SparkClosedLoopController feedback;
 
-  private boolean driveBreakMode = true;
+  private boolean brakeMode = true;
 
-  private final Debouncer driveConnectedDebounce = new Debouncer(0.5);
+  private final Debouncer connectedDebouncer = new Debouncer(0.5);
 
-  public MotorIOSparkMax(VelocityMotorConfig config) {
+  public MotorIOSparkMax(VelocityMotorConstants constants) {
 
-    driveSpark = new SparkMax(config.deviceId(), MotorType.kBrushless);
-    driveRelativeEncoder = driveSpark.getEncoder();
-    driveFeedback = driveSpark.getClosedLoopController();
+    motor = new SparkMax(constants.deviceId(), MotorType.kBrushless);
+    relativeEncoder = motor.getEncoder();
+    feedback = motor.getClosedLoopController();
 
-    driveBreakMode = config.brakeMode();
+    brakeMode = constants.brakeMode();
 
-    // Configure drive motor
-    SparkMaxConfig driveConfig = new SparkMaxConfig();
-    driveConfig
-        .idleMode(driveBreakMode ? IdleMode.kBrake : IdleMode.kCoast)
-        .smartCurrentLimit((int) config.stallCurrent())
+    SparkMaxConfig config = new SparkMaxConfig();
+    config
+        .idleMode(brakeMode ? IdleMode.kBrake : IdleMode.kCoast)
+        .smartCurrentLimit((int) constants.stallCurrent())
         .voltageCompensation(12.0);
-    driveConfig
+    config
         .encoder
-        .positionConversionFactor(config.gearRatio())
-        .velocityConversionFactor(config.gearRatio());
-    driveConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(0.0, 0.0, 0.0);
+        .positionConversionFactor(constants.gearRatio())
+        .velocityConversionFactor(constants.gearRatio());
+    config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(0.0, 0.0, 0.0);
     tryUntilOk(
-        driveSpark,
+        motor,
         5,
         () ->
-            driveSpark.configure(
-                driveConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
-    tryUntilOk(driveSpark, 5, () -> driveRelativeEncoder.setPosition(0.0));
+            motor.configure(
+                config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
+    tryUntilOk(motor, 5, () -> relativeEncoder.setPosition(0.0));
   }
 
   @Override
   public void updateInputs(MotorIOInputs inputs) {
 
-    // --- Drive ---
     SparkUtil.clearError();
     ifOk(
-        driveSpark,
-        driveRelativeEncoder::getPosition,
-        value -> inputs.drivePositionRad = Units.rotationsToRadians(value));
+        motor,
+        relativeEncoder::getPosition,
+        value -> inputs.positionRad = Units.rotationsToRadians(value));
     ifOk(
-        driveSpark,
-        driveRelativeEncoder::getVelocity,
-        value -> inputs.driveVelocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(value));
+        motor,
+        relativeEncoder::getVelocity,
+        value -> inputs.velocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(value));
     ifOk(
-        driveSpark,
-        () -> driveSpark.getAppliedOutput() * driveSpark.getBusVoltage(),
-        value -> inputs.driveAppliedVolts = value);
-    ifOk(driveSpark, driveSpark::getOutputCurrent, value -> inputs.driveSupplyCurrentAmps = value);
-    inputs.driveMotorConnected = driveConnectedDebounce.calculate(!SparkUtil.hasError());
+        motor,
+        () -> motor.getAppliedOutput() * motor.getBusVoltage(),
+        value -> inputs.appliedVolts = value);
+    ifOk(motor, motor::getOutputCurrent, value -> inputs.supplyCurrentAmps = value);
+    inputs.motorConnected = connectedDebouncer.calculate(!SparkUtil.hasError());
   }
 
   @Override
-  public void setDriveOpenLoop(double output) {
-    driveSpark.setVoltage(output);
+  public void setOpenLoop(double output) {
+    motor.setVoltage(output);
   }
 
   @Override
-  public void setDriveVelocity(double velocityRadsPerSec, double feedforward) {
-    driveFeedback.setSetpoint(
+  public void setVelocity(double velocityRadsPerSec, double feedforward) {
+    feedback.setSetpoint(
         Units.radiansPerSecondToRotationsPerMinute(velocityRadsPerSec),
         ControlType.kVelocity,
         ClosedLoopSlot.kSlot0,
@@ -94,34 +92,34 @@ public class MotorIOSparkMax implements MotorIO {
   }
 
   @Override
-  public void setDrivePID(double kP, double kI, double kD) {
-    SparkMaxConfig driveConfig = new SparkMaxConfig();
-    driveConfig.closedLoop.pid(kP, kI, kD);
+  public void setPID(double kP, double kI, double kD) {
+    SparkMaxConfig config = new SparkMaxConfig();
+    config.closedLoop.pid(kP, kI, kD);
     tryUntilOk(
-        driveSpark,
+        motor,
         5,
         () ->
-            driveSpark.configure(
-                driveConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters));
+            motor.configure(
+                config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters));
   }
 
   @Override
-  public void setDriveBrakeMode(boolean enable) {
-    if (driveBreakMode != enable) {
-      driveBreakMode = enable;
-      SparkMaxConfig driveConfig = new SparkMaxConfig();
-      driveConfig.idleMode(enable ? IdleMode.kBrake : IdleMode.kCoast);
+  public void setBrakeMode(boolean enable) {
+    if (brakeMode != enable) {
+      brakeMode = enable;
+      SparkMaxConfig config = new SparkMaxConfig();
+      config.idleMode(enable ? IdleMode.kBrake : IdleMode.kCoast);
       tryUntilOk(
-          driveSpark,
+          motor,
           5,
           () ->
-              driveSpark.configure(
-                  driveConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters));
+              motor.configure(
+                  config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters));
     }
   }
 
   @Override
   public void stop() {
-    driveSpark.stopMotor();
+    motor.stopMotor();
   }
 }

@@ -11,22 +11,21 @@ import frc.robot.Constants;
 /** Physics sim implementation of motor IO. */
 public class MotorIOSim implements MotorIO {
 
-  private final DCMotorSim driveSim;
+  private final DCMotorSim sim;
 
-  private double driveAppliedVolts = 0.0;
+  private double appliedVolts = 0.0;
 
-  private final PIDController driveFeedback;
+  private final PIDController feedback;
 
-  private boolean driveClosedLoop = false;
-  private double driveFFVolts = 0;
+  private boolean closedLoop = false;
+  private double FFVolts = 0;
 
-  private MotorIOSim(DCMotorSim driveMotor) {
-    this.driveSim = driveMotor;
-
-    this.driveFeedback = new PIDController(0.0, 0.0, 0.0, Constants.LOOP_PERIOD_SECONDS);
+  private MotorIOSim(DCMotorSim motor) {
+    this.sim = motor;
+    this.feedback = new PIDController(0.0, 0.0, 0.0, Constants.LOOP_PERIOD_SECONDS);
   }
 
-  public MotorIOSim(DCMotor motor, VelocityMotorConfig config, double JKgMetersSquared) {
+  public MotorIOSim(DCMotor motor, VelocityMotorConstants config, double JKgMetersSquared) {
     this(
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(motor, JKgMetersSquared, config.gearRatio()),
@@ -36,52 +35,52 @@ public class MotorIOSim implements MotorIO {
   @Override
   public void updateInputs(MotorIOInputs inputs) {
 
-    if (driveClosedLoop) {
-      driveAppliedVolts =
-          driveFeedback.calculate(driveSim.getAngularVelocityRadPerSec()) + driveFFVolts;
+    if (closedLoop) {
+      appliedVolts =
+          feedback.calculate(sim.getAngularVelocityRadPerSec()) + FFVolts;
     } else {
-      driveFeedback.reset();
+      feedback.reset();
     }
 
     if (DriverStation.isDisabled()) {
-      driveAppliedVolts = 0.0;
+      appliedVolts = 0.0;
     }
 
     // Update simulation state
-    driveSim.setInputVoltage(MathUtil.clamp(driveAppliedVolts, -12.0, 12.0));
-    driveSim.update(Constants.LOOP_PERIOD_SECONDS);
+    sim.setInputVoltage(MathUtil.clamp(appliedVolts, -12.0, 12.0));
+    sim.update(Constants.LOOP_PERIOD_SECONDS);
 
     // --- Drive ---
-    inputs.driveMotorConnected = true;
-    inputs.drivePositionRad = driveSim.getAngularPositionRad();
-    inputs.driveVelocityRadPerSec = driveSim.getAngularVelocityRadPerSec();
-    inputs.driveAppliedVolts = driveAppliedVolts;
-    inputs.driveSupplyCurrentAmps = Math.abs(driveSim.getCurrentDrawAmps());
+    inputs.motorConnected = true;
+    inputs.positionRad = sim.getAngularPositionRad();
+    inputs.velocityRadPerSec = sim.getAngularVelocityRadPerSec();
+    inputs.appliedVolts = appliedVolts;
+    inputs.supplyCurrentAmps = Math.abs(sim.getCurrentDrawAmps());
   }
 
   @Override
-  public void setDriveOpenLoop(double volts) {
-    driveClosedLoop = false;
-    driveAppliedVolts = volts;
+  public void setOpenLoop(double volts) {
+    closedLoop = false;
+    appliedVolts = volts;
   }
 
   @Override
-  public void setDriveVelocity(double velocityRadsPerSec, double feedforward) {
-    driveClosedLoop = true;
-    driveFFVolts = feedforward;
-    driveFeedback.setSetpoint(velocityRadsPerSec);
+  public void setVelocity(double velocityRadsPerSec, double feedforward) {
+    closedLoop = true;
+    FFVolts = feedforward;
+    feedback.setSetpoint(velocityRadsPerSec);
   }
 
   @Override
-  public void setDrivePID(double kP, double kI, double kD) {
-    driveFeedback.setPID(kP, kI, kD);
+  public void setPID(double kP, double kI, double kD) {
+    feedback.setPID(kP, kI, kD);
   }
 
   @Override
-  public void setDriveBrakeMode(boolean enable) {}
+  public void setBrakeMode(boolean enable) {}
 
   @Override
   public void stop() {
-    setDriveOpenLoop(0);
+    setOpenLoop(0);
   }
 }

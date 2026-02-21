@@ -35,96 +35,87 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 
-/** Module IO implementation for Talon FX drive motor controller. */
+/** Motor IO implementation for Talon FX motor controller. */
 public class MotorIOTalonFX implements MotorIO {
-  // Hardware objects
-  private final TalonFX driveTalon;
 
-  // Config
-  private final TalonFXConfiguration driveConfig = new TalonFXConfiguration();
+  private final TalonFX motor;
+  private final TalonFXConfiguration config = new TalonFXConfiguration();
 
-  // Voltage control requests
   private final VoltageOut voltageRequest = new VoltageOut(0);
   private final VelocityVoltage velocityVoltageRequest = new VelocityVoltage(0.0);
 
-  // Torque-current control requests
   private final TorqueCurrentFOC torqueCurrentRequest = new TorqueCurrentFOC(0);
   private final VelocityTorqueCurrentFOC velocityTorqueCurrentRequest =
       new VelocityTorqueCurrentFOC(0.0);
 
-  // Inputs from drive motor
-  private final StatusSignal<Angle> drivePosition;
-  private final StatusSignal<AngularVelocity> driveVelocity;
-  private final StatusSignal<Voltage> driveAppliedVolts;
-  private final StatusSignal<Current> driveCurrent;
+  private final StatusSignal<Angle> position;
+  private final StatusSignal<AngularVelocity> veclity;
+  private final StatusSignal<Voltage> appliedVolts;
+  private final StatusSignal<Current> current;
 
   private final ClosedLoopOutputType outputType;
 
-  // Break or coast mode
-  private boolean driveBrakeMode = true;
+  private boolean brakeMode = true;
 
   // Connection debouncers
-  private final Debouncer driveConnectedDebounce = new Debouncer(0.5);
+  private final Debouncer connectedDebouncer = new Debouncer(0.5);
 
-  public MotorIOTalonFX(VelocityMotorConfig config) {
-    this(config, ClosedLoopOutputType.TorqueCurrentFOC);
+  public MotorIOTalonFX(VelocityMotorConstants constants) {
+    this(constants, ClosedLoopOutputType.TorqueCurrentFOC);
   }
 
-  public MotorIOTalonFX(VelocityMotorConfig config, ClosedLoopOutputType outputType) {
+  public MotorIOTalonFX(VelocityMotorConstants constants, ClosedLoopOutputType outputType) {
 
-    driveTalon = new TalonFX(config.deviceId());
+    motor = new TalonFX(constants.deviceId());
 
-    driveBrakeMode = config.brakeMode();
+    brakeMode = constants.brakeMode();
     this.outputType = outputType;
 
-    // Configure drive motor
-    driveConfig.MotorOutput.NeutralMode =
-        driveBrakeMode ? NeutralModeValue.Brake : NeutralModeValue.Coast;
-    driveConfig.Slot0 = new Slot0Configs();
-    driveConfig.Feedback.SensorToMechanismRatio = config.gearRatio();
-    driveConfig.TorqueCurrent.PeakForwardTorqueCurrent = config.stallCurrent();
-    driveConfig.TorqueCurrent.PeakReverseTorqueCurrent = -config.stallCurrent();
-    driveConfig.CurrentLimits.StatorCurrentLimit = config.stallCurrent();
-    driveConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-    driveConfig.MotorOutput.Inverted =
-        config.inverted()
+    config.MotorOutput.NeutralMode =
+        brakeMode ? NeutralModeValue.Brake : NeutralModeValue.Coast;
+    config.Slot0 = new Slot0Configs();
+    config.Feedback.SensorToMechanismRatio = constants.gearRatio();
+    config.TorqueCurrent.PeakForwardTorqueCurrent = constants.stallCurrent();
+    config.TorqueCurrent.PeakReverseTorqueCurrent = -constants.stallCurrent();
+    config.CurrentLimits.StatorCurrentLimit = constants.stallCurrent();
+    config.CurrentLimits.StatorCurrentLimitEnable = true;
+    config.MotorOutput.Inverted =
+        constants.inverted()
             ? InvertedValue.Clockwise_Positive
             : InvertedValue.CounterClockwise_Positive;
-    tryUntilOk(5, () -> driveTalon.getConfigurator().apply(driveConfig, 0.25));
-    tryUntilOk(5, () -> driveTalon.setPosition(0.0, 0.25));
+    tryUntilOk(5, () -> motor.getConfigurator().apply(config, 0.25));
+    tryUntilOk(5, () -> motor.setPosition(0.0, 0.25));
 
-    drivePosition = driveTalon.getPosition();
-    driveVelocity = driveTalon.getVelocity();
-    driveAppliedVolts = driveTalon.getMotorVoltage();
-    driveCurrent = driveTalon.getStatorCurrent();
+    position = motor.getPosition();
+    veclity = motor.getVelocity();
+    appliedVolts = motor.getMotorVoltage();
+    current = motor.getStatorCurrent();
 
     BaseStatusSignal.setUpdateFrequencyForAll(
-        50.0, drivePosition, driveVelocity, driveAppliedVolts, driveCurrent);
-    ParentDevice.optimizeBusUtilizationForAll(driveTalon);
+        50.0, position, veclity, appliedVolts, current);
+    ParentDevice.optimizeBusUtilizationForAll(motor);
   }
 
   @Override
   public void updateInputs(MotorIOInputs inputs) {
-    // Refresh all signals
-    var driveStatus =
-        BaseStatusSignal.refreshAll(drivePosition, driveVelocity, driveAppliedVolts, driveCurrent);
+    var status =
+        BaseStatusSignal.refreshAll(position, veclity, appliedVolts, current);
 
-    // Update drive inputs
-    inputs.driveMotorConnected = driveConnectedDebounce.calculate(driveStatus.isOK());
-    inputs.drivePositionRad = Units.rotationsToRadians(drivePosition.getValueAsDouble());
-    inputs.driveVelocityRadPerSec = Units.rotationsToRadians(driveVelocity.getValueAsDouble());
-    inputs.driveAppliedVolts = driveAppliedVolts.getValueAsDouble();
-    inputs.driveSupplyCurrentAmps = driveCurrent.getValueAsDouble();
+    inputs.motorConnected = connectedDebouncer.calculate(status.isOK());
+    inputs.positionRad = Units.rotationsToRadians(position.getValueAsDouble());
+    inputs.velocityRadPerSec = Units.rotationsToRadians(veclity.getValueAsDouble());
+    inputs.appliedVolts = appliedVolts.getValueAsDouble();
+    inputs.supplyCurrentAmps = current.getValueAsDouble();
   }
 
   @Override
-  public void setDriveOpenLoop(double output) {
+  public void setOpenLoop(double output) {
     if (output == 0) {
-      driveTalon.stopMotor();
+      motor.stopMotor();
       return;
     }
 
-    driveTalon.setControl(
+    motor.setControl(
         switch (outputType) {
           case Voltage -> voltageRequest.withOutput(output);
           case TorqueCurrentFOC -> torqueCurrentRequest.withOutput(output);
@@ -132,14 +123,14 @@ public class MotorIOTalonFX implements MotorIO {
   }
 
   @Override
-  public void setDriveVelocity(double velocityRadPerSec, double feedfowrad) {
+  public void setVelocity(double velocityRadPerSec, double feedfowrad) {
     if (velocityRadPerSec == 0) {
-      driveTalon.stopMotor();
+      motor.stopMotor();
       return;
     }
 
     double velocityRotPerSec = Units.radiansToRotations(velocityRadPerSec);
-    driveTalon.setControl(
+    motor.setControl(
         switch (outputType) {
           case Voltage -> velocityVoltageRequest
               .withVelocity(velocityRotPerSec)
@@ -151,23 +142,23 @@ public class MotorIOTalonFX implements MotorIO {
   }
 
   @Override
-  public void setDriveBrakeMode(boolean enable) {
-    if (this.driveBrakeMode != enable) {
-      this.driveBrakeMode = enable;
-      driveTalon.setNeutralMode(enable ? NeutralModeValue.Brake : NeutralModeValue.Coast);
+  public void setBrakeMode(boolean enable) {
+    if (this.brakeMode != enable) {
+      this.brakeMode = enable;
+      motor.setNeutralMode(enable ? NeutralModeValue.Brake : NeutralModeValue.Coast);
     }
   }
 
   @Override
-  public void setDrivePID(double kP, double kI, double kD) {
-    driveConfig.Slot0.kP = kP;
-    driveConfig.Slot0.kI = kI;
-    driveConfig.Slot0.kD = kD;
-    tryUntilOk(5, () -> driveTalon.getConfigurator().apply(driveConfig, 0.25));
+  public void setPID(double kP, double kI, double kD) {
+    config.Slot0.kP = kP;
+    config.Slot0.kI = kI;
+    config.Slot0.kD = kD;
+    tryUntilOk(5, () -> motor.getConfigurator().apply(config, 0.25));
   }
 
   @Override
   public void stop() {
-    driveTalon.stopMotor();
+    motor.stopMotor();
   }
 }
