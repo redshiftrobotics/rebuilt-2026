@@ -15,7 +15,6 @@ import frc.robot.subsystems.common.velocityMotor.MotorIOInputsAutoLogged;
 import frc.robot.subsystems.common.velocityMotor.MotorIOSim;
 import frc.robot.subsystems.common.velocityMotor.MotorIOSparkMax;
 import frc.robot.subsystems.hopper.HopperConstants.HopperRunMode;
-import frc.robot.utility.tunable.TunableNumbers.TunablePID;
 import org.littletonrobotics.junction.Logger;
 
 public class Hopper extends SubsystemBase {
@@ -92,7 +91,7 @@ public class Hopper extends SubsystemBase {
   public void setMode(HopperRunMode mode) {
 
     setpointVisualizer.update(
-      mode.feederDutyCycle * HopperConstants.MAX_FEEDER_SPEED,
+        mode.feederDutyCycle * HopperConstants.MAX_FEEDER_SPEED,
         mode.lifterDutyCycle * HopperConstants.MAX_LIFTER_SPEED);
 
     if (mode == HopperRunMode.STOPPED) {

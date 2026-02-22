@@ -38,5 +38,4 @@ public class HopperConstants {
       FEEDER_MOTOR.withReduction(1.0 / FEEDER_CONSTANTS.gearRatio()).freeSpeedRadPerSec;
   public static final double MAX_LIFTER_SPEED =
       LIFTER_MOTOR.withReduction(1.0 / LIFTER_CONSTANTS.gearRatio()).freeSpeedRadPerSec;
-
 }
