@@ -32,9 +32,6 @@ public class Hopper extends SubsystemBase {
   private final Alert lifterMotorDisconnectedAlert =
       new Alert("Lifter motor disconnected", AlertType.kError);
 
-  private final TunablePID lifterPidConfig =
-      new TunablePID(getName() + "/LifterPID", HopperConstants.LIFTER_PID);
-
   /* Mechanism visualization */
   private final HopperVisualizer measuredVisualizer;
   private final HopperVisualizer setpointVisualizer;
@@ -45,8 +42,6 @@ public class Hopper extends SubsystemBase {
   public Hopper(MotorIO feederIO, MotorIO lifterIO) {
     this.feederIO = feederIO;
     this.lifterIO = lifterIO;
-
-    lifterIO.setPID(HopperConstants.LIFTER_PID);
 
     measuredVisualizer = new HopperVisualizer(getName() + "/Visuization/Measured", Color.kRed, 0);
     setpointVisualizer =
@@ -80,8 +75,6 @@ public class Hopper extends SubsystemBase {
     Logger.processInputs(getName() + "/Feeder", feederInputs);
     Logger.processInputs(getName() + "/Lifter", lifterInputs);
 
-    lifterPidConfig.ifChanged(hashCode(), lifterIO::setPID);
-
     feederDisconnectedAlert.set(!feederInputs.motorConnected);
     lifterMotorDisconnectedAlert.set(!lifterInputs.motorConnected);
 
@@ -93,27 +86,27 @@ public class Hopper extends SubsystemBase {
   }
 
   public void stopAll() {
-    runMode = HopperConstants.HopperRunMode.STOPPED;
-    setpointVisualizer.update(0.0, 0.0);
-    feederIO.stop();
-    lifterIO.stop();
+    setMode(HopperConstants.HopperRunMode.STOPPED);
   }
 
-  public void setMode(HopperConstants.HopperRunMode mode) {
-    runMode = mode;
-    if (mode == HopperConstants.HopperRunMode.STOPPED) {
-      stopAll();
-      return;
-    }
-    feederIO.setDutyCycle(mode.feederDutyCycle);
-    lifterIO.setDutyCycle(mode.lifterDutyCycle);
+  public void setMode(HopperRunMode mode) {
 
     setpointVisualizer.update(
-        mode.feederDutyCycle * HopperConstants.MAX_FEEDER_SPEED,
+      mode.feederDutyCycle * HopperConstants.MAX_FEEDER_SPEED,
         mode.lifterDutyCycle * HopperConstants.MAX_LIFTER_SPEED);
+
+    if (mode == HopperRunMode.STOPPED) {
+      lifterIO.stop();
+      feederIO.stop();
+    } else {
+      feederIO.setDutyCycle(mode.feederDutyCycle);
+      lifterIO.setDutyCycle(mode.lifterDutyCycle);
+    }
+
+    runMode = mode;
   }
 
-  public HopperConstants.HopperRunMode getCurrentRunMode() {
+  public HopperRunMode getCurrentRunMode() {
     return runMode;
   }
 
