@@ -33,7 +33,6 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeConstants.SlapdownConstants;
 import frc.robot.subsystems.led.BlinkenLEDPattern;
 import frc.robot.subsystems.led.LEDSubsystem;
-import frc.robot.subsystems.music.TalonOrchestra;
 import frc.robot.subsystems.outtake.Outtake;
 import frc.robot.subsystems.vision.AprilTagVision;
 import frc.robot.utility.Elastic;
@@ -331,13 +330,6 @@ public class RobotContainer {
 
     // Run the hopper motors in reverse to deal with jams
     xbox.start().whileTrue(hopper.runModeCommand(HopperRunMode.REVERSE).withName("Hopper Reverse"));
-
-    xbox.back()
-        .toggleOnTrue(
-            TalonOrchestra.getInstance()
-                .playSong()
-                .alongWith(Commands.print("ORCHESTRA"))
-                .withName("Play Song!"));
 
     xbox.pov(90)
         .onTrue(

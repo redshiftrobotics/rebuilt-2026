@@ -34,7 +34,6 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants;
-import frc.robot.subsystems.music.TalonOrchestra;
 import frc.robot.utility.records.FeedForwardConfigRecord;
 import frc.robot.utility.records.PIDConfig;
 
@@ -95,7 +94,6 @@ public class MotorIOTalonFX implements MotorIO {
             : InvertedValue.CounterClockwise_Positive;
     config.Audio.BeepOnBoot = Constants.TALON_BEEP_ON_BOOT;
     config.Audio.BeepOnConfig = Constants.TALON_BEEP_ON_CONFIG;
-    config.Audio.AllowMusicDurDisable = true;
     pushConfig();
     tryUntilOk(5, () -> motor.setPosition(0.0, 0.25));
 
@@ -104,8 +102,6 @@ public class MotorIOTalonFX implements MotorIO {
     appliedVolts = motor.getMotorVoltage();
     current = motor.getStatorCurrent();
     dutyCycle = motor.getDutyCycle();
-
-    TalonOrchestra.getInstance().addInstrument(motor);
 
     ParentDevice.optimizeBusUtilizationForAll(motor);
   }

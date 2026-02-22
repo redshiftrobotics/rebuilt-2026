@@ -36,7 +36,6 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.subsystems.common.velocityMotor.MotorConstants;
-import frc.robot.subsystems.music.TalonOrchestra;
 import frc.robot.utility.records.FeedForwardConfigRecord;
 import frc.robot.utility.records.PIDConfig;
 
@@ -99,7 +98,6 @@ public class FlywheelIOTalonFX implements FlywheelIO {
 
     config.Audio.BeepOnBoot = Constants.TALON_BEEP_ON_BOOT;
     config.Audio.BeepOnConfig = Constants.TALON_BEEP_ON_CONFIG;
-    config.Audio.AllowMusicDurDisable = true;
 
     config.MotorOutput.PeakForwardDutyCycle = 1.0;
     config.MotorOutput.PeakReverseDutyCycle = -1.0 * peakReverse;
@@ -114,8 +112,6 @@ public class FlywheelIOTalonFX implements FlywheelIO {
     appliedVolts = motor.getMotorVoltage();
     current = motor.getStatorCurrent();
     dutyCycle = motor.getDutyCycle();
-
-    TalonOrchestra.getInstance().addInstrument(motor);
 
     ParentDevice.optimizeBusUtilizationForAll(motor);
   }
