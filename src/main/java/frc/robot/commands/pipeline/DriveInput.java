@@ -44,7 +44,7 @@ public class DriveInput {
         new ChassisSpeeds(linearVelocity.getX(), linearVelocity.getY(), angularVelocity);
 
     headingTarget.ifPresent(headingController::setGoal);
-    if (headingTarget.isPresent() || holdHeading) {
+    if (headingTarget.isPresent() || (holdHeading && chassisSpeeds.omegaRadiansPerSecond == 0)) {
       double raw = headingController.calculate(); // must call calculate to update atGoal()
       chassisSpeeds.omegaRadiansPerSecond = headingController.atGoal() ? 0 : raw;
     }
@@ -95,7 +95,6 @@ public class DriveInput {
   public DriveInput angularVelocity(double angularVelocity) {
     this.angularVelocity = angularVelocity;
     this.headingTarget = Optional.empty();
-    this.holdHeading = false;
     return this;
   }
 
@@ -127,13 +126,24 @@ public class DriveInput {
   }
 
   /**
-   * Clears the heading target and stops any angular velocity.
+   * Enables hold heading mode, which tries to maintain the current heading when no angular velocity
+   * is commanded.
+   *
+   * @return this
+   */
+  public DriveInput passiveHoldHeading() {
+    this.holdHeading = true;
+    return this;
+  }
+
+  /**
+   * Enables hold heading mode and sets the angular velocity to 0, which tries to maintain the
+   * current heading.
    *
    * @return this
    */
   public DriveInput holdHeading() {
-    this.holdHeading = true;
-    return this;
+    return passiveHoldHeading().angularVelocity(0);
   }
 
   /**
