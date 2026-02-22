@@ -160,8 +160,7 @@ public class DriverDashboard {
                   null);
               builder.addDoubleProperty(
                   moduleNames[i] + " Velocity",
-                  () ->
-                      wheelStatesSupplier.get()[index].speedMetersPerSecond,
+                  () -> wheelStatesSupplier.get()[index].speedMetersPerSecond,
                   null);
             }
 
