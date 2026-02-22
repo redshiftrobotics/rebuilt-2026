@@ -19,8 +19,8 @@ public class DriveRotationController {
   private static final TunableNumberGroup factory = new TunableNumberGroup("HeadingController/");
 
   private static final TunablePID PID = factory.pid("PID", HEADING_CONTROLLER_CONFIG.pid());
-  private static final TunableNumber tolerenceDegrees =
-      factory.number("tolerenceDegrees", HEADING_CONTROLLER_CONFIG.tolerance().getDegrees());
+  private static final TunableNumber positionToleranceDegrees =
+      factory.number("toleranceDegrees", HEADING_CONTROLLER_CONFIG.positionTolerance().getDegrees());
 
   private static final TunableNumber angularVelocity =
       factory.number("kAngularVelocity", DRIVE_CONFIG.maxAngularVelocity());
@@ -42,8 +42,8 @@ public class DriveRotationController {
 
     controller.enableContinuousInput(-Math.PI, Math.PI);
     controller.setTolerance(
-        Units.degreesToRadians(tolerenceDegrees.get()),
-        HEADING_CONTROLLER_CONFIG.velocityTolerence().getRadians());
+        Units.degreesToRadians(positionToleranceDegrees.get()),
+        HEADING_CONTROLLER_CONFIG.velocityTolerance().getRadians());
 
     reset();
   }
@@ -61,7 +61,7 @@ public class DriveRotationController {
   public double calculate() {
 
     PID.ifChanged(hashCode(), pid -> controller.setPID(pid.kP(), pid.kI(), pid.kD()));
-    tolerenceDegrees.ifChanged(hashCode(), (degrees) -> Units.degreesToRadians(degrees));
+    positionToleranceDegrees.ifChanged(hashCode(), (degrees) -> controller.setTolerance(Units.degreesToRadians(degrees)));
     TunableNumber.ifChanged(
         hashCode(),
         values -> controller.setConstraints(new Constraints(values[0], values[1])),

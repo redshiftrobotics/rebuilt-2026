@@ -172,7 +172,7 @@ public class DriveConstants {
   // --- Heading Controller Config ---
 
   public record HeadingControllerConfig(
-      PIDConfig pid, Rotation2d tolerance, Rotation2d velocityTolerence) {}
+      PIDConfig pid, Rotation2d positionTolerance, Rotation2d velocityTolerance) {}
 
   public static final HeadingControllerConfig HEADING_CONTROLLER_CONFIG =
       new HeadingControllerConfig(
