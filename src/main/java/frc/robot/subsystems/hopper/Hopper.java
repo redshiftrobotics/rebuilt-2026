@@ -106,10 +106,11 @@ public class Hopper extends SubsystemBase {
       return;
     }
     feederIO.setDutyCycle(mode.feederDutyCycle);
-    lifterIO.setVelocity(mode.lifterVelocityRadPerSec);
+    lifterIO.setDutyCycle(mode.lifterDutyCycle);
 
     setpointVisualizer.update(
-        mode.feederDutyCycle * HopperConstants.MAX_FEEDER_SPEED, mode.lifterVelocityRadPerSec);
+        mode.feederDutyCycle * HopperConstants.MAX_FEEDER_SPEED,
+        mode.lifterDutyCycle * HopperConstants.MAX_LIFTER_SPEED);
   }
 
   public HopperConstants.HopperRunMode getCurrentRunMode() {

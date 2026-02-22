@@ -342,13 +342,17 @@ public class RobotContainer {
     xbox.pov(90)
         .onTrue(
             Commands.runOnce(
-                () ->
-                    outtake.setRunningDesiredRadPerSec(outtake.getRunningDesiredRadPerSec() + 1)));
+                    () ->
+                        outtake.setRunningDesiredRadPerSec(
+                            outtake.getRunningDesiredRadPerSec() + 1))
+                .ignoringDisable(true));
     xbox.pov(270)
         .onTrue(
             Commands.runOnce(
-                () ->
-                    outtake.setRunningDesiredRadPerSec(outtake.getRunningDesiredRadPerSec() - 1)));
+                    () ->
+                        outtake.setRunningDesiredRadPerSec(
+                            outtake.getRunningDesiredRadPerSec() - 1))
+                .ignoringDisable(true));
 
     // climb.setDefaultCommand(
     //     Commands.run(() -> climb.setSpeed(MathUtil.applyDeadband(xbox.getLeftY(), 0.1)), climb));

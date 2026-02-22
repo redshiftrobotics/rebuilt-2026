@@ -249,11 +249,11 @@ public class DriveInput {
           .angularVelocity(translation.getY());
     }
 
-    Rotation2d targetAngle = linearVelocity.getAngle();
-
     if (linearVelocity.getNorm() < 0.25) {
       return angularVelocity(0);
     }
+
+    Rotation2d targetAngle = linearVelocity.getAngle();
 
     // If already facing the right way: cosine = 1, scale = 1
     // If sideways: cosine = 0, scale = 0

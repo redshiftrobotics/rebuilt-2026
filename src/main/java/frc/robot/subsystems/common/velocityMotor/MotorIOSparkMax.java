@@ -50,12 +50,7 @@ public class MotorIOSparkMax implements MotorIO {
         .encoder
         .positionConversionFactor(constants.gearRatio())
         .velocityConversionFactor(constants.gearRatio());
-    config
-        .closedLoop
-        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-        .pid(0.0, 0.0, 0.0)
-        .feedForward
-        .sva(0.0, 0.0, 0.0);
+    config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(0.0, 0.0, 0.0);
 
     tryUntilOk(motor, 5, () -> relativeEncoder.setPosition(0.0));
 
@@ -111,8 +106,8 @@ public class MotorIOSparkMax implements MotorIO {
 
   @Override
   public void setFF(FeedForwardConfigRecord ffConfig) {
-    config.closedLoop.feedForward.sva(ffConfig.kS(), ffConfig.kV(), ffConfig.kA());
-    pushConfig();
+    // config.closedLoop.feedForward.sva(ffConfig.kS(), ffConfig.kV(), ffConfig.kA());
+    // pushConfig();
   }
 
   @Override

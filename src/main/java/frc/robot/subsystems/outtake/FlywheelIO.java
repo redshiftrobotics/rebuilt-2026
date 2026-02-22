@@ -1,13 +1,13 @@
-package frc.robot.subsystems.common.velocityMotor;
+package frc.robot.subsystems.outtake;
 
 import frc.robot.utility.records.FeedForwardConfigRecord;
 import frc.robot.utility.records.PIDConfig;
 import org.littletonrobotics.junction.AutoLog;
 
 /** IO layer interface for motor hardware */
-public interface MotorIO {
+public interface FlywheelIO {
   @AutoLog
-  public static class MotorIOInputs {
+  public static class FlywheelIOInputs {
     public boolean motorConnected = true;
     public boolean pushedConfigFault = false;
 
@@ -19,7 +19,7 @@ public interface MotorIO {
   }
 
   /** Updates the set of loggable inputs. */
-  public default void updateInputs(MotorIOInputs inputs) {}
+  public default void updateInputs(FlywheelIOInputs inputs) {}
 
   /** Run the motor at duty cycle. */
   public default void setDutyCycle(double dutyCycle) {}

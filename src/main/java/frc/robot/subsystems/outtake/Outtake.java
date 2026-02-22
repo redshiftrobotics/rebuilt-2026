@@ -8,10 +8,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RobotType;
-import frc.robot.subsystems.common.velocityMotor.MotorIO;
-import frc.robot.subsystems.common.velocityMotor.MotorIOInputsAutoLogged;
-import frc.robot.subsystems.common.velocityMotor.MotorIOSim;
-import frc.robot.subsystems.common.velocityMotor.MotorIOSparkMax;
+import frc.robot.subsystems.outtake.FlywheelIOTalonFX.OutputType;
+import frc.robot.utility.tunable.TunableNumbers.TunableFF;
 import frc.robot.utility.tunable.TunableNumbers.TunablePID;
 import java.util.List;
 import org.littletonrobotics.junction.Logger;
@@ -19,27 +17,34 @@ import org.littletonrobotics.junction.Logger;
 public class Outtake extends SubsystemBase {
 
   public final TunablePID pidConfig = new TunablePID(getName() + "/PID", OuttakeConstants.PID);
+  public final TunableFF ffConfig = new TunableFF(getName() + "/FF", OuttakeConstants.FF);
 
-  private final MotorIO left;
-  private final MotorIO middle;
-  private final MotorIO right;
+  private final FlywheelIO left;
+  private final FlywheelIO middle;
+  private final FlywheelIO right;
+  private final List<FlywheelIO> motors;
 
-  private final MotorIOInputsAutoLogged leftInputs = new MotorIOInputsAutoLogged();
-  private final MotorIOInputsAutoLogged middleInputs = new MotorIOInputsAutoLogged();
-  private final MotorIOInputsAutoLogged rightInputs = new MotorIOInputsAutoLogged();
+  private final FlywheelIOInputsAutoLogged leftInputs = new FlywheelIOInputsAutoLogged();
+  private final FlywheelIOInputsAutoLogged middleInputs = new FlywheelIOInputsAutoLogged();
+  private final FlywheelIOInputsAutoLogged rightInputs = new FlywheelIOInputsAutoLogged();
 
   private final Alert leftMotorDisconnectedAlert =
-      new Alert("Left motor disconnected, ", AlertType.kError);
+      new Alert("Left flywheel motor disconnected, ", AlertType.kError);
   private final Alert middleMotorDisconnectedAlert =
-      new Alert("Middle motor disconnected", AlertType.kError);
+      new Alert("Middle flywheel motor disconnected", AlertType.kError);
   private final Alert rightMotorDisconnectedAlert =
-      new Alert("Right motor disconnected", AlertType.kError);
-  private final List<MotorIO> motors;
+      new Alert("Right flywheel motor disconnected", AlertType.kError);
+  private final Alert leftMotorConfigFailAlert =
+      new Alert("Left flywheel motor config fail, ", AlertType.kError);
+  private final Alert middleMotorConfigFailAlert =
+      new Alert("Middle flywheel motor config fail", AlertType.kError);
+  private final Alert rightMotorConfigFailAlert =
+      new Alert("Right flywheel motor config fail", AlertType.kError);
 
   private boolean running = false;
-  private double desiredRadPerSec = 15;
+  private double desiredRadPerSec = 9;
 
-  public Outtake(MotorIO left, MotorIO middle, MotorIO right) {
+  public Outtake(FlywheelIO left, FlywheelIO middle, FlywheelIO right) {
 
     this.left = left;
     this.middle = middle;
@@ -83,10 +88,14 @@ public class Outtake extends SubsystemBase {
     Logger.processInputs(getName() + "/Right", rightInputs);
 
     pidConfig.ifChanged(hashCode(), this::updatePID);
+    ffConfig.ifChanged(hashCode(), this::updateFF);
 
     leftMotorDisconnectedAlert.set(!leftInputs.motorConnected);
     middleMotorDisconnectedAlert.set(!middleInputs.motorConnected);
     rightMotorDisconnectedAlert.set(!rightInputs.motorConnected);
+    leftMotorConfigFailAlert.set(leftInputs.pushedConfigFault);
+    middleMotorConfigFailAlert.set(middleInputs.pushedConfigFault);
+    rightMotorConfigFailAlert.set(rightInputs.pushedConfigFault);
   }
 
   public Command runFlywheelsCommand() {
@@ -95,12 +104,13 @@ public class Outtake extends SubsystemBase {
 
   public void stopFlywheels() {
     running = false;
-    motors.forEach(MotorIO::stop);
+    motors.forEach(FlywheelIO::stop);
   }
 
   public void runFlywheels() {
     running = true;
     motors.forEach(m -> m.setVelocity(desiredRadPerSec));
+    // motors.forEach(m -> m.setDutyCycle(desiredRadPerSec / 100.0));
   }
 
   public double getRunningDesiredRadPerSec() {
@@ -110,7 +120,7 @@ public class Outtake extends SubsystemBase {
   public void setRunningDesiredRadPerSec(double desiredRadPerSec) {
     this.desiredRadPerSec = desiredRadPerSec;
     if (running) {
-      motors.forEach(m -> m.setVelocity(desiredRadPerSec));
+      runFlywheels();
     }
   }
 
@@ -118,20 +128,25 @@ public class Outtake extends SubsystemBase {
     motors.forEach(m -> m.setPID(pidConfig.get()));
   }
 
+  private void updateFF() {
+    motors.forEach(m -> m.setFF(ffConfig.get()));
+  }
+
   public static Outtake create(RobotType robotType) {
     switch (robotType) {
       case REBUILT_2026:
         return new Outtake(
-            new MotorIOSparkMax(OuttakeConstants.LEFT_CONSTANTS),
-            new MotorIOSparkMax(OuttakeConstants.MIDDLE_CONSTANTS),
-            new MotorIOSparkMax(OuttakeConstants.RIGHT_CONSTANTS));
+            new FlywheelIOTalonFX(OuttakeConstants.LEFT_CONSTANTS, OutputType.Voltage),
+            new FlywheelIOTalonFX(OuttakeConstants.MIDDLE_CONSTANTS, OutputType.Voltage),
+            // new FlywheelIOTalonFX(OuttakeConstants.RIGHT_CONSTANTS));
+            new FlywheelIO() {});
       case SIM_BOT:
         return new Outtake(
-            new MotorIOSim(OuttakeConstants.MOTOR, OuttakeConstants.MIDDLE_CONSTANTS, 0.1),
-            new MotorIOSim(OuttakeConstants.MOTOR, OuttakeConstants.MIDDLE_CONSTANTS, 0.1),
-            new MotorIOSim(OuttakeConstants.MOTOR, OuttakeConstants.MIDDLE_CONSTANTS, 0.1));
+            new FlywheelIOSim(OuttakeConstants.MOTOR, OuttakeConstants.MIDDLE_CONSTANTS, 0.1),
+            new FlywheelIOSim(OuttakeConstants.MOTOR, OuttakeConstants.MIDDLE_CONSTANTS, 0.1),
+            new FlywheelIOSim(OuttakeConstants.MOTOR, OuttakeConstants.MIDDLE_CONSTANTS, 0.1));
       default:
-        return new Outtake(new MotorIO() {}, new MotorIO() {}, new MotorIO() {});
+        return new Outtake(new FlywheelIO() {}, new FlywheelIO() {}, new FlywheelIO() {});
     }
   }
 }

@@ -11,7 +11,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-package frc.robot.subsystems.common.velocityMotor;
+package frc.robot.subsystems.outtake;
 
 import static frc.robot.utility.PhoenixUtil.*;
 
@@ -33,13 +33,15 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
+import frc.robot.subsystems.common.velocityMotor.MotorConstants;
 import frc.robot.subsystems.music.TalonOrchestra;
 import frc.robot.utility.records.FeedForwardConfigRecord;
 import frc.robot.utility.records.PIDConfig;
 
 /** Motor IO implementation for Talon FX motor controller. */
-public class MotorIOTalonFX implements MotorIO {
+public class FlywheelIOTalonFX implements FlywheelIO {
 
   private final TalonFX motor;
   private final TalonFXConfiguration config = new TalonFXConfiguration();
@@ -68,36 +70,44 @@ public class MotorIOTalonFX implements MotorIO {
 
   private boolean brakeMode = true;
 
-  // Connection debouncers
   private final Debouncer connectedDebouncer = new Debouncer(0.5);
 
-  public MotorIOTalonFX(MotorConstants constants) {
+  public FlywheelIOTalonFX(MotorConstants constants) {
     this(constants, OutputType.TorqueCurrentFOC);
   }
 
-  public MotorIOTalonFX(MotorConstants constants, OutputType outputType) {
+  public FlywheelIOTalonFX(MotorConstants constants, OutputType outputType) {
 
     motor = new TalonFX(constants.deviceId());
 
     brakeMode = constants.brakeMode();
     this.outputType = outputType;
 
+    final double peakReverse = 0;
+
     config.MotorOutput.NeutralMode = brakeMode ? NeutralModeValue.Brake : NeutralModeValue.Coast;
     config.Slot0 = new Slot0Configs();
     config.Feedback.SensorToMechanismRatio = constants.gearRatio();
     config.TorqueCurrent.PeakForwardTorqueCurrent = constants.stallCurrent();
-    config.TorqueCurrent.PeakReverseTorqueCurrent = -constants.stallCurrent();
+    config.TorqueCurrent.PeakReverseTorqueCurrent = constants.stallCurrent() * peakReverse;
     config.CurrentLimits.StatorCurrentLimit = constants.stallCurrent();
     config.CurrentLimits.StatorCurrentLimitEnable = true;
     config.MotorOutput.Inverted =
         constants.inverted()
             ? InvertedValue.Clockwise_Positive
             : InvertedValue.CounterClockwise_Positive;
+
     config.Audio.BeepOnBoot = Constants.TALON_BEEP_ON_BOOT;
     config.Audio.BeepOnConfig = Constants.TALON_BEEP_ON_CONFIG;
     config.Audio.AllowMusicDurDisable = true;
+
+    config.MotorOutput.PeakForwardDutyCycle = 1.0;
+    config.MotorOutput.PeakReverseDutyCycle = -1.0 * peakReverse;
+
+    config.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = 1;
+    config.ClosedLoopRamps.TorqueClosedLoopRampPeriod = 1;
+
     pushConfig();
-    tryUntilOk(5, () -> motor.setPosition(0.0, 0.25));
 
     position = motor.getPosition();
     velocity = motor.getVelocity();
@@ -111,7 +121,7 @@ public class MotorIOTalonFX implements MotorIO {
   }
 
   @Override
-  public void updateInputs(MotorIOInputs inputs) {
+  public void updateInputs(FlywheelIOInputs inputs) {
     var status = BaseStatusSignal.refreshAll(position, velocity, appliedVolts, current, dutyCycle);
 
     inputs.motorConnected = connectedDebouncer.calculate(status.isOK());
@@ -140,7 +150,8 @@ public class MotorIOTalonFX implements MotorIO {
 
   @Override
   public void setVelocity(double velocityRadPerSec, double arbFeedforward) {
-    double velocityRotPerSec = Units.radiansPerSecondToRotationsPerMinute(velocityRadPerSec);
+    double velocityRotPerSec = Units.radiansToRotations(velocityRadPerSec);
+    SmartDashboard.putString("Flywheel Debug", "RadPerSec " + String.valueOf(velocityRadPerSec));
     motor.setControl(
         switch (outputType) {
           case Voltage -> velocityVoltageRequest
@@ -162,6 +173,7 @@ public class MotorIOTalonFX implements MotorIO {
 
   @Override
   public void setPID(PIDConfig pidConfig) {
+    SmartDashboard.putString("Flywheel Debug", pidConfig.toString());
     config.Slot0.kP = pidConfig.kP();
     config.Slot0.kI = pidConfig.kI();
     config.Slot0.kD = pidConfig.kD();
@@ -170,6 +182,7 @@ public class MotorIOTalonFX implements MotorIO {
 
   @Override
   public void setFF(FeedForwardConfigRecord ffConfig) {
+    SmartDashboard.putString("Flywheel Debug", ffConfig.toString());
     config.Slot0.kS = ffConfig.kS();
     config.Slot0.kV = ffConfig.kV();
     config.Slot0.kA = ffConfig.kA();
