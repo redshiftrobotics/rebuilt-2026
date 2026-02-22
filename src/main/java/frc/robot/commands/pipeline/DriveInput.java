@@ -22,6 +22,8 @@ public class DriveInput {
   public static final double JOYSTICK_DEADBAND = 0.15;
   public static final double JOYSTICK_ANGLE_DEADBAND = 0.8;
 
+  public static final double METERS_PER_SECOND_DEADBAND_LOCUST_MODE = 0.25;
+
   public static final double LINEAR_VELOCITY_EXPONENT = 1.75;
   public static final double ANGULAR_VELOCITY_EXPONENT = 2;
 
@@ -36,7 +38,7 @@ public class DriveInput {
   public ChassisSpeeds getChassisSpeeds(
       Rotation2d robotHeading, DriveRotationController headingController) {
 
-    applyLocustMode(robotHeading);
+    applyLocustModeIfEnabled(robotHeading);
 
     ChassisSpeeds chassisSpeeds =
         new ChassisSpeeds(linearVelocity.getX(), linearVelocity.getY(), angularVelocity);
@@ -160,6 +162,7 @@ public class DriveInput {
     Translation2d translation = new Translation2d(x, y);
 
     if (translation.getNorm() < JOYSTICK_ANGLE_DEADBAND) {
+      // when heading stick is used we should also actively hold the last heading
       return holdHeading();
     }
 
@@ -237,33 +240,44 @@ public class DriveInput {
 
   // --- Mode Specific Methods ---
 
-  private DriveInput applyLocustMode(Rotation2d robotHeading) {
+  /**
+   * If locust mode is enabled, this method modifies the linear and angular velocities to try and
+   * aim the robot in the direction of travel. This should only be called once a final linear
+   * velocity has been set.
+   *
+   * @param robotHeading The current heading of the robot
+   * @return this
+   */
+  private DriveInput applyLocustModeIfEnabled(Rotation2d robotHeading) {
 
     if (!locustMode) {
       return this;
     }
 
     if (!fieldRelative) {
+      // Locust mode requires field relative, this is a fallback option
       Translation2d translation = linearVelocity;
       return linearVelocity(new Translation2d(translation.getNorm(), 0))
           .angularVelocity(translation.getY());
     }
 
-    if (linearVelocity.getNorm() < 0.25) {
+    // Don't try and aim in direction of travel for small speeds
+    if (linearVelocity.getNorm() < METERS_PER_SECOND_DEADBAND_LOCUST_MODE) {
       return angularVelocity(0);
     }
 
+    // Get the direction we are driving
     Rotation2d targetAngle = linearVelocity.getAngle();
 
     // If already facing the right way: cosine = 1, scale = 1
     // If sideways: cosine = 0, scale = 0
     // If backwards: cosine = -1, scale = -0.05
     double cosign = targetAngle.minus(robotHeading).getCos();
-
     double scale = Math.max(cosign, cosign * 0.05);
+    // we want to give drivetrain time to rotate to heading before we start moving, and if we are
+    // facing the opposite direction (cosign is negative), we should reverse a little to get out of
+    // the way while our robot spins. If the reversing is not desired replace the multiplier with 0.
 
-    linearVelocity = linearVelocity.times(scale);
-
-    return headingTarget(targetAngle);
+    return linearCoefficient(scale).headingTarget(targetAngle);
   }
 }
