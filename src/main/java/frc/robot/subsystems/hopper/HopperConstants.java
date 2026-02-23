@@ -1,7 +1,7 @@
 package frc.robot.subsystems.hopper;
 
 import edu.wpi.first.math.system.plant.DCMotor;
-import frc.robot.subsystems.common.velocityMotor.MotorConstants;
+import frc.robot.subsystems.examples.flywheel.MotorConstants;
 
 public class HopperConstants {
 

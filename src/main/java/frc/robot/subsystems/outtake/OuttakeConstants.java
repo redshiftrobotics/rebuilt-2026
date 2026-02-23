@@ -2,21 +2,17 @@ package frc.robot.subsystems.outtake;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 import frc.robot.Constants;
-import frc.robot.subsystems.common.velocityMotor.MotorConstants;
+import frc.robot.subsystems.examples.flywheel.MotorConstants;
 import frc.robot.utility.records.FeedForwardConfigRecord;
 import frc.robot.utility.records.PIDConfig;
 
 public class OuttakeConstants {
+
   public static final DCMotor MOTOR = DCMotor.getKrakenX60(1);
 
-  public static final double STALL_CURRENT = 120;
-
-  public static final MotorConstants LEFT_CONSTANTS =
-      new MotorConstants(3, 1, false, false, STALL_CURRENT);
-  public static final MotorConstants MIDDLE_CONSTANTS =
-      new MotorConstants(4, 1, false, false, STALL_CURRENT);
-  public static final MotorConstants RIGHT_CONSTANTS =
-      new MotorConstants(15, 1, true, true, STALL_CURRENT);
+  public static final MotorConstants LEFT_CONSTANTS = new MotorConstants(3, 1, false, false, 120);
+  public static final MotorConstants MIDDLE_CONSTANTS = new MotorConstants(4, 1, false, false, 120);
+  public static final MotorConstants RIGHT_CONSTANTS = new MotorConstants(15, 1, true, true, 120);
 
   public static final PIDConfig PID =
       switch (Constants.getRobot()) {

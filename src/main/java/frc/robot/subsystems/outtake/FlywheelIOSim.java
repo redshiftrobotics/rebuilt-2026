@@ -5,17 +5,18 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.simulation.DCMotorSim;
+import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import frc.robot.Constants;
-import frc.robot.subsystems.common.velocityMotor.MotorConstants;
+import frc.robot.subsystems.examples.flywheel.MotorConstants;
 import frc.robot.utility.records.FeedForwardConfigRecord;
 import frc.robot.utility.records.PIDConfig;
 
 /** Physics sim implementation of motor IO. */
 public class FlywheelIOSim implements FlywheelIO {
 
-  private final DCMotorSim sim;
+  private final FlywheelSim sim;
 
   private double appliedVolts = 0.0;
 
@@ -27,15 +28,13 @@ public class FlywheelIOSim implements FlywheelIO {
   private boolean closedLoop = false;
   private double FFVolts = 0;
 
-  public FlywheelIOSim(DCMotorSim sim) {
-    this.sim = sim;
-  }
-
-  public FlywheelIOSim(DCMotor motor, MotorConstants config, double JKgMetersSquared) {
-    this(
-        new DCMotorSim(
-            LinearSystemId.createDCMotorSystem(motor, JKgMetersSquared, 1.0 / config.gearRatio()),
-            motor));
+  public FlywheelIOSim(MotorConstants constants) {
+    final DCMotor motor = DCMotor.getKrakenX60(1);
+    final double momentOfInertia = (1.0 / 2.0) * 0.362874 * Math.pow(Units.inchesToMeters(2.0), 2);
+    sim =
+        new FlywheelSim(
+            LinearSystemId.createFlywheelSystem(motor, momentOfInertia, constants.gearRatio()),
+            motor);
   }
 
   @Override
@@ -57,7 +56,6 @@ public class FlywheelIOSim implements FlywheelIO {
 
     // --- Drive ---
     inputs.motorConnected = true;
-    inputs.positionRad = sim.getAngularPositionRad();
     inputs.velocityRadPerSec = sim.getAngularVelocityRadPerSec();
     inputs.appliedVolts = appliedVolts;
     inputs.supplyCurrentAmps = Math.abs(sim.getCurrentDrawAmps());

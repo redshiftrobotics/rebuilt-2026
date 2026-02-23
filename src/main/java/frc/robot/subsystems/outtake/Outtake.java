@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RobotType;
-import frc.robot.subsystems.outtake.FlywheelIOTalonFX.OutputType;
 import frc.robot.utility.tunable.TunableNumbers.TunableFF;
 import frc.robot.utility.tunable.TunableNumbers.TunablePID;
 import java.util.List;
@@ -136,15 +135,15 @@ public class Outtake extends SubsystemBase {
     switch (robotType) {
       case REBUILT_2026:
         return new Outtake(
-            new FlywheelIOTalonFX(OuttakeConstants.LEFT_CONSTANTS, OutputType.Voltage),
-            new FlywheelIOTalonFX(OuttakeConstants.MIDDLE_CONSTANTS, OutputType.Voltage),
+            new FlywheelIOTalonFX(OuttakeConstants.LEFT_CONSTANTS),
+            new FlywheelIOTalonFX(OuttakeConstants.MIDDLE_CONSTANTS),
             // new FlywheelIOTalonFX(OuttakeConstants.RIGHT_CONSTANTS));
             new FlywheelIO() {});
       case SIM_BOT:
         return new Outtake(
-            new FlywheelIOSim(OuttakeConstants.MOTOR, OuttakeConstants.MIDDLE_CONSTANTS, 0.1),
-            new FlywheelIOSim(OuttakeConstants.MOTOR, OuttakeConstants.MIDDLE_CONSTANTS, 0.1),
-            new FlywheelIOSim(OuttakeConstants.MOTOR, OuttakeConstants.MIDDLE_CONSTANTS, 0.1));
+            new FlywheelIOSim(OuttakeConstants.LEFT_CONSTANTS),
+            new FlywheelIOSim(OuttakeConstants.MIDDLE_CONSTANTS),
+            new FlywheelIOSim(OuttakeConstants.RIGHT_CONSTANTS));
       default:
         return new Outtake(new FlywheelIO() {}, new FlywheelIO() {}, new FlywheelIO() {});
     }

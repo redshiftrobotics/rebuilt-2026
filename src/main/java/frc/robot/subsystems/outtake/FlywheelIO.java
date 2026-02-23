@@ -11,7 +11,6 @@ public interface FlywheelIO {
     public boolean motorConnected = true;
     public boolean pushedConfigFault = false;
 
-    public double positionRad = 0.0;
     public double velocityRadPerSec = 0.0;
     public double appliedVolts = 0.0;
     public double supplyCurrentAmps = 0.0;

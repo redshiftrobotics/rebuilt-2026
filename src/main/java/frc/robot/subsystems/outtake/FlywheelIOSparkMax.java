@@ -1,4 +1,4 @@
-package frc.robot.subsystems.common.velocityMotor;
+package frc.robot.subsystems.outtake;
 
 import static frc.robot.utility.SparkUtil.*;
 
@@ -16,12 +16,13 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.util.Units;
+import frc.robot.subsystems.examples.flywheel.MotorConstants;
 import frc.robot.utility.SparkUtil;
 import frc.robot.utility.records.FeedForwardConfigRecord;
 import frc.robot.utility.records.PIDConfig;
 
 /** Motor IO implementation for SparkMax motor controller */
-public class MotorIOSparkMax implements MotorIO {
+public class FlywheelIOSparkMax implements FlywheelIO {
 
   private final SparkMax motor;
   private final RelativeEncoder relativeEncoder;
@@ -33,7 +34,7 @@ public class MotorIOSparkMax implements MotorIO {
 
   private final Debouncer connectedDebouncer = new Debouncer(0.5);
 
-  public MotorIOSparkMax(MotorConstants constants) {
+  public FlywheelIOSparkMax(MotorConstants constants) {
 
     motor = new SparkMax(constants.deviceId(), MotorType.kBrushless);
     relativeEncoder = motor.getEncoder();
@@ -58,13 +59,9 @@ public class MotorIOSparkMax implements MotorIO {
   }
 
   @Override
-  public void updateInputs(MotorIOInputs inputs) {
+  public void updateInputs(FlywheelIOInputs inputs) {
 
     SparkUtil.clearError();
-    ifOk(
-        motor,
-        relativeEncoder::getPosition,
-        value -> inputs.positionRad = Units.rotationsToRadians(value));
     ifOk(
         motor,
         relativeEncoder::getVelocity,

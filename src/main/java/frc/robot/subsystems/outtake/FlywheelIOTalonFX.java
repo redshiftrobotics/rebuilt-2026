@@ -35,7 +35,7 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
-import frc.robot.subsystems.common.velocityMotor.MotorConstants;
+import frc.robot.subsystems.examples.flywheel.MotorConstants;
 import frc.robot.utility.records.FeedForwardConfigRecord;
 import frc.robot.utility.records.PIDConfig;
 
@@ -76,7 +76,6 @@ public class FlywheelIOTalonFX implements FlywheelIO {
   }
 
   public FlywheelIOTalonFX(MotorConstants constants, OutputType outputType) {
-
     motor = new TalonFX(constants.deviceId());
 
     brakeMode = constants.brakeMode();
@@ -121,7 +120,6 @@ public class FlywheelIOTalonFX implements FlywheelIO {
     var status = BaseStatusSignal.refreshAll(position, velocity, appliedVolts, current, dutyCycle);
 
     inputs.motorConnected = connectedDebouncer.calculate(status.isOK());
-    inputs.positionRad = Units.rotationsToRadians(position.getValueAsDouble());
     inputs.velocityRadPerSec =
         Units.rotationsPerMinuteToRadiansPerSecond(velocity.getValueAsDouble());
     inputs.appliedVolts = appliedVolts.getValueAsDouble();

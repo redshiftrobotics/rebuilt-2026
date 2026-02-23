@@ -1,4 +1,4 @@
-package frc.robot.subsystems.common.velocityMotor;
+package frc.robot.subsystems.examples.flywheel;
 
 import frc.robot.utility.records.FeedForwardConfigRecord;
 import frc.robot.utility.records.PIDConfig;

@@ -11,7 +11,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-package frc.robot.subsystems.common.velocityMotor;
+package frc.robot.subsystems.examples.flywheel;
 
 import static frc.robot.utility.PhoenixUtil.*;
 

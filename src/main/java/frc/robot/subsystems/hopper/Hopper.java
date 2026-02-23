@@ -10,10 +10,10 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RobotType;
-import frc.robot.subsystems.common.velocityMotor.MotorIO;
-import frc.robot.subsystems.common.velocityMotor.MotorIOInputsAutoLogged;
-import frc.robot.subsystems.common.velocityMotor.MotorIOSim;
-import frc.robot.subsystems.common.velocityMotor.MotorIOSparkMax;
+import frc.robot.subsystems.examples.flywheel.MotorIO;
+import frc.robot.subsystems.examples.flywheel.MotorIOInputsAutoLogged;
+import frc.robot.subsystems.examples.flywheel.MotorIOSim;
+import frc.robot.subsystems.examples.flywheel.MotorIOSparkMax;
 import frc.robot.subsystems.hopper.HopperConstants.HopperRunMode;
 import org.littletonrobotics.junction.Logger;
 
