@@ -531,9 +531,7 @@ public class Drive extends SubsystemBase {
             new ModuleIOTalonFX(PreseasonConstants.FrontRight),
             new ModuleIOTalonFX(PreseasonConstants.BackLeft),
             new ModuleIOTalonFX(PreseasonConstants.BackRight));
-      case CHASSIS_CANNON:
-      case WOOD_BOT_2026:
-      case REEFSCAPE_2025:
+      case CHASSIS_CANNON, WOOD_BOT_2026, REEFSCAPE_2025:
         return new Drive(
             new GyroIOPigeon2(DriveConstants.GYRO_CAN_ID, false),
             new ModuleIOSparkMax(ModuleConstants.FRONT_LEFT_MODULE_CONFIG),

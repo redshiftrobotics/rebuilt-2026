@@ -3,12 +3,14 @@ package frc.robot.subsystems.intake;
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.util.Units;
+import frc.robot.subsystems.intake.IntakeConstants.IntakeWheelConstants;
 import frc.robot.utility.SparkUtil;
 
 public class IntakeWheelIOSparkMax implements IntakeWheelIO {
@@ -16,21 +18,22 @@ public class IntakeWheelIOSparkMax implements IntakeWheelIO {
   private final RelativeEncoder relativeEncoder;
   private final Debouncer connectionDebouncer = new Debouncer(0.5);
 
-  public IntakeWheelIOSparkMax(SparkMax motor) {
-    this.motor = motor;
+  public IntakeWheelIOSparkMax() {
+    this.motor = new SparkMax(IntakeWheelConstants.CAN_ID, MotorType.kBrushless);
 
     relativeEncoder = motor.getEncoder();
 
     SparkBaseConfig config =
         new SparkMaxConfig()
-            .idleMode(IdleMode.kBrake)
-            .inverted(IntakeConstants.INTAKE_WHEEL_INVERTED)
+            .idleMode(IntakeWheelConstants.BRAKE_MODE ? IdleMode.kBrake : IdleMode.kCoast)
+            .inverted(IntakeWheelConstants.INVERTED)
+            .smartCurrentLimit(40)
             .voltageCompensation(12);
 
     config
         .encoder
-        .positionConversionFactor(IntakeConstants.INTAKE_WHEEL_GEAR_RATIO)
-        .velocityConversionFactor(IntakeConstants.SLAPDOWN_GEAR_RATIO);
+        .positionConversionFactor(IntakeWheelConstants.GEAR_RATIO)
+        .velocityConversionFactor(IntakeWheelConstants.GEAR_RATIO);
 
     motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
@@ -50,11 +53,10 @@ public class IntakeWheelIOSparkMax implements IntakeWheelIO {
     SparkUtil.ifOk(
         motor,
         () -> motor.getAppliedOutput() * motor.getBusVoltage(),
-        values -> inputs.appliedVolts = new double[] {values});
-    SparkUtil.ifOk(
-        motor, motor::getOutputCurrent, value -> inputs.supplyCurrentAmps = new double[] {value});
+        values -> inputs.appliedVolts = values);
+    SparkUtil.ifOk(motor, motor::getOutputCurrent, value -> inputs.supplyCurrentAmps = value);
 
-    inputs.motorConnected = connectionDebouncer.calculate(!motor.hasStickyFault());
+    inputs.motorConnected = connectionDebouncer.calculate(!SparkUtil.hasError());
   }
 
   @Override

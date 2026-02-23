@@ -7,17 +7,17 @@ import org.littletonrobotics.junction.AutoLog;
 public interface SlapdownIO {
   @AutoLog
   public class SlapdownIOInputs {
-    public boolean motorConnected = false;
+    public boolean motorConnected = true;
     public boolean encodersAligned = true;
 
-    public double positionRad = IntakeConstants.SLAPDOWN_UP_SETPOINT.getRadians();
+    public double positionRad = 0.0;
     public double velocityRadPerSec = 0.0;
 
     public double absolutePositionRad = 0.0;
     public double absoluteVelocityRadPerSec = 0.0;
 
-    public double[] appliedVolts = new double[] {};
-    public double[] supplyCurrentAmps = new double[] {};
+    public double appliedVolts;
+    public double supplyCurrentAmps;
   }
 
   public default void updateInputs(SlapdownIOInputsAutoLogged inputs) {}

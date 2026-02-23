@@ -4,24 +4,23 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.intake.Intake;
-import frc.robot.subsystems.intake.IntakeConstants;
+import frc.robot.subsystems.intake.IntakeConstants.IntakeWheelConstants;
 
 public class IntakeCommands {
   public static Command extendSlapdown(Intake intake) {
-    return Commands.runOnce(
-        () -> intake.setSlapdownSetpoint(intake.getSavedDownSetpoint()), intake);
+    return intake.runOnce(() -> intake.setSlapdownSetpoint(intake.getSavedDownSetpoint()));
   }
 
   public static Command retractSlapdown(Intake intake) {
-    return Commands.runOnce(() -> intake.setSlapdownSetpoint(intake.getSavedUpSetpoint()), intake);
+    return intake.runOnce(() -> intake.setSlapdownSetpoint(intake.getSavedUpSetpoint()));
   }
 
   public static Command startIntake(Intake intake) {
-    return Commands.runOnce(() -> intake.setWheelSpeed(IntakeConstants.INTAKE_WHEEL_SPEED), intake);
+    return intake.runOnce(() -> intake.setWheelSpeed(IntakeWheelConstants.SPEED_INTAKING));
   }
 
   public static Command stopIntake(Intake intake) {
-    return Commands.runOnce(() -> intake.stopWheels(), intake);
+    return intake.runOnce(intake::stopWheels);
   }
 
   private IntakeCommands() {
@@ -31,11 +30,11 @@ public class IntakeCommands {
   // Increments
   public static Command incrementUpSlapdown(Intake intake, Rotation2d amount) {
     return Commands.runOnce(
-        () -> intake.setSavedUpSetpoint(intake.getSavedUpSetpoint().plus(amount)), intake);
+        () -> intake.setSavedUpSetpoint(intake.getSavedUpSetpoint().plus(amount)));
   }
 
   public static Command incrementDownSlapdown(Intake intake, Rotation2d amount) {
-    return Commands.runOnce(
-        () -> intake.setSavedDownSetpoint(intake.getSavedDownSetpoint().plus(amount)), intake);
+    return intake.runOnce(
+        () -> intake.setSavedDownSetpoint(intake.getSavedDownSetpoint().plus(amount)));
   }
 }
