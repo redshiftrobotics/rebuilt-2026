@@ -160,8 +160,7 @@ public class DriverDashboard {
               final int index = i;
               builder.addDoubleProperty(
                   moduleNames[i] + " Angle",
-                  () ->
-                      AllianceMirrorUtil.apply(wheelStatesSupplier.get()[index].angle).getRadians(),
+                  () -> wheelStatesSupplier.get()[index].angle.getRadians(),
                   null);
               builder.addDoubleProperty(
                   moduleNames[i] + " Velocity",

@@ -171,8 +171,10 @@ public class DriveConstants {
 
   // --- Heading Controller Config ---
 
-  public record HeadingControllerConfig(PIDConfig pid, double toleranceRadians) {}
+  public record HeadingControllerConfig(
+      PIDConfig pid, Rotation2d positionTolerance, Rotation2d velocityTolerance) {}
 
   public static final HeadingControllerConfig HEADING_CONTROLLER_CONFIG =
-      new HeadingControllerConfig(ROTATION_CONTROLLER_CONSTANTS, Units.degreesToRadians(1));
+      new HeadingControllerConfig(
+          ROTATION_CONTROLLER_CONSTANTS, Rotation2d.fromDegrees(1), Rotation2d.fromDegrees(5));
 }

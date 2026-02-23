@@ -22,7 +22,6 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.Mode;
 import frc.robot.Constants.RobotType;
 import frc.robot.commands.DriveCharacterizationCommands;
-import frc.robot.commands.DriveCommands;
 import frc.robot.commands.HopperCommands;
 import frc.robot.commands.IntakeCommands;
 import frc.robot.commands.pipeline.DriveInput;
@@ -40,7 +39,6 @@ import frc.robot.utility.Elastic;
 import frc.robot.utility.Elastic.Notification.NotificationLevel;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -200,9 +198,10 @@ public class RobotContainer {
   private void configureDriverControllerBindings(CommandXboxController xbox) {
     Supplier<DriveInput> baseDrive =
         () ->
-            new DriveInput(drive)
-                .linearVelocityStick(-xbox.getLeftY(), -xbox.getLeftX())
-                .angularVelocityStick(-xbox.getRightX())
+            new DriveInput()
+                .linearVelocityStick(
+                    -xbox.getLeftY(), -xbox.getLeftX(), drive.getMaxLinearSpeedMetersPerSec())
+                .angularVelocityStick(-xbox.getRightX(), drive.getMaxAngularSpeedRadPerSec())
                 .fieldRelativeEnabled();
 
     final DriveInputPipeline pipeline = new DriveInputPipeline(drive, baseDrive);
@@ -229,21 +228,22 @@ public class RobotContainer {
     xbox.y().toggleOnTrue(pipeline.runLayer("Robot Relative", DriveInput::fieldRelativeDisabled));
 
     // Secondary drive command, right stick will be used to control target angular
-    // position instead
-    // of angular velocity
-    xbox.rightBumper()
+    // position instead of angular velocity
+    xbox.leftBumper()
         .whileTrue(
             pipeline.runLayer(
                 "Heading Controlled",
                 input -> input.headingStick(-xbox.getRightY(), -xbox.getRightX())));
 
+    // Secondary drive command, use driving stick to control angle as well
+    xbox.rightBumper().whileTrue(pipeline.runLayer("Locust", DriveInput::locustMode));
+
     // Slow mode, reduce translation and rotation speeds for fine control
-    xbox.leftBumper()
-        .whileTrue(pipeline.runLayer("Slow Mode", input -> input.coefficients(0.3, 0.3)));
+    // xbox.leftBumper()
+    //     .whileTrue(pipeline.runLayer("Slow Mode", input -> input.coefficients(0.3, 0.3)));
 
     // Cause the robot to resist movement by forming an X shape with the swerve
-    // modules
-    // Helps prevent getting pushed around
+    // modules. Helps prevent getting pushed around
     xbox.x().whileTrue(drive.run(drive::stopUsingBrakeArrangement).withName("Hold Position"));
 
     // Stop the robot and cancel any running commands
@@ -279,43 +279,11 @@ public class RobotContainer {
               String.format(
                   "Strafe %.0f", MathUtil.inputModulus(rotation.getDegrees(), -180, +180)),
               input ->
-                  input.linearVelocity(translation).fieldRelativeDisabled().coefficients(1, 0.3));
+                  input
+                      .linearVelocity(translation)
+                      .fieldRelativeDisabled()
+                      .angularCoefficient(0.3));
       xbox.pov(pov).whileTrue(activateLayer);
-    }
-
-    if (Constants.isDemoMode()) {
-
-      SmartDashboard.putBoolean("Slow Mode", false);
-      Trigger dashboardSlowMode = new Trigger(() -> SmartDashboard.getBoolean("Slow Mode", false));
-      dashboardSlowMode.whileTrue(
-          pipeline.runLayer("Slow Mode", input -> input.coefficients(0.1, 0.2)));
-
-      AtomicReference<Pose2d> setpoint = new AtomicReference<>(null);
-
-      xbox.a()
-          .whileTrue(
-              pipeline
-                  .runLayer(
-                      "Face Setpoint", input -> input.facingPoint(setpoint.get().getTranslation()))
-                  .onlyIf(() -> setpoint.get() != null));
-
-      // Drive to pose setpoint reset
-      RobotModeTriggers.disabled()
-          .onTrue(Commands.runOnce(() -> setpoint.set(null)).withName("Reset Pose Controller"));
-
-      // Save current pose as setpoint
-      xbox.leftTrigger()
-          .onTrue(rumbleController(xbox, 0.4).withTimeout(0.1))
-          .onTrue(
-              Commands.runOnce(() -> setpoint.set(drive.getRobotPose())).withName("Save Setpoint"));
-
-      // Drive to pose setpoint
-      xbox.rightTrigger()
-          .whileTrue(
-              DriveCommands.driveWithPoseController(drive, setpoint::get)
-                  .andThen(rumbleController(xbox, 1, RumbleType.kRightRumble).withTimeout(0.2))
-                  .onlyIf(() -> setpoint.get() != null)
-                  .withName("Drive to Setpoint"));
     }
   }
 
