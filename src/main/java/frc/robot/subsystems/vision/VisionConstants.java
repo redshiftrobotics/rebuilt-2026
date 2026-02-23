@@ -9,10 +9,8 @@ public class VisionConstants {
   // --- Vision Config ---
 
   // Set cameraName on PhotonVision web interface. Edit camera name from camera
-  // type to camera
-  // position. To find robotToCamera, measure the distance from the camera to the
-  // center of the
-  // robot or use the robot's CAD model.
+  // type to camera position. To find robotToCamera, measure the distance from
+  // the camera to the center of the robot or use the robot's CAD model.
 
   // Docs:
   // https://docs.photonvision.org/en/latest/docs/apriltag-pipelines/coordinate-systems.html

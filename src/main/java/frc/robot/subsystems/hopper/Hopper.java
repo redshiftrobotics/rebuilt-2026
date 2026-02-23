@@ -3,120 +3,101 @@ package frc.robot.subsystems.hopper;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RobotType;
 import frc.robot.subsystems.hopper.HopperConstants.RunMode;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
-import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
-import org.littletonrobotics.junction.mechanism.LoggedMechanismRoot2d;
 
 public class Hopper extends SubsystemBase {
   /* IO layers */
-  private final HopperMotorIO bubbler;
   private final HopperMotorIO feeder;
+  private final HopperMotorIO lifter;
 
   /* Loggable inputs */
-  private final HopperMotorIOInputsAutoLogged bubblerInputs = new HopperMotorIOInputsAutoLogged();
   private final HopperMotorIOInputsAutoLogged feederInputs = new HopperMotorIOInputsAutoLogged();
+  private final HopperMotorIOInputsAutoLogged lifterInputs = new HopperMotorIOInputsAutoLogged();
 
   /* Feedforward models */
-  private final SimpleMotorFeedforward bubblerFF;
   private final SimpleMotorFeedforward feederFF;
+  private final SimpleMotorFeedforward lifterFF;
 
   /* Run mode storage */
   private HopperConstants.RunMode runMode = RunMode.STOPPED;
 
   /* Mechanism visualization */
-  private final LoggedMechanism2d mechanism;
-  private final LoggedMechanismRoot2d feederRoot;
-  private final LoggedMechanismRoot2d lifterRoot;
-  private final LoggedMechanismLigament2d feederMech;
-  private final LoggedMechanismLigament2d lifterMech;
+  private final HopperVisualizer visualizer;
 
-  public Hopper(HopperMotorIO bubblerIO, HopperMotorIO feederIO) {
+  public Hopper(HopperMotorIO feederIO, HopperMotorIO lifterIO) {
     // Set IO layers
-    bubbler = bubblerIO;
     feeder = feederIO;
+    lifter = lifterIO;
 
     // Configure feedforward models
-    bubblerFF =
-        new SimpleMotorFeedforward(
-            HopperConstants.BUBBLER_FF.kS(),
-            HopperConstants.BUBBLER_FF.kV(),
-            HopperConstants.BUBBLER_FF.kA());
     feederFF =
         new SimpleMotorFeedforward(
             HopperConstants.FEEDER_FF.kS(),
             HopperConstants.FEEDER_FF.kV(),
             HopperConstants.FEEDER_FF.kA());
+    lifterFF =
+        new SimpleMotorFeedforward(
+            HopperConstants.LIFTER_FF.kS(),
+            HopperConstants.LIFTER_FF.kV(),
+            HopperConstants.LIFTER_FF.kA());
 
     // Apply PID constants
-    bubbler.configurePID(
-        HopperConstants.BUBBLER_PID.kP(),
-        HopperConstants.BUBBLER_PID.kI(),
-        HopperConstants.BUBBLER_PID.kD());
     feeder.configurePID(
         HopperConstants.FEEDER_PID.kP(),
         HopperConstants.FEEDER_PID.kI(),
         HopperConstants.FEEDER_PID.kD());
+    lifter.configurePID(
+        HopperConstants.LIFTER_PID.kP(),
+        HopperConstants.LIFTER_PID.kI(),
+        HopperConstants.LIFTER_PID.kD());
 
-    // Set up mechanism
-    // TODO Move to new class
-    mechanism = new LoggedMechanism2d(.256, .256);
-    feederRoot = mechanism.getRoot("Bubbler", .1, .2);
-    feederMech = new LoggedMechanismLigament2d("Bubbler", .1, 0, 5, new Color8Bit(Color.kGreen));
-    feederRoot.append(feederMech);
-
-    lifterRoot = mechanism.getRoot("Feeder", -.2, .6);
-    lifterMech = new LoggedMechanismLigament2d("Feeder", .1, 0, 5, new Color8Bit(Color.kGoldenrod));
-    lifterRoot.append(lifterMech);
+    visualizer = new HopperVisualizer(Color.kGray, Color.kGreen);
   }
 
   @Override
   public void periodic() {
     // Update and log inputs
-    bubbler.updateInputs(bubblerInputs);
     feeder.updateInputs(feederInputs);
-    Logger.processInputs("Hopper/Bubbler", bubblerInputs);
-    Logger.processInputs("Hopper/Feeder", feederInputs);
+    lifter.updateInputs(lifterInputs);
+    Logger.processInputs("Hopper/feeder", feederInputs);
+    Logger.processInputs("Hopper/lifter", lifterInputs);
 
     // Update and log mechanisms
-    feederMech.setAngle(Units.radiansToDegrees(bubblerInputs.positionRad));
-    lifterMech.setAngle(Units.radiansToDegrees(feederInputs.positionRad));
-    Logger.recordOutput("Hopper/Visualization", mechanism);
+    visualizer.think(feederInputs, lifterInputs);
   }
 
-  private void runBubblerAtVelocity(double velocityRPM) {
-    double velocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(velocityRPM);
-    bubbler.setVelocity(velocityRadPerSec, bubblerFF.calculate(velocityRadPerSec));
-
-    Logger.recordOutput("Hopper/Bubbler/SetpointRPM", velocityRPM);
-  }
-
-  private void runFeederAtVelocity(double velocityRPM) {
+  private void runfeederAtVelocity(double velocityRPM) {
     double velocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(velocityRPM);
     feeder.setVelocity(velocityRadPerSec, feederFF.calculate(velocityRadPerSec));
 
-    Logger.recordOutput("Hopper/Feeder/SetpointRPM", velocityRPM);
+    Logger.recordOutput("Hopper/feeder/SetpointRPM", velocityRPM);
   }
 
-  public void stopBubbler() {
-    runBubblerAtVelocity(0);
-    bubbler.stop();
+  private void runlifterAtVelocity(double velocityRPM) {
+    double velocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(velocityRPM);
+    lifter.setVelocity(velocityRadPerSec, lifterFF.calculate(velocityRadPerSec));
+
+    Logger.recordOutput("Hopper/lifter/SetpointRPM", velocityRPM);
   }
 
-  public void stopFeeder() {
-    runFeederAtVelocity(0);
+  public void stopfeeder() {
+    runfeederAtVelocity(0);
     feeder.stop();
+  }
+
+  public void stoplifter() {
+    runlifterAtVelocity(0);
+    lifter.stop();
   }
 
   public void stopAll() {
     runMode = HopperConstants.RunMode.STOPPED;
-    stopBubbler();
-    stopFeeder();
+    stopfeeder();
+    stoplifter();
   }
 
   public void runInMode(HopperConstants.RunMode mode) {
@@ -125,8 +106,8 @@ public class Hopper extends SubsystemBase {
       stopAll();
       return;
     }
-    runBubblerAtVelocity(mode.bubblerVelocityRadPerSec);
-    runFeederAtVelocity(mode.feederVelocityRadPerSec);
+    runfeederAtVelocity(mode.feederVelocityRadPerSec);
+    runlifterAtVelocity(mode.lifterVelocityRadPerSec);
   }
 
   public HopperConstants.RunMode getCurrentRunMode() {
@@ -134,16 +115,7 @@ public class Hopper extends SubsystemBase {
   }
 
   @AutoLogOutput
-  public double getBubblerVelocityRPM() {
-    return Units.radiansPerSecondToRotationsPerMinute(bubblerInputs.velocityRadPerSec);
-  }
-
-  public double getBubblerCharacterizationVelocity() {
-    return bubblerInputs.velocityRadPerSec;
-  }
-
-  @AutoLogOutput
-  public double getFeederVelocityRPM() {
+  public double getfeederVelocityRPM() {
     return Units.radiansPerSecondToRotationsPerMinute(feederInputs.velocityRadPerSec);
   }
 
@@ -151,12 +123,21 @@ public class Hopper extends SubsystemBase {
     return feederInputs.velocityRadPerSec;
   }
 
+  @AutoLogOutput
+  public double getlifterVelocityRPM() {
+    return Units.radiansPerSecondToRotationsPerMinute(lifterInputs.velocityRadPerSec);
+  }
+
+  public double getLifterCharacterizationVelocity() {
+    return lifterInputs.velocityRadPerSec;
+  }
+
   public static Hopper create(RobotType robotType) {
     switch (robotType) {
       case SIM_BOT:
         return new Hopper(
-            new HopperMotorIOSim(HopperConstants.BUBBLER_GEAR_RATIO),
-            new HopperMotorIOSim(HopperConstants.FEEDER_GEAR_RATIO));
+            new HopperMotorIOSim(HopperConstants.FEEDER_GEAR_RATIO),
+            new HopperMotorIOSim(HopperConstants.LIFTER_GEAR_RATIO));
 
       default:
         return new Hopper(new HopperMotorIO() {}, new HopperMotorIO() {});

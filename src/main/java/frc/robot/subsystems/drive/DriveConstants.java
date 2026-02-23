@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
+import frc.robot.generated.CompetitionConstants;
 import frc.robot.generated.MetalbotTwoConstants;
 import frc.robot.generated.PreseasonConstants;
 import frc.robot.utility.records.PIDConfig;
@@ -62,8 +63,9 @@ public class DriveConstants {
   /** Center of wheel to center of wheel size */
   private static final Translation2d TRACK_SIZE =
       switch (Constants.getRobot()) {
-        case REBUILT_2026 -> throw new UnsupportedOperationException(); // TODO get track size
-          // (L:22.75-H:21.75)
+        case REBUILT_2026 -> new Translation2d(
+            CompetitionConstants.FrontLeft.LocationX - CompetitionConstants.BackRight.LocationX,
+            CompetitionConstants.FrontLeft.LocationY - CompetitionConstants.BackRight.LocationY);
         case METALBOT_2, SIM_BOT -> new Translation2d(
             MetalbotTwoConstants.FrontLeft.LocationX - MetalbotTwoConstants.BackRight.LocationX,
             MetalbotTwoConstants.FrontLeft.LocationY - MetalbotTwoConstants.BackRight.LocationY);
@@ -81,7 +83,11 @@ public class DriveConstants {
 
   public static final DriveConfig DRIVE_CONFIG =
       switch (Constants.getRobot()) {
-        case REBUILT_2026 -> throw new UnsupportedOperationException(); // TODO
+        case REBUILT_2026 -> new DriveConfig(
+            TRACK_SIZE,
+            BUMPER_TO_BUMPER,
+            PreseasonConstants.kSpeedAt12Volts.in(MetersPerSecond),
+            22.0); // TODO: Update for new generated constants
         case METALBOT_2, PRESEASON_2026, SIM_BOT -> new DriveConfig(
             TRACK_SIZE,
             BUMPER_TO_BUMPER,
@@ -108,7 +114,7 @@ public class DriveConstants {
 
   public static final int GYRO_CAN_ID =
       switch (Constants.getRobot()) {
-        case REBUILT_2026 -> throw new UnsupportedOperationException(); // TODO Get gyro can id
+        case REBUILT_2026 -> CompetitionConstants.DrivetrainConstants.Pigeon2Id;
         case REEFSCAPE_2025, CHASSIS_CANNON, WOOD_BOT_2026 -> 40;
         case METALBOT_2 -> MetalbotTwoConstants.DrivetrainConstants.Pigeon2Id;
         case PRESEASON_2026 -> PreseasonConstants.DrivetrainConstants.Pigeon2Id;
@@ -119,7 +125,7 @@ public class DriveConstants {
 
   public static final CANBus CAN_BUS =
       switch (Constants.getRobot()) {
-        case REBUILT_2026 -> throw new UnsupportedOperationException(); // TODO get can bus
+        case REBUILT_2026 -> CompetitionConstants.kCANBus;
         case PRESEASON_2026 -> PreseasonConstants.kCANBus;
         case METALBOT_2 -> MetalbotTwoConstants.kCANBus;
         case REEFSCAPE_2025, CHASSIS_CANNON, WOOD_BOT_2026 -> CANBus.roboRIO();

@@ -45,7 +45,7 @@ public class DriverDashboard {
       new Debouncer(0.1, DebounceType.kFalling);
 
   public static Supplier<String> currentHopperRunModeNameSupplier = () -> "Unknown";
-  public static DoubleSupplier hopperBubblerVelocitySupplier = () -> 0.0;
+  public static DoubleSupplier hopperLifterVelocitySupplier = () -> 0.0;
   public static DoubleSupplier hopperFeederVelocitySupplier = () -> 0.0;
 
   public static void addSubsystem(SubsystemBase subsystem) {
@@ -185,9 +185,9 @@ public class DriverDashboard {
             builder.addStringProperty("Run Mode", currentHopperRunModeNameSupplier, null);
 
             builder.addDoubleProperty(
-                "Bubbler Velocity (rad per sec)", hopperBubblerVelocitySupplier, null);
+                "Bubbler Velocity (rad per sec)", hopperLifterVelocitySupplier, null);
             builder.addDoubleProperty(
-                "Feeder Velocity (rad per sec)", hopperFeederVelocitySupplier, null);
+                "Feeder Velocity (rad per sec)", hopperLifterVelocitySupplier, null);
           }
         });
   }
