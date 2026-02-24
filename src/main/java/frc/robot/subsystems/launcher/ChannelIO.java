@@ -1,10 +1,8 @@
 package frc.robot.subsystems.launcher;
 
-import frc.robot.utility.records.FeedForwardConfigRecord;
-
-import org.littletonrobotics.junction.AutoLog;
-
 import edu.wpi.first.units.measure.AngularVelocity;
+import frc.robot.utility.records.FeedForwardConfigRecord;
+import org.littletonrobotics.junction.AutoLog;
 
 /** Interface for the IO layers of the Template subsystem. */
 public interface ChannelIO {

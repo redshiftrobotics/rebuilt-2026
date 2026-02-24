@@ -12,7 +12,6 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import frc.robot.Constants;
-import frc.robot.subsystems.launcher.ChannelIOTalonFX.OutputType;
 import frc.robot.utility.records.FeedForwardConfigRecord;
 
 /** Physics sim implementation of motor IO. */
@@ -35,8 +34,7 @@ public class ChannelIOSim implements ChannelIO {
     final double momentOfInertia = (1.0 / 2.0) * 0.362874 * Math.pow(Units.inchesToMeters(2.0), 2);
     sim =
         new FlywheelSim(
-            LinearSystemId.createFlywheelSystem(motor, momentOfInertia, gearRatio),
-            motor);
+            LinearSystemId.createFlywheelSystem(motor, momentOfInertia, gearRatio), motor);
   }
 
   @Override
