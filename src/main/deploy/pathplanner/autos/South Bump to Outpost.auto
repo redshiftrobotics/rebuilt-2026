@@ -89,6 +89,12 @@
           "data": {
             "pathName": "South Intermediate to Hang"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "StopHopper"
+          }
         }
       ]
     }

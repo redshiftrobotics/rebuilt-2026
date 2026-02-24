@@ -17,6 +17,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "IdleHopper"
+          }
+        },
+        {
           "type": "sequential",
           "data": {
             "commands": [
@@ -82,6 +88,12 @@
           "type": "path",
           "data": {
             "pathName": "South Intermediate to Hang"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "StopHopper"
           }
         }
       ]

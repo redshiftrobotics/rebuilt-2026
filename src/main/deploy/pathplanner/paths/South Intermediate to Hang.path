@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.304982594944595,
-        "y": 1.9133941214976344
+        "x": 3.0476545604081533,
+        "y": 1.8343111202563203
       },
       "isLocked": false,
       "linkedName": "South Intermediate"
@@ -20,8 +20,8 @@
         "y": 2.709651534884584
       },
       "prevControl": {
-        "x": 0.5304478293774175,
-        "y": 2.213952323315191
+        "x": 0.7776743649884746,
+        "y": 2.5265187272023244
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0.0,
-    "rotation": 180.0
+    "rotation": 0.0
   },
   "reversed": false,
   "folder": null,
