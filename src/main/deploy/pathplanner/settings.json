@@ -12,8 +12,10 @@
     "Start Middle"
   ],
   "autoFolders": [
-    "Needs update Deprecated",
-    "PracticeAutos"
+    "Middle Start",
+    "North Start",
+    "Practice Autos",
+    "South Start"
   ],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,
