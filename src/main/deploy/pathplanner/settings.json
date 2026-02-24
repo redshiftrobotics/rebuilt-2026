@@ -6,12 +6,13 @@
     "Demo Auto",
     "Demo Shapes",
     "GraysonPaths",
+    "Intermediate",
     "North Intermediate to outpost",
     "South Intermediate to Outpost",
     "Start Middle"
   ],
   "autoFolders": [
-    "Needs update",
+    "Needs update Deprecated",
     "PracticeAutos"
   ],
   "defaultMaxVel": 3.0,
