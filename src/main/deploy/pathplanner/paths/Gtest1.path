@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.4018396570745293,
-        "y": 7.270077084489706
+        "x": 3.23109649122807,
+        "y": 6.496754385964912
       },
       "isLocked": false,
       "linkedName": "North Trench"
     },
     {
       "anchor": {
-        "x": 2.5,
-        "y": 6.0
+        "x": 0.5000877192982456,
+        "y": 0.6789364035087715
       },
       "prevControl": {
-        "x": 2.3445610903754583,
-        "y": 5.772674711550378
+        "x": 1.5674890350877195,
+        "y": 0.8904934210526312
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "North Intermediate"
+      "linkedName": "Outpost Pickup"
     }
   ],
   "rotationTargets": [],
@@ -42,10 +42,10 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -46.24536426676836
+    "rotation": 180.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "GraysonPaths",
   "idealStartingState": {
     "velocity": 0,
     "rotation": -90.0
