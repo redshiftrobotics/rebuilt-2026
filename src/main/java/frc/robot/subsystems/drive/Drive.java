@@ -14,8 +14,6 @@ import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -34,9 +32,9 @@ import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.Constants.RobotType;
 import frc.robot.DriverDashboard;
+import frc.robot.generated.CompetitionConstants;
 import frc.robot.generated.MetalbotTwoConstants;
 import frc.robot.generated.PreseasonConstants;
-import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.utility.AllianceMirrorUtil;
 import frc.robot.utility.LocalADStarAK;
 import java.util.Arrays;
@@ -279,162 +277,6 @@ public class Drive extends SubsystemBase {
     return robotPose;
   }
 
-  @AutoLogOutput(key = "Vision/Camera1")
-  public Pose2d getCameraPose1() {
-
-    // Full import needed because WPILib has two classes, both named Units 🫠
-    Transform3d camera = VisionConstants.TOP_CAMERA.robotToCamera();
-    return getRobotPose()
-        .plus(
-            new Transform2d(
-                camera.getX(), camera.getY(), new Rotation2d(camera.getRotation().getZ())));
-  }
-
-  @AutoLogOutput(key = "Vision/FOVLeft1")
-  public Pose2d getCameraLeft1() {
-
-    // Full import needed because WPILib has two classes, both named Units 🫠
-    double angleOffset = edu.wpi.first.math.util.Units.degreesToRadians(-35);
-    Transform3d camera = VisionConstants.TOP_CAMERA.robotToCamera();
-    return getRobotPose()
-        .plus(
-            new Transform2d(
-                camera.getX(),
-                camera.getY(),
-                new Rotation2d(camera.getRotation().getZ() + angleOffset)))
-        .plus(new Transform2d(5, 0, new Rotation2d()));
-  }
-
-  @AutoLogOutput(key = "Vision/FOVRight1")
-  public Pose2d getCameraRight1() {
-    double angleOffset = edu.wpi.first.math.util.Units.degreesToRadians(35);
-    Transform3d camera = VisionConstants.TOP_CAMERA.robotToCamera();
-    return getRobotPose()
-        .plus(
-            new Transform2d(
-                camera.getX(),
-                camera.getY(),
-                new Rotation2d(camera.getRotation().getZ() + angleOffset)))
-        .plus(new Transform2d(5, 0, new Rotation2d()));
-  }
-
-  @AutoLogOutput(key = "Vision/Camera2")
-  public Pose2d getCameraPose2() {
-
-    // Full import needed because WPILib has two classes, both named Units 🫠
-    Transform3d camera = VisionConstants.BACK_CAMERA.robotToCamera();
-    return getRobotPose()
-        .plus(
-            new Transform2d(
-                camera.getX(), camera.getY(), new Rotation2d(camera.getRotation().getZ())));
-  }
-
-  @AutoLogOutput(key = "Vision/FOVLeft2")
-  public Pose2d getCameraLeft2() {
-
-    // Full import needed because WPILib has two classes, both named Units 🫠
-    double angleOffset = edu.wpi.first.math.util.Units.degreesToRadians(-35);
-    Transform3d camera = VisionConstants.BACK_CAMERA.robotToCamera();
-    return getRobotPose()
-        .plus(
-            new Transform2d(
-                camera.getX(),
-                camera.getY(),
-                new Rotation2d(camera.getRotation().getZ() + angleOffset)))
-        .plus(new Transform2d(5, 0, new Rotation2d()));
-  }
-
-  @AutoLogOutput(key = "Vision/FOVRight2")
-  public Pose2d getCameraRight2() {
-    double angleOffset = edu.wpi.first.math.util.Units.degreesToRadians(35);
-    Transform3d camera = VisionConstants.BACK_CAMERA.robotToCamera();
-    return getRobotPose()
-        .plus(
-            new Transform2d(
-                camera.getX(),
-                camera.getY(),
-                new Rotation2d(camera.getRotation().getZ() + angleOffset)))
-        .plus(new Transform2d(5, 0, new Rotation2d()));
-  }
-
-  @AutoLogOutput(key = "Vision/Camera3")
-  public Pose2d getCameraPose3() {
-
-    // Full import needed because WPILib has two classes, both named Units 🫠
-    Transform3d camera = VisionConstants.LEFT_CAMERA.robotToCamera();
-    return getRobotPose()
-        .plus(
-            new Transform2d(
-                camera.getX(), camera.getY(), new Rotation2d(camera.getRotation().getZ())));
-  }
-
-  @AutoLogOutput(key = "Vision/FOVLeft3")
-  public Pose2d getCameraLeft3() {
-
-    // Full import needed because WPILib has two classes, both named Units 🫠
-    double angleOffset = edu.wpi.first.math.util.Units.degreesToRadians(-35);
-    Transform3d camera = VisionConstants.LEFT_CAMERA.robotToCamera();
-    return getRobotPose()
-        .plus(
-            new Transform2d(
-                camera.getX(),
-                camera.getY(),
-                new Rotation2d(camera.getRotation().getZ() + angleOffset)))
-        .plus(new Transform2d(5, 0, new Rotation2d()));
-  }
-
-  @AutoLogOutput(key = "Vision/FOVRight3")
-  public Pose2d getCameraRight3() {
-    double angleOffset = edu.wpi.first.math.util.Units.degreesToRadians(35);
-    Transform3d camera = VisionConstants.LEFT_CAMERA.robotToCamera();
-    return getRobotPose()
-        .plus(
-            new Transform2d(
-                camera.getX(),
-                camera.getY(),
-                new Rotation2d(camera.getRotation().getZ() + angleOffset)))
-        .plus(new Transform2d(5, 0, new Rotation2d()));
-  }
-
-  @AutoLogOutput(key = "Vision/Camera4")
-  public Pose2d getCameraPose4() {
-
-    // Full import needed because WPILib has two classes, both named Units 🫠
-    Transform3d camera = VisionConstants.RIGHT_CAMERA.robotToCamera();
-    return getRobotPose()
-        .plus(
-            new Transform2d(
-                camera.getX(), camera.getY(), new Rotation2d(camera.getRotation().getZ())));
-  }
-
-  @AutoLogOutput(key = "Vision/FOVLeft4")
-  public Pose2d getCameraLeft4() {
-
-    // Full import needed because WPILib has two classes, both named Units 🫠
-    double angleOffset = edu.wpi.first.math.util.Units.degreesToRadians(-35);
-    Transform3d camera = VisionConstants.RIGHT_CAMERA.robotToCamera();
-    return getRobotPose()
-        .plus(
-            new Transform2d(
-                camera.getX(),
-                camera.getY(),
-                new Rotation2d(camera.getRotation().getZ() + angleOffset)))
-        .plus(new Transform2d(5, 0, new Rotation2d()));
-  }
-
-  @AutoLogOutput(key = "Vision/FOVRight4")
-  public Pose2d getCameraRight4() {
-    double angleOffset = edu.wpi.first.math.util.Units.degreesToRadians(35);
-    Transform3d camera = VisionConstants.RIGHT_CAMERA.robotToCamera();
-    return getRobotPose()
-        .plus(
-            new Transform2d(
-                camera.getX(),
-                camera.getY(),
-                new Rotation2d(camera.getRotation().getZ() + angleOffset)))
-        .plus(new Transform2d(5, 0, new Rotation2d()));
-  }
-
   /**
    * Set the current estimated position of robot.
    *
@@ -668,6 +510,13 @@ public class Drive extends SubsystemBase {
 
   public static Drive create(RobotType robotType) {
     switch (robotType) {
+      case REBUILT_2026:
+        return new Drive(
+            new GyroIOPigeon2(DriveConstants.GYRO_CAN_ID, true),
+            new ModuleIOTalonFX(CompetitionConstants.FrontLeft),
+            new ModuleIOTalonFX(CompetitionConstants.FrontRight),
+            new ModuleIOTalonFX(CompetitionConstants.BackLeft),
+            new ModuleIOTalonFX(CompetitionConstants.BackRight));
       case METALBOT_2:
         return new Drive(
             new GyroIOPigeon2(DriveConstants.GYRO_CAN_ID, true),

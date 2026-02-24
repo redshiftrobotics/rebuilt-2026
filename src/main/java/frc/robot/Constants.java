@@ -19,7 +19,7 @@ public final class Constants {
   /** The period, in seconds, of the main robot loop */
   public static final double LOOP_PERIOD_SECONDS = Robot.defaultPeriodSecs; // 0.02
 
-  public static final RobotType PRIMARY_ROBOT_TYPE = RobotType.METALBOT_2;
+  public static final RobotType PRIMARY_ROBOT_TYPE = RobotType.REBUILT_2026;
   private static RobotType robotType;
 
   /**
@@ -110,6 +110,8 @@ public final class Constants {
           return RobotType.WOOD_BOT_2026;
         case "03238024":
           return RobotType.METALBOT_2;
+        case "0240C1FA":
+          return RobotType.REBUILT_2026;
         default:
           unrecognizedRobotType.set(true);
           return PRIMARY_ROBOT_TYPE;
