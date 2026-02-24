@@ -25,7 +25,7 @@ public class HopperMotorIOSim implements HopperMotorIO {
       new SimpleMotorFeedforward(0.0, 0.0, 0.0, Constants.LOOP_PERIOD_SECONDS);
 
   private boolean closedLoop = false;
-  private double FFVolts = 0;
+  private double ffVolts = 0;
 
   public HopperMotorIOSim(DCMotorSim sim) {
     this.sim = sim;
@@ -42,7 +42,7 @@ public class HopperMotorIOSim implements HopperMotorIO {
   public void updateInputs(HopperMotorIOInputs inputs) {
 
     if (closedLoop) {
-      appliedVolts = feedback.calculate(sim.getAngularVelocityRadPerSec()) + FFVolts;
+      appliedVolts = feedback.calculate(sim.getAngularVelocityRadPerSec()) + ffVolts;
     } else {
       feedback.reset();
     }
@@ -78,7 +78,7 @@ public class HopperMotorIOSim implements HopperMotorIO {
   @Override
   public void setVelocity(double velocityRadsPerSec, double arbFeedforward) {
     closedLoop = true;
-    FFVolts = feedfoward.calculate(velocityRadsPerSec) + arbFeedforward;
+    ffVolts = feedfoward.calculate(velocityRadsPerSec) + arbFeedforward;
     feedback.setSetpoint(velocityRadsPerSec);
   }
 

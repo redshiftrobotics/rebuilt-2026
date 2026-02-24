@@ -107,8 +107,8 @@ public class HopperMotorIOSparkMax implements HopperMotorIO {
 
   @Override
   public void setFF(FeedForwardConfigRecord ffConfig) {
-    // config.closedLoop.feedForward.sva(ffConfig.kS(), ffConfig.kV(), ffConfig.kA());
-    // pushConfig();
+    config.closedLoop.feedForward.sva(ffConfig.kS(), ffConfig.kV(), ffConfig.kA());
+    pushConfig();
   }
 
   @Override
