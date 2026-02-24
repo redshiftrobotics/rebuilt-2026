@@ -41,6 +41,11 @@ public final class Constants {
   /** If true, enables demo mode features throughout the codebase. */
   private static final boolean DEMO_MODE = true;
 
+  /** Talon noise */
+  public static final boolean TALON_BEEP_ON_CONFIG = false;
+
+  public static final boolean TALON_BEEP_ON_BOOT = false;
+
   public static RobotType getRobot() {
     if (robotType == null) {
       robotType = determineRobotType();

@@ -1,6 +1,5 @@
 package frc.robot;
 
-import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -29,16 +28,16 @@ import frc.robot.commands.pipeline.DriveInputPipeline;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.hopper.Hopper;
-import frc.robot.subsystems.hopper.HopperConstants.RunMode;
+import frc.robot.subsystems.hopper.HopperConstants.HopperRunMode;
 import frc.robot.subsystems.intake.Intake;
-import frc.robot.subsystems.intake.IntakeConstants;
+import frc.robot.subsystems.intake.IntakeConstants.SlapdownConstants;
 import frc.robot.subsystems.led.BlinkenLEDPattern;
 import frc.robot.subsystems.led.LEDSubsystem;
+import frc.robot.subsystems.outtake.Outtake;
 import frc.robot.subsystems.vision.AprilTagVision;
 import frc.robot.utility.Elastic;
 import frc.robot.utility.Elastic.Notification.NotificationLevel;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -56,6 +55,7 @@ public class RobotContainer {
   private final LEDSubsystem leds;
   private final Hopper hopper;
   private final Intake intake;
+  private final Outtake outtake;
   private final Climb climb;
 
   // Controller
@@ -98,6 +98,7 @@ public class RobotContainer {
     hopper = Hopper.create(robotType);
     intake = Intake.create(robotType);
     climb = Climb.create(robotType);
+    outtake = Outtake.create(robotType);
 
     // Vision setup
     if (Constants.isOnPlayingField()) {
@@ -117,16 +118,17 @@ public class RobotContainer {
     // Can also use AutoBuilder.buildAutoChooser(); instead of SendableChooser to
     // auto populate
     registerNamedCommands();
-    autoChooser =
-        new LoggedDashboardChooser<>(
-            "Auto Chooser",
-            Constants.DEVELOPMENT_MODE
-                ? AutoBuilder.buildAutoChooser()
-                : new SendableChooser<Command>());
+    // autoChooser =
+    //     new LoggedDashboardChooser<>(
+    //         "Auto Chooser",
+    //         Constants.DEVELOPMENT_MODE
+    //             ? AutoBuilder.buildAutoChooser()
+    //             : new SendableChooser<Command>());
+    autoChooser = new LoggedDashboardChooser<>("Auto Chooser", new SendableChooser<Command>());
     autoChooser.addDefaultOption("None", Commands.none());
 
     // Configure autos
-    configureAutos(autoChooser);
+    // configureAutos(autoChooser);
 
     leds.setDefaultCommand(
         leds.runColor(
@@ -160,9 +162,6 @@ public class RobotContainer {
     DriverDashboard.speedsSupplier = drive::getRobotSpeeds;
     DriverDashboard.wheelStatesSupplier = drive::getWheelSpeeds;
     DriverDashboard.hasVisionEstimate = vision::hasSuccessfulEstimate;
-    DriverDashboard.currentHopperRunModeNameSupplier = () -> hopper.getCurrentRunMode().toString();
-    DriverDashboard.hopperLifterVelocitySupplier = hopper::getFeederCharacterizationVelocity;
-    DriverDashboard.hopperLifterVelocitySupplier = hopper::getLifterCharacterizationVelocity;
 
     DriverDashboard.currentDriveModeName =
         () -> drive.getCurrentCommand() == null ? "Idle" : drive.getCurrentCommand().getName();
@@ -300,48 +299,54 @@ public class RobotContainer {
     // down pos
     xbox.leftTrigger()
         .and(xbox.pov(0))
-        .onTrue(
-            IntakeCommands.incrementDownSlapdown(
-                intake, IntakeConstants.SLAPDOWN_INCREMENT_SETPOINT));
+        .onTrue(IntakeCommands.incrementDownSlapdown(intake, SlapdownConstants.INCREMENT_SETPOINT));
     xbox.leftTrigger()
         .and(xbox.pov(180))
         .onTrue(
             IntakeCommands.incrementDownSlapdown(
-                intake, IntakeConstants.SLAPDOWN_INCREMENT_SETPOINT.unaryMinus()));
+                intake, SlapdownConstants.INCREMENT_SETPOINT.unaryMinus()));
 
-    // up pos
-    xbox.leftTrigger()
-        .negate()
-        .and(xbox.pov(0))
-        .onTrue(
-            IntakeCommands.incrementUpSlapdown(
-                intake, IntakeConstants.SLAPDOWN_INCREMENT_SETPOINT));
-    xbox.leftTrigger()
-        .negate()
-        .and(xbox.pov(180))
-        .onTrue(
-            IntakeCommands.incrementUpSlapdown(
-                intake, IntakeConstants.SLAPDOWN_INCREMENT_SETPOINT.unaryMinus()));
+    xbox.rightTrigger(0.2).whileTrue(outtake.runFlywheelsCommand().withName("Flywheels 0.2"));
+
+    xbox.rightBumper()
+        .toggleOnTrue(
+            hopper
+                .runModeCommand(HopperRunMode.PREP_SHOT)
+                .until(xbox.rightTrigger(0.2))
+                .withName("Hopper Prep RB"))
+        .toggleOnTrue(outtake.runFlywheelsCommand().withName("Flywheels RB"));
 
     // This is the input for firing; when the shooter is added, it should be
     // triggered by this as
     // well
-    xbox.rightTrigger()
-        .whileTrue(HopperCommands.setHopperMode(hopper, RunMode.FIRING))
-        .onFalse(HopperCommands.setHopperMode(hopper, RunMode.STOPPED));
+    xbox.rightTrigger(0.8)
+        .whileTrue(hopper.runModeCommand(HopperRunMode.FIRING).withName("Hopper Firing"))
+        .whileTrue(outtake.runFlywheelsCommand().withName("Flywheels Firing"));
 
     // Run the bubbler at low speed to send fuel towards the back without firing
     xbox.b()
-        .whileTrue(HopperCommands.setHopperMode(hopper, RunMode.FUEL_STORE))
-        .onFalse(HopperCommands.setHopperMode(hopper, RunMode.STOPPED));
+        .whileTrue(hopper.runModeCommand(HopperRunMode.FUEL_STORE).withName("Hopper Fuel Store"));
 
     // Run the hopper motors in reverse to deal with jams
-    xbox.start()
-        .whileTrue(HopperCommands.setHopperMode(hopper, RunMode.REVERSE))
-        .onFalse(HopperCommands.setHopperMode(hopper, RunMode.STOPPED));
+    xbox.start().whileTrue(hopper.runModeCommand(HopperRunMode.REVERSE).withName("Hopper Reverse"));
 
-    climb.setDefaultCommand(
-        Commands.run(() -> climb.setSpeed(MathUtil.applyDeadband(xbox.getLeftY(), 0.1)), climb));
+    xbox.pov(90)
+        .onTrue(
+            Commands.runOnce(
+                    () ->
+                        outtake.setRunningDesiredRadPerSec(
+                            outtake.getRunningDesiredRadPerSec() + 1))
+                .ignoringDisable(true));
+    xbox.pov(270)
+        .onTrue(
+            Commands.runOnce(
+                    () ->
+                        outtake.setRunningDesiredRadPerSec(
+                            outtake.getRunningDesiredRadPerSec() - 1))
+                .ignoringDisable(true));
+
+    // climb.setDefaultCommand(
+    //     Commands.run(() -> climb.setSpeed(MathUtil.applyDeadband(xbox.getLeftY(), 0.1)), climb));
   }
 
   private Command rumbleController(
@@ -387,15 +392,15 @@ public class RobotContainer {
 
   /** Make commands accessible to PathPlanner autos. */
   private void registerNamedCommands() {
-    Map<String, Command> namedCommands = new HashMap<String, Command>();
+    HashMap<String, Command> namedCommands = new HashMap<String, Command>();
 
     namedCommands.put("LEDS", leds.runColor(BlinkenLEDPattern.RED));
 
     // Hopper commands
-    namedCommands.put("StopHopper", HopperCommands.setHopperMode(hopper, RunMode.STOPPED));
-    namedCommands.put("IdleHopper", HopperCommands.setHopperMode(hopper, RunMode.FUEL_STORE));
-    namedCommands.put("FireHopper", HopperCommands.setHopperMode(hopper, RunMode.FIRING));
-    namedCommands.put("ReverseHopper", HopperCommands.setHopperMode(hopper, RunMode.REVERSE));
+    namedCommands.put("StopHopper", HopperCommands.setHopperMode(hopper, HopperRunMode.STOPPED));
+    namedCommands.put("IdleHopper", HopperCommands.setHopperMode(hopper, HopperRunMode.FUEL_STORE));
+    namedCommands.put("FireHopper", HopperCommands.setHopperMode(hopper, HopperRunMode.FIRING));
+    namedCommands.put("ReverseHopper", HopperCommands.setHopperMode(hopper, HopperRunMode.REVERSE));
 
     // Intake commands
     namedCommands.put("ExtendSlapdown", IntakeCommands.extendSlapdown(intake));
@@ -409,10 +414,15 @@ public class RobotContainer {
     namedCommands.put("HangUp", null);
     namedCommands.put("HangDown", null);
 
-    System.out.println("Avaliable named commands:");
-    namedCommands.keySet().forEach(commandName -> System.out.println("  " + commandName));
-
-    NamedCommands.registerCommands(namedCommands);
+    System.out.println("Named commands:");
+    for (var commandName : namedCommands.keySet()) {
+      try {
+        NamedCommands.registerCommand(commandName, namedCommands.get(commandName));
+        System.out.println("[ OK ] " + commandName);
+      } catch (Exception e) {
+        System.err.println("[FAIL] " + commandName);
+      }
+    }
   }
 
   private void configureAutos(LoggedDashboardChooser<Command> dashboardChooser) {
