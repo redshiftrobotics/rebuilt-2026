@@ -1,0 +1,29 @@
+{
+  "name": "comp_2026_8032",
+  "sourceUrl": "https://cad.onshape.com/documents/220b9abf676d63afba42e73d/w/eabbdd64b2cd2bb3141ce26e/e/756a506a3a9fec132690df28",
+  "rotations": [
+    {
+      "axis": "x",
+      "degrees": 90
+    },
+    {
+      "axis": "z",
+      "degrees": 90
+    }
+  ],
+  "position": [
+    0,
+    0,
+    0
+  ],
+  "cameras": [
+    {
+      "name": "camera_0",
+      "rotations": [],
+      "position": [0.2, 0, 0.2],
+      "resolution": [640, 480],
+      "fov": 100
+    }
+  ],
+  "components": []
+}

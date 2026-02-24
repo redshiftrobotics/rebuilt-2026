@@ -1,110 +1,41 @@
 package frc.robot.subsystems.hopper;
 
-import frc.robot.Constants;
-import frc.robot.utility.records.FeedForwardConfigRecord;
-import frc.robot.utility.records.PIDConstants;
+import edu.wpi.first.math.system.plant.DCMotor;
+import frc.robot.subsystems.examples.flywheel.MotorConstants;
 
 public class HopperConstants {
-  /*
-   * All constants related to the hopper (bubbler and feeder) should go here.
-   * Don't make a separate file for the components.
-   */
 
-  // Bubbler motor CAN ID
-  public static final int BUBBLER_CAN_ID =
-      switch (Constants.getRobot()) {
-        case PRESEASON_2026 -> 0;
-        case SIM_BOT -> 0;
-        default -> 0;
-      };
+  public static final MotorConstants FEEDER_CONSTANTS =
+      new MotorConstants(17, (1.0 / 3.0) * (1.0 / 3.0), true, false, 30);
+  public static final MotorConstants LIFTER_CONSTANTS =
+      new MotorConstants(13, (1.0 / 3.0) * (1.0 / 3.0) * (1.0 / 3.0), true, false, 40);
 
-  // Feeder motor CAN ID
-  public static final int FEEDER_CAN_ID =
-      switch (Constants.getRobot()) {
-        case PRESEASON_2026 -> 0;
-        case SIM_BOT -> 0;
-        default -> 0;
-      };
-
-  // Hopper run mode
-  // TODO: Set real speeds
-  public static enum RunMode {
+  public static enum HopperRunMode {
     STOPPED(0, 0),
-    /** All hopper motors stopped */
-    FUEL_STORE(1, 0),
-    /** Bubbler running at low speed to push fuel to the back, feeder stopped */
+    FUEL_STORE(0.5, 0.0),
     FIRING(1, 1),
-    /** Bubbler running at high speed to send balls to the feeder, feeder running */
-    REVERSE(-1, -1);
-    /** All hopper motors running in reverse in case of jams */
-    public int bubblerVelocityRadPerSec;
+    REVERSE(-1, -0.7),
+    PREP_SHOT(0, -0.3);
 
-    public int feederVelocityRadPerSec;
+    public double feederDutyCycle;
+    public double lifterDutyCycle;
 
-    private RunMode(int bubblerVelocity, int feederVelocity) {
-      bubblerVelocityRadPerSec = bubblerVelocity;
-      feederVelocityRadPerSec = feederVelocity;
+    private HopperRunMode(double feederDutyCycle, double lifterDutyCycle) {
+      this.feederDutyCycle = feederDutyCycle;
+      this.lifterDutyCycle = lifterDutyCycle;
     }
 
     @Override
     public String toString() {
-      switch (this) {
-        case STOPPED:
-          return "Stopped";
-        case FUEL_STORE:
-          return "Fuel Storing";
-        case FIRING:
-          return "Firing";
-        case REVERSE:
-          return "Reverse";
-        default:
-          return "Unknown";
-      }
+      return String.format("%s(feeder=%s, lifter=%s)", name(), feederDutyCycle, lifterDutyCycle);
     }
   }
 
-  // PID constants
-  // TODO: Add real values
-  public static final PIDConstants BUBBLER_PID =
-      switch (Constants.getRobot()) {
-        case PRESEASON_2026 -> new PIDConstants(0.0, 0.0, 0.0);
-        case SIM_BOT -> new PIDConstants(0.0, 0.0, 0.0);
-        default -> new PIDConstants(0.0, 0.0, 0.0);
-      };
-  public static final PIDConstants FEEDER_PID =
-      switch (Constants.getRobot()) {
-        case PRESEASON_2026 -> new PIDConstants(0.0, 0.0, 0.0);
-        case SIM_BOT -> new PIDConstants(0.0, 0.0, 0.0);
-        default -> new PIDConstants(0.0, 0.0, 0.0);
-      };
+  public static final DCMotor FEEDER_MOTOR = DCMotor.getNEO(1);
+  public static final DCMotor LIFTER_MOTOR = DCMotor.getNEO(1);
 
-  // Feedforward constants
-  // TODO: Add real values
-  public static final FeedForwardConfigRecord BUBBLER_FF =
-      switch (Constants.getRobot()) {
-        case PRESEASON_2026 -> new FeedForwardConfigRecord(0.0, 0.0, 0.0);
-        case SIM_BOT -> new FeedForwardConfigRecord(0.0, 0.0, 0.0);
-        default -> new FeedForwardConfigRecord(0.0, 0.0, 0.0);
-      };
-  public static final FeedForwardConfigRecord FEEDER_FF =
-      switch (Constants.getRobot()) {
-        case PRESEASON_2026 -> new FeedForwardConfigRecord(0.0, 0.0, 0.0);
-        case SIM_BOT -> new FeedForwardConfigRecord(0.0, 0.0, 0.0);
-        default -> new FeedForwardConfigRecord(0.0, 0.0, 0.0);
-      };
-
-  // Gear ratios
-  // TODO: Add real values (thank you design team)
-  public static final double BUBBLER_GEAR_RATIO =
-      switch (Constants.getRobot()) {
-        case PRESEASON_2026 -> 1.0;
-        case SIM_BOT -> 1.0;
-        default -> 1.0;
-      };
-  public static final double FEEDER_GEAR_RATIO =
-      switch (Constants.getRobot()) {
-        case PRESEASON_2026 -> 1.0;
-        case SIM_BOT -> 1.0;
-        default -> 1.0;
-      };
+  public static final double MAX_FEEDER_SPEED =
+      FEEDER_MOTOR.withReduction(1.0 / FEEDER_CONSTANTS.gearRatio()).freeSpeedRadPerSec;
+  public static final double MAX_LIFTER_SPEED =
+      LIFTER_MOTOR.withReduction(1.0 / LIFTER_CONSTANTS.gearRatio()).freeSpeedRadPerSec;
 }

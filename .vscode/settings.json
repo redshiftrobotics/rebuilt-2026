@@ -60,5 +60,8 @@
   "java.dependency.enableDependencyCheckup": false,
   "editor.tabSize": 2,
   "editor.detectIndentation": false,
-  "chat.disableAIFeatures": true
+  "chat.disableAIFeatures": true,
+  // For some reason the Java LSP will hallucinate errors.
+  // At first I thought this was a Linux issue, but it's spread around.
+  "java.debug.settings.onBuildFailureProceed": true
 }

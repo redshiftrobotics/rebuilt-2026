@@ -1,7 +1,7 @@
 package frc.robot.utility.tunable;
 
 import frc.robot.utility.records.FeedForwardConfigRecord;
-import frc.robot.utility.records.PIDConstants;
+import frc.robot.utility.records.PIDConfig;
 import frc.robot.utility.tunable.TunableNumbers.TunableFF;
 import frc.robot.utility.tunable.TunableNumbers.TunablePID;
 
@@ -29,7 +29,7 @@ public class TunableNumberGroup {
     return new TunableNumber(key + "/" + dashboardKey, defaultValue);
   }
 
-  public TunablePID pid(String dashboardKey, PIDConstants defaultValues) {
+  public TunablePID pid(String dashboardKey, PIDConfig defaultValues) {
     return new TunableNumbers.TunablePID(key + "/" + dashboardKey, defaultValues);
   }
 

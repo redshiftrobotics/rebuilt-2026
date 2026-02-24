@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.RobotType;
 import java.util.Arrays;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
@@ -22,7 +23,17 @@ public class LEDSubsystem extends SubsystemBase {
 
   private final Debouncer setupDebouncer = new Debouncer(0.8);
 
-  public LEDSubsystem(LEDStripIO... strips) {
+  public static LEDSubsystem create(RobotType robotType) {
+    switch (robotType) {
+      case SIM_BOT:
+        return new LEDSubsystem(new LEDStripIOSim(BlinkenLEDPattern.HEARTBEAT_RED));
+
+      default:
+        return new LEDSubsystem();
+    }
+  }
+
+  private LEDSubsystem(LEDStripIO... strips) {
     this.strips = strips;
 
     inputs =

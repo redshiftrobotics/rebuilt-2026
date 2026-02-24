@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.RobotType;
 import frc.robot.FieldConstants;
 import frc.robot.subsystems.launcher.ShotCalculator.ShotParameters;
 import frc.robot.utility.AllianceMirrorUtil;
@@ -26,6 +27,15 @@ public class Launcher extends SubsystemBase {
 
   private boolean running = false;
   private Rotation2d robotYaw = AllianceMirrorUtil.apply(Rotation2d.kZero);
+
+  public static Launcher create(RobotType robotType) {
+    switch (robotType) {
+      case SIM_BOT:
+        return new Launcher(new HoodIOFixed(), new ChannelIOSim(1), new ChannelIOSim(1), new ChannelIOSim(1));
+      default:
+        return new Launcher(new HoodIO() {});
+    }
+  }
 
   /** Creates a new Template. */
   public Launcher(HoodIO hoodIO, ChannelIO... channelIOs) {
