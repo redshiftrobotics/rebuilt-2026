@@ -38,7 +38,6 @@ import frc.robot.subsystems.vision.AprilTagVision;
 import frc.robot.utility.Elastic;
 import frc.robot.utility.Elastic.Notification.NotificationLevel;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -118,7 +117,7 @@ public class RobotContainer {
 
     // Can also use AutoBuilder.buildAutoChooser(); instead of SendableChooser to
     // auto populate
-    // registerNamedCommands();
+    registerNamedCommands();
     // autoChooser =
     //     new LoggedDashboardChooser<>(
     //         "Auto Chooser",
@@ -393,7 +392,7 @@ public class RobotContainer {
 
   /** Make commands accessible to PathPlanner autos. */
   private void registerNamedCommands() {
-    Map<String, Command> namedCommands = new HashMap<String, Command>();
+    HashMap<String, Command> namedCommands = new HashMap<String, Command>();
 
     namedCommands.put("LEDS", leds.runColor(BlinkenLEDPattern.RED));
 
@@ -415,10 +414,15 @@ public class RobotContainer {
     namedCommands.put("HangUp", null);
     namedCommands.put("HangDown", null);
 
-    System.out.println("Avaliable named commands:");
-    namedCommands.keySet().forEach(commandName -> System.out.println("  " + commandName));
-
-    NamedCommands.registerCommands(namedCommands);
+    System.out.println("Named commands:");
+    for (var commandName : namedCommands.keySet()) {
+      try {
+        NamedCommands.registerCommand(commandName, namedCommands.get(commandName));
+        System.out.println("[ OK ] " + commandName);
+      } catch (Exception e) {
+        System.err.println("[FAIL] " + commandName);
+      }
+    }
   }
 
   private void configureAutos(LoggedDashboardChooser<Command> dashboardChooser) {

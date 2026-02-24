@@ -1,4 +1,4 @@
-# REBUILT 2026 
+# REBUILT 2026
 ![CI Badge](https://github.com/redshiftrobotics/rebuilt-2026/actions/workflows/build.yml/badge.svg) ![CI Badge](https://github.com/redshiftrobotics/rebuilt-2026/actions/workflows/format.yml/badge.svg)
 * [Progress Tracker](https://github.com/orgs/redshiftrobotics/projects/5)
 * [Project Manual](https://docs.google.com/document/d/1du1wdfCDV_ItNRmlIkbZu90ODlOhq23gx_gZdmTtot0/edit?tab=t.0#heading=h.kq21oa24f0wc)
