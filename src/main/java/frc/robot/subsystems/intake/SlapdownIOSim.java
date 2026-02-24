@@ -9,6 +9,7 @@ import frc.robot.Constants;
 import frc.robot.subsystems.intake.IntakeConstants.SlapdownConstants;
 import frc.robot.utility.records.PIDConfig;
 
+/** Simulation implementation of SlapdownIO. */
 public class SlapdownIOSim implements SlapdownIO {
 
   private final DCMotorSim sim;

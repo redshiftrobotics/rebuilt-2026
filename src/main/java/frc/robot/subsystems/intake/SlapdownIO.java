@@ -4,6 +4,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.utility.records.PIDConfig;
 import org.littletonrobotics.junction.AutoLog;
 
+/** Interface for the slapdown mechanism hardware. */
 public interface SlapdownIO {
   @AutoLog
   public class SlapdownIOInputs {
