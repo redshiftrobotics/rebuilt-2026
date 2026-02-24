@@ -21,6 +21,12 @@
           "data": {
             "pathName": "Backup - preload to hang"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "StopHopper"
+          }
         }
       ]
     }
