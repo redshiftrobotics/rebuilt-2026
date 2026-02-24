@@ -10,10 +10,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RobotType;
 import frc.robot.subsystems.hopper.HopperConstants.HopperRunMode;
-import frc.robot.utility.records.PIDConfig;
 import frc.robot.utility.tunable.TunableNumberGroup;
 import frc.robot.utility.tunable.TunableNumbers.TunablePID;
-
 import org.littletonrobotics.junction.Logger;
 
 public class Hopper extends SubsystemBase {
@@ -39,22 +37,23 @@ public class Hopper extends SubsystemBase {
   private HopperConstants.HopperRunMode runMode = HopperRunMode.STOPPED;
 
   /* Tunable numbers (you're welcome Aceius) */
-  private static final TunableNumberGroup lifterGains = new TunableNumberGroup("Hopper/Lifter");
-  private static final TunablePID lifterPID = lifterGains.pid("PID", HopperConstants.LIFTER_FEEDBACK);
+  private static final TunableNumberGroup lifterGains = new TunableNumberGroup("Hopper");
+  private static final TunablePID lifterPID =
+      lifterGains.pid("Lifter_PID", HopperConstants.LIFTER_FEEDBACK);
 
   public Hopper(HopperMotorIO feederIO, HopperMotorIO lifterIO) {
     this.feederIO = feederIO;
     this.lifterIO = lifterIO;
 
-    //Visualization setup
+    // Visualization setup
     measuredVisualizer = new HopperVisualizer(getName() + "/Visualization/Measured", Color.kRed, 0);
     setpointVisualizer =
         new HopperVisualizer(getName() + "/Visualization/Setpoint", Color.kBlue, 0.01);
 
-    //Safety first :-)
+    // Safety first :-)
     stopAll();
 
-    //Set up state logging
+    // Set up state logging
     SmartDashboard.putData(
         "Hopper State",
         new Sendable() {
@@ -72,26 +71,26 @@ public class Hopper extends SubsystemBase {
           }
         });
 
-    //Set initial PID
+    // Set initial PID
     lifterIO.setPID(lifterPID.get());
   }
 
   @Override
   public void periodic() {
-    //Update and process inputs
+    // Update and process inputs
     feederIO.updateInputs(feederInputs);
     lifterIO.updateInputs(lifterInputs);
     Logger.processInputs(getName() + "/Feeder", feederInputs);
     Logger.processInputs(getName() + "/Lifter", lifterInputs);
 
-    //Update tunable lifter PID
+    // Update tunable lifter PID
     lifterPID.ifChanged(hashCode(), (pid) -> lifterIO.setPID(pid));
 
-    //Update alert state
+    // Update alert state
     feederDisconnectedAlert.set(!feederInputs.motorConnected);
     lifterMotorDisconnectedAlert.set(!lifterInputs.motorConnected);
 
-    //Update measured visualizer
+    // Update measured visualizer
     measuredVisualizer.update(feederInputs.velocityRadPerSec, lifterInputs.velocityRadPerSec);
   }
 
@@ -104,12 +103,11 @@ public class Hopper extends SubsystemBase {
   }
 
   public void setMode(HopperRunMode mode) {
-    //Update setpoint visualizer
+    // Update setpoint visualizer
     setpointVisualizer.update(
-        mode.feederDutyCycle * HopperConstants.MAX_FEEDER_SPEED,
-        mode.lifterVelocityRadPerSec);
+        mode.feederDutyCycle * HopperConstants.MAX_FEEDER_SPEED, mode.lifterVelocityRadPerSec);
 
-    //Apply mode change
+    // Apply mode change
     if (mode == HopperRunMode.STOPPED) {
       lifterIO.stop();
       feederIO.stop();

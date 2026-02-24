@@ -1,8 +1,8 @@
 package frc.robot.subsystems.hopper;
 
+import edu.wpi.first.math.system.plant.DCMotor;
 import frc.robot.Constants;
 import frc.robot.utility.records.PIDConfig;
-import edu.wpi.first.math.system.plant.DCMotor;
 
 public class HopperConstants {
 
@@ -14,11 +14,12 @@ public class HopperConstants {
   public static final MotorConstants LIFTER_CONSTANTS =
       new MotorConstants(13, (1.0 / 3.0) * (1.0 / 3.0) * (1.0 / 3.0), true, false, 40);
 
-  public static final PIDConfig LIFTER_FEEDBACK = switch(Constants.getRobot()) {
-    case SIM_BOT -> new PIDConfig(1, 0, 0);
-    case REBUILT_2026 -> new PIDConfig(1, 0, 0);
-    default -> new PIDConfig(0, 0, 0);
-  };
+  public static final PIDConfig LIFTER_FEEDBACK =
+      switch (Constants.getRobot()) {
+        case SIM_BOT -> new PIDConfig(1, 0, 0);
+        case REBUILT_2026 -> new PIDConfig(1, 0, 0);
+        default -> new PIDConfig(0, 0, 0);
+      };
 
   public static enum HopperRunMode {
     STOPPED(0, 0),
@@ -37,7 +38,8 @@ public class HopperConstants {
 
     @Override
     public String toString() {
-      return String.format("%s(feeder=%s dutycycle, lifter=%s rad per sec)", name(), feederDutyCycle, lifterVelocityRadPerSec);
+      return String.format(
+          "%s (feeder = %s, lifter = %s)", name(), feederDutyCycle, lifterVelocityRadPerSec);
     }
   }
 
