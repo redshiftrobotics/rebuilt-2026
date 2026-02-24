@@ -42,9 +42,14 @@ public class ChannelIOSparkMax implements ChannelIO {
   }
 
   @Override
-  public void setSpeed(AngularVelocity speed) {
+  public void setDutyCycle(double dutyCycle) {
+    motor.set(dutyCycle);
+  }
+
+  @Override
+  public void setVelocity(AngularVelocity velocity) {
     controller.setSetpoint(
-        speed.in(RotationsPerSecond) * 60, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
+        velocity.in(RotationsPerSecond) * 60, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
   }
 
   public boolean isAtSetpoint() {
@@ -57,7 +62,7 @@ public class ChannelIOSparkMax implements ChannelIO {
   }
 
   @Override
-  public void configurePID(double kP, double kI, double kD) {
+  public void setPID(double kP, double kI, double kD) {
     SparkMaxConfig config = new SparkMaxConfig();
     config.closedLoop.pid(kP, kI, kD);
     motor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);

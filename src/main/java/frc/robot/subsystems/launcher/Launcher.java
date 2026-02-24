@@ -34,7 +34,7 @@ public class Launcher extends SubsystemBase {
     this.channelIOs = channelIOs;
     channelInputs = new ChannelIOInputsAutoLogged[channelIOs.length];
     for (int i = 0; i < channelIOs.length; i++) {
-      this.channelIOs[i].configurePID(
+      this.channelIOs[i].setPID(
           LauncherConstants.FLYWHEEL_KP,
           LauncherConstants.FLYWHEEL_KI,
           LauncherConstants.FLYWHEEL_KD);
@@ -72,7 +72,7 @@ public class Launcher extends SubsystemBase {
 
       hoodIO.setAngle(parameters.pitch());
       for (ChannelIO channel : channelIOs) {
-        channel.setSpeed(
+        channel.setVelocity(
             RadiansPerSecond.of(
                 parameters.velocity().in(MetersPerSecond)
                     * LauncherConstants.LAUNCHER_VELOCITY_MULTIPLIER

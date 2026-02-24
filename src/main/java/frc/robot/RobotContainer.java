@@ -153,7 +153,7 @@ public class RobotContainer {
                 new HopperMotorIOSim(HopperConstants.FEEDER_GEAR_RATIO));
         launcher =
             new Launcher(
-                new HoodIOFixed(), new ChannelIOSim(), new ChannelIOSim(), new ChannelIOSim());
+                new HoodIOFixed(), new ChannelIOSim(1), new ChannelIOSim(1), new ChannelIOSim(1));
         break;
 
       default:
