@@ -6,9 +6,7 @@ import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.Constants;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeWheelConstants;
 
-/**
- * Simulation implementation of IntakeWheelIO.
- */
+/** Simulation implementation of IntakeWheelIO. */
 public class IntakeWheelIOSim implements IntakeWheelIO {
   private final DCMotorSim sim;
   private final DCMotor motor;

@@ -31,7 +31,8 @@ public class Launcher extends SubsystemBase {
   public static Launcher create(RobotType robotType) {
     switch (robotType) {
       case SIM_BOT:
-        return new Launcher(new HoodIOFixed(), new ChannelIOSim(1), new ChannelIOSim(1), new ChannelIOSim(1));
+        return new Launcher(
+            new HoodIOFixed(), new ChannelIOSim(1), new ChannelIOSim(1), new ChannelIOSim(1));
       default:
         return new Launcher(new HoodIO() {});
     }

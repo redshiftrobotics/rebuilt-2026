@@ -12,9 +12,7 @@ import frc.robot.utility.records.PIDConfig;
  */
 public class IntakeConstants {
 
-  /**
-   * Constants for the intake wheel motor.
-   */
+  /** Constants for the intake wheel motor. */
   public class IntakeWheelConstants {
     public static final int CAN_ID = 5;
     public static final double GEAR_RATIO = 1.0 / 3.0;
@@ -24,9 +22,7 @@ public class IntakeConstants {
     public static final double SPEED_INTAKING = 1.0;
   }
 
-  /**
-   * Constants for the intake slapdown mechanism.
-   */
+  /** Constants for the intake slapdown mechanism. */
   public class SlapdownConstants {
     public static final int CAN_ID = 14;
     public static final double GEAR_RATIO = (1.0 / 4.0) * (1.0 / 4.0) * (1.0 / 2.0);

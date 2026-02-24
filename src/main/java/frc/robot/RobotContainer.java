@@ -32,10 +32,6 @@ import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.hopper.HopperConstants.HopperRunMode;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeConstants.SlapdownConstants;
-import frc.robot.subsystems.launcher.ChannelIO;
-import frc.robot.subsystems.launcher.ChannelIOSim;
-import frc.robot.subsystems.launcher.HoodIO;
-import frc.robot.subsystems.launcher.HoodIOFixed;
 import frc.robot.subsystems.launcher.Launcher;
 import frc.robot.subsystems.led.BlinkenLEDPattern;
 import frc.robot.subsystems.led.LEDSubsystem;
@@ -309,9 +305,7 @@ public class RobotContainer {
                 pipeline.runLayer(
                     "Aim at Hub", input -> input.headingTarget(launcher.getRobotYaw())),
                 Commands.runEnd(
-                    () -> launcher.setRunning(true),
-                    () -> launcher.setRunning(false),
-                    launcher)));
+                    () -> launcher.setRunning(true), () -> launcher.setRunning(false), launcher)));
   }
 
   private void configureOperatorControllerBindings(CommandXboxController xbox) {
