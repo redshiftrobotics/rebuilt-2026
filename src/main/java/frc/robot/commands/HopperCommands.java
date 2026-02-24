@@ -13,7 +13,7 @@ public class HopperCommands {
 
   /* Runs a hopper test routine */
   public static Command hopperTestRoutine(Hopper hopper) {
-    return setHopperMode(hopper, HopperConstants.HopperRunMode.FUEL_STORE)
+    return setHopperMode(hopper, HopperConstants.HopperRunMode.IDLE)
         .andThen(Commands.waitSeconds(5))
         .andThen(setHopperMode(hopper, HopperConstants.HopperRunMode.STOPPED))
         .andThen(Commands.waitSeconds(2))

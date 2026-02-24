@@ -1,6 +1,5 @@
 package frc.robot.subsystems.hopper;
 
-import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Alert;
@@ -10,21 +9,17 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RobotType;
-import frc.robot.subsystems.examples.flywheel.MotorIO;
-import frc.robot.subsystems.examples.flywheel.MotorIOInputsAutoLogged;
-import frc.robot.subsystems.examples.flywheel.MotorIOSim;
-import frc.robot.subsystems.examples.flywheel.MotorIOSparkMax;
 import frc.robot.subsystems.hopper.HopperConstants.HopperRunMode;
 import org.littletonrobotics.junction.Logger;
 
 public class Hopper extends SubsystemBase {
   /* IO layers */
-  private final MotorIO feederIO;
-  private final MotorIO lifterIO;
+  private final HopperMotorIO feederIO;
+  private final HopperMotorIO lifterIO;
 
   /* Loggable inputs */
-  private final MotorIOInputsAutoLogged feederInputs = new MotorIOInputsAutoLogged();
-  private final MotorIOInputsAutoLogged lifterInputs = new MotorIOInputsAutoLogged();
+  private final HopperMotorIOInputsAutoLogged feederInputs = new HopperMotorIOInputsAutoLogged();
+  private final HopperMotorIOInputsAutoLogged lifterInputs = new HopperMotorIOInputsAutoLogged();
 
   private final Alert feederDisconnectedAlert =
       new Alert("Feeder motor disconnected, ", AlertType.kError);
@@ -38,13 +33,13 @@ public class Hopper extends SubsystemBase {
   /* Run mode storage */
   private HopperConstants.HopperRunMode runMode = HopperRunMode.STOPPED;
 
-  public Hopper(MotorIO feederIO, MotorIO lifterIO) {
+  public Hopper(HopperMotorIO feederIO, HopperMotorIO lifterIO) {
     this.feederIO = feederIO;
     this.lifterIO = lifterIO;
 
-    measuredVisualizer = new HopperVisualizer(getName() + "/Visuization/Measured", Color.kRed, 0);
+    measuredVisualizer = new HopperVisualizer(getName() + "/Visualization/Measured", Color.kRed, 0);
     setpointVisualizer =
-        new HopperVisualizer(getName() + "/Visuization/Setpoint", Color.kBlue, 0.01);
+        new HopperVisualizer(getName() + "/Visualization/Setpoint", Color.kBlue, 0.01);
 
     stopAll();
 
@@ -113,16 +108,18 @@ public class Hopper extends SubsystemBase {
     switch (robotType) {
       case REBUILT_2026:
         return new Hopper(
-            new MotorIOSparkMax(HopperConstants.FEEDER_CONSTANTS),
-            new MotorIOSparkMax(HopperConstants.LIFTER_CONSTANTS));
+            new HopperMotorIOSparkMax(HopperConstants.FEEDER_CONSTANTS),
+            new HopperMotorIOSparkMax(HopperConstants.LIFTER_CONSTANTS));
 
       case SIM_BOT:
         return new Hopper(
-            new MotorIOSim(DCMotor.getNEO(1), HopperConstants.FEEDER_CONSTANTS, 0.1),
-            new MotorIOSim(DCMotor.getNEO(1), HopperConstants.LIFTER_CONSTANTS, 0.1));
+            new HopperMotorIOSim(
+                HopperConstants.LIFTER_MOTOR, HopperConstants.FEEDER_CONSTANTS, 0.1),
+            new HopperMotorIOSim(
+                HopperConstants.FEEDER_MOTOR, HopperConstants.LIFTER_CONSTANTS, 0.1));
 
       default:
-        return new Hopper(new MotorIO() {}, new MotorIO() {});
+        return new Hopper(new HopperMotorIO() {}, new HopperMotorIO() {});
     }
   }
 }
