@@ -2,6 +2,7 @@ package frc.robot.subsystems.launcher;
 
 import edu.wpi.first.units.measure.AngularVelocity;
 import frc.robot.utility.records.FeedForwardConfigRecord;
+import frc.robot.utility.records.PIDConfig;
 import org.littletonrobotics.junction.AutoLog;
 
 /** Interface for the IO layers of the Template subsystem. */
@@ -17,7 +18,10 @@ public interface ChannelIO {
     public double appliedDutycycle = 0.0;
   }
 
-  /** Updates the set of loggable inputs. */
+  public default String getName() {
+    return "";
+  }
+
   /** Updates the set of loggable inputs. */
   public default void updateInputs(ChannelIOInputs inputs) {}
 
@@ -36,7 +40,7 @@ public interface ChannelIO {
   public default void setVelocity(AngularVelocity velocity, double arbFeedforward) {}
 
   /** Configure PID */
-  public default void setPID(double kP, double kI, double kD) {}
+  public default void setPID(PIDConfig pid) {}
 
   /** Configure FF */
   public default void setFF(FeedForwardConfigRecord ffConfig) {}

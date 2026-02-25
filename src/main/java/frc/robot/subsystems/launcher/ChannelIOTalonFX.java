@@ -23,10 +23,13 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.subsystems.examples.flywheel.MotorConstants;
 import frc.robot.utility.records.FeedForwardConfigRecord;
+import frc.robot.utility.records.PIDConfig;
 
 /** Hardware implementation of the TemplateIO. */
 public class ChannelIOTalonFX implements ChannelIO {
+  private final String name;
   private final TalonFX motor;
   private final TalonFXConfiguration config = new TalonFXConfiguration();
 
@@ -56,28 +59,29 @@ public class ChannelIOTalonFX implements ChannelIO {
 
   private final Debouncer connectedDebouncer = new Debouncer(0.5);
 
-  public ChannelIOTalonFX(
-      int motorID,
-      double gearRatio,
-      boolean isInverted,
-      boolean brakeMode,
-      double stallCurrent,
-      OutputType outputType) {
-    motor = new TalonFX(motorID);
-    this.brakeMode = brakeMode;
+  public ChannelIOTalonFX(String name, MotorConstants constants) {
+    this(name, constants, OutputType.TorqueCurrentFOC);
+  }
+
+  public ChannelIOTalonFX(String name, MotorConstants constants, OutputType outputType) {
+    this.name = name;
+    motor = new TalonFX(constants.deviceId());
+    brakeMode = constants.brakeMode();
     this.outputType = outputType;
 
     final double peakReverse = 0;
 
     config.MotorOutput.NeutralMode = brakeMode ? NeutralModeValue.Brake : NeutralModeValue.Coast;
     config.Slot0 = new Slot0Configs();
-    config.Feedback.SensorToMechanismRatio = gearRatio;
-    config.TorqueCurrent.PeakForwardTorqueCurrent = stallCurrent;
-    config.TorqueCurrent.PeakReverseTorqueCurrent = stallCurrent * peakReverse;
-    config.CurrentLimits.StatorCurrentLimit = stallCurrent;
+    config.Feedback.SensorToMechanismRatio = constants.gearRatio();
+    config.TorqueCurrent.PeakForwardTorqueCurrent = constants.stallCurrent();
+    config.TorqueCurrent.PeakReverseTorqueCurrent = constants.stallCurrent() * peakReverse;
+    config.CurrentLimits.StatorCurrentLimit = constants.stallCurrent();
     config.CurrentLimits.StatorCurrentLimitEnable = true;
     config.MotorOutput.Inverted =
-        isInverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
+        constants.inverted()
+            ? InvertedValue.Clockwise_Positive
+            : InvertedValue.CounterClockwise_Positive;
 
     // config.Audio.BeepOnBoot = Constants.TALON_BEEP_ON_BOOT;
     // config.Audio.BeepOnConfig = Constants.TALON_BEEP_ON_CONFIG;
@@ -100,13 +104,17 @@ public class ChannelIOTalonFX implements ChannelIO {
   }
 
   @Override
+  public String getName() {
+    return name;
+  }
+
+  @Override
   public void updateInputs(ChannelIOInputs inputs) {
     StatusCode status =
         BaseStatusSignal.refreshAll(position, velocity, appliedVolts, current, dutyCycle);
 
     inputs.motorConnected = connectedDebouncer.calculate(status.isOK());
-    inputs.velocityRadPerSec =
-        Units.rotationsPerMinuteToRadiansPerSecond(velocity.getValueAsDouble());
+    inputs.velocityRadPerSec = Units.rotationsToRadians(velocity.getValueAsDouble());
     inputs.appliedVolts = appliedVolts.getValueAsDouble();
     inputs.supplyCurrentAmps = current.getValueAsDouble();
     inputs.appliedDutycycle = dutyCycle.getValueAsDouble();
@@ -152,12 +160,11 @@ public class ChannelIOTalonFX implements ChannelIO {
   }
 
   @Override
-  public void setPID(double kP, double kI, double kD) {
-    SmartDashboard.putString(
-        "Launcher Channel Debug", String.format("kP: %s, kI: %s, kD: %s", kP, kI, kD));
-    config.Slot0.kP = kP;
-    config.Slot0.kI = kI;
-    config.Slot0.kD = kD;
+  public void setPID(PIDConfig pid) {
+    SmartDashboard.putString("Launcher Channel Debug", pid.toString());
+    config.Slot0.kP = pid.kP();
+    config.Slot0.kI = pid.kI();
+    config.Slot0.kD = pid.kD();
     pushConfig();
   }
 

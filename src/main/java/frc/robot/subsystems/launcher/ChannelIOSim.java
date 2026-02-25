@@ -12,10 +12,14 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import frc.robot.Constants;
+import frc.robot.subsystems.examples.flywheel.MotorConstants;
 import frc.robot.utility.records.FeedForwardConfigRecord;
+import frc.robot.utility.records.PIDConfig;
 
 /** Physics sim implementation of motor IO. */
 public class ChannelIOSim implements ChannelIO {
+
+  private final String name;
 
   private final FlywheelSim sim;
 
@@ -29,12 +33,19 @@ public class ChannelIOSim implements ChannelIO {
   private boolean closedLoop = false;
   private double FFVolts = 0;
 
-  public ChannelIOSim(double gearRatio) {
+  public ChannelIOSim(String name, MotorConstants constants) {
+    this.name = name;
     final DCMotor motor = DCMotor.getKrakenX60(1);
     final double momentOfInertia = (1.0 / 2.0) * 0.362874 * Math.pow(Units.inchesToMeters(2.0), 2);
     sim =
         new FlywheelSim(
-            LinearSystemId.createFlywheelSystem(motor, momentOfInertia, gearRatio), motor);
+            LinearSystemId.createFlywheelSystem(motor, momentOfInertia, constants.gearRatio()),
+            motor);
+  }
+
+  @Override
+  public String getName() {
+    return name;
   }
 
   @Override
@@ -81,8 +92,8 @@ public class ChannelIOSim implements ChannelIO {
   }
 
   @Override
-  public void setPID(double kP, double kI, double kD) {
-    feedback.setPID(kP, kI, kD);
+  public void setPID(PIDConfig pid) {
+    feedback.setPID(pid.kP(), pid.kI(), pid.kD());
   }
 
   @Override

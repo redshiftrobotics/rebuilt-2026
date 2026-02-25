@@ -12,23 +12,36 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.units.measure.MomentOfInertia;
+import frc.robot.Constants;
+import frc.robot.subsystems.examples.flywheel.MotorConstants;
+import frc.robot.utility.records.FeedForwardConfigRecord;
+import frc.robot.utility.records.PIDConfig;
 import frc.robot.utility.tunable.TunableNumber;
 
 /** Constants for the Template subsystem. */
 public class LauncherConstants {
-  // TODO Add real IDs
+  // TODO Add real values
+
   public static final int ACTUATOR_LEFT_ID = 1;
   public static final int ACTUATOR_RIGHT_ID = 2;
 
-  public static final int CHANNEL_LEFT_ID = 1;
-  public static final int CHANNEL_CENTER_ID = 2;
-  public static final int CHANNEL_RIGHT_ID = 3;
+  public static final MotorConstants LEFT_CONSTANTS = new MotorConstants(3, 1, false, false, 120);
+  public static final MotorConstants CENTER_CONSTANTS = new MotorConstants(4, 1, false, false, 120);
+  public static final MotorConstants RIGHT_CONSTANTS = new MotorConstants(15, 1, true, true, 120);
 
-  public static final double FLYWHEEL_KP = 0.92;
-  public static final double FLYWHEEL_KI = 0.0;
-  public static final double FLYWHEEL_KD = 0.0;
+  public static final PIDConfig FLYWHEEL_PID =
+      switch (Constants.getRobot()) {
+        case REBUILT_2026 -> new PIDConfig(100, 0.0, 0.0);
+        case SIM_BOT -> new PIDConfig(1.0, 0.0, 0.0);
+        default -> new PIDConfig(0.0, 0.0, 0.0);
+      };
+  public static final FeedForwardConfigRecord FF =
+      switch (Constants.getRobot()) {
+        case REBUILT_2026 -> new FeedForwardConfigRecord(0.0, 0.0, 0.0);
+        case SIM_BOT -> new FeedForwardConfigRecord(0.0, 0.0, 0.0);
+        default -> new FeedForwardConfigRecord(0.0, 0.0, 0.0);
+      };
 
-  // TODO Update
   public static final Distance LAUNCHER_WHEEL_RADIUS = Inches.of(2);
   public static final Mass LAUNCHER_WHEEL_MASS = Pounds.of(0.3);
   public static final MomentOfInertia LAUNCHER_WHEEL_MOI =
@@ -57,17 +70,14 @@ public class LauncherConstants {
               + (LauncherConstants.TOTAL_MOI.in(KilogramSquareMeters))
               + LauncherConstants.FUEL_MASS.in(Kilograms))
           / LauncherConstants.TOTAL_MOI.in(KilogramSquareMeters);
-  // TODO Double check
   public static final Distance LAUNCHER_X_OFFSET = Inches.of(-12);
   public static final Distance LAUNCHER_Z_OFFSET = Inches.of(20);
   public static final Distance HUB_Z_OFFSET = Feet.of(6);
 
   public static final HoodType HOOD_TYPE = HoodType.FIXED;
-  // TODO Add real hood values
   public static final Rotation2d FIXED_LAUNCH_ANGLE = new Rotation2d(75);
   public static final Distance HOOD_RADIUS = Inches.of(20);
 
-  // TODO Add real actuator values
   public static final Translation2d ACTUATOR_LOCATION =
       new Translation2d(Inches.of(-12), Inches.of(-4));
   public static final Distance ACTUATOR_LENGTH_MIN = Inches.of(12);
