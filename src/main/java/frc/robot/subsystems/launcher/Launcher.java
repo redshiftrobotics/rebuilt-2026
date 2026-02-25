@@ -82,24 +82,6 @@ public class Launcher extends SubsystemBase {
       channelConfigFailAlerts.add(
           new Alert(channelIOs[i].getName() + " channel config failed", AlertType.kError));
     }
-
-    SmartDashboard.putData(
-        "Outtake State",
-        new Sendable() {
-          @Override
-          public void initSendable(SendableBuilder builder) {
-            builder.addBooleanProperty("Run", () -> running, null);
-            for (int i = 0; i < channelIOs.length; i++) {
-              final var inputs = channelInputs.get(i);
-              builder.addDoubleProperty(
-                  channelIOs[i].getName() + " Velocity (rad/sec)",
-                  () -> inputs.velocityRadPerSec,
-                  null);
-              builder.addDoubleProperty(
-                  channelIOs[i].getName() + " duty cycle", () -> inputs.appliedDutycycle, null);
-            }
-          }
-        });
   }
 
   private void stopMotors() {
@@ -159,6 +141,8 @@ public class Launcher extends SubsystemBase {
                     / LauncherConstants.LAUNCHER_WHEEL_RADIUS.in(Meters)));
       }
       robotYaw = parameters.yaw();
+    } else {
+      robotYaw = null;
     }
 
     hoodIO.updateInputs(hoodInputs);
