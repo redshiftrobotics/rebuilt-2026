@@ -6,6 +6,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -32,6 +33,7 @@ import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.hopper.HopperConstants.HopperRunMode;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeConstants.SlapdownConstants;
+import frc.robot.subsystems.launcher.Launcher;
 import frc.robot.subsystems.led.BlinkenLEDPattern;
 import frc.robot.subsystems.led.LEDSubsystem;
 import frc.robot.subsystems.outtake.Outtake;
@@ -55,6 +57,7 @@ public class RobotContainer {
   private final AprilTagVision vision;
   private final LEDSubsystem leds;
   private final Hopper hopper;
+  private final Launcher launcher;
   private final Intake intake;
   private final Outtake outtake;
   private final Climb climb;
@@ -100,6 +103,7 @@ public class RobotContainer {
     intake = Intake.create(robotType);
     climb = Climb.create(robotType);
     outtake = Outtake.create(robotType);
+    launcher = Launcher.create(robotType);
 
     // Vision setup
     if (Constants.isOnPlayingField()) {
@@ -128,6 +132,17 @@ public class RobotContainer {
                 BlinkenLEDPattern.COLORWAVES_LAVA,
                 BlinkenLEDPattern.WHITE)
             .withName("LED Alliance Color Waves"));
+
+    launcher.configure(
+        drive::getRobotPose,
+        () -> {
+          Rotation2d robotAngle = drive.getRobotPose().getRotation();
+          // Robot relative to field relative;
+          ChassisSpeeds speeds =
+              ChassisSpeeds.fromFieldRelativeSpeeds(
+                  drive.getRobotSpeeds(), robotAngle.unaryMinus());
+          return (new Translation2d(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond));
+        });
 
     // Alerts for constants to avoid using them in competition
     developmentModeActiveAlert.set(Constants.DEVELOPMENT_MODE);
@@ -276,6 +291,13 @@ public class RobotContainer {
                       .angularCoefficient(0.3));
       xbox.pov(pov).whileTrue(activateLayer);
     }
+    xbox.a()
+        .toggleOnTrue(
+            Commands.parallel(
+                pipeline.runLayer(
+                    "Aim at Hub", input -> input.headingTarget(launcher.getRobotYaw())),
+                Commands.runEnd(
+                    () -> launcher.startAutomatic(), () -> launcher.stop(), launcher)));
   }
 
   private void configureOperatorControllerBindings(CommandXboxController xbox) {
