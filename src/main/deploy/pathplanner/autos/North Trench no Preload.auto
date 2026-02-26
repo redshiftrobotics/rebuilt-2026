@@ -5,28 +5,65 @@
     "data": {
       "commands": [
         {
-          "type": "path",
-          "data": {
-            "pathName": "North Trench to mid"
-          }
-        },
-        {
-          "type": "sequential",
+          "type": "parallel",
           "data": {
             "commands": [
               {
-                "type": "named",
+                "type": "path",
                 "data": {
-                  "name": "ExtendSlapdown"
+                  "pathName": "North Trench to mid"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "ExtendSlapdown"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "StartIntake"
+                      }
+                    }
+                  ]
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "StartIntake"
+                  "name": "IdleHopper"
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Mid drive over north side"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "north mid to trench"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "goto score north no preload"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "FireHopper"
           }
         }
       ]

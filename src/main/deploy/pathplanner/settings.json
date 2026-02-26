@@ -7,10 +7,11 @@
     "Demo Shapes",
     "GraysonPaths",
     "Intermediate",
-    "south goto mid",
+    "north goto mid",
     "North Intermediate to outpost",
     "South Intermediate to Outpost",
-    "Start Middle"
+    "Start Middle",
+    "south goto mid"
   ],
   "autoFolders": [
     "Middle Start",

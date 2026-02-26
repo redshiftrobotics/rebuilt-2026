@@ -4,28 +4,28 @@
     {
       "anchor": {
         "x": 3.5291995614035088,
-        "y": 7.371831140350877
+        "y": 7.419912280701754
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.962017543859649,
-        "y": 7.333366228070175
+        "x": 2.6541228070175436,
+        "y": 7.42952850877193
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "north mid nointake post-trench"
     },
     {
       "anchor": {
-        "x": 6.1351973684210535,
-        "y": 7.371831140350877
+        "x": 2.4906469298245617,
+        "y": 6.2371162280701755
       },
       "prevControl": {
-        "x": 5.1351973684210535,
-        "y": 7.371831140350877
+        "x": 1.6348026315789475,
+        "y": 6.362127192982456
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "North Middle Ready For Intake"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 1.613538932881116
+    "rotation": -42.195917004877735
   },
   "reversed": false,
   "folder": "north goto mid",

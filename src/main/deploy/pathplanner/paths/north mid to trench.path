@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.5291995614035088,
-        "y": 7.371831140350877
+        "x": 7.750723684210525,
+        "y": 5.390888157894737
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.962017543859649,
-        "y": 7.333366228070175
+        "x": 7.51031798245614,
+        "y": 6.679462719298246
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "north middle post-intake"
     },
     {
       "anchor": {
-        "x": 6.1351973684210535,
-        "y": 7.371831140350877
+        "x": 3.5291995614035088,
+        "y": 7.419912280701754
       },
       "prevControl": {
-        "x": 5.1351973684210535,
-        "y": 7.371831140350877
+        "x": 5.404364035087719,
+        "y": 7.881491228070175
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "North Middle Ready For Intake"
+      "linkedName": "north mid nointake post-trench"
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 1.613538932881116
+    "rotation": 0.0
   },
   "reversed": false,
   "folder": "north goto mid",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -89.37040139158974
   },
   "useDefaultConstraints": true
 }
