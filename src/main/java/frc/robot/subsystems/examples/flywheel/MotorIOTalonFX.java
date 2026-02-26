@@ -112,8 +112,7 @@ public class MotorIOTalonFX implements MotorIO {
 
     inputs.motorConnected = connectedDebouncer.calculate(status.isOK());
     inputs.positionRad = Units.rotationsToRadians(position.getValueAsDouble());
-    inputs.velocityRadPerSec =
-        Units.rotationsPerMinuteToRadiansPerSecond(velocity.getValueAsDouble());
+    inputs.velocityRadPerSec = Units.rotationsToRadians(velocity.getValueAsDouble());
     inputs.appliedVolts = appliedVolts.getValueAsDouble();
     inputs.supplyCurrentAmps = current.getValueAsDouble();
     inputs.appliedDutycycle = dutyCycle.getValueAsDouble();
@@ -136,7 +135,7 @@ public class MotorIOTalonFX implements MotorIO {
 
   @Override
   public void setVelocity(double velocityRadPerSec, double arbFeedforward) {
-    double velocityRotPerSec = Units.radiansPerSecondToRotationsPerMinute(velocityRadPerSec);
+    double velocityRotPerSec = Units.radiansToRotations(velocityRadPerSec);
     motor.setControl(
         switch (outputType) {
           case Voltage -> velocityVoltageRequest

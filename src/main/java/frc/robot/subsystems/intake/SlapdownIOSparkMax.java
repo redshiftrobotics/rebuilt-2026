@@ -22,6 +22,7 @@ import frc.robot.subsystems.intake.IntakeConstants.SlapdownConstants;
 import frc.robot.utility.SparkUtil;
 import frc.robot.utility.records.PIDConfig;
 
+/** SparkMAX implementation of SlapdownIO. */
 public class SlapdownIOSparkMax implements SlapdownIO {
 
   private final SparkMax motor;

@@ -14,8 +14,16 @@ import frc.robot.subsystems.intake.IntakeConstants.SlapdownConstants;
 import frc.robot.utility.tunable.TunableNumbers.TunablePID;
 import org.littletonrobotics.junction.Logger;
 
+/**
+ * The Intake subsystem controls both the intake wheels and the slapdown mechanism.
+ *
+ * <p>The intake wheels are responsible for intaking and outtaking game pieces, while the slapdown
+ * mechanism adjusts the intake's angle for different scoring positions.
+ *
+ * <p>This subsystem supports three robot configurations: the competition robot (REBUILT_2026),
+ * simulation (SIM_BOT), and a default fallback for unknown robots.
+ */
 public class Intake extends SubsystemBase {
-
   private final IntakeWheelIO wheelIO;
   private final SlapdownIO slapdownIO;
 
@@ -101,11 +109,17 @@ public class Intake extends SubsystemBase {
 
   // wheel
 
+  /**
+   * Sets the intake wheel speed.
+   *
+   * @param speed The duty cycle speed (-1.0 to 1.0), positive for intaking
+   */
   public void setWheelSpeed(double speed) {
     wheelIO.setSpeed(speed);
     this.setpointWheelSpeed = speed;
   }
 
+  /** Stops the intake wheels. */
   public void stopWheels() {
     wheelIO.stop();
     this.setpointWheelSpeed = 0;
@@ -113,21 +127,41 @@ public class Intake extends SubsystemBase {
 
   // slapdown
 
+  /**
+   * Sets the slapdown mechanism setpoint position.
+   *
+   * @param setpoint The desired angle for the slapdown mechanism
+   */
   public void setSlapdownSetpoint(Rotation2d setpoint) {
     slapdownIO.setSetpoint(setpoint);
     this.setpointPosition = setpoint;
   }
 
+  /**
+   * Sets and saves the "up" position setpoint for the slapdown mechanism.
+   *
+   * @param setPoint The angle to save as the up position
+   */
   public void setSavedUpSetpoint(Rotation2d setPoint) {
     setSlapdownSetpoint(setPoint);
     slapdownUpPosition = setPoint;
   }
 
+  /**
+   * Sets and saves the "down" position setpoint for the slapdown mechanism.
+   *
+   * @param setPoint The angle to save as the down position
+   */
   public void setSavedDownSetpoint(Rotation2d setPoint) {
     setSlapdownSetpoint(setPoint);
     slapdownDownPosition = setPoint;
   }
 
+  /**
+   * Gets the saved "up" position setpoint for the slapdown mechanism.
+   *
+   * @return The saved up position angle
+   */
   public Rotation2d getSavedUpSetpoint() {
     return slapdownUpPosition;
   }
@@ -136,6 +170,12 @@ public class Intake extends SubsystemBase {
     return slapdownDownPosition;
   }
 
+  /**
+   * Creates an Intake subsystem for the specified robot type.
+   *
+   * @param robotType The type of robot to create the intake for
+   * @return The configured Intake subsystem instance
+   */
   public static Intake create(RobotType robotType) {
 
     switch (robotType) {

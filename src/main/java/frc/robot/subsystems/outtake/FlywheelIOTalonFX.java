@@ -120,8 +120,7 @@ public class FlywheelIOTalonFX implements FlywheelIO {
     var status = BaseStatusSignal.refreshAll(position, velocity, appliedVolts, current, dutyCycle);
 
     inputs.motorConnected = connectedDebouncer.calculate(status.isOK());
-    inputs.velocityRadPerSec =
-        Units.rotationsPerMinuteToRadiansPerSecond(velocity.getValueAsDouble());
+    inputs.velocityRadPerSec = Units.rotationsToRadians(velocity.getValueAsDouble());
     inputs.appliedVolts = appliedVolts.getValueAsDouble();
     inputs.supplyCurrentAmps = current.getValueAsDouble();
     inputs.appliedDutycycle = dutyCycle.getValueAsDouble();

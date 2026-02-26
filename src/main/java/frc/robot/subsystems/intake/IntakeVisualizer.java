@@ -9,8 +9,11 @@ import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
 import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
 import org.littletonrobotics.junction.mechanism.LoggedMechanismRoot2d;
 
+/**
+ * Visualizer for the intake subsystem. Renders a 2D representation of the intake mechanism
+ * including the slapdown arm and wheels.
+ */
 public class IntakeVisualizer {
-
   private final LoggedMechanism2d visualizerMechanism = new LoggedMechanism2d(3, 1.5);
   private final LoggedMechanismRoot2d visualizerRoot =
       visualizerMechanism.getRoot("wheel", 1.75, .25);
