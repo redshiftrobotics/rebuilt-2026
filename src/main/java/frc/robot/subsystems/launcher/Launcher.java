@@ -30,9 +30,11 @@ public class Launcher extends SubsystemBase {
     AUTOMATIC
   }
 
-  public final TunablePID flywheelPID = new TunablePID(getName() + "/PID", LauncherConstants.FLYWHEEL_PID);
+  public final TunablePID flywheelPID =
+      new TunablePID(getName() + "/PID", LauncherConstants.FLYWHEEL_PID);
   public final TunableFF flywheelFF = new TunableFF(getName() + "/FF", LauncherConstants.FF);
-  public final TunableNumber flywheelSetpoint = new TunableNumber(getName() + "/Setpoint", LauncherConstants.FLYWHEEL_SETPOINT);
+  public final TunableNumber flywheelSetpoint =
+      new TunableNumber(getName() + "/Setpoint", LauncherConstants.FLYWHEEL_SETPOINT);
 
   private final HoodIO hoodIO;
   private final HoodIOInputsAutoLogged hoodInputs = new HoodIOInputsAutoLogged();
@@ -131,9 +133,7 @@ public class Launcher extends SubsystemBase {
     flywheelFF.ifChanged(hashCode(), () -> updateFF());
 
     Translation2d hubTranslation =
-        FieldConstants.Hub.topCenterPoint
-            .toTranslation2d()
-            .minus(robotPose.get().getTranslation());
+        FieldConstants.Hub.topCenterPoint.toTranslation2d().minus(robotPose.get().getTranslation());
     switch (mode) {
       case STOPPED:
         robotYaw = hubTranslation.getAngle();
