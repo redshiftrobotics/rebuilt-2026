@@ -105,7 +105,8 @@ public class Hopper extends SubsystemBase {
   public void setMode(HopperRunMode mode) {
     // Update setpoint visualizer
     setpointVisualizer.update(
-        mode.feederDutyCycle * HopperConstants.MAX_FEEDER_SPEED, mode.lifterVelocityRadPerSec);
+        mode.feederDutyCycle * HopperConstants.FEEDER_MOTOR.freeSpeedRadPerSec,
+        mode.lifterDutyCycle * HopperConstants.LIFTER_MOTOR.freeSpeedRadPerSec);
 
     // Apply mode change
     if (mode == HopperRunMode.STOPPED) {
@@ -113,7 +114,7 @@ public class Hopper extends SubsystemBase {
       feederIO.stop();
     } else {
       feederIO.setDutyCycle(mode.feederDutyCycle);
-      lifterIO.setVelocity(mode.lifterVelocityRadPerSec);
+      lifterIO.setDutyCycle(mode.lifterDutyCycle);
     }
 
     runMode = mode;
