@@ -1,5 +1,6 @@
 package frc.robot;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -118,17 +119,8 @@ public class RobotContainer {
     // Can also use AutoBuilder.buildAutoChooser(); instead of SendableChooser to
     // auto populate
     registerNamedCommands();
-    // autoChooser =
-    //     new LoggedDashboardChooser<>(
-    //         "Auto Chooser",
-    //         Constants.DEVELOPMENT_MODE
-    //             ? AutoBuilder.buildAutoChooser()
-    //             : new SendableChooser<Command>());
-    autoChooser = new LoggedDashboardChooser<>("Auto Chooser", new SendableChooser<Command>());
+    autoChooser = new LoggedDashboardChooser<>("Auto Chooser", createSendableChooser());
     autoChooser.addDefaultOption("None", Commands.none());
-
-    // Configure autos
-    // configureAutos(autoChooser);
 
     leds.setDefaultCommand(
         leds.runColor(
@@ -425,37 +417,6 @@ public class RobotContainer {
     }
   }
 
-  private void configureAutos(LoggedDashboardChooser<Command> dashboardChooser) {
-    // Path planner Autos
-    // https://pathplanner.dev/gui-editing-paths-and-autos.html#autos
-
-    // Choreo Autos
-    // https://pathplanner.dev/pplib-choreo-interop.html#load-choreo-trajectory-as-a-pathplannerpath
-
-    if (Constants.DEVELOPMENT_MODE) {
-      dashboardChooser.addOption(
-          "[Characterization] Drive Feed Forward",
-          DriveCharacterizationCommands.feedforwardCharacterization(drive));
-      dashboardChooser.addOption(
-          "[Characterization] Drive Wheel Radius",
-          DriveCharacterizationCommands.wheelRadiusCharacterization(drive));
-
-      dashboardChooser.addOption(
-          "[SysId] Drive Quasistatic Forward",
-          drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-      dashboardChooser.addOption(
-          "[SysId] Drive Quasistatic Reverse",
-          drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-      dashboardChooser.addOption(
-          "[SysId] Drive Dynamic Forward", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
-      dashboardChooser.addOption(
-          "[SysId] Drive Dynamic Reverse", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-
-      dashboardChooser.addOption(
-          "[Test] Hopper Test Routine", HopperCommands.hopperTestRoutine(hopper));
-    }
-  }
-
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
@@ -471,5 +432,42 @@ public class RobotContainer {
       return null;
     }
     return autoChooser.get();
+  }
+
+  // Path planner Autos
+  // https://pathplanner.dev/gui-editing-paths-and-autos.html#autos
+  // Choreo Autos
+  // https://pathplanner.dev/pplib-choreo-interop.html#load-choreo-trajectory-as-a-pathplannerpath
+  private SendableChooser<Command> createSendableChooser() {
+    var chooser =
+        Constants.DEVELOPMENT_MODE
+            ? AutoBuilder.buildAutoChooser()
+            : new SendableChooser<Command>();
+
+    if (Constants.DEVELOPMENT_MODE) {
+      chooser.addOption(null, getAutonomousCommand());
+
+      chooser.addOption(
+          "[Characterization] Drive Feed Forward",
+          DriveCharacterizationCommands.feedforwardCharacterization(drive));
+      chooser.addOption(
+          "[Characterization] Drive Wheel Radius",
+          DriveCharacterizationCommands.wheelRadiusCharacterization(drive));
+
+      chooser.addOption(
+          "[SysId] Drive Quasistatic Forward",
+          drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+      chooser.addOption(
+          "[SysId] Drive Quasistatic Reverse",
+          drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+      chooser.addOption(
+          "[SysId] Drive Dynamic Forward", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
+      chooser.addOption(
+          "[SysId] Drive Dynamic Reverse", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+
+      chooser.addOption("[Test] Hopper Test Routine", HopperCommands.hopperTestRoutine(hopper));
+    }
+
+    return chooser;
   }
 }
