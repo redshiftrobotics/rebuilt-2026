@@ -315,9 +315,8 @@ public class RobotContainer {
         .whileTrue(hopper.runModeCommand(HopperRunMode.FIRING).withName("Hopper Firing"))
         .whileTrue(outtake.runFlywheelsCommand().withName("Flywheels Firing"));
 
-    // Run the bubbler at low speed to send fuel towards the back without firing
-    xbox.b()
-        .whileTrue(hopper.runModeCommand(HopperRunMode.FUEL_STORE).withName("Hopper Fuel Store"));
+    // Run the feeder at low speed to send fuel towards the back without firing
+    xbox.b().whileTrue(hopper.runModeCommand(HopperRunMode.IDLE).withName("Hopper Idle"));
 
     // Run the hopper motors in reverse to deal with jams
     xbox.start().whileTrue(hopper.runModeCommand(HopperRunMode.REVERSE).withName("Hopper Reverse"));
@@ -390,7 +389,7 @@ public class RobotContainer {
 
     // Hopper commands
     namedCommands.put("StopHopper", HopperCommands.setHopperMode(hopper, HopperRunMode.STOPPED));
-    namedCommands.put("IdleHopper", HopperCommands.setHopperMode(hopper, HopperRunMode.FUEL_STORE));
+    namedCommands.put("IdleHopper", HopperCommands.setHopperMode(hopper, HopperRunMode.IDLE));
     namedCommands.put("FireHopper", HopperCommands.setHopperMode(hopper, HopperRunMode.FIRING));
     namedCommands.put("ReverseHopper", HopperCommands.setHopperMode(hopper, HopperRunMode.REVERSE));
 
