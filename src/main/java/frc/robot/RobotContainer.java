@@ -120,8 +120,6 @@ public class RobotContainer {
           }
         });
 
-    // Can also use AutoBuilder.buildAutoChooser(); instead of SendableChooser to
-    // auto populate
     registerNamedCommands();
     autoChooser = new LoggedDashboardChooser<>("Auto Chooser", createSendableChooser());
     autoChooser.addDefaultOption("None", Commands.none());
@@ -296,8 +294,7 @@ public class RobotContainer {
             Commands.parallel(
                 pipeline.runLayer(
                     "Aim at Hub", input -> input.headingTarget(launcher.getRobotYaw())),
-                Commands.runEnd(
-                    () -> launcher.startAutomatic(), () -> launcher.stop(), launcher)));
+                Commands.runEnd(() -> launcher.startAutomatic(), () -> launcher.stop(), launcher)));
   }
 
   private void configureOperatorControllerBindings(CommandXboxController xbox) {
@@ -455,19 +452,19 @@ public class RobotContainer {
     return autoChooser.get();
   }
 
-  // Path planner Autos
-  // https://pathplanner.dev/gui-editing-paths-and-autos.html#autos
-  // Choreo Autos
-  // https://pathplanner.dev/pplib-choreo-interop.html#load-choreo-trajectory-as-a-pathplannerpath
   private SendableChooser<Command> createSendableChooser() {
+
+    // Path planner Autos
+    // https://pathplanner.dev/gui-editing-paths-and-autos.html#autos
+    // Choreo Autos
+    // https://pathplanner.dev/pplib-choreo-interop.html#load-choreo-trajectory-as-a-pathplannerpath
+
     var chooser =
         Constants.DEVELOPMENT_MODE
             ? AutoBuilder.buildAutoChooser()
             : new SendableChooser<Command>();
 
     if (Constants.DEVELOPMENT_MODE) {
-      chooser.addOption(null, getAutonomousCommand());
-
       chooser.addOption(
           "[Characterization] Drive Feed Forward",
           DriveCharacterizationCommands.feedforwardCharacterization(drive));
