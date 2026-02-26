@@ -32,7 +32,6 @@ import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.hopper.HopperConstants.HopperRunMode;
 import frc.robot.subsystems.intake.Intake;
-import frc.robot.subsystems.intake.IntakeConstants.SlapdownConstants;
 import frc.robot.subsystems.launcher.Launcher;
 import frc.robot.subsystems.led.BlinkenLEDPattern;
 import frc.robot.subsystems.led.LEDSubsystem;
@@ -299,64 +298,65 @@ public class RobotContainer {
 
   private void configureOperatorControllerBindings(CommandXboxController xbox) {
 
-    xbox.leftTrigger()
-        .onTrue(
-            Commands.sequence(
-                IntakeCommands.extendSlapdown(intake), IntakeCommands.startIntake(intake)))
-        .onFalse(
-            Commands.sequence(
-                IntakeCommands.retractSlapdown(intake), IntakeCommands.stopIntake(intake)));
+    // --- INTAKE CONTROL ---
 
-    // down pos
-    xbox.leftTrigger()
-        .and(xbox.pov(0))
-        .onTrue(IntakeCommands.incrementDownSlapdown(intake, SlapdownConstants.INCREMENT_SETPOINT));
-    xbox.leftTrigger()
-        .and(xbox.pov(180))
-        .onTrue(
-            IntakeCommands.incrementDownSlapdown(
-                intake, SlapdownConstants.INCREMENT_SETPOINT.unaryMinus()));
+    // Intake button (hold)
+    xbox.leftTrigger();
 
-    xbox.rightTrigger(0.2).whileTrue(outtake.runFlywheelsCommand().withName("Flywheels 0.2"));
+    // Dump through intake button (hold)
+    xbox.leftBumper().debounce(0.01);
 
-    xbox.rightBumper()
-        .toggleOnTrue(
-            hopper
-                .runModeCommand(HopperRunMode.PREP_SHOT)
-                .until(xbox.rightTrigger(0.2))
-                .withName("Hopper Prep RB"))
-        .toggleOnTrue(outtake.runFlywheelsCommand().withName("Flywheels RB"));
+    // Deploy intake tap button
+    xbox.leftStick();
 
-    // This is the input for firing; when the shooter is added, it should be
-    // triggered by this as
-    // well
-    xbox.rightTrigger(0.8)
-        .whileTrue(hopper.runModeCommand(HopperRunMode.FIRING).withName("Hopper Firing"))
-        .whileTrue(outtake.runFlywheelsCommand().withName("Flywheels Firing"));
+    // Retract intake tap button
+    xbox.rightStick();
 
-    // Run the feeder at low speed to send fuel towards the back without firing
-    xbox.b().whileTrue(hopper.runModeCommand(HopperRunMode.IDLE).withName("Hopper Idle"));
+    // Intake shift up button
+    xbox.povUp();
 
-    // Run the hopper motors in reverse to deal with jams
-    xbox.start().whileTrue(hopper.runModeCommand(HopperRunMode.REVERSE).withName("Hopper Reverse"));
+    // Intake shift down button
+    xbox.povDown();
 
-    xbox.pov(90)
-        .onTrue(
-            Commands.runOnce(
-                    () ->
-                        outtake.setRunningDesiredRadPerSec(
-                            outtake.getRunningDesiredRadPerSec() + 1))
-                .ignoringDisable(true));
-    xbox.pov(270)
-        .onTrue(
-            Commands.runOnce(
-                    () ->
-                        outtake.setRunningDesiredRadPerSec(
-                            outtake.getRunningDesiredRadPerSec() - 1))
-                .ignoringDisable(true));
+    // Reset intake shift button
+    xbox.start().debounce(0.3);
 
-    // climb.setDefaultCommand(
-    //     Commands.run(() -> climb.setSpeed(MathUtil.applyDeadband(xbox.getLeftY(), 0.1)), climb));
+    // --- OUTTAKE CONTROL ---
+
+    // Spin up then launch button
+    xbox.rightTrigger();
+
+    // Force launch button
+    xbox.rightBumper();
+
+    // Manual launch control button
+    xbox.back();
+
+    // Start spin up button
+    xbox.y();
+
+    // Cancel spin up button
+    xbox.b();
+
+    // Reverse lifter & outtake button
+    xbox.x();
+
+    // Reverse lifter button
+    xbox.a();
+
+    // Outtake shift up button
+    xbox.povLeft();
+
+    // Outtake shift down button
+    xbox.povRight();
+
+    // --- HANG/MANUAL CONTROL ---
+
+    // Hang up/down axis
+    xbox.getRightY();
+
+    // Manual mechanism axis
+    xbox.getLeftY();
   }
 
   private Command rumbleController(
