@@ -66,25 +66,6 @@ public class Intake extends SubsystemBase {
 
     setSlapdownSetpoint(slapdownUpPosition);
     stopWheels();
-
-    SmartDashboard.putData(
-        "Intake State",
-        new Sendable() {
-          @Override
-          public void initSendable(SendableBuilder builder) {
-            builder.addDoubleProperty(
-                "Slapdown Setpoint (deg)", () -> setpointPosition.getDegrees(), null);
-            builder.addDoubleProperty(
-                "Slapdown Position (deg)",
-                () -> Units.radiansToDegrees(slapdownInputs.positionRad),
-                null);
-            builder.addDoubleProperty(
-                "Slapdown Absolute Position (deg)",
-                () -> Units.radiansToDegrees(slapdownInputs.absolutePositionRad),
-                null);
-            builder.addDoubleProperty("Wheel Dutycycle", () -> setpointWheelSpeed, null);
-          }
-        });
   }
 
   @Override

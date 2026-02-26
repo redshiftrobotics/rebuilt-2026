@@ -53,24 +53,6 @@ public class Hopper extends SubsystemBase {
     // Safety first :-)
     stopAll();
 
-    // Set up state logging
-    SmartDashboard.putData(
-        "Hopper State",
-        new Sendable() {
-          @Override
-          public void initSendable(SendableBuilder builder) {
-            builder.addStringProperty("Run Mode", () -> runMode.toString(), null);
-            builder.addDoubleProperty(
-                "Feeder Velocity (rad per sec)", () -> feederInputs.velocityRadPerSec, null);
-            builder.addDoubleProperty(
-                "Lifter Velocity (rad per sec)", () -> lifterInputs.velocityRadPerSec, null);
-            builder.addDoubleProperty(
-                "Feeder Dutycycle", () -> feederInputs.appliedDutycycle, null);
-            builder.addDoubleProperty(
-                "Lifter Dutycycle", () -> lifterInputs.appliedDutycycle, null);
-          }
-        });
-
     // Set initial PID
     lifterIO.setPID(lifterPID.get());
   }
