@@ -35,7 +35,6 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.launcher.Launcher;
 import frc.robot.subsystems.led.BlinkenLEDPattern;
 import frc.robot.subsystems.led.LEDSubsystem;
-import frc.robot.subsystems.outtake.Outtake;
 import frc.robot.subsystems.vision.AprilTagVision;
 import frc.robot.utility.Elastic;
 import frc.robot.utility.Elastic.Notification.NotificationLevel;
@@ -58,7 +57,6 @@ public class RobotContainer {
   private final Hopper hopper;
   private final Launcher launcher;
   private final Intake intake;
-  private final Outtake outtake;
   private final Climb climb;
 
   // Controller
