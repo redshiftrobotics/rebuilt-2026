@@ -70,7 +70,7 @@ public class ChannelIOSim implements ChannelIO {
     inputs.velocityRadPerSec = sim.getAngularVelocityRadPerSec();
     inputs.appliedVolts = appliedVolts;
     inputs.supplyCurrentAmps = Math.abs(sim.getCurrentDrawAmps());
-    inputs.appliedDutycycle = appliedVolts / 12.0;
+    inputs.appliedDutyCycle = appliedVolts / 12.0;
   }
 
   @Override

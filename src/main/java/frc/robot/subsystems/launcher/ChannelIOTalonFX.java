@@ -117,7 +117,7 @@ public class ChannelIOTalonFX implements ChannelIO {
     inputs.velocityRadPerSec = Units.rotationsToRadians(velocity.getValueAsDouble());
     inputs.appliedVolts = appliedVolts.getValueAsDouble();
     inputs.supplyCurrentAmps = current.getValueAsDouble();
-    inputs.appliedDutycycle = dutyCycle.getValueAsDouble();
+    inputs.appliedDutyCycle = dutyCycle.getValueAsDouble();
     inputs.pushedConfigFault = pushedConfigFault;
   }
 

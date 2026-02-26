@@ -15,7 +15,7 @@ public interface ChannelIO {
     public double velocityRadPerSec = 0.0;
     public double appliedVolts = 0.0;
     public double supplyCurrentAmps = 0.0;
-    public double appliedDutycycle = 0.0;
+    public double appliedDutyCycle = 0.0;
   }
 
   public default String getName() {
