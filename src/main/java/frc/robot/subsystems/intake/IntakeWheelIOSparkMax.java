@@ -13,6 +13,7 @@ import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeWheelConstants;
 import frc.robot.utility.SparkUtil;
 
+/** SparkMAX implementation of IntakeWheelIO. */
 public class IntakeWheelIOSparkMax implements IntakeWheelIO {
   private final SparkMax motor;
   private final RelativeEncoder relativeEncoder;
