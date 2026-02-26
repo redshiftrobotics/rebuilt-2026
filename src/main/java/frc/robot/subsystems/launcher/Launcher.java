@@ -7,17 +7,13 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.util.sendable.Sendable;
-import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RobotType;
 import frc.robot.FieldConstants;
 import frc.robot.subsystems.launcher.ShotCalculator.ShotParameters;
-import frc.robot.subsystems.outtake.OuttakeConstants;
-import frc.robot.utility.AllianceMirrorUtil;
+import frc.robot.utility.tunable.TunableNumber;
 import frc.robot.utility.tunable.TunableNumbers.TunableFF;
 import frc.robot.utility.tunable.TunableNumbers.TunablePID;
 import java.util.ArrayList;
@@ -28,8 +24,15 @@ import org.littletonrobotics.junction.Logger;
 /** The subsystem that the person will actually use for the Template. */
 public class Launcher extends SubsystemBase {
 
-  public final TunablePID flywheelPID = new TunablePID(getName() + "/PID", OuttakeConstants.PID);
-  public final TunableFF flywheelFF = new TunableFF(getName() + "/FF", OuttakeConstants.FF);
+  public enum LauncherRunMode {
+    STOPPED,
+    FIXED,
+    AUTOMATIC
+  }
+
+  public final TunablePID flywheelPID = new TunablePID(getName() + "/PID", LauncherConstants.FLYWHEEL_PID);
+  public final TunableFF flywheelFF = new TunableFF(getName() + "/FF", LauncherConstants.FF);
+  public final TunableNumber flywheelSetpoint = new TunableNumber(getName() + "/Setpoint", LauncherConstants.FLYWHEEL_SETPOINT);
 
   private final HoodIO hoodIO;
   private final HoodIOInputsAutoLogged hoodInputs = new HoodIOInputsAutoLogged();
@@ -41,8 +44,8 @@ public class Launcher extends SubsystemBase {
   private Supplier<Pose2d> robotPose = null;
   private Supplier<Translation2d> robotVelocity = null;
 
-  private boolean running = false;
-  private Rotation2d robotYaw = AllianceMirrorUtil.apply(Rotation2d.kZero);
+  private LauncherRunMode mode = LauncherRunMode.STOPPED;
+  private Rotation2d robotYaw = Rotation2d.kZero;
 
   public static Launcher create(RobotType robotType) {
     switch (robotType) {
@@ -91,17 +94,21 @@ public class Launcher extends SubsystemBase {
   }
 
   public void stop() {
-    this.running = false;
+    mode = LauncherRunMode.STOPPED;
     stopMotors();
   }
 
-  public void start() {
-    this.running = true;
+  public void startFixed() {
+    mode = LauncherRunMode.FIXED;
   }
 
-  public void setRunning(boolean enabled) {
-    this.running = enabled;
-    if (enabled == false) stopMotors();
+  public void startAutomatic() {
+    mode = LauncherRunMode.AUTOMATIC;
+  }
+
+  public void setMode(LauncherRunMode mode) {
+    this.mode = mode;
+    if (mode == LauncherRunMode.STOPPED) stopMotors();
   }
 
   private void updatePID() {
@@ -123,26 +130,37 @@ public class Launcher extends SubsystemBase {
     flywheelPID.ifChanged(hashCode(), () -> updatePID());
     flywheelFF.ifChanged(hashCode(), () -> updateFF());
 
-    if (running) {
-      Translation2d hubTranslation =
-          FieldConstants.Hub.topCenterPoint
-              .toTranslation2d()
-              .minus(robotPose.get().getTranslation());
-      ShotParameters parameters =
-          ShotCalculator.method1(hubTranslation, robotVelocity.get(), hoodIO.hoodType());
+    Translation2d hubTranslation =
+        FieldConstants.Hub.topCenterPoint
+            .toTranslation2d()
+            .minus(robotPose.get().getTranslation());
+    switch (mode) {
+      case STOPPED:
+        robotYaw = hubTranslation.getAngle();
+        break;
+      case FIXED:
+        if (hoodIO.getClass() == HoodIOActuator.class) {
+          ((HoodIOActuator) hoodIO).setPosition(0);
+        }
+        for (ChannelIO channel : channelIOs) {
+          channel.setDutyCycle(flywheelSetpoint.get());
+        }
+        break;
+      case AUTOMATIC:
+        ShotParameters parameters =
+            ShotCalculator.method1(hubTranslation, robotVelocity.get(), hoodIO.hoodType());
 
-      hoodIO.setAngle(parameters.pitch());
-      for (ChannelIO channel : channelIOs) {
-        channel.setVelocity(
-            RadiansPerSecond.of(
-                parameters.velocity().in(MetersPerSecond)
-                    * LauncherConstants.LAUNCHER_VELOCITY_MULTIPLIER
-                    * LauncherConstants.LAUNCHER_TUNING_PARAMETER.get()
-                    / LauncherConstants.LAUNCHER_WHEEL_RADIUS.in(Meters)));
-      }
-      robotYaw = parameters.yaw();
-    } else {
-      robotYaw = null;
+        hoodIO.setAngle(parameters.pitch());
+        for (ChannelIO channel : channelIOs) {
+          channel.setVelocity(
+              RadiansPerSecond.of(
+                  parameters.velocity().in(MetersPerSecond)
+                      * LauncherConstants.LAUNCHER_VELOCITY_MULTIPLIER
+                      * LauncherConstants.LAUNCHER_TUNING_PARAMETER.get()
+                      / LauncherConstants.LAUNCHER_WHEEL_RADIUS.in(Meters)));
+        }
+        robotYaw = parameters.yaw();
+        break;
     }
 
     hoodIO.updateInputs(hoodInputs);

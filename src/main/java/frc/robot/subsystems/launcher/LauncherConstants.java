@@ -41,6 +41,7 @@ public class LauncherConstants {
         case SIM_BOT -> new FeedForwardConfigRecord(0.0, 0.0, 0.0);
         default -> new FeedForwardConfigRecord(0.0, 0.0, 0.0);
       };
+  public static final double FLYWHEEL_SETPOINT = 0.5;
 
   public static final Distance LAUNCHER_WHEEL_RADIUS = Inches.of(2);
   public static final Mass LAUNCHER_WHEEL_MASS = Pounds.of(0.3);

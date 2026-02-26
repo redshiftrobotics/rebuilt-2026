@@ -305,7 +305,7 @@ public class RobotContainer {
                 pipeline.runLayer(
                     "Aim at Hub", input -> input.headingTarget(launcher.getRobotYaw())),
                 Commands.runEnd(
-                    () -> launcher.setRunning(true), () -> launcher.setRunning(false), launcher)));
+                    () -> launcher.startAutomatic(), () -> launcher.stop(), launcher)));
   }
 
   private void configureOperatorControllerBindings(CommandXboxController xbox) {

@@ -9,10 +9,10 @@ public class LaunchCommands {
 
   public static Command PrimeToLaunch(Drive drive, Launcher launcher) {
     return Commands.parallel(
-        DriveCommands.rotateWithRotationController(drive, launcher::getRobotYaw),
+        DriveCommands.rotateWithRotationController(drive, () -> launcher.getRobotYaw()),
         launcher.runOnce(
             () -> {
-              launcher.start();
+              launcher.startAutomatic();
             }));
   }
 }
