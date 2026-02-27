@@ -12,7 +12,6 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
 import frc.robot.subsystems.examples.flywheel.MotorConstants;
@@ -60,11 +59,6 @@ public class ChannelIOSparkMax implements ChannelIO {
   public void setVelocity(AngularVelocity velocity) {
     controller.setSetpoint(
         velocity.in(RotationsPerSecond) * 60, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
-  }
-
-  public boolean isAtSetpoint() {
-    // Tolerance of +/- 30 RPM
-    return MathUtil.isNear(controller.getSetpoint(), encoder.getVelocity(), 30);
   }
 
   public void stop() {

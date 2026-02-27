@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -21,6 +22,7 @@ import frc.robot.utility.tunable.TunableNumbers.TunablePID;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 /** The subsystem that the person will actually use for the Template. */
@@ -28,14 +30,16 @@ public class Launcher extends SubsystemBase {
 
   public enum LauncherRunMode {
     MANUAL,
-    AUTOMATIC
+    INTERPOLATION,
+    AUTOMATIC,
   }
 
   public final TunablePID flywheelPID =
       new TunablePID(getName() + "/PID", LauncherConstants.FLYWHEEL_PID);
   public final TunableFF flywheelFF = new TunableFF(getName() + "/FF", LauncherConstants.FF);
-  public final TunableNumber flywheelSetpoint =
-      new TunableNumber(getName() + "/Setpoint", LauncherConstants.FLYWHEEL_SETPOINT);
+
+  public final TunableNumber LAUNCHER_VELOCITY_TOLERANCE =
+      new TunableNumber(getName() + "/VelocityTolerance", 15.0); // in radians per second
 
   private final HoodIO hoodIO;
   private final HoodIOInputsAutoLogged hoodInputs = new HoodIOInputsAutoLogged();
@@ -44,11 +48,15 @@ public class Launcher extends SubsystemBase {
   private final List<Alert> channelDisconnectedAlerts;
   private final List<Alert> channelConfigFailAlerts;
 
-  private Supplier<Pose2d> robotPose = null;
-  private Supplier<Translation2d> robotVelocity = null;
+  private Supplier<Pose2d> robotPoseSupplier = null;
+  private Supplier<Translation2d> robotVelocitySupplier = null;
 
   private boolean running = false;
   private LauncherRunMode mode = LauncherRunMode.MANUAL;
+
+  private Supplier<AngularVelocity> manualModeDesiredVelocity = () -> RadiansPerSecond.zero();
+  private AngularVelocity desiredVelocity = RadiansPerSecond.zero();
+
 
   private Rotation2d robotYaw = Rotation2d.kZero;
 
@@ -90,9 +98,23 @@ public class Launcher extends SubsystemBase {
       channelConfigFailAlerts.add(
           new Alert(channelIOs[i].getName() + " channel config failed", AlertType.kError));
     }
+
+    stop();
   }
 
-  private void stopFlywheels() {
+  public void setManualModeSupplier(Supplier<AngularVelocity> setpoint) {
+    this.manualModeDesiredVelocity = setpoint;
+  }
+
+  public void setDutyCycle(double dutyCycle) {
+    desiredVelocity = RadiansPerSecond.zero();
+    for (ChannelIO channel : channelIOs) {
+      channel.setDutyCycle(dutyCycle);
+    }
+  }
+
+  private void stopChannelMotors() {
+    desiredVelocity = RadiansPerSecond.of(0.0);
     for (ChannelIO channel : channelIOs) {
       channel.stop();
     }
@@ -102,7 +124,7 @@ public class Launcher extends SubsystemBase {
 
   public void stop() {
     running = false;
-    stopFlywheels();
+    stopChannelMotors();
   }
 
   public void start() {
@@ -121,6 +143,117 @@ public class Launcher extends SubsystemBase {
   public void setMode(LauncherRunMode mode) {
     this.mode = mode;
   }
+  
+  private void setChannelVelocities(AngularVelocity wheelVelocity) {
+    this.desiredVelocity = wheelVelocity;
+    for (ChannelIO channel : channelIOs) {
+      channel.setVelocity(wheelVelocity);
+    }
+  }
+
+  public void configure(
+      Supplier<Pose2d> robotPoseSupplier, Supplier<Translation2d> robotVelocitySupplier) {
+    this.robotPoseSupplier = robotPoseSupplier;
+    this.robotVelocitySupplier = robotVelocitySupplier;
+  }
+
+  @Override
+  public void periodic() {
+
+    hoodIO.updateInputs(hoodInputs);
+    Logger.processInputs(getName() + "/Hood", hoodInputs);
+
+    for (int i = 0; i < channelIOs.size(); i++) {
+      channelIOs.get(i).updateInputs(channelInputs.get(i));
+      Logger.processInputs(
+          getName() + "/Channel" + channelIOs.get(i).getName(), channelInputs.get(i));
+      channelDisconnectedAlerts.get(i).set(!channelInputs.get(i).motorConnected);
+      channelConfigFailAlerts.get(i).set(channelInputs.get(i).pushedConfigFault);
+    }
+
+    flywheelPID.ifChanged(hashCode(), this::updatePID);
+    flywheelFF.ifChanged(hashCode(), this::updateFF);
+
+    Pose2d robotPose = robotPoseSupplier.get();
+
+    Translation2d hubTranslation =
+        FieldConstants.Hub.topCenterPoint.toTranslation2d().minus(robotPose.getTranslation());
+
+    ShotParameters parameters =
+        ShotCalculator.method1(hubTranslation, robotVelocitySupplier.get(), hoodIO.hoodType());
+
+    AngularVelocity runningVelocity = RadiansPerSecond.zero();
+    Rotation2d runningHoodPitch = Rotation2d.kZero;
+
+    switch (mode) {
+      case MANUAL:
+        runningVelocity = manualModeDesiredVelocity.get();
+        robotYaw = parameters.yaw();
+        break;
+      case AUTOMATIC:
+        runningHoodPitch = parameters.pitch();
+        runningVelocity = calculateWheelVelocity(parameters.velocity());
+        robotYaw = parameters.yaw();
+        break;
+      case INTERPOLATION:
+        runningVelocity =
+            RadiansPerSecond.of(
+                InterpolationShotCalculator.calculateWheelVelocity(hubTranslation.getNorm()));
+        robotYaw = parameters.yaw();
+        break;
+    }
+
+    hoodIO.setAngle(runningHoodPitch);
+
+    if (running) {
+      setChannelVelocities(runningVelocity);
+    } else {
+      stopChannelMotors(); // Coast to slow down
+    }
+  }
+
+  @AutoLogOutput(key = "Launcher/isRunning")
+  public boolean isRunning() {
+    return running;
+  }
+
+  @AutoLogOutput(key = "Launcher/desiredVelocity")
+  public AngularVelocity getDesiredVelocity() {
+    return desiredVelocity;
+  }
+
+  @AutoLogOutput(key = "Launcher/averageVelocity")
+  public double getAverageVelocity() {
+    return channelInputs.stream().mapToDouble(c -> c.velocityRadPerSec).average().orElse(0.0);
+  }
+
+  @AutoLogOutput(key = "Launcher/runMode")
+  public LauncherRunMode getRunMode() {
+    return mode;
+  }
+
+  @AutoLogOutput(key = "Launcher/isReady")
+  public boolean isReady() {
+    boolean ready = true;
+    for (ChannelIO.ChannelIOInputs channelIO : channelInputs) {
+      boolean channelReady =
+          MathUtil.isNear(
+              desiredVelocity.in(RadiansPerSecond),
+              channelIO.velocityRadPerSec,
+              LAUNCHER_VELOCITY_TOLERANCE.get());
+      ready = ready && channelReady;
+    }
+    return ready;
+  }
+
+  private AngularVelocity calculateWheelVelocity(LinearVelocity ballVelocity) {
+    ballVelocity =
+        ballVelocity
+            .times(LauncherConstants.LAUNCHER_VELOCITY_MULTIPLIER)
+            .times(LauncherConstants.LAUNCHER_TUNING_PARAMETER.get());
+    return RadiansPerSecond.of(
+        ballVelocity.in(MetersPerSecond) / LauncherConstants.LAUNCHER_WHEEL_RADIUS.in(Meters));
+  }
 
   private void updatePID() {
     channelIOs.forEach(m -> m.setPID(flywheelPID.get()));
@@ -130,77 +263,7 @@ public class Launcher extends SubsystemBase {
     channelIOs.forEach(m -> m.setFF(flywheelFF.get()));
   }
 
-  public void configure(
-      Supplier<Pose2d> robotPoseSupplier, Supplier<Translation2d> robotVelocitySupplier) {
-    robotPose = robotPoseSupplier;
-    robotVelocity = robotVelocitySupplier;
-  }
-
-  @Override
-  public void periodic() {
-    flywheelPID.ifChanged(hashCode(), () -> updatePID());
-    flywheelFF.ifChanged(hashCode(), () -> updateFF());
-
-    Translation2d hubTranslation =
-        FieldConstants.Hub.topCenterPoint.toTranslation2d().minus(robotPose.get().getTranslation());
-    if (running) {
-      switch (mode) {
-        case MANUAL:
-          if (hoodIO.getClass() == HoodIOActuator.class) {
-            ((HoodIOActuator) hoodIO).setPosition(0);
-          }
-          for (ChannelIO channel : channelIOs) {
-            channel.setDutyCycle(flywheelSetpoint.get());
-          }
-          break;
-        case AUTOMATIC:
-          ShotParameters parameters =
-              ShotCalculator.method1(
-                  hubTranslation, robotVelocity.get().unaryMinus(), hoodIO.hoodType());
-
-          hoodIO.setAngle(parameters.pitch());
-          setFlywheelVelocity(parameters.velocity());
-
-          robotYaw = parameters.yaw();
-          break;
-      }
-    }
-
-    hoodIO.updateInputs(hoodInputs);
-    Logger.processInputs(getName() + "/Hood", hoodInputs);
-
-    for (int i = 0; i < channelIOs.size(); i++) {
-      channelIOs.get(i).updateInputs(channelInputs.get(i));
-      Logger.processInputs(
-          getName() + "/Channel" + channelIOs.get(i).getName(), channelInputs.get(i));
-      channelDisconnectedAlerts.get(i).set(channelInputs.get(i).motorConnected);
-      channelConfigFailAlerts.get(i).set(channelInputs.get(i).pushedConfigFault);
-    }
-  }
-
-  private void setFlywheelVelocity(LinearVelocity ballVelocity) {
-    AngularVelocity speed =
-        RadiansPerSecond.of(
-            ballVelocity.in(MetersPerSecond)
-                * LauncherConstants.LAUNCHER_VELOCITY_MULTIPLIER
-                * LauncherConstants.LAUNCHER_TUNING_PARAMETER.get()
-                / LauncherConstants.LAUNCHER_WHEEL_RADIUS.in(Meters));
-    Logger.recordOutput(getName() + "/desiredVelocityRadPerSec", speed.in(RadiansPerSecond));
-    for (ChannelIO channel : channelIOs) {
-      channel.setVelocity(speed);
-    }
-  }
-
   public Rotation2d getRobotYaw() {
     return robotYaw;
-  }
-
-  // Function to determine if the launcher wheels and hood are at their setpoints
-  public boolean isReady() {
-    boolean ready = true;
-    for (ChannelIO channelIO : channelIOs) {
-      ready = ready && channelIO.isAtSetpoint();
-    }
-    return ready;
   }
 }

@@ -3,7 +3,6 @@ package frc.robot.subsystems.intake;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
-import frc.robot.subsystems.intake.IntakeConstants.SlapdownConstants;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
 import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
@@ -32,7 +31,7 @@ public class IntakeVisualizer {
             new LoggedMechanismLigament2d(
                 "slapdownArm",
                 0.5,
-                SlapdownConstants.UP_SETPOINT.getDegrees(),
+                IntakeRunMode.START_POSITION.getSetpoint().getDegrees(),
                 10,
                 new Color8Bit(color)));
 

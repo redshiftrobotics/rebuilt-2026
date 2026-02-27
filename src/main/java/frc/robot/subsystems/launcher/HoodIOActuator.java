@@ -18,12 +18,14 @@ public class HoodIOActuator implements HoodIO {
     actuatorRight.setBoundsMicroseconds(2000, 1800, 1500, 1200, 1000);
   }
 
+  @Override
   public void setPosition(double position) {
     actuatorLeft.set(position);
     actuatorRight.set(position);
   }
 
-  private double getPosition() {
+  @Override
+  public double getPosition() {
     return (actuatorLeft.getPosition() + actuatorRight.getPosition()) / 2;
   }
 

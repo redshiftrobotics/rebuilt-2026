@@ -14,6 +14,11 @@ public class HopperConstants {
   public static final MotorConstants LIFTER_CONSTANTS =
       new MotorConstants(13, (1.0 / 3.0) * (1.0 / 3.0) * (1.0 / 3.0), true, false, 40);
 
+  public static final DCMotor FEEDER_MOTOR =
+      DCMotor.getNEO(1).withReduction(1.0 / FEEDER_CONSTANTS.gearRatio());
+  public static final DCMotor LIFTER_MOTOR =
+      DCMotor.getNEO(1).withReduction(1.0 / LIFTER_CONSTANTS.gearRatio());
+
   public static final PIDConfig LIFTER_FEEDBACK =
       switch (Constants.getRobot()) {
         case SIM_BOT -> new PIDConfig(1, 0, 0);
@@ -29,25 +34,16 @@ public class HopperConstants {
     REVERSE(-1, -0.7);
 
     public double feederDutyCycle;
-    public double lifterVelocityRadPerSec;
+    public double lifterDutyCycle;
 
-    private HopperRunMode(double feederDutyCycle, double lifterVelocityRadPerSec) {
+    private HopperRunMode(double feederDutyCycle, double lifterDutyCycle) {
       this.feederDutyCycle = feederDutyCycle;
-      this.lifterVelocityRadPerSec = lifterVelocityRadPerSec;
+      this.lifterDutyCycle = lifterDutyCycle;
     }
 
     @Override
     public String toString() {
-      return String.format(
-          "%s (feeder = %s, lifter = %s)", name(), feederDutyCycle, lifterVelocityRadPerSec);
+      return String.format("%s(feeder=%s, lifter=%s)", name(), feederDutyCycle, lifterDutyCycle);
     }
   }
-
-  public static final DCMotor FEEDER_MOTOR = DCMotor.getNEO(1);
-  public static final DCMotor LIFTER_MOTOR = DCMotor.getNEO(1);
-
-  public static final double MAX_FEEDER_SPEED =
-      FEEDER_MOTOR.withReduction(1.0 / FEEDER_CONSTANTS.gearRatio()).freeSpeedRadPerSec;
-  public static final double MAX_LIFTER_SPEED =
-      LIFTER_MOTOR.withReduction(1.0 / LIFTER_CONSTANTS.gearRatio()).freeSpeedRadPerSec;
 }
