@@ -318,24 +318,28 @@ public class RobotContainer {
     xbox.leftTrigger()
         .whileTrue(
             Commands.parallel(
-                intake.run(() -> intake.setMode(IntakeRunMode.INTAKING)),
-                hopper.run(() -> hopper.setMode(HopperRunMode.IDLE))
-            ).finallyDo(() -> {
-                intake.setMode(IntakeRunMode.UP);
-                hopper.setMode(HopperRunMode.STOPPED);
-            }).withName("Intake"));
+                    intake.run(() -> intake.setMode(IntakeRunMode.INTAKING)),
+                    hopper.run(() -> hopper.setMode(HopperRunMode.IDLE)))
+                .finallyDo(
+                    () -> {
+                      intake.setMode(IntakeRunMode.UP);
+                      hopper.setMode(HopperRunMode.STOPPED);
+                    })
+                .withName("Intake"));
 
     // Dump through intake button (hold)
     xbox.leftBumper()
         .debounce(0.1)
         .whileTrue(
             Commands.parallel(
-                intake.run(() -> intake.setMode(IntakeRunMode.OUTTAKING)),
-                hopper.run(() -> hopper.setMode(HopperRunMode.REVERSE))
-            ).finallyDo(() -> {
-                intake.setMode(IntakeRunMode.UP);
-                hopper.setMode(HopperRunMode.STOPPED);
-            }).withName("Intake"));
+                    intake.run(() -> intake.setMode(IntakeRunMode.OUTTAKING)),
+                    hopper.run(() -> hopper.setMode(HopperRunMode.REVERSE)))
+                .finallyDo(
+                    () -> {
+                      intake.setMode(IntakeRunMode.UP);
+                      hopper.setMode(HopperRunMode.STOPPED);
+                    })
+                .withName("Intake"));
 
     // Deploy intake tap button
     xbox.leftStick()
@@ -418,7 +422,7 @@ public class RobotContainer {
         .and(manualLaunch.negate())
         .whileTrue(
             Commands.parallel(
-                    launcher.runOnce(() -> launcher.setMode(LauncherRunMode.REVERSE)).andThen(launcher::start).andThen(launcher.idle()),
+                    launcher.run(() -> launcher.setDutyCycle(-0.1)),
                     hopper.run(() -> hopper.setMode(HopperRunMode.PREP_SHOT)))
                 .finallyDo(
                     () -> {
@@ -443,7 +447,7 @@ public class RobotContainer {
         .multiPress(2, 0.2)
         .toggleOnTrue(
             Commands.startEnd(
-                    () -> launcher.setMode(LauncherRunMode.AUTOMATIC),
+                    () -> launcher.setMode(LauncherRunMode.INTERPOLATION),
                     () -> launcher.setMode(LauncherRunMode.MANUAL))
                 .ignoringDisable(true)
                 .withName("Automatic Launch Preferred Mode"));

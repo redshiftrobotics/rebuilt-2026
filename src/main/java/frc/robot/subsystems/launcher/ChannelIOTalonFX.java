@@ -23,12 +23,19 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.subsystems.examples.flywheel.MotorConstants;
+import frc.robot.Constants;
+import frc.robot.subsystems.launcher.LauncherConstants.ChannelConstants;
 import frc.robot.utility.records.FeedForwardConfigRecord;
 import frc.robot.utility.records.PIDConfig;
 
 /** Hardware implementation of the TemplateIO. */
 public class ChannelIOTalonFX implements ChannelIO {
+
+  public static final double PEAK_REVERSE_PERCENTAGE = 1.0;
+  public static final double RAMP_RATE_SECONDS = 0;
+  public static final boolean BRAKE_MODE = false;
+  public static final double STALL_CURRENT = 120.0; // in amps
+
   private final String name;
   private final TalonFX motor;
   private final TalonFXConfiguration config = new TalonFXConfiguration();
@@ -59,38 +66,36 @@ public class ChannelIOTalonFX implements ChannelIO {
 
   private final Debouncer connectedDebouncer = new Debouncer(0.5);
 
-  public ChannelIOTalonFX(String name, MotorConstants constants) {
+  public ChannelIOTalonFX(String name, ChannelConstants constants) {
     this(name, constants, OutputType.TorqueCurrentFOC);
   }
 
-  public ChannelIOTalonFX(String name, MotorConstants constants, OutputType outputType) {
+  public ChannelIOTalonFX(String name, ChannelConstants constants, OutputType outputType) {
     this.name = name;
     motor = new TalonFX(constants.deviceId());
-    brakeMode = constants.brakeMode();
+    brakeMode = BRAKE_MODE;
     this.outputType = outputType;
-
-    final double peakReverse = 0;
 
     config.MotorOutput.NeutralMode = brakeMode ? NeutralModeValue.Brake : NeutralModeValue.Coast;
     config.Slot0 = new Slot0Configs();
     config.Feedback.SensorToMechanismRatio = constants.gearRatio();
-    config.TorqueCurrent.PeakForwardTorqueCurrent = constants.stallCurrent();
-    config.TorqueCurrent.PeakReverseTorqueCurrent = constants.stallCurrent() * peakReverse;
-    config.CurrentLimits.StatorCurrentLimit = constants.stallCurrent();
+    config.TorqueCurrent.PeakForwardTorqueCurrent = STALL_CURRENT;
+    config.TorqueCurrent.PeakReverseTorqueCurrent = STALL_CURRENT * PEAK_REVERSE_PERCENTAGE;
+    config.CurrentLimits.StatorCurrentLimit = STALL_CURRENT;
     config.CurrentLimits.StatorCurrentLimitEnable = true;
     config.MotorOutput.Inverted =
         constants.inverted()
             ? InvertedValue.Clockwise_Positive
             : InvertedValue.CounterClockwise_Positive;
 
-    // config.Audio.BeepOnBoot = Constants.TALON_BEEP_ON_BOOT;
-    // config.Audio.BeepOnConfig = Constants.TALON_BEEP_ON_CONFIG;
+    config.Audio.BeepOnBoot = Constants.TALON_BEEP_ON_BOOT;
+    config.Audio.BeepOnConfig = Constants.TALON_BEEP_ON_CONFIG;
 
     config.MotorOutput.PeakForwardDutyCycle = 1.0;
-    config.MotorOutput.PeakReverseDutyCycle = -1.0 * peakReverse;
+    config.MotorOutput.PeakReverseDutyCycle = -1.0 * PEAK_REVERSE_PERCENTAGE;
 
-    config.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = 1;
-    config.ClosedLoopRamps.TorqueClosedLoopRampPeriod = 1;
+    config.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = RAMP_RATE_SECONDS;
+    config.ClosedLoopRamps.TorqueClosedLoopRampPeriod = RAMP_RATE_SECONDS;
 
     pushConfig();
 

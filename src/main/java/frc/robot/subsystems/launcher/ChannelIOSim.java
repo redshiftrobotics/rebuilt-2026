@@ -11,7 +11,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import frc.robot.Constants;
-import frc.robot.subsystems.examples.flywheel.MotorConstants;
+import frc.robot.subsystems.launcher.LauncherConstants.ChannelConstants;
 import frc.robot.utility.records.FeedForwardConfigRecord;
 import frc.robot.utility.records.PIDConfig;
 
@@ -32,12 +32,14 @@ public class ChannelIOSim implements ChannelIO {
   private boolean closedLoop = false;
   private double FFVolts = 0;
 
-  public ChannelIOSim(String name, MotorConstants constants) {
+  public ChannelIOSim(String name, ChannelConstants constants) {
     this.name = name;
     final DCMotor motor = DCMotor.getKrakenX60(1);
     sim =
         new FlywheelSim(
-            LinearSystemId.createFlywheelSystem(motor, 0.1, constants.gearRatio()), motor);
+            LinearSystemId.createFlywheelSystem(
+                motor, LauncherConstants.FLYWHEEL_MOI.baseUnitMagnitude(), constants.gearRatio()),
+            motor);
   }
 
   @Override

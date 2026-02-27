@@ -30,9 +30,8 @@ public class Launcher extends SubsystemBase {
 
   public enum LauncherRunMode {
     MANUAL,
-    REVERSE,
     AUTOMATIC,
-    AUTOMATIC_INTERPOLATION,
+    INTERPOLATION,
   }
 
   public final TunablePID flywheelPID =
@@ -40,7 +39,7 @@ public class Launcher extends SubsystemBase {
   public final TunableFF flywheelFF = new TunableFF(getName() + "/FF", LauncherConstants.FF);
 
   public final TunableNumber LAUNCHER_VELOCITY_TOLERANCE =
-      new TunableNumber(getName() + "/VelocityTolerance", 1.0); // in radians per second
+      new TunableNumber(getName() + "/VelocityTolerance", 15.0); // in radians per second
 
   private final HoodIO hoodIO;
   private final HoodIOInputsAutoLogged hoodInputs = new HoodIOInputsAutoLogged();
@@ -118,6 +117,13 @@ public class Launcher extends SubsystemBase {
     this.manualModeDesiredVelocity = setpoint;
   }
 
+  public void setDutyCycle(double dutyCycle) {
+    desiredVelocity = RadiansPerSecond.zero();
+    for (ChannelIO channel : channelIOs) {
+      channel.setDutyCycle(dutyCycle);
+    }
+  }
+
   private void stopChannelMotors() {
     desiredVelocity = RadiansPerSecond.of(0.0);
     for (ChannelIO channel : channelIOs) {
@@ -167,9 +173,6 @@ public class Launcher extends SubsystemBase {
     Rotation2d runningHoodPitch = Rotation2d.kZero;
 
     switch (mode) {
-      case REVERSE:
-        runningVelocity = RadiansPerSecond.of(-10.0);
-        break;
       case MANUAL:
         runningVelocity = manualModeDesiredVelocity.get();
         robotYaw = parameters.yaw();
@@ -179,8 +182,9 @@ public class Launcher extends SubsystemBase {
         runningVelocity = calculateWheelVelocity(parameters.velocity());
         robotYaw = parameters.yaw();
         break;
-      case AUTOMATIC_INTERPOLATION:
-        // TODO
+      case INTERPOLATION:
+        runningVelocity = RadiansPerSecond.of(InterpolationShotCalculator.calculateWheelVelocity(hubTranslation.getNorm()));
+        robotYaw = parameters.yaw();
         break;
     }
 
@@ -189,7 +193,7 @@ public class Launcher extends SubsystemBase {
     if (running) {
       setChannelVelocities(runningVelocity);
     } else {
-      stopChannelMotors();
+      stopChannelMotors(); // Coast to slow down
     }
   }
 
