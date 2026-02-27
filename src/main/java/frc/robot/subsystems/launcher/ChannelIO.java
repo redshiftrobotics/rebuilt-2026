@@ -1,24 +1,29 @@
-package frc.robot.subsystems.outtake;
+package frc.robot.subsystems.launcher;
 
+import edu.wpi.first.units.measure.AngularVelocity;
 import frc.robot.utility.records.FeedForwardConfigRecord;
 import frc.robot.utility.records.PIDConfig;
 import org.littletonrobotics.junction.AutoLog;
 
-/** IO layer interface for motor hardware */
-public interface FlywheelIO {
+/** Interface for the IO layers of the Template subsystem. */
+public interface ChannelIO {
   @AutoLog
-  public static class FlywheelIOInputs {
+  public static class ChannelIOInputs {
     public boolean motorConnected = true;
     public boolean pushedConfigFault = false;
 
     public double velocityRadPerSec = 0.0;
     public double appliedVolts = 0.0;
     public double supplyCurrentAmps = 0.0;
-    public double appliedDutycycle = 0.0;
+    public double appliedDutyCycle = 0.0;
+  }
+
+  public default String getName() {
+    return "";
   }
 
   /** Updates the set of loggable inputs. */
-  public default void updateInputs(FlywheelIOInputs inputs) {}
+  public default void updateInputs(ChannelIOInputs inputs) {}
 
   /** Run the motor at duty cycle. */
   public default void setDutyCycle(double dutyCycle) {}
@@ -27,15 +32,15 @@ public interface FlywheelIO {
   public default void setOpenLoop(double output) {}
 
   /** Run to velocity setpoint */
-  public default void setVelocity(double velocityRadsPerSec) {
-    setVelocity(velocityRadsPerSec, 0);
+  public default void setVelocity(AngularVelocity velocity) {
+    setVelocity(velocity, 0);
   }
 
   /** Run to velocity setpoint with feedforward */
-  public default void setVelocity(double velocityRadsPerSec, double arbFeedforward) {}
+  public default void setVelocity(AngularVelocity velocity, double arbFeedforward) {}
 
   /** Configure PID */
-  public default void setPID(PIDConfig pidConfig) {}
+  public default void setPID(PIDConfig pid) {}
 
   /** Configure FF */
   public default void setFF(FeedForwardConfigRecord ffConfig) {}

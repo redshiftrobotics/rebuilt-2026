@@ -1,6 +1,7 @@
 package frc.robot.subsystems.intake;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.system.plant.DCMotor;
 import frc.robot.Constants;
 import frc.robot.utility.records.PIDConfig;
 
@@ -19,7 +20,7 @@ public class IntakeConstants {
     public static final boolean INVERTED = true;
     public static final boolean BRAKE_MODE = false;
 
-    public static final double SPEED_INTAKING = 1.0;
+    public static final DCMotor MOTOR = DCMotor.getNEO(1).withReduction(1.0 / GEAR_RATIO);
   }
 
   /** Constants for the intake slapdown mechanism. */
@@ -28,13 +29,11 @@ public class IntakeConstants {
     public static final double GEAR_RATIO = (1.0 / 4.0) * (1.0 / 4.0) * (1.0 / 2.0);
     public static final boolean MOTOR_INVERTED = false;
 
+    public static final DCMotor MOTOR_TYPE = DCMotor.getNEO(1).withReduction(1.0 / GEAR_RATIO);
+
     public static final Rotation2d ABSOLUTE_ENCODER_ZERO =
         Rotation2d.fromRadians(3.414031536391377);
     public static final boolean ABSOLUTE_ENCODER_INVERTED = true;
-
-    public static final Rotation2d DOWN_SETPOINT = Rotation2d.fromDegrees(10);
-    public static final Rotation2d UP_SETPOINT = Rotation2d.fromDegrees(90);
-    public static final Rotation2d INCREMENT_SETPOINT = Rotation2d.fromDegrees(1);
 
     public static final PIDConfig PID =
         switch (Constants.getRobot()) {

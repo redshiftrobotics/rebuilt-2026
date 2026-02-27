@@ -27,9 +27,5 @@ public interface SlapdownIO {
 
   public default void setSetpoint(Rotation2d setPoint) {}
 
-  public default void setSavedUpSetpoint(Rotation2d setPoint) {}
-
-  public default void setSavedDownSetpoint(Rotation2d setPoint) {}
-
   public default void stopMotor() {}
 }

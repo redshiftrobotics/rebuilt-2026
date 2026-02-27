@@ -41,10 +41,14 @@ public final class Constants {
   /** If true, enables demo mode features throughout the codebase. */
   private static final boolean DEMO_MODE = true;
 
-  /** Talon noise */
+  /** Talon noises */
   public static final boolean TALON_BEEP_ON_CONFIG = false;
 
+  /** Talon noises */
   public static final boolean TALON_BEEP_ON_BOOT = false;
+
+  /** If true, logger will attempt to log to a USB stick ("/U/logs") */
+  public static final boolean AKIT_LOGGER_LOG_TO_USB = false;
 
   public static RobotType getRobot() {
     if (robotType == null) {

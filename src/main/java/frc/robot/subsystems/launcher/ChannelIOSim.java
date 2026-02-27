@@ -1,20 +1,24 @@
-package frc.robot.subsystems.outtake;
+package frc.robot.subsystems.launcher;
+
+import static edu.wpi.first.units.Units.RadiansPerSecond;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
-import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import frc.robot.Constants;
-import frc.robot.subsystems.examples.flywheel.MotorConstants;
+import frc.robot.subsystems.launcher.LauncherConstants.ChannelConstants;
 import frc.robot.utility.records.FeedForwardConfigRecord;
 import frc.robot.utility.records.PIDConfig;
 
 /** Physics sim implementation of motor IO. */
-public class FlywheelIOSim implements FlywheelIO {
+public class ChannelIOSim implements ChannelIO {
+
+  private final String name;
 
   private final FlywheelSim sim;
 
@@ -28,17 +32,23 @@ public class FlywheelIOSim implements FlywheelIO {
   private boolean closedLoop = false;
   private double FFVolts = 0;
 
-  public FlywheelIOSim(MotorConstants constants) {
+  public ChannelIOSim(String name, ChannelConstants constants) {
+    this.name = name;
     final DCMotor motor = DCMotor.getKrakenX60(1);
-    final double momentOfInertia = (1.0 / 2.0) * 0.362874 * Math.pow(Units.inchesToMeters(2.0), 2);
     sim =
         new FlywheelSim(
-            LinearSystemId.createFlywheelSystem(motor, momentOfInertia, constants.gearRatio()),
+            LinearSystemId.createFlywheelSystem(
+                motor, LauncherConstants.FLYWHEEL_MOI.baseUnitMagnitude(), constants.gearRatio()),
             motor);
   }
 
   @Override
-  public void updateInputs(FlywheelIOInputs inputs) {
+  public String getName() {
+    return name;
+  }
+
+  @Override
+  public void updateInputs(ChannelIOInputs inputs) {
 
     if (closedLoop) {
       appliedVolts = feedback.calculate(sim.getAngularVelocityRadPerSec()) + FFVolts;
@@ -59,7 +69,7 @@ public class FlywheelIOSim implements FlywheelIO {
     inputs.velocityRadPerSec = sim.getAngularVelocityRadPerSec();
     inputs.appliedVolts = appliedVolts;
     inputs.supplyCurrentAmps = Math.abs(sim.getCurrentDrawAmps());
-    inputs.appliedDutycycle = appliedVolts / 12.0;
+    inputs.appliedDutyCycle = appliedVolts / 12.0;
   }
 
   @Override
@@ -74,15 +84,15 @@ public class FlywheelIOSim implements FlywheelIO {
   }
 
   @Override
-  public void setVelocity(double velocityRadsPerSec, double arbFeedforward) {
+  public void setVelocity(AngularVelocity velocity, double arbFeedforward) {
     closedLoop = true;
-    FFVolts = feedfoward.calculate(velocityRadsPerSec) + arbFeedforward;
-    feedback.setSetpoint(velocityRadsPerSec);
+    FFVolts = feedfoward.calculate(velocity.in(RadiansPerSecond)) + arbFeedforward;
+    feedback.setSetpoint(velocity.in(RadiansPerSecond));
   }
 
   @Override
-  public void setPID(PIDConfig pidConfig) {
-    feedback.setPID(pidConfig.kP(), pidConfig.kI(), pidConfig.kD());
+  public void setPID(PIDConfig pid) {
+    feedback.setPID(pid.kP(), pid.kI(), pid.kD());
   }
 
   @Override

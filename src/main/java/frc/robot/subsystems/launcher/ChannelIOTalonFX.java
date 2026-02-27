@@ -1,21 +1,10 @@
-// Copyright 2021-2025 FRC 6328
-// http://github.com/Mechanical-Advantage
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// version 3 as published by the Free Software Foundation or
-// available in the root directory of this project.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
+package frc.robot.subsystems.launcher;
 
-package frc.robot.subsystems.outtake;
-
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static frc.robot.utility.PhoenixUtil.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -35,13 +24,19 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
-import frc.robot.subsystems.examples.flywheel.MotorConstants;
+import frc.robot.subsystems.launcher.LauncherConstants.ChannelConstants;
 import frc.robot.utility.records.FeedForwardConfigRecord;
 import frc.robot.utility.records.PIDConfig;
 
-/** Motor IO implementation for Talon FX motor controller. */
-public class FlywheelIOTalonFX implements FlywheelIO {
+/** Hardware implementation of the TemplateIO. */
+public class ChannelIOTalonFX implements ChannelIO {
 
+  public static final double PEAK_REVERSE_PERCENTAGE = 1.0;
+  public static final double RAMP_RATE_SECONDS = 0;
+  public static final boolean BRAKE_MODE = false;
+  public static final double STALL_CURRENT = 120.0; // in amps
+
+  private final String name;
   private final TalonFX motor;
   private final TalonFXConfiguration config = new TalonFXConfiguration();
 
@@ -62,7 +57,7 @@ public class FlywheelIOTalonFX implements FlywheelIO {
 
   public enum OutputType {
     Voltage,
-    TorqueCurrentFOC,
+    TorqueCurrentFOC
   }
 
   private final OutputType outputType;
@@ -71,24 +66,22 @@ public class FlywheelIOTalonFX implements FlywheelIO {
 
   private final Debouncer connectedDebouncer = new Debouncer(0.5);
 
-  public FlywheelIOTalonFX(MotorConstants constants) {
-    this(constants, OutputType.TorqueCurrentFOC);
+  public ChannelIOTalonFX(String name, ChannelConstants constants) {
+    this(name, constants, OutputType.TorqueCurrentFOC);
   }
 
-  public FlywheelIOTalonFX(MotorConstants constants, OutputType outputType) {
+  public ChannelIOTalonFX(String name, ChannelConstants constants, OutputType outputType) {
+    this.name = name;
     motor = new TalonFX(constants.deviceId());
-
-    brakeMode = constants.brakeMode();
+    brakeMode = BRAKE_MODE;
     this.outputType = outputType;
-
-    final double peakReverse = 0;
 
     config.MotorOutput.NeutralMode = brakeMode ? NeutralModeValue.Brake : NeutralModeValue.Coast;
     config.Slot0 = new Slot0Configs();
     config.Feedback.SensorToMechanismRatio = constants.gearRatio();
-    config.TorqueCurrent.PeakForwardTorqueCurrent = constants.stallCurrent();
-    config.TorqueCurrent.PeakReverseTorqueCurrent = constants.stallCurrent() * peakReverse;
-    config.CurrentLimits.StatorCurrentLimit = constants.stallCurrent();
+    config.TorqueCurrent.PeakForwardTorqueCurrent = STALL_CURRENT;
+    config.TorqueCurrent.PeakReverseTorqueCurrent = STALL_CURRENT * PEAK_REVERSE_PERCENTAGE;
+    config.CurrentLimits.StatorCurrentLimit = STALL_CURRENT;
     config.CurrentLimits.StatorCurrentLimitEnable = true;
     config.MotorOutput.Inverted =
         constants.inverted()
@@ -99,10 +92,10 @@ public class FlywheelIOTalonFX implements FlywheelIO {
     config.Audio.BeepOnConfig = Constants.TALON_BEEP_ON_CONFIG;
 
     config.MotorOutput.PeakForwardDutyCycle = 1.0;
-    config.MotorOutput.PeakReverseDutyCycle = -1.0 * peakReverse;
+    config.MotorOutput.PeakReverseDutyCycle = -1.0 * PEAK_REVERSE_PERCENTAGE;
 
-    config.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = 1;
-    config.ClosedLoopRamps.TorqueClosedLoopRampPeriod = 1;
+    config.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = RAMP_RATE_SECONDS;
+    config.ClosedLoopRamps.TorqueClosedLoopRampPeriod = RAMP_RATE_SECONDS;
 
     pushConfig();
 
@@ -116,14 +109,20 @@ public class FlywheelIOTalonFX implements FlywheelIO {
   }
 
   @Override
-  public void updateInputs(FlywheelIOInputs inputs) {
-    var status = BaseStatusSignal.refreshAll(position, velocity, appliedVolts, current, dutyCycle);
+  public String getName() {
+    return name;
+  }
+
+  @Override
+  public void updateInputs(ChannelIOInputs inputs) {
+    StatusCode status =
+        BaseStatusSignal.refreshAll(position, velocity, appliedVolts, current, dutyCycle);
 
     inputs.motorConnected = connectedDebouncer.calculate(status.isOK());
     inputs.velocityRadPerSec = Units.rotationsToRadians(velocity.getValueAsDouble());
     inputs.appliedVolts = appliedVolts.getValueAsDouble();
     inputs.supplyCurrentAmps = current.getValueAsDouble();
-    inputs.appliedDutycycle = dutyCycle.getValueAsDouble();
+    inputs.appliedDutyCycle = dutyCycle.getValueAsDouble();
     inputs.pushedConfigFault = pushedConfigFault;
   }
 
@@ -142,9 +141,10 @@ public class FlywheelIOTalonFX implements FlywheelIO {
   }
 
   @Override
-  public void setVelocity(double velocityRadPerSec, double arbFeedforward) {
-    double velocityRotPerSec = Units.radiansToRotations(velocityRadPerSec);
-    SmartDashboard.putString("Flywheel Debug", "RadPerSec " + String.valueOf(velocityRadPerSec));
+  public void setVelocity(AngularVelocity velocity, double arbFeedforward) {
+    double velocityRotPerSec = velocity.in(RotationsPerSecond);
+    SmartDashboard.putString(
+        "Flywheel Debug", "RadPerSec " + String.valueOf(velocity.in(RotationsPerSecond)));
     motor.setControl(
         switch (outputType) {
           case Voltage -> velocityVoltageRequest
@@ -165,11 +165,11 @@ public class FlywheelIOTalonFX implements FlywheelIO {
   }
 
   @Override
-  public void setPID(PIDConfig pidConfig) {
-    SmartDashboard.putString("Flywheel Debug", pidConfig.toString());
-    config.Slot0.kP = pidConfig.kP();
-    config.Slot0.kI = pidConfig.kI();
-    config.Slot0.kD = pidConfig.kD();
+  public void setPID(PIDConfig pid) {
+    SmartDashboard.putString("Launcher Channel Debug", pid.toString());
+    config.Slot0.kP = pid.kP();
+    config.Slot0.kI = pid.kI();
+    config.Slot0.kD = pid.kD();
     pushConfig();
   }
 

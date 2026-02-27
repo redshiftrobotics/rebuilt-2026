@@ -26,7 +26,7 @@ public class SlapdownIOSim implements SlapdownIO {
                 motor, 0.0004, SlapdownConstants.GEAR_RATIO),
             motor);
 
-    sim.setAngle(SlapdownConstants.UP_SETPOINT.getRadians());
+    sim.setAngle(Rotation2d.kCCW_90deg.getRadians());
 
     pidController = new PIDController(0, 0, 0);
     pidController.setTolerance(0);
