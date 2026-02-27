@@ -20,7 +20,6 @@ import frc.robot.utility.tunable.TunableNumber;
 
 /** Constants for the Template subsystem. */
 public class LauncherConstants {
-  // TODO Add real values
 
   public static final int ACTUATOR_LEFT_ID = 1;
   public static final int ACTUATOR_RIGHT_ID = 2;
@@ -41,7 +40,9 @@ public class LauncherConstants {
         case SIM_BOT -> new FeedForwardConfigRecord(0.0, 0.0, 0.0);
         default -> new FeedForwardConfigRecord(0.0, 0.0, 0.0);
       };
-  public static final double FLYWHEEL_SETPOINT = 0.5;
+
+  // Math for calculating flywheel velocity based on desired ball velocity, using conservation of
+  // energy and momentum
 
   public static final Distance LAUNCHER_WHEEL_RADIUS = Inches.of(2);
   public static final Mass LAUNCHER_WHEEL_MASS = Pounds.of(0.3);
