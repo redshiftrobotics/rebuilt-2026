@@ -36,7 +36,6 @@ import frc.robot.subsystems.intake.IntakeConstants.SlapdownConstants;
 import frc.robot.subsystems.launcher.Launcher;
 import frc.robot.subsystems.led.BlinkenLEDPattern;
 import frc.robot.subsystems.led.LEDSubsystem;
-import frc.robot.subsystems.outtake.Outtake;
 import frc.robot.subsystems.vision.AprilTagVision;
 import frc.robot.utility.Elastic;
 import frc.robot.utility.Elastic.Notification.NotificationLevel;
@@ -59,7 +58,6 @@ public class RobotContainer {
   private final Hopper hopper;
   private final Launcher launcher;
   private final Intake intake;
-  private final Outtake outtake;
   private final Climb climb;
 
   // Controller
@@ -102,7 +100,6 @@ public class RobotContainer {
     hopper = Hopper.create(robotType);
     intake = Intake.create(robotType);
     climb = Climb.create(robotType);
-    outtake = Outtake.create(robotType);
     launcher = Launcher.create(robotType);
 
     // Vision setup
@@ -317,43 +314,23 @@ public class RobotContainer {
             IntakeCommands.incrementDownSlapdown(
                 intake, SlapdownConstants.INCREMENT_SETPOINT.unaryMinus()));
 
-    xbox.rightTrigger(0.2).whileTrue(outtake.runFlywheelsCommand().withName("Flywheels 0.2"));
-
     xbox.rightBumper()
         .toggleOnTrue(
             hopper
                 .runModeCommand(HopperRunMode.PREP_SHOT)
                 .until(xbox.rightTrigger(0.2))
-                .withName("Hopper Prep RB"))
-        .toggleOnTrue(outtake.runFlywheelsCommand().withName("Flywheels RB"));
+                .withName("Hopper Prep RB"));
 
     // This is the input for firing; when the shooter is added, it should be
-    // triggered by this as
-    // well
+    // triggered by this as well
     xbox.rightTrigger(0.8)
-        .whileTrue(hopper.runModeCommand(HopperRunMode.FIRING).withName("Hopper Firing"))
-        .whileTrue(outtake.runFlywheelsCommand().withName("Flywheels Firing"));
+        .whileTrue(hopper.runModeCommand(HopperRunMode.FIRING).withName("Hopper Firing"));
 
     // Run the feeder at low speed to send fuel towards the back without firing
     xbox.b().whileTrue(hopper.runModeCommand(HopperRunMode.IDLE).withName("Hopper Idle"));
 
     // Run the hopper motors in reverse to deal with jams
     xbox.start().whileTrue(hopper.runModeCommand(HopperRunMode.REVERSE).withName("Hopper Reverse"));
-
-    xbox.pov(90)
-        .onTrue(
-            Commands.runOnce(
-                    () ->
-                        outtake.setRunningDesiredRadPerSec(
-                            outtake.getRunningDesiredRadPerSec() + 1))
-                .ignoringDisable(true));
-    xbox.pov(270)
-        .onTrue(
-            Commands.runOnce(
-                    () ->
-                        outtake.setRunningDesiredRadPerSec(
-                            outtake.getRunningDesiredRadPerSec() - 1))
-                .ignoringDisable(true));
 
     // climb.setDefaultCommand(
     //     Commands.run(() -> climb.setSpeed(MathUtil.applyDeadband(xbox.getLeftY(), 0.1)), climb));
