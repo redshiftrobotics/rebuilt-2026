@@ -1353,7 +1353,7 @@
             }
           },
           {
-            "title": "Utilization",
+            "title": "CANBus Utilization",
             "x": 512.0,
             "y": 384.0,
             "width": 256.0,
