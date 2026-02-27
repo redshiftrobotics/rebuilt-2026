@@ -231,7 +231,12 @@ public class Launcher extends SubsystemBase {
   public boolean isReady() {
     boolean ready = true;
     for (ChannelIO.ChannelIOInputs channelIO : channelInputs) {
-      ready = ready && MathUtil.isNear(channelIO.velocityRadPerSec, desiredVelocityRadPerSec, LAUNCHER_VELOCITY_TOLERANCE.get());
+      ready =
+          ready
+              && MathUtil.isNear(
+                  channelIO.velocityRadPerSec,
+                  desiredVelocityRadPerSec,
+                  LAUNCHER_VELOCITY_TOLERANCE.get());
     }
     return ready;
   }
