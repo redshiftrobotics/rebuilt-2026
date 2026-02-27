@@ -48,7 +48,7 @@ public class LauncherConstants {
 
   // TODO (may be innaccurate)
   public static final Mass LAUNCHER_WHEEL_MASS = Pounds.of(2.2);
-  
+
   public static final MomentOfInertia LAUNCHER_WHEEL_MOI =
       KilogramSquareMeters.of(
           0.5
@@ -58,8 +58,7 @@ public class LauncherConstants {
 
   // public static final Distance FLYWHEEL_RADIUS = Inches.of(0);
   // public static final Mass FLYWHEEL_MASS = Pounds.of(0);
-  public static final MomentOfInertia FLYWHEEL_MOI =
-      KilogramSquareMeters.of(0.0007901271);
+  public static final MomentOfInertia FLYWHEEL_MOI = KilogramSquareMeters.of(0.0007901271);
 
   // TODO waiting on flywheel
   public static final MomentOfInertia TOTAL_MOI = LAUNCHER_WHEEL_MOI;

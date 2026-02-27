@@ -14,10 +14,10 @@ public class ShotCalculator {
 
   // Adjust distance, then calculate pitch, then calculate velocity based on pitch
   public static ShotParameters method1(
-      Translation2d hubPosition, Translation2d robotVelocityMetersPerSecond, HoodType hoodType) {
+      Translation2d hubPosition, Translation2d hubVelocityMetersPerSecond, HoodType hoodType) {
 
     Translation2d adjustedHub =
-        adjustedHubPosition(hubPosition, robotVelocityMetersPerSecond, hoodType);
+        adjustedHubPosition(hubPosition, hubVelocityMetersPerSecond, hoodType);
     Distance adjustedDistance =
         Meters.of(adjustedHub.getNorm() - LauncherConstants.LAUNCHER_X_OFFSET.in(Meters));
 
@@ -27,20 +27,18 @@ public class ShotCalculator {
   }
 
   private static Translation2d adjustedHubPosition(
-      Translation2d hubPosition, Translation2d robotVelocityMetersPerSecond, HoodType hoodType) {
+      Translation2d hubPosition, Translation2d hubVelocityMetersPerSecond, HoodType hoodType) {
     Translation2d adjustedHubPosition = hubPosition;
     for (int i = 0; i < 5; i++) {
-      ShotParameters parameters =
-          calculateTrajectory(adjustedHubPosition, robotVelocityMetersPerSecond, hoodType);
+      ShotParameters parameters = calculateTrajectory(adjustedHubPosition, hoodType);
       double time = timeOfFlight(parameters, adjustedHubPosition);
       // Shift hubPosition, not adjustedHubPosition, to avoid positive feedback
-      adjustedHubPosition = shiftHubPosition(hubPosition, robotVelocityMetersPerSecond, time);
+      adjustedHubPosition = shiftHubPosition(hubPosition, hubVelocityMetersPerSecond, time);
     }
     return adjustedHubPosition;
   }
 
-  private static ShotParameters calculateTrajectory(
-      Translation2d hubPosition, Translation2d robotVelocityMetersPerSecond, HoodType hoodType) {
+  private static ShotParameters calculateTrajectory(Translation2d hubPosition, HoodType hoodType) {
     Distance distance =
         Meters.of(hubPosition.getNorm() - LauncherConstants.LAUNCHER_X_OFFSET.in(Meters));
     // Formula acquired through experimentation

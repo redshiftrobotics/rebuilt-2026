@@ -12,7 +12,7 @@ public class LaunchCommands {
         DriveCommands.rotateWithRotationController(drive, () -> launcher.getRobotYaw()),
         launcher.runOnce(
             () -> {
-              launcher.startAutomatic();
+              launcher.start();
             }));
   }
 }

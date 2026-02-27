@@ -137,8 +137,7 @@ public class RobotContainer {
           Rotation2d robotAngle = drive.getRobotPose().getRotation();
           // Robot relative to field relative;
           ChassisSpeeds speeds =
-              ChassisSpeeds.fromRobotRelativeSpeeds(
-                  drive.getRobotSpeeds(), robotAngle);
+              ChassisSpeeds.fromRobotRelativeSpeeds(drive.getRobotSpeeds(), robotAngle);
           return (new Translation2d(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond));
         });
 
@@ -294,7 +293,7 @@ public class RobotContainer {
             Commands.parallel(
                 pipeline.runLayer(
                     "Aim at Hub", input -> input.headingTarget(launcher.getRobotYaw())),
-                Commands.runEnd(() -> launcher.startAutomatic(), () -> launcher.stop(), launcher)));
+                Commands.runEnd(() -> launcher.start(), () -> launcher.stop(), launcher)));
   }
 
   private void configureOperatorControllerBindings(CommandXboxController xbox) {
