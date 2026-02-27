@@ -7,7 +7,6 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
@@ -38,8 +37,7 @@ public class ChannelIOSim implements ChannelIO {
     final DCMotor motor = DCMotor.getKrakenX60(1);
     sim =
         new FlywheelSim(
-            LinearSystemId.createFlywheelSystem(motor, 0.1, constants.gearRatio()),
-            motor);
+            LinearSystemId.createFlywheelSystem(motor, 0.1, constants.gearRatio()), motor);
   }
 
   @Override

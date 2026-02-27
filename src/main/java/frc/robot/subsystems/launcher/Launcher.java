@@ -15,6 +15,7 @@ import frc.robot.Constants.RobotType;
 import frc.robot.FieldConstants;
 import frc.robot.subsystems.launcher.ManualModeLauncherControl.ManualLaunchMode;
 import frc.robot.subsystems.launcher.ShotCalculator.ShotParameters;
+import frc.robot.utility.tunable.TunableNumber;
 import frc.robot.utility.tunable.TunableNumbers.TunableFF;
 import frc.robot.utility.tunable.TunableNumbers.TunablePID;
 import java.util.ArrayList;
@@ -37,6 +38,9 @@ public class Launcher extends SubsystemBase {
       new TunablePID(getName() + "/PID", LauncherConstants.FLYWHEEL_PID);
   public final TunableFF flywheelFF = new TunableFF(getName() + "/FF", LauncherConstants.FF);
 
+  public final TunableNumber LAUNCHER_VELOCITY_TOLERANCE =
+      new TunableNumber(getName() + "/VelocityTolerance", 1.0); // in radians per second
+
   private final HoodIO hoodIO;
   private final HoodIOInputsAutoLogged hoodInputs = new HoodIOInputsAutoLogged();
   private final List<ChannelIO> channelIOs;
@@ -44,12 +48,12 @@ public class Launcher extends SubsystemBase {
   private final List<Alert> channelDisconnectedAlerts;
   private final List<Alert> channelConfigFailAlerts;
 
-  private Supplier<Pose2d> robotPose = null;
-  private Supplier<Translation2d> robotVelocity = null;
+  private Supplier<Pose2d> robotPoseSupplier = null;
+  private Supplier<Translation2d> robotVelocitySupplier = null;
 
   private LauncherRunMode preferredRunMode = LauncherRunMode.AUTOMATIC;
   private Supplier<ManualLaunchMode> manualModeFlywheelSetpoint = () -> ManualLaunchMode.Y;
-  private double desiredVelocity = 0.0;
+  private double desiredVelocityRadPerSec = 0.0;
 
   private Rotation2d robotYaw = Rotation2d.kZero;
 
@@ -98,7 +102,7 @@ public class Launcher extends SubsystemBase {
   }
 
   public void stop() {
-    desiredVelocity = 0.0;
+    desiredVelocityRadPerSec = 0.0;
     setMode(LauncherRunMode.STOPPED);
   }
 
@@ -126,7 +130,7 @@ public class Launcher extends SubsystemBase {
   }
 
   private void setAllChannelsVelocity(double velocityRadPerSec) {
-    desiredVelocity = velocityRadPerSec;
+    desiredVelocityRadPerSec = velocityRadPerSec;
     for (ChannelIO channel : channelIOs) {
       channel.setVelocity(RadiansPerSecond.of(velocityRadPerSec));
     }
@@ -142,23 +146,39 @@ public class Launcher extends SubsystemBase {
 
   public void configure(
       Supplier<Pose2d> robotPoseSupplier, Supplier<Translation2d> robotVelocitySupplier) {
-    robotPose = robotPoseSupplier;
-    robotVelocity = robotVelocitySupplier;
+    this.robotPoseSupplier = robotPoseSupplier;
+    this.robotVelocitySupplier = robotVelocitySupplier;
   }
 
   @Override
   public void periodic() {
-    flywheelPID.ifChanged(hashCode(), () -> updatePID());
-    flywheelFF.ifChanged(hashCode(), () -> updateFF());
+    flywheelPID.ifChanged(hashCode(), this::updatePID);
+    flywheelFF.ifChanged(hashCode(), this::updateFF);
 
     Logger.recordOutput(getName() + "/mode", mode.toString());
     Logger.recordOutput(getName() + "/preferredMode", preferredRunMode.toString());
     Logger.recordOutput(getName() + "/manualMode", manualModeFlywheelSetpoint.get().toString());
     Logger.recordOutput(getName() + "/isReady", isReady());
-    Logger.recordOutput(getName() + "/DesiredVelocity", desiredVelocity);
+    Logger.recordOutput(getName() + "/DesiredVelocity", desiredVelocityRadPerSec);
+    Logger.recordOutput(
+        getName() + "/AverageVelocity",
+        channelInputs.stream().mapToDouble(c -> c.velocityRadPerSec).average().orElse(0.0));
+
+    Pose2d robotPose = robotPoseSupplier.get();
 
     Translation2d hubTranslation =
-        FieldConstants.Hub.topCenterPoint.toTranslation2d().minus(robotPose.get().getTranslation());
+        FieldConstants.Hub.topCenterPoint.toTranslation2d().minus(robotPose.getTranslation());
+
+    ShotParameters parameters =
+        ShotCalculator.method1(hubTranslation, robotVelocitySupplier.get(), hoodIO.hoodType());
+
+    Logger.recordOutput(
+        getName() + "/ShotCalculator/SimpleYaw",
+        new Pose2d(robotPose.getTranslation(), hubTranslation.getAngle()));
+    Logger.recordOutput(
+        getName() + "/ShotCalculator/ShotParamYaw",
+        new Pose2d(robotPose.getTranslation(), parameters.yaw()));
+
     switch (mode) {
       case STOPPED:
         robotYaw = hubTranslation.getAngle();
@@ -168,18 +188,16 @@ public class Launcher extends SubsystemBase {
         }
         break;
       case REVERSE:
-        setAllChannelsVelocity(-0.0);
+        setAllChannelsVelocity(0.0);
         for (ChannelIO channel : channelIOs) {
           channel.setDutyCycle(-0.2);
         }
         break;
       case MANUAL:
-        hoodIO.setPosition(0.0);
         setAllChannelsVelocity(manualModeFlywheelSetpoint.get().getVelocityRadPerSecond());
+        robotYaw = parameters.yaw();
         break;
       case AUTOMATIC:
-        ShotParameters parameters =
-            ShotCalculator.method1(hubTranslation, robotVelocity.get(), hoodIO.hoodType());
         hoodIO.setAngle(parameters.pitch());
         setAllChannelsVelocity(
             parameters.velocity().in(MetersPerSecond)
@@ -200,7 +218,7 @@ public class Launcher extends SubsystemBase {
       channelIOs.get(i).updateInputs(channelInputs.get(i));
       Logger.processInputs(
           getName() + "/Channel" + channelIOs.get(i).getName(), channelInputs.get(i));
-      channelDisconnectedAlerts.get(i).set(channelInputs.get(i).motorConnected);
+      channelDisconnectedAlerts.get(i).set(!channelInputs.get(i).motorConnected);
       channelConfigFailAlerts.get(i).set(channelInputs.get(i).pushedConfigFault);
     }
   }
@@ -213,7 +231,7 @@ public class Launcher extends SubsystemBase {
   public boolean isReady() {
     boolean ready = true;
     for (ChannelIO.ChannelIOInputs channelIO : channelInputs) {
-      ready = ready && MathUtil.isNear(channelIO.velocityRadPerSec, desiredVelocity, 1.0);
+      ready = ready && MathUtil.isNear(channelIO.velocityRadPerSec, desiredVelocityRadPerSec, LAUNCHER_VELOCITY_TOLERANCE.get());
     }
     return ready;
   }

@@ -24,7 +24,7 @@ public class ShotCalculator {
       Translation2d hubPosition, Translation2d robotVelocityMetersPerSecond, HoodType hoodType) {
 
     Translation2d adjustedHub =
-        adjustedHubPosition(hubPosition, robotVelocityMetersPerSecond, hoodType);
+        adjustedHubPosition(hubPosition, robotVelocityMetersPerSecond.unaryMinus(), hoodType);
     Distance adjustedDistance =
         Meters.of(adjustedHub.getNorm() - LauncherConstants.LAUNCHER_X_OFFSET.in(Meters));
 
@@ -34,14 +34,14 @@ public class ShotCalculator {
   }
 
   private static Translation2d adjustedHubPosition(
-      Translation2d hubPosition, Translation2d robotVelocityMetersPerSecond, HoodType hoodType) {
+      Translation2d hubPosition, Translation2d hubVelocityMetersPerSecond, HoodType hoodType) {
     Translation2d adjustedHubPosition = hubPosition;
     for (int i = 0; i < 5; i++) {
       ShotParameters parameters =
-          calculateTrajectory(adjustedHubPosition, robotVelocityMetersPerSecond, hoodType);
+          calculateTrajectory(adjustedHubPosition, hubVelocityMetersPerSecond, hoodType);
       double time = timeOfFlight(parameters, adjustedHubPosition);
       // Shift hubPosition, not adjustedHubPosition, to avoid positive feedback
-      adjustedHubPosition = shiftHubPosition(hubPosition, robotVelocityMetersPerSecond, time);
+      adjustedHubPosition = shiftHubPosition(hubPosition, hubVelocityMetersPerSecond, time);
     }
     return adjustedHubPosition;
   }

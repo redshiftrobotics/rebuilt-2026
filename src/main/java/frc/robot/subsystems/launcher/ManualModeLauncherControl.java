@@ -3,10 +3,10 @@ package frc.robot.subsystems.launcher;
 public class ManualModeLauncherControl {
 
   public enum ManualLaunchMode {
-    Y(10.0),
-    X(20.0),
-    A(30.0),
-    B(40.0);
+    Y(400.0),
+    X(300.0),
+    A(200.0),
+    B(100.0);
 
     private final double channelVelocityRadPerSec;
     private double shift;
@@ -30,7 +30,7 @@ public class ManualModeLauncherControl {
 
     @Override
     public String toString() {
-      return String.format("%s(velocity=%.2f)", name(), getVelocityRadPerSecond());
+      return String.format("%s(r/s=%.2f)", name(), getVelocityRadPerSecond());
     }
   }
 

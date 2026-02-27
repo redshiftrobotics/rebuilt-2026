@@ -133,11 +133,9 @@ public class RobotContainer {
         drive::getRobotPose,
         () -> {
           Rotation2d robotAngle = drive.getRobotPose().getRotation();
-          // Robot relative to field relative;
           ChassisSpeeds speeds =
-              ChassisSpeeds.fromFieldRelativeSpeeds(
-                  drive.getRobotSpeeds(), robotAngle.unaryMinus());
-          return (new Translation2d(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond));
+              ChassisSpeeds.fromRobotRelativeSpeeds(drive.getRobotSpeeds(), robotAngle);
+          return new Translation2d(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond);
         });
 
     // Alerts for constants to avoid using them in competition
@@ -240,8 +238,8 @@ public class RobotContainer {
             pipeline.runLayer(
                 "Slow Mode", input -> input.linearCoefficient(0.3).angularCoefficient(0.3)));
 
-    xbox.leftTrigger()
-        .toggleOnTrue(
+    xbox.rightTrigger()
+        .whileTrue(
             Commands.parallel(
                 pipeline.runLayer(
                     "Aim at Hub", input -> input.headingTarget(launcher.getRobotYaw())),
@@ -393,7 +391,7 @@ public class RobotContainer {
                       launcher.stop();
                       hopper.setMode(HopperRunMode.STOPPED);
                     })
-                .withName("Spin up and Launch"));
+                .withName("Force Launch"));
 
     // Start spin up button
     xbox.y()
@@ -414,10 +412,8 @@ public class RobotContainer {
         .and(manualLaunch.negate())
         .whileTrue(
             Commands.parallel(
-                    launcher
-                        .run(() -> launcher.setMode(LauncherRunMode.REVERSE)),
-                    hopper
-                        .run(() -> hopper.setMode(HopperRunMode.REVERSE)))
+                    launcher.run(() -> launcher.setMode(LauncherRunMode.REVERSE)),
+                    hopper.run(() -> hopper.setMode(HopperRunMode.REVERSE)))
                 .finallyDo(
                     () -> {
                       launcher.stop();
