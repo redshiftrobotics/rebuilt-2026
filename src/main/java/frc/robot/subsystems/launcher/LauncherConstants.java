@@ -27,7 +27,7 @@ public class LauncherConstants {
 
   public static final MotorConstants LEFT_CONSTANTS = new MotorConstants(3, 1, false, false, 120);
   public static final MotorConstants CENTER_CONSTANTS = new MotorConstants(4, 1, false, false, 120);
-  public static final MotorConstants RIGHT_CONSTANTS = new MotorConstants(15, 1, true, true, 120);
+  public static final MotorConstants RIGHT_CONSTANTS = new MotorConstants(15, 1, true, false, 120);
 
   public static final PIDConfig FLYWHEEL_PID =
       switch (Constants.getRobot()) {
