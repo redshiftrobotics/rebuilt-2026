@@ -10,7 +10,14 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 
 public class ShotCalculator {
-  public record ShotParameters(LinearVelocity velocity, Rotation2d pitch, Rotation2d yaw) {}
+  public record ShotParameters(LinearVelocity velocity, Rotation2d pitch, Rotation2d yaw) {
+    @Override
+    public final String toString() {
+      return String.format(
+          "ShotParameters(velocity=%.2f m/s, pitch=%.2f deg, yaw=%.2f deg)",
+          velocity.in(MetersPerSecond), pitch.getDegrees(), yaw.getDegrees());
+    }
+  }
 
   // Adjust distance, then calculate pitch, then calculate velocity based on pitch
   public static ShotParameters method1(
@@ -59,17 +66,21 @@ public class ShotCalculator {
   }
 
   static LinearVelocity calculateVelocity(Distance distance, Rotation2d pitch) {
-    // https://www.desmos.com/3d/enuvzskzsh
-    double velocity =
-        distance.in(Meters)
-            * Math.sqrt(
-                9.81
-                    / (2 * distance.in(Meters) * pitch.getTan()
-                        - LauncherConstants.HUB_Z_OFFSET.in(Meters)
-                        + LauncherConstants.LAUNCHER_Z_OFFSET.in(Meters)))
-            / pitch.getCos();
-    return MetersPerSecond.of(velocity);
+    return MetersPerSecond.of(10.0);
   }
+
+  // static LinearVelocity calculateVelocity(Distance distance, Rotation2d pitch) {
+  //   // https://www.desmos.com/3d/enuvzskzsh
+  //   double velocity =
+  //       distance.in(Meters)
+  //           * Math.sqrt(
+  //               9.81
+  //                   / (2 * distance.in(Meters) * pitch.getTan()
+  //                       - LauncherConstants.HUB_Z_OFFSET.in(Meters)
+  //                       + LauncherConstants.LAUNCHER_Z_OFFSET.in(Meters)))
+  //           / pitch.getCos();
+  //   return MetersPerSecond.of(velocity);
+  // }
 
   private static double timeOfFlight(ShotParameters parameters, Translation2d hubPosition) {
     // Distance divided by horizontal shot speed

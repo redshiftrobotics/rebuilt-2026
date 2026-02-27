@@ -62,11 +62,6 @@ public class ChannelIOSparkMax implements ChannelIO {
         velocity.in(RotationsPerSecond) * 60, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
   }
 
-  public boolean isAtSetpoint() {
-    // Tolerance of +/- 30 RPM
-    return MathUtil.isNear(controller.getSetpoint(), encoder.getVelocity(), 30);
-  }
-
   public void stop() {
     motor.stopMotor();
   }

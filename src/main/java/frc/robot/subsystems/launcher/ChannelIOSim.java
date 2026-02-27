@@ -36,10 +36,9 @@ public class ChannelIOSim implements ChannelIO {
   public ChannelIOSim(String name, MotorConstants constants) {
     this.name = name;
     final DCMotor motor = DCMotor.getKrakenX60(1);
-    final double momentOfInertia = (1.0 / 2.0) * 0.362874 * Math.pow(Units.inchesToMeters(2.0), 2);
     sim =
         new FlywheelSim(
-            LinearSystemId.createFlywheelSystem(motor, momentOfInertia, constants.gearRatio()),
+            LinearSystemId.createFlywheelSystem(motor, 0.1, constants.gearRatio()),
             motor);
   }
 

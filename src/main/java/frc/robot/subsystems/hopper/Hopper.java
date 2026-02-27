@@ -1,10 +1,7 @@
 package frc.robot.subsystems.hopper;
 
-import edu.wpi.first.util.sendable.Sendable;
-import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -34,7 +31,7 @@ public class Hopper extends SubsystemBase {
   private final HopperVisualizer setpointVisualizer;
 
   /* Run mode storage */
-  private HopperConstants.HopperRunMode runMode = HopperRunMode.STOPPED;
+  private HopperRunMode runMode = HopperRunMode.STOPPED;
 
   /* Tunable numbers (you're welcome Aceius) */
   private static final TunableNumberGroup lifterGains = new TunableNumberGroup("Hopper");
@@ -50,11 +47,10 @@ public class Hopper extends SubsystemBase {
     setpointVisualizer =
         new HopperVisualizer(getName() + "/Visualization/Setpoint", Color.kBlue, 0.01);
 
-    // Safety first :-)
-    stopAll();
-
     // Set initial PID
     lifterIO.setPID(lifterPID.get());
+    // Safety first :-)
+    stopAll();
   }
 
   @Override
@@ -64,6 +60,8 @@ public class Hopper extends SubsystemBase {
     lifterIO.updateInputs(lifterInputs);
     Logger.processInputs(getName() + "/Feeder", feederInputs);
     Logger.processInputs(getName() + "/Lifter", lifterInputs);
+
+    Logger.recordOutput(getName() + "/mode", runMode.toString());
 
     // Update tunable lifter PID
     lifterPID.ifChanged(hashCode(), (pid) -> lifterIO.setPID(pid));
@@ -76,12 +74,8 @@ public class Hopper extends SubsystemBase {
     measuredVisualizer.update(feederInputs.velocityRadPerSec, lifterInputs.velocityRadPerSec);
   }
 
-  public Command runModeCommand(HopperConstants.HopperRunMode mode) {
-    return startEnd(() -> setMode(mode), this::stopAll);
-  }
-
   public void stopAll() {
-    setMode(HopperConstants.HopperRunMode.STOPPED);
+    setMode(HopperRunMode.STOPPED);
   }
 
   public void setMode(HopperRunMode mode) {

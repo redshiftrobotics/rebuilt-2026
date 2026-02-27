@@ -43,8 +43,7 @@ public class HopperConstants {
 
     @Override
     public String toString() {
-      return String.format(
-          "%s (feeder = %s, lifter = %s)", name(), feederDutyCycle, lifterDutyCycle);
+      return String.format("%s(feeder=%s, lifter=%s)", name(), feederDutyCycle, lifterDutyCycle);
     }
   }
 }

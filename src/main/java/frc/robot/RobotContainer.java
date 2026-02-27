@@ -23,8 +23,6 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.Mode;
 import frc.robot.Constants.RobotType;
 import frc.robot.commands.DriveCharacterizationCommands;
-import frc.robot.commands.HopperCommands;
-import frc.robot.commands.IntakeCommands;
 import frc.robot.commands.pipeline.DriveInput;
 import frc.robot.commands.pipeline.DriveInputPipeline;
 import frc.robot.subsystems.climb.Climb;
@@ -32,7 +30,11 @@ import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.hopper.HopperConstants.HopperRunMode;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeRunMode;
 import frc.robot.subsystems.launcher.Launcher;
+import frc.robot.subsystems.launcher.Launcher.LauncherRunMode;
+import frc.robot.subsystems.launcher.ManualModeLauncherControl;
+import frc.robot.subsystems.launcher.ManualModeLauncherControl.ManualLaunchMode;
 import frc.robot.subsystems.led.BlinkenLEDPattern;
 import frc.robot.subsystems.led.LEDSubsystem;
 import frc.robot.subsystems.vision.AprilTagVision;
@@ -99,7 +101,6 @@ public class RobotContainer {
     hopper = Hopper.create(robotType);
     intake = Intake.create(robotType);
     climb = Climb.create(robotType);
-    outtake = Outtake.create(robotType);
     launcher = Launcher.create(robotType);
 
     // Vision setup
@@ -226,22 +227,33 @@ public class RobotContainer {
         };
 
     // Toggle robot relative mode, used as backup if gyro fails
-    xbox.y().toggleOnTrue(pipeline.runLayer("Robot Relative", DriveInput::fieldRelativeDisabled));
+    xbox.back()
+        .debounce(0.1)
+        .toggleOnTrue(pipeline.runLayer("Robot Relative", DriveInput::fieldRelativeDisabled));
+
+    // Secondary drive command, use driving stick to control angle as well
+    xbox.leftTrigger().whileTrue(pipeline.runLayer("Locust", DriveInput::locustMode));
+
+    // Slow mode, reduce translation and rotation speeds for fine control
+    xbox.leftBumper()
+        .whileTrue(
+            pipeline.runLayer(
+                "Slow Mode", input -> input.linearCoefficient(0.3).angularCoefficient(0.3)));
+
+    xbox.leftTrigger()
+        .toggleOnTrue(
+            Commands.parallel(
+                pipeline.runLayer(
+                    "Aim at Hub", input -> input.headingTarget(launcher.getRobotYaw())),
+                launcher.runOnce(launcher::start)));
 
     // Secondary drive command, right stick will be used to control target angular
     // position instead of angular velocity
-    xbox.leftBumper()
+    xbox.rightBumper()
         .whileTrue(
             pipeline.runLayer(
                 "Heading Controlled",
                 input -> input.headingStick(-xbox.getRightY(), -xbox.getRightX())));
-
-    // Secondary drive command, use driving stick to control angle as well
-    xbox.rightBumper().whileTrue(pipeline.runLayer("Locust", DriveInput::locustMode));
-
-    // Slow mode, reduce translation and rotation speeds for fine control
-    // xbox.leftBumper()
-    //     .whileTrue(pipeline.runLayer("Slow Mode", input -> input.coefficients(0.3, 0.3)));
 
     // Cause the robot to resist movement by forming an X shape with the swerve
     // modules. Helps prevent getting pushed around
@@ -286,67 +298,190 @@ public class RobotContainer {
                       .angularCoefficient(0.3));
       xbox.pov(pov).whileTrue(activateLayer);
     }
-    xbox.a()
-        .toggleOnTrue(
-            Commands.parallel(
-                pipeline.runLayer(
-                    "Aim at Hub", input -> input.headingTarget(launcher.getRobotYaw())),
-                Commands.runEnd(() -> launcher.startAutomatic(), () -> launcher.stop(), launcher)));
   }
 
   private void configureOperatorControllerBindings(CommandXboxController xbox) {
 
+    final ManualModeLauncherControl manualLaunchControl =
+        new ManualModeLauncherControl(ManualLaunchMode.Y);
+
+    launcher.setManualModeFlywheelSetpointSupplier(manualLaunchControl::getMode);
+
+    launcher.setPreferredRunMode(LauncherRunMode.MANUAL);
+
+    final Trigger manualLaunch = xbox.back();
+    final Trigger resetShift = xbox.start().debounce(0.01);
+
     // --- INTAKE CONTROL ---
 
     // Intake button (hold)
-    xbox.leftTrigger();
+    xbox.leftTrigger()
+        .whileTrue(
+            intake
+                .startEnd(
+                    () -> intake.setMode(IntakeRunMode.INTAKING),
+                    () -> intake.setMode(IntakeRunMode.UP))
+                .withName("Intake"));
 
     // Dump through intake button (hold)
-    xbox.leftBumper().debounce(0.01);
+    xbox.leftBumper()
+        .debounce(0.01)
+        .whileTrue(
+            intake
+                .startEnd(
+                    () -> intake.setMode(IntakeRunMode.OUTTAKING),
+                    () -> intake.setMode(IntakeRunMode.UP))
+                .withName("Outtake"));
 
     // Deploy intake tap button
-    xbox.leftStick();
+    xbox.leftStick()
+        .onTrue(
+            intake
+                .runOnce(() -> intake.setModeNoWheels(IntakeRunMode.INTAKING))
+                .withName("Deploy intake"));
 
     // Retract intake tap button
-    xbox.rightStick();
+    xbox.rightStick()
+        .onTrue(
+            intake
+                .runOnce(() -> intake.setModeNoWheels(IntakeRunMode.UP))
+                .withName("Retract intake"));
 
     // Intake shift up button
-    xbox.povUp();
+    xbox.povUp()
+        .onTrue(
+            Commands.runOnce(() -> intake.shiftSetpoint(Rotation2d.fromDegrees(+1)))
+                .withName("Shift intake up"));
 
     // Intake shift down button
-    xbox.povDown();
+    xbox.povDown()
+        .and(manualLaunch.negate())
+        .onTrue(
+            Commands.runOnce(() -> intake.shiftSetpoint(Rotation2d.fromDegrees(-1)))
+                .withName("Shift intake down"));
 
     // Reset intake shift button
-    xbox.start().debounce(0.3);
+    resetShift
+        .and(manualLaunch.negate())
+        .onTrue(Commands.runOnce(intake::unshiftSetpoint).withName("Reset intake shift"));
 
     // --- OUTTAKE CONTROL ---
 
     // Spin up then launch button
-    xbox.rightTrigger();
+    xbox.rightTrigger()
+        .whileTrue(
+            launcher
+                .runOnce(launcher::start)
+                .andThen(launcher.idle().until(launcher::isReady))
+                .andThen(hopper.runOnce(() -> hopper.setMode(HopperRunMode.FIRING)))
+                .andThen(launcher.idle())
+                .finallyDo(
+                    () -> {
+                      launcher.stop();
+                      hopper.setMode(HopperRunMode.STOPPED);
+                    })
+                .withName("Spin up and Launch"));
 
     // Force launch button
-    xbox.rightBumper();
-
-    // Manual launch control button
-    xbox.back();
+    xbox.rightBumper()
+        .whileTrue(
+            launcher
+                .run(launcher::start)
+                .alongWith(hopper.run(() -> hopper.setMode(HopperRunMode.FIRING)))
+                .finallyDo(
+                    () -> {
+                      launcher.stop();
+                      hopper.setMode(HopperRunMode.STOPPED);
+                    })
+                .withName("Spin up and Launch"));
 
     // Start spin up button
-    xbox.y();
+    xbox.y()
+        .and(manualLaunch.negate())
+        .onTrue(launcher.runOnce(launcher::start).withName("Spin Up"));
 
     // Cancel spin up button
-    xbox.b();
+    xbox.b()
+        .and(manualLaunch.negate())
+        .onTrue(
+            launcher
+                .runOnce(launcher::stop)
+                .andThen(hopper.runOnce(() -> hopper.setMode(HopperRunMode.STOPPED)))
+                .withName("Cancel Spin Up"));
 
     // Reverse lifter & outtake button
-    xbox.x();
+    xbox.x()
+        .and(manualLaunch.negate())
+        .whileTrue(
+            Commands.parallel(
+                    launcher
+                        .run(() -> launcher.setMode(LauncherRunMode.REVERSE)),
+                    hopper
+                        .run(() -> hopper.setMode(HopperRunMode.REVERSE)))
+                .finallyDo(
+                    () -> {
+                      launcher.stop();
+                      hopper.setMode(HopperRunMode.STOPPED);
+                    })
+                .withName("Reverse Launcher and Hopper"));
 
     // Reverse lifter button
-    xbox.a();
+    xbox.a()
+        .and(manualLaunch.negate())
+        .whileTrue(
+            hopper
+                .run(() -> hopper.setMode(HopperRunMode.REVERSE))
+                .finallyDo(() -> hopper.setMode(HopperRunMode.STOPPED))
+                .withName("Reverse Hopper"));
+
+    // --- MANUAL LAUNCH MODE CONTROLS ---
+
+    manualLaunch
+        .and(resetShift)
+        .multiPress(2, 0.2)
+        .toggleOnTrue(
+            Commands.startEnd(
+                    () -> launcher.setPreferredRunMode(LauncherRunMode.AUTOMATIC),
+                    () -> launcher.setPreferredRunMode(LauncherRunMode.MANUAL))
+                .withName("Automatic Launch Preferred Mode"));
 
     // Outtake shift up button
-    xbox.povLeft();
+    xbox.povRight()
+        .onTrue(
+            Commands.runOnce(() -> manualLaunchControl.shiftVelocity(1.0))
+                .withName("Shift Velocity Up"));
 
     // Outtake shift down button
-    xbox.povRight();
+    xbox.povLeft()
+        .onTrue(
+            Commands.runOnce(() -> manualLaunchControl.shiftVelocity(-1.0))
+                .withName("Shift Velocity Down"));
+
+    // Outtake shift reset button
+    resetShift
+        .and(manualLaunch)
+        .onTrue(Commands.runOnce(manualLaunchControl::resetShift).withName("Reset Shift"));
+
+    xbox.a()
+        .and(manualLaunch)
+        .onTrue(
+            Commands.runOnce(() -> manualLaunchControl.setMode(ManualLaunchMode.A))
+                .withName("Set Manual Launch Mode A"));
+    xbox.b()
+        .and(manualLaunch)
+        .onTrue(
+            Commands.runOnce(() -> manualLaunchControl.setMode(ManualLaunchMode.B))
+                .withName("Set Manual Launch Mode B"));
+    xbox.x()
+        .and(manualLaunch)
+        .onTrue(
+            Commands.runOnce(() -> manualLaunchControl.setMode(ManualLaunchMode.X))
+                .withName("Set Manual Launch Mode X"));
+    xbox.y()
+        .and(manualLaunch)
+        .onTrue(
+            Commands.runOnce(() -> manualLaunchControl.setMode(ManualLaunchMode.Y))
+                .withName("Set Manual Launch Mode Y"));
 
     // --- HANG/MANUAL CONTROL ---
 
@@ -405,16 +540,18 @@ public class RobotContainer {
     namedCommands.put("LEDS", leds.runColor(BlinkenLEDPattern.RED));
 
     // Hopper commands
-    namedCommands.put("StopHopper", HopperCommands.setHopperMode(hopper, HopperRunMode.STOPPED));
-    namedCommands.put("IdleHopper", HopperCommands.setHopperMode(hopper, HopperRunMode.IDLE));
-    namedCommands.put("FireHopper", HopperCommands.setHopperMode(hopper, HopperRunMode.FIRING));
-    namedCommands.put("ReverseHopper", HopperCommands.setHopperMode(hopper, HopperRunMode.REVERSE));
+    namedCommands.put("StopHopper", hopper.runOnce(() -> hopper.setMode(HopperRunMode.STOPPED)));
+    namedCommands.put("IdleHopper", hopper.runOnce(() -> hopper.setMode(HopperRunMode.IDLE)));
+    namedCommands.put("FireHopper", hopper.runOnce(() -> hopper.setMode(HopperRunMode.FIRING)));
+    namedCommands.put("ReverseHopper", hopper.runOnce(() -> hopper.setMode(HopperRunMode.REVERSE)));
 
     // Intake commands
-    namedCommands.put("ExtendSlapdown", IntakeCommands.extendSlapdown(intake));
-    namedCommands.put("RetractSlapdown", IntakeCommands.retractSlapdown(intake));
-    namedCommands.put("StartIntake", IntakeCommands.startIntake(intake));
-    namedCommands.put("StopIntake", IntakeCommands.stopIntake(intake));
+    namedCommands.put(
+        "ExtendSlapdown", intake.runOnce(() -> intake.setModeNoWheels(IntakeRunMode.INTAKING)));
+    namedCommands.put(
+        "RetractSlapdown", intake.runOnce(() -> intake.setModeNoWheels(IntakeRunMode.UP)));
+    namedCommands.put("StartIntake", intake.runOnce(() -> intake.setMode(IntakeRunMode.INTAKING)));
+    namedCommands.put("StopIntake", intake.runOnce(() -> intake.setMode(IntakeRunMode.UP)));
 
     // Launcher commands
 
@@ -480,8 +617,6 @@ public class RobotContainer {
           "[SysId] Drive Dynamic Forward", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
       chooser.addOption(
           "[SysId] Drive Dynamic Reverse", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-
-      chooser.addOption("[Test] Hopper Test Routine", HopperCommands.hopperTestRoutine(hopper));
     }
 
     return chooser;

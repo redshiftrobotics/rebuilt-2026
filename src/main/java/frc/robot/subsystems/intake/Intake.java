@@ -2,11 +2,8 @@ package frc.robot.subsystems.intake;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.util.sendable.Sendable;
-import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RobotType;
@@ -30,11 +27,7 @@ public class Intake extends SubsystemBase {
   private IntakeWheelIOInputsAutoLogged wheelInputs = new IntakeWheelIOInputsAutoLogged();
   private SlapdownIOInputsAutoLogged slapdownInputs = new SlapdownIOInputsAutoLogged();
 
-  private Rotation2d slapdownUpPosition;
-  private Rotation2d slapdownDownPosition;
-
-  private Rotation2d setpointPosition = Rotation2d.kZero;
-  private double setpointWheelSpeed;
+  private IntakeRunMode currentMode = IntakeRunMode.UP;
 
   private final Alert wheelMotorDisconnectedAlert =
       new Alert("Hardware error detected on intake wheel.", AlertType.kError);
@@ -61,11 +54,7 @@ public class Intake extends SubsystemBase {
         new IntakeVisualizer(getName() + "/Visuization/AbsoluteMeasured", Color.kOrange);
     setpointVisualizer = new IntakeVisualizer(getName() + "/Visuization/Setpoint", Color.kBlue);
 
-    slapdownUpPosition = SlapdownConstants.UP_SETPOINT;
-    slapdownDownPosition = SlapdownConstants.DOWN_SETPOINT;
-
-    setSlapdownSetpoint(slapdownUpPosition);
-    stopWheels();
+    setMode(IntakeRunMode.UP);
   }
 
   @Override
@@ -78,77 +67,41 @@ public class Intake extends SubsystemBase {
 
     slapdownPidConfig.ifChanged(hashCode(), slapdownIO::setPID);
 
+    Logger.recordOutput(getName() + "/mode", currentMode.toString());
+
     visualizer.update(slapdownInputs.positionRad, wheelInputs.positionRad);
     absoluteVisualizer.update(slapdownInputs.absolutePositionRad, wheelInputs.positionRad);
-    setpointVisualizer.update(
-        setpointPosition.getRadians(), -setpointWheelSpeed * System.currentTimeMillis() * 0.001);
-
     wheelMotorDisconnectedAlert.set(!wheelInputs.motorConnected);
     slapdownMotorDisconnectedAlert.set(!slapdownInputs.motorConnected);
     encodersMisalignedAlert.set(!slapdownInputs.encodersAligned);
   }
 
-  // wheel
-
-  /**
-   * Sets the intake wheel speed.
-   *
-   * @param speed The duty cycle speed (-1.0 to 1.0), positive for intaking
-   */
-  public void setWheelSpeed(double speed) {
-    wheelIO.setSpeed(speed);
-    this.setpointWheelSpeed = speed;
+  public void shiftSetpoint(Rotation2d shift) {
+    currentMode.shiftSetpoint(shift);
+    setMode(currentMode);
   }
 
-  /** Stops the intake wheels. */
-  public void stopWheels() {
+  public void unshiftSetpoint() {
+    currentMode.resetShift();
+    setMode(currentMode);
+  }
+
+  public void setMode(IntakeRunMode mode) {
+    currentMode = mode;
+    wheelIO.setSpeed(mode.intakeDutyCycle);
+    slapdownIO.setSetpoint(currentMode.getSetpoint());
+    setpointVisualizer.update(
+        currentMode.getSetpoint().getRadians(),
+        currentMode.intakeDutyCycle
+            * IntakeConstants.IntakeWheelConstants.MOTOR.freeSpeedRadPerSec
+            * Units.millisecondsToSeconds(System.currentTimeMillis()));
+  }
+
+  public void setModeNoWheels(IntakeRunMode mode) {
+    currentMode = mode;
     wheelIO.stop();
-    this.setpointWheelSpeed = 0;
-  }
-
-  // slapdown
-
-  /**
-   * Sets the slapdown mechanism setpoint position.
-   *
-   * @param setpoint The desired angle for the slapdown mechanism
-   */
-  public void setSlapdownSetpoint(Rotation2d setpoint) {
-    slapdownIO.setSetpoint(setpoint);
-    this.setpointPosition = setpoint;
-  }
-
-  /**
-   * Sets and saves the "up" position setpoint for the slapdown mechanism.
-   *
-   * @param setPoint The angle to save as the up position
-   */
-  public void setSavedUpSetpoint(Rotation2d setPoint) {
-    setSlapdownSetpoint(setPoint);
-    slapdownUpPosition = setPoint;
-  }
-
-  /**
-   * Sets and saves the "down" position setpoint for the slapdown mechanism.
-   *
-   * @param setPoint The angle to save as the down position
-   */
-  public void setSavedDownSetpoint(Rotation2d setPoint) {
-    setSlapdownSetpoint(setPoint);
-    slapdownDownPosition = setPoint;
-  }
-
-  /**
-   * Gets the saved "up" position setpoint for the slapdown mechanism.
-   *
-   * @return The saved up position angle
-   */
-  public Rotation2d getSavedUpSetpoint() {
-    return slapdownUpPosition;
-  }
-
-  public Rotation2d getSavedDownSetpoint() {
-    return slapdownDownPosition;
+    slapdownIO.setSetpoint(currentMode.getSetpoint());
+    setpointVisualizer.update(currentMode.getSetpoint().getRadians(), 0);
   }
 
   /**

@@ -50,8 +50,4 @@ public interface ChannelIO {
 
   /** Disable output to brake and turn motor */
   public default void stop() {}
-
-  public default boolean isAtSetpoint() {
-    return false;
-  }
 }
