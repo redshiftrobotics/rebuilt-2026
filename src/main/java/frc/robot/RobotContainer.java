@@ -137,8 +137,8 @@ public class RobotContainer {
           Rotation2d robotAngle = drive.getRobotPose().getRotation();
           // Robot relative to field relative;
           ChassisSpeeds speeds =
-              ChassisSpeeds.fromFieldRelativeSpeeds(
-                  drive.getRobotSpeeds(), robotAngle.unaryMinus());
+              ChassisSpeeds.fromRobotRelativeSpeeds(
+                  drive.getRobotSpeeds(), robotAngle);
           return (new Translation2d(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond));
         });
 
