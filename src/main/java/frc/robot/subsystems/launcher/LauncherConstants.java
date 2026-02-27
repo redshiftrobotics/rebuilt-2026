@@ -13,35 +13,37 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.units.measure.MomentOfInertia;
 import frc.robot.Constants;
-import frc.robot.subsystems.examples.flywheel.MotorConstants;
 import frc.robot.utility.records.FeedForwardConfigRecord;
 import frc.robot.utility.records.PIDConfig;
 import frc.robot.utility.tunable.TunableNumber;
 
 /** Constants for the Template subsystem. */
 public class LauncherConstants {
-  // TODO Add real values
 
   public static final int ACTUATOR_LEFT_ID = 1;
   public static final int ACTUATOR_RIGHT_ID = 2;
 
-  public static final MotorConstants LEFT_CONSTANTS = new MotorConstants(3, 1, false, false, 120);
-  public static final MotorConstants CENTER_CONSTANTS = new MotorConstants(4, 1, false, false, 120);
-  public static final MotorConstants RIGHT_CONSTANTS = new MotorConstants(15, 1, true, true, 120);
+  public record ChannelConstants(int deviceId, double gearRatio, boolean inverted) {}
+
+  public static final ChannelConstants LEFT_CONSTANTS = new ChannelConstants(3, 1, false);
+  public static final ChannelConstants CENTER_CONSTANTS = new ChannelConstants(4, 1, false);
+  public static final ChannelConstants RIGHT_CONSTANTS = new ChannelConstants(15, 1, true);
 
   public static final PIDConfig FLYWHEEL_PID =
       switch (Constants.getRobot()) {
-        case REBUILT_2026 -> new PIDConfig(100, 0.0, 0.0);
-        case SIM_BOT -> new PIDConfig(1.0, 0.0, 0.0);
+        case REBUILT_2026 -> new PIDConfig(0.15, 0.0, 0.0);
+        case SIM_BOT -> new PIDConfig(0.15, 0.0, 0.0);
         default -> new PIDConfig(0.0, 0.0, 0.0);
       };
   public static final FeedForwardConfigRecord FF =
       switch (Constants.getRobot()) {
-        case REBUILT_2026 -> new FeedForwardConfigRecord(0.0, 0.0, 0.0);
-        case SIM_BOT -> new FeedForwardConfigRecord(0.0, 0.0, 0.0);
+        case REBUILT_2026 -> new FeedForwardConfigRecord(0.0, 0.019, 0.0);
+        case SIM_BOT -> new FeedForwardConfigRecord(0.0, 0.019, 0.0);
         default -> new FeedForwardConfigRecord(0.0, 0.0, 0.0);
       };
-  public static final double FLYWHEEL_SETPOINT = 0.5;
+
+  // Math for calculating flywheel velocity based on desired ball velocity, using conservation of
+  // energy and momentum
 
   public static final Distance LAUNCHER_WHEEL_RADIUS = Inches.of(2);
   public static final Mass LAUNCHER_WHEEL_MASS = Pounds.of(0.3);

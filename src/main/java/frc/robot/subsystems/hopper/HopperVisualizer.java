@@ -32,8 +32,10 @@ public class HopperVisualizer {
   }
 
   public void update(double feedVelocityRadPerSec, double lifterVelocityRadPerSecond) {
-    feederMech.setLength(feedVelocityRadPerSec / HopperConstants.MAX_FEEDER_SPEED * 0.8);
-    lifterMech.setLength(lifterVelocityRadPerSecond / HopperConstants.MAX_LIFTER_SPEED * 0.8);
+    feederMech.setLength(
+        feedVelocityRadPerSec / HopperConstants.FEEDER_MOTOR.freeSpeedRadPerSec * 0.8);
+    lifterMech.setLength(
+        lifterVelocityRadPerSecond / HopperConstants.LIFTER_MOTOR.freeSpeedRadPerSec * 0.8);
     Logger.recordOutput(name, mechanism);
   }
 }

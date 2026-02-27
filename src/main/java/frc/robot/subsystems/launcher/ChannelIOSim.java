@@ -7,12 +7,11 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import frc.robot.Constants;
-import frc.robot.subsystems.examples.flywheel.MotorConstants;
+import frc.robot.subsystems.launcher.LauncherConstants.ChannelConstants;
 import frc.robot.utility.records.FeedForwardConfigRecord;
 import frc.robot.utility.records.PIDConfig;
 
@@ -33,13 +32,13 @@ public class ChannelIOSim implements ChannelIO {
   private boolean closedLoop = false;
   private double FFVolts = 0;
 
-  public ChannelIOSim(String name, MotorConstants constants) {
+  public ChannelIOSim(String name, ChannelConstants constants) {
     this.name = name;
     final DCMotor motor = DCMotor.getKrakenX60(1);
-    final double momentOfInertia = (1.0 / 2.0) * 0.362874 * Math.pow(Units.inchesToMeters(2.0), 2);
     sim =
         new FlywheelSim(
-            LinearSystemId.createFlywheelSystem(motor, momentOfInertia, constants.gearRatio()),
+            LinearSystemId.createFlywheelSystem(
+                motor, LauncherConstants.FLYWHEEL_MOI.baseUnitMagnitude(), constants.gearRatio()),
             motor);
   }
 
@@ -70,7 +69,7 @@ public class ChannelIOSim implements ChannelIO {
     inputs.velocityRadPerSec = sim.getAngularVelocityRadPerSec();
     inputs.appliedVolts = appliedVolts;
     inputs.supplyCurrentAmps = Math.abs(sim.getCurrentDrawAmps());
-    inputs.appliedDutycycle = appliedVolts / 12.0;
+    inputs.appliedDutyCycle = appliedVolts / 12.0;
   }
 
   @Override
