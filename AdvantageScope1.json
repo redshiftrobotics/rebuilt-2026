@@ -7,7 +7,7 @@
       "height": 832,
       "state": {
         "sidebar": {
-          "width": 328,
+          "width": 306,
           "expanded": [
             "/AdvantageKit/RealOutputs",
             "/SmartDashboard",
@@ -21,7 +21,6 @@
             "/RealOutputs/Intake/AbsoluteMeasured",
             "/RealOutputs/Intake/Measured",
             "/RealOutputs/Intake/Setpoint",
-            "/Tuning",
             "/Tuning/Intake/Slapdown",
             "/Tuning/Intake/Slapdown/Pid",
             "/RealOutputs/Intake/Visuization",
@@ -33,17 +32,29 @@
             "/Hopper/Feeder",
             "/Intake/Slapdown",
             "/Intake/Wheel",
-            "/Tuning/Intake",
             "/Tuning/Intake/SlapdownPID",
             "/Tuning/Hopper",
-            "/Tuning/HeadingController",
             "/Tuning/HeadingController/PID",
+            "/Outtake/Left",
+            "/Outtake/Middle",
+            "/Outtake/Right",
+            "/RealOutputs",
+            "/RealOutputs/Outtake",
+            "/Tuning",
+            "/Tuning/Outtake",
+            "/Tuning/Outtake/PID",
             "/Outtake",
-            "/Outtake/Left"
+            "/Tuning/Launcher",
+            "/Tuning/Launcher/PID",
+            "/RealOutputs/Launcher",
+            "/Launcher",
+            "/Launcher/ChannelCenter",
+            "/Launcher/ChannelLeft",
+            "/Launcher/ChannelRight"
           ]
         },
         "tabs": {
-          "selected": 1,
+          "selected": 4,
           "tabs": [
             {
               "type": 0,
@@ -64,7 +75,7 @@
                     "logType": "Pose2d",
                     "visible": true,
                     "options": {
-                      "model": "2026 KitBot"
+                      "model": "comp_2026_8032"
                     }
                   },
                   {
@@ -120,7 +131,7 @@
                     "type": "ghost",
                     "logKey": "/RealOutputs/Vision/robotPosesAccepted",
                     "logType": "Pose3d[]",
-                    "visible": false,
+                    "visible": true,
                     "options": {
                       "model": "KitBot",
                       "color": "#ff00ff"
@@ -130,7 +141,7 @@
                     "type": "ghost",
                     "logKey": "/RealOutputs/Vision/robotPosesRejected",
                     "logType": "Pose3d[]",
-                    "visible": false,
+                    "visible": true,
                     "options": {
                       "model": "KitBot",
                       "color": "#ffff00"
@@ -144,14 +155,14 @@
                 "cameraIndex": -3,
                 "orbitFov": 50,
                 "cameraPosition": [
-                  -9.760701186975595,
-                  1.5748000000000002,
-                  -1.4750935014646256
+                  -7.140875567281624,
+                  2.1377800456465037,
+                  1.1947419825694856
                 ],
                 "cameraTarget": [
-                  0,
-                  0.5,
-                  0
+                  -3.6786262610508236,
+                  0.05555206455878636,
+                  2.5261301065548003
                 ]
               },
               "controlsHeight": 0
@@ -206,6 +217,118 @@
                 }
               ],
               "controllerUUID": "w0x5ruft9o4qydhot3oh9co1tp1djl4u",
+              "renderer": null,
+              "controlsHeight": 200
+            },
+            {
+              "type": 1,
+              "title": "Outtake",
+              "controller": {
+                "leftSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/Launcher/DesiredVelocity",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2",
+                      "size": "verybold"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/Launcher/ChannelCenter/VelocityRadPerSec",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#af2437",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/Launcher/ChannelLeft/VelocityRadPerSec",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#80588e",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/Launcher/ChannelRight/VelocityRadPerSec",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e48b32",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "rightSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "/Launcher/ChannelCenter/AppliedDutyCycle",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#c0b487",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/Launcher/ChannelLeft/AppliedDutyCycle",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#858584",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/Launcher/ChannelRight/AppliedDutyCycle",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#3b875a",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "discreteSources": [
+                  {
+                    "type": "stripes",
+                    "logKey": "/RealOutputs/Launcher/mode",
+                    "logType": "String",
+                    "visible": true,
+                    "options": {
+                      "color": "#e5b31b"
+                    }
+                  }
+                ],
+                "leftLockedRange": [
+                  0,
+                  50
+                ],
+                "rightLockedRange": [
+                  -1,
+                  1
+                ],
+                "leftUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "rightUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "v4qvaoiymft8pu71e3ahi82wd6apyl6w",
               "renderer": null,
               "controlsHeight": 200
             },

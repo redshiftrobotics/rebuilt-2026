@@ -34,7 +34,7 @@ public enum IntakeRunMode {
   @Override
   public String toString() {
     return String.format(
-        "%s(wrist=%.2f deg, intakeDutyCycle=%.2f)",
+        "%s(wrist=%.2f deg, intake=%.2f)",
         name(), getSetpoint().getDegrees(), intakeDutyCycle);
   }
 }
