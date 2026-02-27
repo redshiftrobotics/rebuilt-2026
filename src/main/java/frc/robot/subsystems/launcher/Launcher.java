@@ -183,7 +183,9 @@ public class Launcher extends SubsystemBase {
         robotYaw = parameters.yaw();
         break;
       case INTERPOLATION:
-        runningVelocity = RadiansPerSecond.of(InterpolationShotCalculator.calculateWheelVelocity(hubTranslation.getNorm()));
+        runningVelocity =
+            RadiansPerSecond.of(
+                InterpolationShotCalculator.calculateWheelVelocity(hubTranslation.getNorm()));
         robotYaw = parameters.yaw();
         break;
     }
