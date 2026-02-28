@@ -1,6 +1,5 @@
 package frc.robot.subsystems.launcher;
 
-import static edu.wpi.first.units.Units.FeetPerSecond;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
@@ -290,8 +289,6 @@ public class Launcher extends SubsystemBase {
         LinearVelocity velocity = ShotCalculator.calculateVelocity(distance, pitch);
         velocity = velocity.times(LauncherConstants.LAUNCHER_VELOCITY_MULTIPLIER.get());
                 
-        Logger.recordOutput(getName() + "/velocityMultiplier", LauncherConstants.LAUNCHER_VELOCITY_MULTIPLIER);
-        Logger.recordOutput(getName() + "/calculatedVelocity", velocity.in(FeetPerSecond));
         return RadiansPerSecond.of(
             velocity.in(MetersPerSecond) / LauncherConstants.LAUNCHER_WHEEL_RADIUS.in(Meters));
       default:
