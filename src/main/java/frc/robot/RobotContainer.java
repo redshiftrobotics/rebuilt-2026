@@ -611,9 +611,10 @@ public class RobotContainer {
     // https://pathplanner.dev/pplib-choreo-interop.html#load-choreo-trajectory-as-a-pathplannerpath
 
     var chooser =
-        Constants.DEVELOPMENT_MODE
-            ? AutoBuilder.buildAutoChooser()
-            : new SendableChooser<Command>();
+        // Constants.DEVELOPMENT_MODE
+        //     ? AutoBuilder.buildAutoChooser()
+        //     : new SendableChooser<Command>();
+        AutoBuilder.buildAutoChooser(); // for now lets just include all autos
 
     if (Constants.DEVELOPMENT_MODE) {
       chooser.addOption(

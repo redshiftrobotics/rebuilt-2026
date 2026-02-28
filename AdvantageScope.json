@@ -9,8 +9,6 @@
         "sidebar": {
           "width": 306,
           "expanded": [
-            "/AdvantageKit/RealOutputs",
-            "/SmartDashboard",
             "/SmartDashboard/Intake",
             "/AdvantageKit",
             "/AdvantageKit/RealOutputs/Intake",
@@ -58,11 +56,12 @@
             "/RealOutputs/Intake",
             "/RealOutputs/Intake/Visuization/Setpoint/wheel/slapdownArm",
             "/RealOutputs/Intake/Visuization/Setpoint/wheel/slapdownArm/wheelArm2",
-            "/Tuning/Launcher/FF"
+            "/Tuning/Launcher/FF",
+            "/AdvantageKit/PowerDistribution"
           ]
         },
         "tabs": {
-          "selected": 4,
+          "selected": 10,
           "tabs": [
             {
               "type": 0,
@@ -599,6 +598,51 @@
               "controllerUUID": "wnsaktydth5fjbshpwwfpx2zxvpz3ndd",
               "renderer": null,
               "controlsHeight": 153
+            },
+            {
+              "type": 1,
+              "title": "Battery",
+              "controller": {
+                "leftSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/SystemStats/BatteryVoltage",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/PowerDistribution/Voltage",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e5b31b",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "rightSources": [],
+                "discreteSources": [],
+                "leftLockedRange": null,
+                "rightLockedRange": null,
+                "leftUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "rightUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "v1bc029gwgo6xdjid48ur0tv5nthw1hj",
+              "renderer": null,
+              "controlsHeight": 200
             }
           ]
         }
