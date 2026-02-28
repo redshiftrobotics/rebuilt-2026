@@ -8,10 +8,10 @@ import org.littletonrobotics.junction.AutoLogOutput;
 public class ManualLauncherControl {
 
   public enum ManualLaunchMode {
-    Y(RadiansPerSecond.of(400.0)),
-    X(RadiansPerSecond.of(300.0)),
-    A(RadiansPerSecond.of(200.0)),
-    B(RadiansPerSecond.of(100.0));
+    Y(RadiansPerSecond.of(500.0)),
+    X(RadiansPerSecond.of(400.0)),
+    A(RadiansPerSecond.of(300.0)),
+    B(RadiansPerSecond.of(200.0));
 
     private final AngularVelocity channelVelocity;
     private AngularVelocity shift;
