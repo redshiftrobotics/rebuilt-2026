@@ -1,20 +1,40 @@
 package frc.robot.subsystems.launcher;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 
 /** Dead simple interpolation shot calculator */
 public class InterpolationShotCalculator {
 
-  private static InterpolatingDoubleTreeMap speeds = new InterpolatingDoubleTreeMap();
+  private static InterpolatingDoubleTreeMap fixedHoodSpeeds = new InterpolatingDoubleTreeMap();
+  private static InterpolatingDoubleTreeMap hoodPitchDegrees = new InterpolatingDoubleTreeMap();
+  private static InterpolatingDoubleTreeMap actuatingHoodSpeeds = new InterpolatingDoubleTreeMap();
 
   static {
-    // Map distances to launcher wheel speeds.
-    speeds.put(1.0, 100.0);
-    speeds.put(2.0, 200.0);
-    speeds.put(3.0, 300.0);
+    // Map distances (meters) to launcher wheel speeds.
+    fixedHoodSpeeds.put(1.0, 100.0);
+    fixedHoodSpeeds.put(2.0, 200.0);
+    fixedHoodSpeeds.put(3.0, 300.0);
+    
+    hoodPitch.put(1.0, 75.0);
+    hoodPitch.put(2.0, 70.0);
+    hoodPitch.put(3.0, 65.0);
+    hoodPitch.put(4.0, 60.0);
+
+    actuatingHoodSpeeds.put(1.0, 100.0);
+    actuatingHoodSpeeds.put(2.0, 175.0);
+    actuatingHoodSpeeds.put(3.0, 250.0);
   }
 
-  public static double calculateWheelVelocity(double distance) {
-    return speeds.get(distance);
+  public static double calculateVelocity(double distance) {
+    return fixedHoodSpeeds.get(distance);
+  }
+  
+  public static Rotation2d calculateHoodPitch(double distance) {
+    return Rotation2d.fromDegrees(hoodPitchDegrees.get(distance));
+  }
+  
+  public static double calculateVelocityAdjustableHood(double distance) {
+    return actuatingHoodSpeeds.get(distance);
   }
 }

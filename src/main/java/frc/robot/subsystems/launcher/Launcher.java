@@ -21,6 +21,8 @@ import frc.robot.utility.tunable.TunableNumbers.TunableFF;
 import frc.robot.utility.tunable.TunableNumbers.TunablePID;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -29,9 +31,18 @@ import org.littletonrobotics.junction.Logger;
 public class Launcher extends SubsystemBase {
 
   public enum LauncherRunMode {
-    MANUAL,
-    INTERPOLATION,
-    AUTOMATIC,
+    MANUAL((a) -> manualModeDesiredAngle.get(), (a) -> manualModeDesiredVelocity.get(), (a,b) -> manualModeDesiredVelocity.get()),
+    INTERPOLATION(InterpolationShotCalculator::calculateHoodPitch, InterpolationShotCalculator::calculateVelocity, (distance,b) -> InterpolationShotCalculator.calculateVelocityAdjustableHood(distance)),
+    AUTOMATIC((distance) -> ShotCalculator.calculatePitch(distance, HoodType.ACTUATOR), (a) -> ShotCalculator.calculateVelocity());
+
+    public final Function<double, double> pitch;
+    public final Function<double, double> velocityFixed;
+    public final BiFunction<double, Rotation2d, double> velocityActuating;
+
+    private LauncherRunMode(Function<double, double> pitch, Function<double, double> velocityFixed, BiFunction<double, Rotation2d, double> velocityActuating) {
+      this.pitch = pitch;
+      this.velocity = velocity;
+    }
   }
 
   public final TunablePID flywheelPID =
@@ -55,8 +66,8 @@ public class Launcher extends SubsystemBase {
   private LauncherRunMode mode = LauncherRunMode.MANUAL;
 
   private Supplier<AngularVelocity> manualModeDesiredVelocity = () -> RadiansPerSecond.zero();
+  private Supplier<Rotation2d> manualModeDesiredAngle = () -> LauncherConstants.FIXED_LAUNCH_ANGLE;
   private AngularVelocity desiredVelocity = RadiansPerSecond.zero();
-
 
   private Rotation2d robotYaw = Rotation2d.kZero;
 
@@ -102,8 +113,12 @@ public class Launcher extends SubsystemBase {
     stop();
   }
 
-  public void setManualModeSupplier(Supplier<AngularVelocity> setpoint) {
+  public void setManualModeVelocitySupplier(Supplier<AngularVelocity> setpoint) {
     this.manualModeDesiredVelocity = setpoint;
+  }
+
+  public void setManualModeAngleSupplier(Supplier<Rotation2d> setpoint) {
+    this.manualModeDesiredAngle = setpoint;
   }
 
   public void setDutyCycle(double dutyCycle) {
@@ -119,7 +134,6 @@ public class Launcher extends SubsystemBase {
       channel.stop();
     }
     Logger.recordOutput(getName() + "/desiredVelocityRadPerSec", 0);
-    
   }
 
   public void stop() {
@@ -130,7 +144,7 @@ public class Launcher extends SubsystemBase {
   public void start() {
     running = true;
   }
-  
+
   public void start(LauncherRunMode mode) {
     this.mode = mode;
     running = true;
@@ -143,7 +157,7 @@ public class Launcher extends SubsystemBase {
   public void setMode(LauncherRunMode mode) {
     this.mode = mode;
   }
-  
+
   private void setChannelVelocities(AngularVelocity wheelVelocity) {
     this.desiredVelocity = wheelVelocity;
     for (ChannelIO channel : channelIOs) {
@@ -159,7 +173,7 @@ public class Launcher extends SubsystemBase {
 
   @Override
   public void periodic() {
-
+    var func = ShotCalculator::calculateVelocity;
     hoodIO.updateInputs(hoodInputs);
     Logger.processInputs(getName() + "/Hood", hoodInputs);
 
@@ -176,31 +190,30 @@ public class Launcher extends SubsystemBase {
 
     Pose2d robotPose = robotPoseSupplier.get();
 
-    Translation2d hubTranslation =
+    Translation2d hubLocation =
         FieldConstants.Hub.topCenterPoint.toTranslation2d().minus(robotPose.getTranslation());
 
-    ShotParameters parameters =
-        ShotCalculator.method1(hubTranslation, robotVelocitySupplier.get(), hoodIO.hoodType());
+    Translation2d hubTranslation = ShotCalculator.adjustedHubPosition(hubTranslation, robotVelocitySupplier.get(), null);
 
     AngularVelocity runningVelocity = RadiansPerSecond.zero();
     Rotation2d runningHoodPitch = Rotation2d.kZero;
+    robotYaw = hubTranslation.getAngle();
 
     switch (mode) {
       case MANUAL:
         runningVelocity = manualModeDesiredVelocity.get();
-        robotYaw = parameters.yaw();
-        break;
-      case AUTOMATIC:
-        runningHoodPitch = parameters.pitch();
-        runningVelocity = calculateWheelVelocity(parameters.velocity());
-        robotYaw = parameters.yaw();
+        runningHoodPitch = manualModeDesiredAngle.get()
         break;
       case INTERPOLATION:
         runningVelocity =
             RadiansPerSecond.of(
                 InterpolationShotCalculator.calculateWheelVelocity(hubTranslation.getNorm()));
-        robotYaw = parameters.yaw();
         break;
+      case AUTOMATIC:
+        runningHoodPitch = Rotation2d.fromDegrees(75);
+        runningVelocity = calculateWheelVelocity(ShotCalculator.calculateVelocity(hubTranslation.getNorm(), runningHoodPitch));
+        break;
+      
     }
 
     hoodIO.setAngle(runningHoodPitch);
