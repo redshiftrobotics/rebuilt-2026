@@ -26,8 +26,8 @@ public class LauncherConstants {
   public record ChannelConstants(int deviceId, double gearRatio, boolean inverted) {}
 
   public static final ChannelConstants LEFT_CONSTANTS = new ChannelConstants(3, 1, false);
-  public static final ChannelConstants CENTER_CONSTANTS = new ChannelConstants(4, 1, false);
-  public static final ChannelConstants RIGHT_CONSTANTS = new ChannelConstants(15, 1, true);
+  public static final ChannelConstants CENTER_CONSTANTS = new ChannelConstants(15, 1, false);
+  public static final ChannelConstants RIGHT_CONSTANTS = new ChannelConstants(4, 1, true);
 
   public static final PIDConfig FLYWHEEL_PID =
       switch (Constants.getRobot()) {
