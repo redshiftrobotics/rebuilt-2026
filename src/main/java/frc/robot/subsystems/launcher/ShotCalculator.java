@@ -1,13 +1,10 @@
 package frc.robot.subsystems.launcher;
 
-import static edu.wpi.first.units.Units.Feet;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 
 import java.util.function.Function;
@@ -59,14 +56,5 @@ public class ShotCalculator {
     // Distance divided by horizontal shot speed
     return (hubPosition.getNorm() + LauncherConstants.LAUNCHER_X_OFFSET.in(Meters))
         / (parameters.pitch.getCos() * parameters.velocity.in(MetersPerSecond));
-  }
-
-  public static Rotation2d calculatePitch(Distance distance, HoodType hoodType) {
-    return switch (hoodType) {
-      case FIXED -> LauncherConstants.FIXED_LAUNCH_ANGLE;
-        // Formula from experimentation
-      case ACTUATOR -> Rotation2d.fromDegrees(
-          75.0 - 15.0 * Math.tanh(2.0 * distance.in(Feet) / 25.0));
-    };
   }
 }

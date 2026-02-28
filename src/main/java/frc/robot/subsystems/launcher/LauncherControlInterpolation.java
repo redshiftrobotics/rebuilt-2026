@@ -4,7 +4,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 
 /** Dead simple interpolation shot calculator */
-public class InterpolationShotCalculator {
+public class LauncherControlInterpolation {
 
   private static InterpolatingDoubleTreeMap fixedHoodSpeeds = new InterpolatingDoubleTreeMap();
   private static InterpolatingDoubleTreeMap hoodPitchDegrees = new InterpolatingDoubleTreeMap();
@@ -16,10 +16,10 @@ public class InterpolationShotCalculator {
     fixedHoodSpeeds.put(2.0, 200.0);
     fixedHoodSpeeds.put(3.0, 300.0);
     
-    hoodPitch.put(1.0, 75.0);
-    hoodPitch.put(2.0, 70.0);
-    hoodPitch.put(3.0, 65.0);
-    hoodPitch.put(4.0, 60.0);
+    hoodPitchDegrees.put(1.0, 75.0);
+    hoodPitchDegrees.put(2.0, 70.0);
+    hoodPitchDegrees.put(3.0, 65.0);
+    hoodPitchDegrees.put(4.0, 60.0);
 
     actuatingHoodSpeeds.put(1.0, 100.0);
     actuatingHoodSpeeds.put(2.0, 175.0);

@@ -15,13 +15,11 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RobotType;
 import frc.robot.FieldConstants;
-import frc.robot.subsystems.launcher.ShotCalculator.ShotParameters;
 import frc.robot.utility.tunable.TunableNumber;
 import frc.robot.utility.tunable.TunableNumbers.TunableFF;
 import frc.robot.utility.tunable.TunableNumbers.TunablePID;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -31,18 +29,9 @@ import org.littletonrobotics.junction.Logger;
 public class Launcher extends SubsystemBase {
 
   public enum LauncherRunMode {
-    MANUAL((a) -> manualModeDesiredAngle.get(), (a) -> manualModeDesiredVelocity.get(), (a,b) -> manualModeDesiredVelocity.get()),
-    INTERPOLATION(InterpolationShotCalculator::calculateHoodPitch, InterpolationShotCalculator::calculateVelocity, (distance,b) -> InterpolationShotCalculator.calculateVelocityAdjustableHood(distance)),
-    AUTOMATIC((distance) -> ShotCalculator.calculatePitch(distance, HoodType.ACTUATOR), (a) -> ShotCalculator.calculateVelocity());
-
-    public final Function<double, double> pitch;
-    public final Function<double, double> velocityFixed;
-    public final BiFunction<double, Rotation2d, double> velocityActuating;
-
-    private LauncherRunMode(Function<double, double> pitch, Function<double, double> velocityFixed, BiFunction<double, Rotation2d, double> velocityActuating) {
-      this.pitch = pitch;
-      this.velocity = velocity;
-    }
+    MANUAL,
+    INTERPOLATION,
+    AUTOMATIC;
   }
 
   public final TunablePID flywheelPID =
@@ -173,7 +162,6 @@ public class Launcher extends SubsystemBase {
 
   @Override
   public void periodic() {
-    var func = ShotCalculator::calculateVelocity;
     hoodIO.updateInputs(hoodInputs);
     Logger.processInputs(getName() + "/Hood", hoodInputs);
 
@@ -193,28 +181,16 @@ public class Launcher extends SubsystemBase {
     Translation2d hubLocation =
         FieldConstants.Hub.topCenterPoint.toTranslation2d().minus(robotPose.getTranslation());
 
-    Translation2d hubTranslation = ShotCalculator.adjustedHubPosition(hubTranslation, robotVelocitySupplier.get(), null);
+    Function<Double, Rotation2d> pitchCalculator = getPitchCalculator();
+    Translation2d hubTranslation = ShotCalculator.adjustedHubPosition(hubLocation, robotVelocitySupplier.get(), pitchCalculator);
 
     AngularVelocity runningVelocity = RadiansPerSecond.zero();
     Rotation2d runningHoodPitch = Rotation2d.kZero;
     robotYaw = hubTranslation.getAngle();
 
-    switch (mode) {
-      case MANUAL:
-        runningVelocity = manualModeDesiredVelocity.get();
-        runningHoodPitch = manualModeDesiredAngle.get()
-        break;
-      case INTERPOLATION:
-        runningVelocity =
-            RadiansPerSecond.of(
-                InterpolationShotCalculator.calculateWheelVelocity(hubTranslation.getNorm()));
-        break;
-      case AUTOMATIC:
-        runningHoodPitch = Rotation2d.fromDegrees(75);
-        runningVelocity = calculateWheelVelocity(ShotCalculator.calculateVelocity(hubTranslation.getNorm(), runningHoodPitch));
-        break;
-      
-    }
+    double distance = hubTranslation.getNorm();
+    runningHoodPitch = pitchCalculator.apply(distance);
+    runningVelocity = calculateVelocity(hubTranslation.getNorm());
 
     hoodIO.setAngle(runningHoodPitch);
 
@@ -259,15 +235,6 @@ public class Launcher extends SubsystemBase {
     return ready;
   }
 
-  private AngularVelocity calculateWheelVelocity(LinearVelocity ballVelocity) {
-    ballVelocity =
-        ballVelocity
-            .times(LauncherConstants.LAUNCHER_VELOCITY_MULTIPLIER)
-            .times(LauncherConstants.LAUNCHER_TUNING_PARAMETER.get());
-    return RadiansPerSecond.of(
-        ballVelocity.in(MetersPerSecond) / LauncherConstants.LAUNCHER_WHEEL_RADIUS.in(Meters));
-  }
-
   private void updatePID() {
     channelIOs.forEach(m -> m.setPID(flywheelPID.get()));
   }
@@ -278,5 +245,46 @@ public class Launcher extends SubsystemBase {
 
   public Rotation2d getRobotYaw() {
     return robotYaw;
+  }
+  /**
+   * @param double the distance in meters from the hub
+   * @return the pitch of the launch trajectory
+   */
+  private Function<Double, Rotation2d> getPitchCalculator() {
+    if (hoodIO.hoodType() == HoodType.FIXED) {
+      return (dist) -> LauncherConstants.FIXED_LAUNCH_ANGLE;
+    }
+    switch (mode) {
+      case MANUAL:
+        return (Double dist) -> manualModeDesiredAngle.get();
+      case INTERPOLATION:
+        return LauncherControlInterpolation::calculateHoodPitch;
+      case AUTOMATIC:
+        return (Double dist) -> LauncherControlAutomatic.calculatePitch(Meters.of(dist));
+    }
+    return (Double dist) -> Rotation2d.kZero;
+  }
+  private AngularVelocity calculateVelocity(double distance) {
+    switch (mode) {
+      case MANUAL:
+        return manualModeDesiredVelocity.get();
+      case INTERPOLATION:
+        switch (hoodIO.hoodType()) {
+          case FIXED:
+            return RadiansPerSecond.of(LauncherControlInterpolation.calculateVelocity(distance));
+          case ACTUATOR:
+            return RadiansPerSecond.of(LauncherControlInterpolation.calculateVelocityAdjustableHood(distance));
+        }
+      case AUTOMATIC:
+        Rotation2d pitch = LauncherControlAutomatic.calculatePitch(Meters.of(distance));
+        LinearVelocity velocity = ShotCalculator.calculateVelocity(distance, pitch);
+        velocity = velocity
+            .times(LauncherConstants.LAUNCHER_VELOCITY_MULTIPLIER)
+            .times(LauncherConstants.LAUNCHER_TUNING_PARAMETER.get());
+        return RadiansPerSecond.of(
+            velocity.in(MetersPerSecond) / LauncherConstants.LAUNCHER_WHEEL_RADIUS.in(Meters));
+      default:
+        return RadiansPerSecond.zero();
+    }
   }
 }

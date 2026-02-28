@@ -5,7 +5,7 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 import edu.wpi.first.units.measure.AngularVelocity;
 import org.littletonrobotics.junction.AutoLogOutput;
 
-public class ManualLauncherControl {
+public class LauncherControlManual {
 
   public enum ManualLaunchMode {
     Y(RadiansPerSecond.of(400.0)),
@@ -41,7 +41,7 @@ public class ManualLauncherControl {
 
   public ManualLaunchMode currentManualLaunchMode;
 
-  public ManualLauncherControl(ManualLaunchMode initialMode) {
+  public LauncherControlManual(ManualLaunchMode initialMode) {
     this.currentManualLaunchMode = initialMode;
   }
 
