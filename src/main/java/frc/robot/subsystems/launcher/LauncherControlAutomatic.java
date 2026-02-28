@@ -9,7 +9,6 @@ class LauncherControlAutomatic {
 
   public static Rotation2d calculatePitch(Distance distance) {
     // Formula from experimentation
-    return Rotation2d.fromDegrees(
-      75.0 - 15.0 * Math.tanh(2.0 * distance.in(Feet) / 25.0));
+    return Rotation2d.fromDegrees(75.0 - 15.0 * Math.tanh(2.0 * distance.in(Feet) / 25.0));
   }
 }

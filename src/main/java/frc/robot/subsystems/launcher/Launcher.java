@@ -1,5 +1,6 @@
 package frc.robot.subsystems.launcher;
 
+import static edu.wpi.first.units.Units.FeetPerSecond;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
@@ -182,7 +183,10 @@ public class Launcher extends SubsystemBase {
         FieldConstants.Hub.topCenterPoint.toTranslation2d().minus(robotPose.getTranslation());
 
     Function<Double, Rotation2d> pitchCalculator = getPitchCalculator();
-    Translation2d hubTranslation = ShotCalculator.adjustedHubPosition(hubLocation, robotVelocitySupplier.get(), pitchCalculator);
+    
+    Translation2d hubTranslation =
+        ShotCalculator.adjustedHubPosition(
+            hubLocation, robotVelocitySupplier.get(), pitchCalculator);
 
     AngularVelocity runningVelocity = RadiansPerSecond.zero();
     Rotation2d runningHoodPitch = Rotation2d.kZero;
@@ -192,6 +196,7 @@ public class Launcher extends SubsystemBase {
     runningHoodPitch = pitchCalculator.apply(distance);
     runningVelocity = calculateVelocity(hubTranslation.getNorm());
 
+    Logger.recordOutput(getName() + "/desiredAngle", runningHoodPitch.getDegrees());
     hoodIO.setAngle(runningHoodPitch);
 
     if (running) {
@@ -264,6 +269,7 @@ public class Launcher extends SubsystemBase {
     }
     return (Double dist) -> Rotation2d.kZero;
   }
+
   private AngularVelocity calculateVelocity(double distance) {
     switch (mode) {
       case MANUAL:
@@ -273,14 +279,19 @@ public class Launcher extends SubsystemBase {
           case FIXED:
             return RadiansPerSecond.of(LauncherControlInterpolation.calculateVelocity(distance));
           case ACTUATOR:
-            return RadiansPerSecond.of(LauncherControlInterpolation.calculateVelocityAdjustableHood(distance));
+            return RadiansPerSecond.of(
+                LauncherControlInterpolation.calculateVelocityAdjustableHood(distance));
         }
       case AUTOMATIC:
-        Rotation2d pitch = LauncherControlAutomatic.calculatePitch(Meters.of(distance));
+        Rotation2d pitch = switch (hoodIO.hoodType()) {
+          case FIXED -> Rotation2d.fromDegrees(75);
+          case ACTUATOR -> LauncherControlAutomatic.calculatePitch(Meters.of(distance));
+        };
         LinearVelocity velocity = ShotCalculator.calculateVelocity(distance, pitch);
-        velocity = velocity
-            .times(LauncherConstants.LAUNCHER_VELOCITY_MULTIPLIER)
-            .times(LauncherConstants.LAUNCHER_TUNING_PARAMETER.get());
+        velocity = velocity.times(LauncherConstants.LAUNCHER_VELOCITY_MULTIPLIER.get());
+                
+        Logger.recordOutput(getName() + "/velocityMultiplier", LauncherConstants.LAUNCHER_VELOCITY_MULTIPLIER);
+        Logger.recordOutput(getName() + "/calculatedVelocity", velocity.in(FeetPerSecond));
         return RadiansPerSecond.of(
             velocity.in(MetersPerSecond) / LauncherConstants.LAUNCHER_WHEEL_RADIUS.in(Meters));
       default:

@@ -15,7 +15,7 @@ public class LauncherControlInterpolation {
     fixedHoodSpeeds.put(1.0, 100.0);
     fixedHoodSpeeds.put(2.0, 200.0);
     fixedHoodSpeeds.put(3.0, 300.0);
-    
+
     hoodPitchDegrees.put(1.0, 75.0);
     hoodPitchDegrees.put(2.0, 70.0);
     hoodPitchDegrees.put(3.0, 65.0);
@@ -29,11 +29,11 @@ public class LauncherControlInterpolation {
   public static double calculateVelocity(double distance) {
     return fixedHoodSpeeds.get(distance);
   }
-  
+
   public static Rotation2d calculateHoodPitch(double distance) {
     return Rotation2d.fromDegrees(hoodPitchDegrees.get(distance));
   }
-  
+
   public static double calculateVelocityAdjustableHood(double distance) {
     return actuatingHoodSpeeds.get(distance);
   }

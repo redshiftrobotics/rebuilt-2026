@@ -34,8 +34,8 @@ import frc.robot.subsystems.hopper.HopperConstants.HopperRunMode;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeRunMode;
 import frc.robot.subsystems.launcher.Launcher;
-import frc.robot.subsystems.launcher.LauncherConstants;
 import frc.robot.subsystems.launcher.Launcher.LauncherRunMode;
+import frc.robot.subsystems.launcher.LauncherConstants;
 import frc.robot.subsystems.launcher.LauncherControlManual;
 import frc.robot.subsystems.launcher.LauncherControlManual.ManualLaunchMode;
 import frc.robot.subsystems.led.BlinkenLEDPattern;
@@ -449,7 +449,7 @@ public class RobotContainer {
         .multiPress(2, 0.2)
         .toggleOnTrue(
             Commands.startEnd(
-                    () -> launcher.setMode(LauncherRunMode.INTERPOLATION),
+                    () -> launcher.setMode(LauncherRunMode.AUTOMATIC),
                     () -> launcher.setMode(LauncherRunMode.MANUAL))
                 .ignoringDisable(true)
                 .withName("Automatic Launch Preferred Mode"));
