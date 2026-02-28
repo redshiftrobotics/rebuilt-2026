@@ -10,9 +10,9 @@ public class HopperConstants {
       int deviceId, double gearRatio, boolean inverted, boolean brakeMode, double stallCurrent) {}
 
   public static final MotorConstants FEEDER_CONSTANTS =
-      new MotorConstants(17, (1.0 / 3.0) * (1.0 / 3.0), true, false, 30);
+      new MotorConstants(14, (1.0 / 3.0) * (1.0 / 3.0), true, false, 30);
   public static final MotorConstants LIFTER_CONSTANTS =
-      new MotorConstants(13, (1.0 / 3.0) * (1.0 / 3.0) * (1.0 / 3.0), true, false, 40);
+      new MotorConstants(5, (1.0 / 3.0) * (1.0 / 3.0) * (1.0 / 3.0), true, false, 40);
 
   public static final DCMotor FEEDER_MOTOR =
       DCMotor.getNEO(1).withReduction(1.0 / FEEDER_CONSTANTS.gearRatio());

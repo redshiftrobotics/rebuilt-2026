@@ -144,7 +144,7 @@ public class AprilTagVision extends SubsystemBase {
     switch (robotType) {
       case REBUILT_2026:
         return new AprilTagVision(
-            drivetrain::getRobotPose, new CameraIOPhotonVision(VisionConstants.TOP_CAMERA_FLAT));
+            drivetrain::getRobotPose, new CameraIOPhotonVision(VisionConstants.TOP_CAMERA_ANGLED));
       case METALBOT_2:
         return new AprilTagVision(
             drivetrain::getRobotPose,

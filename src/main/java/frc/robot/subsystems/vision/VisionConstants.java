@@ -33,12 +33,12 @@ public class VisionConstants {
 
   public static final CameraConfig TOP_CAMERA_ANGLED =
       new CameraConfig(
-          "a1",
+          "neilcam",
           CameraPositionName.TOP_45,
           new Transform3d(
               new Translation3d(
                   Units.inchesToMeters(0.257),
-                  Units.inchesToMeters(-10.015),
+                  Units.inchesToMeters(10.015),
                   Units.inchesToMeters(19.137)),
               new Rotation3d(0, Units.degreesToRadians(-45), 0)));
 
@@ -49,7 +49,7 @@ public class VisionConstants {
           new Transform3d(
               new Translation3d(
                   Units.inchesToMeters(0.158),
-                  Units.inchesToMeters(10.015),
+                  Units.inchesToMeters(-10.015),
                   Units.inchesToMeters(18.096)),
               new Rotation3d(0, Units.degreesToRadians(0), 0)));
   // --- Old ---

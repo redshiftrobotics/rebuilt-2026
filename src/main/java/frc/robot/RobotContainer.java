@@ -121,7 +121,9 @@ public class RobotContainer {
         });
 
     registerNamedCommands();
-    autoChooser = new LoggedDashboardChooser<>("Auto Chooser", /*createSendableChooser()*/ new SendableChooser<>());
+    autoChooser =
+        new LoggedDashboardChooser<>(
+            "Auto Chooser", /*createSendableChooser()*/ new SendableChooser<>());
     autoChooser.addDefaultOption("None", Commands.none());
 
     leds.setDefaultCommand(

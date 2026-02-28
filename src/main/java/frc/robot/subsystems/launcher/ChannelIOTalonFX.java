@@ -166,7 +166,8 @@ public class ChannelIOTalonFX implements ChannelIO {
 
   @Override
   public void setPID(PIDConfig pid) {
-    SmartDashboard.putString("Launcher Channel Debug", pid.toString());
+    SmartDashboard.putString("Launcher PID Debug", pid.toString());
+    System.out.println("Launcher PID Debug Set " + pid.toString());
     config.Slot0.kP = pid.kP();
     config.Slot0.kI = pid.kI();
     config.Slot0.kD = pid.kD();
@@ -175,7 +176,8 @@ public class ChannelIOTalonFX implements ChannelIO {
 
   @Override
   public void setFF(FeedForwardConfigRecord ffConfig) {
-    SmartDashboard.putString("Flywheel Debug", ffConfig.toString());
+    SmartDashboard.putString("Launcher FF Debug", ffConfig.toString());
+    System.out.println("Launcher PID Debug Set " + ffConfig.toString());
     config.Slot0.kS = ffConfig.kS();
     config.Slot0.kV = ffConfig.kV();
     config.Slot0.kA = ffConfig.kA();
