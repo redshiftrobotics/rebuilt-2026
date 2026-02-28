@@ -10,7 +10,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
-import frc.robot.subsystems.vision.VisionConstants.CameraPosition;
+import frc.robot.subsystems.vision.VisionConstants.CameraPositionName;
 import frc.robot.utility.tunable.TunableNumber;
 import frc.robot.utility.tunable.TunableNumberGroup;
 import java.util.ArrayList;
@@ -87,16 +87,20 @@ public class Camera {
     return io.getCameraName();
   }
 
-  public CameraPosition getCameraPosition() {
+  public CameraPositionName getCameraPosition() {
     return io.getCameraPosition();
   }
 
   /** Run periodic of module. Updates the set of loggable inputs, updating vision result. */
   public void periodic() {
     io.setLastRobotPose(robotPoseSupplier.get());
+    io.updateInputs(inputs);
 
     Logger.processInputs("Vision/" + getCameraPosition(), inputs);
-    io.updateInputs(inputs);
+
+    Logger.recordOutput(
+        "Vision/" + getCameraPosition() + "/cameraPose",
+        new Pose3d(robotPoseSupplier.get()).plus(io.getRobotToCamera()));
 
     missingCameraAlert.set(!inputs.connected);
 
