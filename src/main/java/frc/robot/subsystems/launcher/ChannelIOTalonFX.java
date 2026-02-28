@@ -31,7 +31,7 @@ import frc.robot.utility.records.PIDConfig;
 /** Hardware implementation of the TemplateIO. */
 public class ChannelIOTalonFX implements ChannelIO {
 
-  public static final double PEAK_REVERSE_PERCENTAGE = 1.0;
+  public static final double PEAK_REVERSE_PERCENTAGE = 0; // TODO COMP TESTING CHANGE
   public static final double RAMP_RATE_SECONDS = 0;
   public static final boolean BRAKE_MODE = false;
   public static final double STALL_CURRENT = 120.0; // in amps

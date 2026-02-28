@@ -31,13 +31,13 @@ public class LauncherConstants {
 
   public static final PIDConfig FLYWHEEL_PID =
       switch (Constants.getRobot()) {
-        case REBUILT_2026 -> new PIDConfig(0.15, 0.0, 0.0);
+        case REBUILT_2026 -> new PIDConfig(100.15, 0.0, 0.0);
         case SIM_BOT -> new PIDConfig(0.15, 0.0, 0.0);
         default -> new PIDConfig(0.0, 0.0, 0.0);
       };
   public static final FeedForwardConfigRecord FF =
       switch (Constants.getRobot()) {
-        case REBUILT_2026 -> new FeedForwardConfigRecord(0.0, 0.019, 0.0);
+        case REBUILT_2026 -> new FeedForwardConfigRecord(0.0, 0.0, 0.0);
         case SIM_BOT -> new FeedForwardConfigRecord(0.0, 0.019, 0.0);
         default -> new FeedForwardConfigRecord(0.0, 0.0, 0.0);
       };
