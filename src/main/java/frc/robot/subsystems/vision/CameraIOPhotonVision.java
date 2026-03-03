@@ -2,9 +2,10 @@ package frc.robot.subsystems.vision;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import frc.robot.FieldConstants;
 import frc.robot.subsystems.vision.VisionConstants.CameraConfig;
-import frc.robot.subsystems.vision.VisionConstants.CameraPosition;
+import frc.robot.subsystems.vision.VisionConstants.CameraPositionName;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -19,12 +20,14 @@ public class CameraIOPhotonVision implements CameraIO {
   protected final PhotonCamera camera;
 
   private final PhotonPoseEstimator photonPoseEstimator;
-  private final CameraPosition cameraPosition;
+  private final CameraPositionName cameraPosition;
+  private final Transform3d robotToCamera;
 
   private final List<EstimatedRobotPose> estimates = new ArrayList<>();
 
   public CameraIOPhotonVision(CameraConfig config) {
     this.cameraPosition = config.cameraPosition();
+    this.robotToCamera = config.robotToCamera();
 
     // --- Setup Camera ---
     camera = new PhotonCamera(config.cameraName());
@@ -50,8 +53,13 @@ public class CameraIOPhotonVision implements CameraIO {
   }
 
   @Override
-  public CameraPosition getCameraPosition() {
+  public CameraPositionName getCameraPosition() {
     return cameraPosition;
+  }
+
+  @Override
+  public Transform3d getRobotToCamera() {
+    return robotToCamera;
   }
 
   @Override

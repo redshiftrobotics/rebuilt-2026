@@ -1,4 +1,4 @@
-package frc.robot.subsystems.outtake;
+package frc.robot.subsystems.hopper;
 
 import static frc.robot.utility.SparkUtil.*;
 
@@ -16,13 +16,13 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.util.Units;
-import frc.robot.subsystems.examples.flywheel.MotorConstants;
+import frc.robot.subsystems.hopper.HopperConstants.MotorConstants;
 import frc.robot.utility.SparkUtil;
 import frc.robot.utility.records.FeedForwardConfigRecord;
 import frc.robot.utility.records.PIDConfig;
 
 /** Motor IO implementation for SparkMax motor controller */
-public class FlywheelIOSparkMax implements FlywheelIO {
+public class HopperMotorIOSparkMax implements HopperMotorIO {
 
   private final SparkMax motor;
   private final RelativeEncoder relativeEncoder;
@@ -34,7 +34,7 @@ public class FlywheelIOSparkMax implements FlywheelIO {
 
   private final Debouncer connectedDebouncer = new Debouncer(0.5);
 
-  public FlywheelIOSparkMax(MotorConstants constants) {
+  public HopperMotorIOSparkMax(MotorConstants constants) {
 
     motor = new SparkMax(constants.deviceId(), MotorType.kBrushless);
     relativeEncoder = motor.getEncoder();
@@ -59,9 +59,13 @@ public class FlywheelIOSparkMax implements FlywheelIO {
   }
 
   @Override
-  public void updateInputs(FlywheelIOInputs inputs) {
+  public void updateInputs(HopperMotorIOInputs inputs) {
 
     SparkUtil.clearError();
+    ifOk(
+        motor,
+        relativeEncoder::getPosition,
+        value -> inputs.positionRad = Units.rotationsToRadians(value));
     ifOk(
         motor,
         relativeEncoder::getVelocity,
@@ -103,8 +107,8 @@ public class FlywheelIOSparkMax implements FlywheelIO {
 
   @Override
   public void setFF(FeedForwardConfigRecord ffConfig) {
-    // config.closedLoop.feedForward.sva(ffConfig.kS(), ffConfig.kV(), ffConfig.kA());
-    // pushConfig();
+    config.closedLoop.feedForward.sva(ffConfig.kS(), ffConfig.kV(), ffConfig.kA());
+    pushConfig();
   }
 
   @Override

@@ -1,16 +1,17 @@
-package frc.robot.subsystems.outtake;
+package frc.robot.subsystems.hopper;
 
 import frc.robot.utility.records.FeedForwardConfigRecord;
 import frc.robot.utility.records.PIDConfig;
 import org.littletonrobotics.junction.AutoLog;
 
 /** IO layer interface for motor hardware */
-public interface FlywheelIO {
+public interface HopperMotorIO {
   @AutoLog
-  public static class FlywheelIOInputs {
+  public static class HopperMotorIOInputs {
     public boolean motorConnected = true;
     public boolean pushedConfigFault = false;
 
+    public double positionRad = 0.0;
     public double velocityRadPerSec = 0.0;
     public double appliedVolts = 0.0;
     public double supplyCurrentAmps = 0.0;
@@ -18,7 +19,7 @@ public interface FlywheelIO {
   }
 
   /** Updates the set of loggable inputs. */
-  public default void updateInputs(FlywheelIOInputs inputs) {}
+  public default void updateInputs(HopperMotorIOInputs inputs) {}
 
   /** Run the motor at duty cycle. */
   public default void setDutyCycle(double dutyCycle) {}
