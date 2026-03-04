@@ -121,9 +121,7 @@ public class RobotContainer {
         });
 
     registerNamedCommands();
-    autoChooser =
-        new LoggedDashboardChooser<>(
-            "Auto Chooser", /*createSendableChooser()*/ new SendableChooser<>());
+    autoChooser = new LoggedDashboardChooser<>("Auto Chooser", createSendableChooser());
     autoChooser.addDefaultOption("None", Commands.none());
 
     leds.setDefaultCommand(
@@ -603,17 +601,15 @@ public class RobotContainer {
   }
 
   private SendableChooser<Command> createSendableChooser() {
-
     // Path planner Autos
     // https://pathplanner.dev/gui-editing-paths-and-autos.html#autos
     // Choreo Autos
     // https://pathplanner.dev/pplib-choreo-interop.html#load-choreo-trajectory-as-a-pathplannerpath
 
     var chooser =
-        // Constants.DEVELOPMENT_MODE
-        //     ? AutoBuilder.buildAutoChooser()
-        //     : new SendableChooser<Command>();
-        AutoBuilder.buildAutoChooser(); // for now lets just include all autos
+        Constants.DEVELOPMENT_MODE
+            ? AutoBuilder.buildAutoChooser()
+            : new SendableChooser<Command>();
 
     if (Constants.DEVELOPMENT_MODE) {
       chooser.addOption(
@@ -633,6 +629,8 @@ public class RobotContainer {
           "[SysId] Drive Dynamic Forward", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
       chooser.addOption(
           "[SysId] Drive Dynamic Reverse", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    } else {
+      chooser.addOption("Nothing", Commands.none()); // TODO Add useful autos
     }
 
     return chooser;

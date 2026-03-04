@@ -40,7 +40,7 @@ public class VisionConstants {
                   Units.inchesToMeters(0.257),
                   Units.inchesToMeters(10.015),
                   Units.inchesToMeters(19.137)),
-              new Rotation3d(0, Units.degreesToRadians(-90+70), 0)));
+              new Rotation3d(0, Units.degreesToRadians(-90 + 70), 0)));
 
   public static final CameraConfig TOP_CAMERA_FLAT =
       new CameraConfig(
