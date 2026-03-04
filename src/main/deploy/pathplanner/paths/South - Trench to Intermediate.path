@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.0,
+        "x": 3.5,
         "y": 0.5
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.2401252236135956,
-        "y": 0.43381037567084024
+        "x": 3.3144142252946467,
+        "y": 0.6690744237769327
       },
       "isLocked": false,
       "linkedName": "South Trench"
@@ -20,8 +20,8 @@
         "y": 2.0
       },
       "prevControl": {
-        "x": 2.7695885509838996,
-        "y": 1.5444007155635062
+        "x": 3.277147217101409,
+        "y": 1.2120194212176298
       },
       "nextControl": null,
       "isLocked": false,
@@ -45,7 +45,7 @@
     "rotation": 45.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Intermediate",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0
