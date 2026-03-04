@@ -119,27 +119,6 @@
             }
           },
           {
-            "title": "Field",
-            "x": 384.0,
-            "y": 0.0,
-            "width": 512.0,
-            "height": 256.0,
-            "type": "Field",
-            "properties": {
-              "topic": "/SmartDashboard/Field",
-              "period": 0.06,
-              "field_game": "Rebuilt (No Fuel)",
-              "robot_width": 0.85,
-              "robot_length": 0.85,
-              "show_other_objects": true,
-              "show_trajectories": true,
-              "field_rotation": 0.0,
-              "robot_color": 4294198070,
-              "trajectory_color": 4294967295,
-              "show_robot_outside_widget": true
-            }
-          },
-          {
             "title": "Has Vision",
             "x": 896.0,
             "y": 0.0,
@@ -287,6 +266,24 @@
               "topic": "/AdvantageKit/RealOutputs/Launcher/runMode",
               "period": 0.06,
               "data_type": "string"
+            }
+          },
+          {
+            "title": "BatteryVoltage",
+            "x": 384.0,
+            "y": 0.0,
+            "width": 512.0,
+            "height": 256.0,
+            "type": "Graph",
+            "properties": {
+              "topic": "/AdvantageKit/SystemStats/BatteryVoltage",
+              "period": 0.033,
+              "data_type": "double",
+              "time_displayed": 5.0,
+              "min_value": 0.0,
+              "max_value": 13.0,
+              "color": 4278238420,
+              "line_width": 2.0
             }
           }
         ]
@@ -818,147 +815,8 @@
       "grid_layout": {
         "layouts": [
           {
-            "title": "PowerDistribution",
-            "x": 256.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 640.0,
-            "type": "List Layout",
-            "properties": {
-              "label_position": "TOP"
-            },
-            "children": [
-              {
-                "title": "ChannelCount",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/AdvantageKit/PowerDistribution/ChannelCount",
-                  "period": 0.06,
-                  "data_type": "int",
-                  "show_submit_button": false
-                }
-              },
-              {
-                "title": "ChannelCurrent",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/AdvantageKit/PowerDistribution/ChannelCurrent",
-                  "period": 0.06,
-                  "data_type": "double[]",
-                  "show_submit_button": false
-                }
-              },
-              {
-                "title": "Faults",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/AdvantageKit/PowerDistribution/Faults",
-                  "period": 0.06,
-                  "data_type": "int",
-                  "show_submit_button": false
-                }
-              },
-              {
-                "title": "StickyFaults",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/AdvantageKit/PowerDistribution/StickyFaults",
-                  "period": 0.06,
-                  "data_type": "int",
-                  "show_submit_button": false
-                }
-              },
-              {
-                "title": "Temperature",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/AdvantageKit/PowerDistribution/Temperature",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": false
-                }
-              },
-              {
-                "title": "TotalCurrent",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/AdvantageKit/PowerDistribution/TotalCurrent",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": false
-                }
-              },
-              {
-                "title": "TotalEnergy",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/AdvantageKit/PowerDistribution/TotalEnergy",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": false
-                }
-              },
-              {
-                "title": "TotalPower",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/AdvantageKit/PowerDistribution/TotalPower",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": false
-                }
-              },
-              {
-                "title": "Voltage",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/AdvantageKit/PowerDistribution/Voltage",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": false
-                }
-              }
-            ]
-          },
-          {
             "title": "CANBus",
-            "x": 512.0,
+            "x": 256.0,
             "y": 0.0,
             "width": 256.0,
             "height": 256.0,
@@ -1044,7 +902,7 @@
             "x": 0.0,
             "y": 0.0,
             "width": 256.0,
-            "height": 640.0,
+            "height": 704.0,
             "type": "List Layout",
             "properties": {
               "label_position": "TOP"
@@ -1338,23 +1196,25 @@
         "containers": [
           {
             "title": "BatteryVoltage",
-            "x": 768.0,
+            "x": 512.0,
             "y": 128.0,
-            "width": 512.0,
+            "width": 768.0,
             "height": 256.0,
             "type": "Graph",
             "properties": {
               "topic": "/AdvantageKit/SystemStats/BatteryVoltage",
               "period": 0.033,
               "data_type": "double",
-              "time_displayed": 5.0,
+              "time_displayed": 10.0,
+              "min_value": 0.0,
+              "max_value": 13.0,
               "color": 4278238420,
               "line_width": 2.0
             }
           },
           {
             "title": "CANBus Utilization",
-            "x": 512.0,
+            "x": 256.0,
             "y": 384.0,
             "width": 256.0,
             "height": 256.0,
@@ -1363,14 +1223,16 @@
               "topic": "/AdvantageKit/SystemStats/CANBus/Utilization",
               "period": 0.033,
               "data_type": "float",
-              "time_displayed": 5.0,
+              "time_displayed": 10.0,
+              "min_value": 0.0,
+              "max_value": 1.0,
               "color": 4278238420,
               "line_width": 2.0
             }
           },
           {
             "title": "OffCount",
-            "x": 512.0,
+            "x": 256.0,
             "y": 256.0,
             "width": 128.0,
             "height": 128.0,
@@ -1383,7 +1245,7 @@
           },
           {
             "title": "TxFullCount",
-            "x": 640.0,
+            "x": 384.0,
             "y": 256.0,
             "width": 128.0,
             "height": 128.0,
@@ -1396,25 +1258,25 @@
           },
           {
             "title": "BatteryCurrent",
-            "x": 768.0,
+            "x": 512.0,
             "y": 384.0,
-            "width": 512.0,
+            "width": 768.0,
             "height": 256.0,
             "type": "Graph",
             "properties": {
               "topic": "/AdvantageKit/SystemStats/BatteryCurrent",
               "period": 0.033,
               "data_type": "double",
-              "time_displayed": 5.0,
+              "time_displayed": 10.0,
               "color": 4278238420,
               "line_width": 2.0
             }
           },
           {
             "title": "BrownedOut",
-            "x": 832.0,
+            "x": 640.0,
             "y": 0.0,
-            "width": 256.0,
+            "width": 512.0,
             "height": 128.0,
             "type": "Boolean Box",
             "properties": {
@@ -1429,7 +1291,7 @@
           },
           {
             "title": "BrownoutVoltage",
-            "x": 1088.0,
+            "x": 1152.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
@@ -1451,6 +1313,20 @@
             "properties": {
               "topic": "/SmartDashboard/Alerts",
               "period": 0.06
+            }
+          },
+          {
+            "title": "Timestamp",
+            "x": 512.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/Timestamp",
+              "period": 0.06,
+              "data_type": "int",
+              "show_submit_button": false
             }
           }
         ]
