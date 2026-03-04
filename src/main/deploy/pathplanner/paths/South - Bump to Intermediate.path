@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.0,
+        "x": 3.5,
         "y": 2.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.2401252236135956,
-        "y": 1.9338103756708402
+        "x": 2.8036728529157773,
+        "y": 2.047007007165598
       },
       "isLocked": false,
       "linkedName": "South Bump"
@@ -20,12 +20,12 @@
         "y": 2.0
       },
       "prevControl": {
-        "x": 3.1589982110912342,
-        "y": 1.950035778175312
+        "x": 3.233397659316987,
+        "y": 2.0315108174815437
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "South Intermediate"
     }
   ],
   "rotationTargets": [],
@@ -45,7 +45,7 @@
     "rotation": 45.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Intermediate",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0

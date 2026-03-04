@@ -1,0 +1,75 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "South Trench to mid"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "ExtendSlapdown"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "StartIntake"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IdleHopper"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Mid drive over south side"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "south mid to trench"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "goto score south no preload"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "FireHopper"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "No Preload",
+  "choreoAuto": false
+}

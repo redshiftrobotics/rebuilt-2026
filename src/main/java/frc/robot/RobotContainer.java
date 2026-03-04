@@ -35,13 +35,15 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeRunMode;
 import frc.robot.subsystems.launcher.Launcher;
 import frc.robot.subsystems.launcher.Launcher.LauncherRunMode;
-import frc.robot.subsystems.launcher.ManualLauncherControl;
-import frc.robot.subsystems.launcher.ManualLauncherControl.ManualLaunchMode;
+import frc.robot.subsystems.launcher.LauncherConstants;
+import frc.robot.subsystems.launcher.LauncherControlManual;
+import frc.robot.subsystems.launcher.LauncherControlManual.ManualLaunchMode;
 import frc.robot.subsystems.led.BlinkenLEDPattern;
 import frc.robot.subsystems.led.LEDSubsystem;
 import frc.robot.subsystems.vision.AprilTagVision;
 import frc.robot.utility.Elastic;
 import frc.robot.utility.Elastic.Notification.NotificationLevel;
+import frc.robot.utility.HubTracker;
 import java.util.HashMap;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -121,9 +123,7 @@ public class RobotContainer {
         });
 
     registerNamedCommands();
-    autoChooser =
-        new LoggedDashboardChooser<>(
-            "Auto Chooser", /*createSendableChooser()*/ new SendableChooser<>());
+    autoChooser = new LoggedDashboardChooser<>("Auto Chooser", createSendableChooser());
     autoChooser.addDefaultOption("None", Commands.none());
 
     leds.setDefaultCommand(
@@ -303,9 +303,10 @@ public class RobotContainer {
 
   private void configureOperatorControllerBindings(CommandXboxController xbox) {
 
-    final ManualLauncherControl manualLaunchControl = new ManualLauncherControl(ManualLaunchMode.Y);
+    final LauncherControlManual manualLaunchControl = new LauncherControlManual(ManualLaunchMode.Y);
 
-    launcher.setManualModeSupplier(manualLaunchControl::get);
+    launcher.setManualModeVelocitySupplier(manualLaunchControl::get);
+    launcher.setManualModeAngleSupplier(() -> LauncherConstants.FIXED_LAUNCH_ANGLE);
     launcher.setMode(LauncherRunMode.MANUAL);
 
     final Trigger manualLaunch = xbox.back();
@@ -446,7 +447,7 @@ public class RobotContainer {
         .multiPress(2, 0.2)
         .toggleOnTrue(
             Commands.startEnd(
-                    () -> launcher.setMode(LauncherRunMode.INTERPOLATION),
+                    () -> launcher.setMode(LauncherRunMode.AUTOMATIC),
                     () -> launcher.setMode(LauncherRunMode.MANUAL))
                 .ignoringDisable(true)
                 .withName("Automatic Launch Preferred Mode"));
@@ -525,6 +526,8 @@ public class RobotContainer {
   }
 
   private void configureAlertTriggers() {
+    new Trigger(() -> HubTracker.isActive()).onChange(rumbleControllers(.25));
+
     // Endgame alert triggers
     new Trigger(
             () ->
@@ -603,17 +606,15 @@ public class RobotContainer {
   }
 
   private SendableChooser<Command> createSendableChooser() {
-
     // Path planner Autos
     // https://pathplanner.dev/gui-editing-paths-and-autos.html#autos
     // Choreo Autos
     // https://pathplanner.dev/pplib-choreo-interop.html#load-choreo-trajectory-as-a-pathplannerpath
 
     var chooser =
-        // Constants.DEVELOPMENT_MODE
-        //     ? AutoBuilder.buildAutoChooser()
-        //     : new SendableChooser<Command>();
-        AutoBuilder.buildAutoChooser(); // for now lets just include all autos
+        Constants.DEVELOPMENT_MODE
+            ? AutoBuilder.buildAutoChooser()
+            : new SendableChooser<Command>();
 
     if (Constants.DEVELOPMENT_MODE) {
       chooser.addOption(
@@ -633,6 +634,8 @@ public class RobotContainer {
           "[SysId] Drive Dynamic Forward", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
       chooser.addOption(
           "[SysId] Drive Dynamic Reverse", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    } else {
+      chooser.addOption("Nothing", Commands.none()); // TODO Add useful autos
     }
 
     return chooser;
