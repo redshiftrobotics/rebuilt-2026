@@ -53,7 +53,7 @@ public class ShotCalculator {
     return MetersPerSecond.of(velocity);
   }
 
-  static double timeOfFlight(ShotParameters parameters, Translation2d hubPosition) {
+  public static double timeOfFlight(ShotParameters parameters, Translation2d hubPosition) {
     // Distance divided by horizontal shot speed
     return (hubPosition.getNorm() + LauncherConstants.LAUNCHER_X_OFFSET.in(Meters))
         / (parameters.pitch.getCos() * parameters.velocity.in(MetersPerSecond));

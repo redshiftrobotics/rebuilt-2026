@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RobotType;
 import frc.robot.FieldConstants;
+import frc.robot.subsystems.launcher.ShotCalculator.ShotParameters;
 import frc.robot.utility.tunable.TunableNumber;
 import frc.robot.utility.tunable.TunableNumbers.TunableFF;
 import frc.robot.utility.tunable.TunableNumbers.TunablePID;
@@ -182,10 +183,19 @@ public class Launcher extends SubsystemBase {
         FieldConstants.Hub.topCenterPoint.toTranslation2d().minus(robotPose.getTranslation());
 
     Function<Double, Rotation2d> pitchCalculator = getPitchCalculator();
-    
+
+    ShotParameters parameters =
+        new ShotParameters(
+            ShotCalculator.calculateVelocity(
+                hubLocation.getNorm(), pitchCalculator.apply(hubLocation.getNorm())),
+            pitchCalculator.apply(hubLocation.getNorm()));
+    double timeOfFlight = ShotCalculator.timeOfFlight(parameters, hubLocation);
+    Logger.recordOutput(getName() + "/timeOfFlight", Math.round(timeOfFlight * 10.0) / 10.0);
+
     Translation2d hubTranslation =
         ShotCalculator.adjustedHubPosition(
             hubLocation, robotVelocitySupplier.get(), pitchCalculator);
+    Logger.recordOutput(getName() + "/HubAdjustment", hubTranslation.minus(hubLocation).getNorm());
 
     AngularVelocity runningVelocity = RadiansPerSecond.zero();
     Rotation2d runningHoodPitch = Rotation2d.kZero;
@@ -282,13 +292,14 @@ public class Launcher extends SubsystemBase {
                 LauncherControlInterpolation.calculateVelocityAdjustableHood(distance));
         }
       case AUTOMATIC:
-        Rotation2d pitch = switch (hoodIO.hoodType()) {
-          case FIXED -> Rotation2d.fromDegrees(75);
-          case ACTUATOR -> LauncherControlAutomatic.calculatePitch(Meters.of(distance));
-        };
+        Rotation2d pitch =
+            switch (hoodIO.hoodType()) {
+              case FIXED -> Rotation2d.fromDegrees(75);
+              case ACTUATOR -> LauncherControlAutomatic.calculatePitch(Meters.of(distance));
+            };
         LinearVelocity velocity = ShotCalculator.calculateVelocity(distance, pitch);
         velocity = velocity.times(LauncherConstants.LAUNCHER_VELOCITY_MULTIPLIER.get());
-                
+
         return RadiansPerSecond.of(
             velocity.in(MetersPerSecond) / LauncherConstants.LAUNCHER_WHEEL_RADIUS.in(Meters));
       default:

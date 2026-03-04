@@ -65,14 +65,16 @@ public class LauncherConstants {
   public static final MomentOfInertia TOTAL_MOI = LAUNCHER_WHEEL_MOI;
   public static final Distance FUEL_RADIUS = Inches.of(3);
   public static final Mass FUEL_MASS = Pounds.of(0.5);
-  public static final MomentOfInertia FUEL_MOI = KilogramSquareMeters.of(FUEL_MASS.in(Kilograms) * Math.pow(FUEL_RADIUS.plus(LAUNCHER_WHEEL_RADIUS).in(Meters), 2));
+  public static final MomentOfInertia FUEL_MOI =
+      KilogramSquareMeters.of(
+          FUEL_MASS.in(Kilograms)
+              * Math.pow(FUEL_RADIUS.plus(LAUNCHER_WHEEL_RADIUS).in(Meters), 2));
 
   // Give flywheel additional velocity to account for velocity lost in momentum transfer
   // Give flywheel double  velocity to account for spin. It rolls the ball, rather than pushing
   public static final TunableNumber LAUNCHER_VELOCITY_MULTIPLIER =
       new TunableNumber("Launcher/VelocityMultiplier", 2.2);
 
-  
   public static final Distance LAUNCHER_X_OFFSET = Inches.of(-12);
   public static final Distance LAUNCHER_Z_OFFSET = Inches.of(20);
   public static final Distance HUB_Z_OFFSET = Feet.of(6);
