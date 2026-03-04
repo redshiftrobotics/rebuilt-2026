@@ -21,6 +21,7 @@ import frc.robot.utility.tunable.TunableNumbers.TunableFF;
 import frc.robot.utility.tunable.TunableNumbers.TunablePID;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -30,8 +31,8 @@ public class Launcher extends SubsystemBase {
 
   public enum LauncherRunMode {
     MANUAL,
-    AUTOMATIC,
     INTERPOLATION,
+    AUTOMATIC;
   }
 
   public final TunablePID flywheelPID =
@@ -52,9 +53,10 @@ public class Launcher extends SubsystemBase {
   private Supplier<Translation2d> robotVelocitySupplier = null;
 
   private boolean running = false;
-  private LauncherRunMode mode;
+  private LauncherRunMode mode = LauncherRunMode.MANUAL;
 
   private Supplier<AngularVelocity> manualModeDesiredVelocity = () -> RadiansPerSecond.zero();
+  private Supplier<Rotation2d> manualModeDesiredAngle = () -> LauncherConstants.FIXED_LAUNCH_ANGLE;
   private AngularVelocity desiredVelocity = RadiansPerSecond.zero();
 
   private Rotation2d robotYaw = Rotation2d.kZero;
@@ -113,8 +115,12 @@ public class Launcher extends SubsystemBase {
     this.mode = mode;
   }
 
-  public void setManualModeSupplier(Supplier<AngularVelocity> setpoint) {
+  public void setManualModeVelocitySupplier(Supplier<AngularVelocity> setpoint) {
     this.manualModeDesiredVelocity = setpoint;
+  }
+
+  public void setManualModeAngleSupplier(Supplier<Rotation2d> setpoint) {
+    this.manualModeDesiredAngle = setpoint;
   }
 
   public void setDutyCycle(double dutyCycle) {
@@ -129,6 +135,29 @@ public class Launcher extends SubsystemBase {
     for (ChannelIO channel : channelIOs) {
       channel.stop();
     }
+    Logger.recordOutput(getName() + "/desiredVelocityRadPerSec", 0);
+  }
+
+  public void stop() {
+    running = false;
+    stopChannelMotors();
+  }
+
+  public void start() {
+    running = true;
+  }
+
+  public void start(LauncherRunMode mode) {
+    this.mode = mode;
+    running = true;
+  }
+
+  public void setRunning(boolean running) {
+    this.running = running;
+  }
+
+  public void setMode(LauncherRunMode mode) {
+    this.mode = mode;
   }
 
   private void setChannelVelocities(AngularVelocity wheelVelocity) {
@@ -146,7 +175,6 @@ public class Launcher extends SubsystemBase {
 
   @Override
   public void periodic() {
-
     hoodIO.updateInputs(hoodInputs);
     Logger.processInputs(getName() + "/Hood", hoodInputs);
 

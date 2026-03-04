@@ -35,15 +35,15 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeRunMode;
 import frc.robot.subsystems.launcher.Launcher;
 import frc.robot.subsystems.launcher.Launcher.LauncherRunMode;
-import frc.robot.subsystems.launcher.ManualLauncherControl;
-import frc.robot.subsystems.launcher.ManualLauncherControl.ManualLaunchMode;
+import frc.robot.subsystems.launcher.LauncherConstants;
+import frc.robot.subsystems.launcher.LauncherControlManual;
+import frc.robot.subsystems.launcher.LauncherControlManual.ManualLaunchMode;
 import frc.robot.subsystems.led.BlinkenLEDPattern;
 import frc.robot.subsystems.led.LEDSubsystem;
 import frc.robot.subsystems.vision.AprilTagVision;
 import frc.robot.utility.Elastic;
 import frc.robot.utility.Elastic.Notification.NotificationLevel;
 import java.util.HashMap;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -307,9 +307,10 @@ public class RobotContainer {
 
   private void configureOperatorControllerBindings(CommandXboxController xbox) {
 
-    final ManualLauncherControl manualLaunchControl = new ManualLauncherControl(ManualLaunchMode.Y);
+    final LauncherControlManual manualLaunchControl = new LauncherControlManual(ManualLaunchMode.Y);
 
-    launcher.setManualModeSupplier(manualLaunchControl::get);
+    launcher.setManualModeVelocitySupplier(manualLaunchControl::get);
+    launcher.setManualModeAngleSupplier(() -> LauncherConstants.FIXED_LAUNCH_ANGLE);
     launcher.setMode(LauncherRunMode.MANUAL);
 
     final Trigger manualLaunch = xbox.back();

@@ -78,13 +78,13 @@ public class LauncherConstants {
   public static final Distance HUB_Z_OFFSET = Feet.of(6);
 
   public static final HoodType HOOD_TYPE = HoodType.FIXED;
-  public static final Rotation2d FIXED_LAUNCH_ANGLE = new Rotation2d(75);
-  public static final Distance HOOD_RADIUS = Inches.of(20);
+  public static final Rotation2d FIXED_LAUNCH_ANGLE = Rotation2d.fromDegrees(75);
+  public static final Distance HOOD_RADIUS = Inches.of(7.4144);
 
   public static final Translation2d ACTUATOR_LOCATION =
-      new Translation2d(Inches.of(-12), Inches.of(-4));
-  public static final Distance ACTUATOR_LENGTH_MIN = Inches.of(12);
-  public static final Distance ACTUATOR_EXTENSION = Inches.of(24);
+      new Translation2d(Inches.of(-5.709), Inches.of(-4.784));
+  public static final Distance ACTUATOR_LENGTH_MIN = Inches.of(6.610);
+  public static final Distance ACTUATOR_EXTENSION = Millimeters.of(100);
 
   public static final Distance MIN_DISTANCE = Feet.of(5);
   public static final Distance MAX_DISTANCE = Feet.of(25);
