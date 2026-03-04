@@ -19,20 +19,18 @@ public final class Constants {
   /** The period, in seconds, of the main robot loop */
   public static final double LOOP_PERIOD_SECONDS = Robot.defaultPeriodSecs; // 0.02
 
-  public static final RobotType PRIMARY_ROBOT_TYPE = RobotType.PRESEASON_2026;
+  public static final RobotType PRIMARY_ROBOT_TYPE = RobotType.REBUILT_2026;
   private static RobotType robotType;
 
-  /** If true, allows TunableNumbers to be edited from Advantage Scope */
-  public static final boolean TUNING_MODE = true;
-
-  /** If true, should enable cosmetic logging to Advantage Scope throughout the codebase */
-  public static final boolean ADDITIONAL_LOGGING = true;
-
-  /** If true, includes testing/diagnostic autos in auto chooser */
-  public static final boolean RUNNING_TEST_PLANS = true;
-
-  /** If true, includes all created PathPlanner autos in auto chooser */
-  public static final boolean INCLUDE_ALL_PATHPLANNER_AUTOS = true;
+  /**
+   * If true, enables several development features, such as
+   *
+   * <ul>
+   *   <li>TunableNumber editing in AdvantageScope
+   *   <li>Verbose logging in AdvantageScope
+   *   <li>Enables SysId, Diagnostic, Test Plans, and other debug autos
+   */
+  public static final boolean DEVELOPMENT_MODE = true;
 
   /**
    * If true, robot is considered to be on the playing field. Vision will look for field tags, and
@@ -42,6 +40,15 @@ public final class Constants {
 
   /** If true, enables demo mode features throughout the codebase. */
   private static final boolean DEMO_MODE = true;
+
+  /** Talon noises */
+  public static final boolean TALON_BEEP_ON_CONFIG = false;
+
+  /** Talon noises */
+  public static final boolean TALON_BEEP_ON_BOOT = false;
+
+  /** If true, logger will attempt to log to a USB stick ("/U/logs") */
+  public static final boolean AKIT_LOGGER_LOG_TO_USB = false;
 
   public static RobotType getRobot() {
     if (robotType == null) {
@@ -89,7 +96,8 @@ public final class Constants {
   }
 
   public enum RobotType {
-    METAL_BOT_2,
+    REBUILT_2026,
+    METALBOT_2,
     PRESEASON_2026,
     REEFSCAPE_2025,
     WOOD_BOT_2026,
@@ -99,6 +107,7 @@ public final class Constants {
 
   private static RobotType determineRobotType() {
     if (RobotBase.isReal()) {
+      unrecognizedRobotType.set(false);
       switch (RobotController.getSerialNumber()) {
         case "03238024":
           return RobotType.METAL_BOT_2;
@@ -110,6 +119,13 @@ public final class Constants {
           return RobotType.REEFSCAPE_2025;
         case "032D216B":
           return RobotType.WOOD_BOT_2026;
+        case "03238024":
+          return RobotType.METALBOT_2;
+        case "0240C1FA":
+          return RobotType.REBUILT_2026;
+        default:
+          unrecognizedRobotType.set(true);
+          return PRIMARY_ROBOT_TYPE;
       }
     } else if (RobotBase.isSimulation()) {
       return RobotType.SIM_BOT;
@@ -135,6 +151,9 @@ public final class Constants {
 
   private static final Alert demoMode =
       new Alert("Robot is in demo mode according to Constants.java", AlertType.kInfo);
+
+  private static final Alert unrecognizedRobotType =
+      new Alert("RoboRIO serial number unrecognized!", AlertType.kWarning);
 
   static {
     notOnField.set(!isOnPlayingField());

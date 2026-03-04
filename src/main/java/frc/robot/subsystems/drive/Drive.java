@@ -33,7 +33,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
+import frc.robot.Constants.RobotType;
 import frc.robot.DriverDashboard;
+import frc.robot.generated.CompetitionConstants;
+import frc.robot.generated.MetalbotTwoConstants;
+import frc.robot.generated.PreseasonConstants;
 import frc.robot.utility.AllianceMirrorUtil;
 import frc.robot.utility.LocalADStarAK;
 import java.util.Arrays;
@@ -206,7 +210,8 @@ public class Drive extends SubsystemBase {
   @Override
   public void periodic() {
 
-    // Prevents odometry updates while reading data, this is needed as odometry is handed on a
+    // Prevents odometry updates while reading data, this is needed as odometry is
+    // handed on a
     // different thread
     odometryLock.lock();
     gyroIO.updateInputs(gyroInputs);
@@ -231,6 +236,8 @@ public class Drive extends SubsystemBase {
     Logger.recordOutput("ChassisStates/MeasuredRobotSpeeds", getRobotSpeeds());
     Logger.recordOutput(
         "ChassisStates/ModuleDesiredSpeeds", kinematics.toChassisSpeeds(getDesiredWheelSpeeds()));
+
+    Logger.recordOutput("Drive/RobotPose", robotPose);
 
     // Update odometry
     double[] sampleTimestamps =
@@ -262,7 +269,8 @@ public class Drive extends SubsystemBase {
         // Use the real gyro angle
         rawGyroRotation = gyroInputs.odometryYawPositions[i];
       } else {
-        // Fallback option: use the delta of swerve module to create estimated amount twisted
+        // Fallback option: use the delta of swerve module to create estimated amount
+        // twisted
         Twist2d twist = kinematics.toTwist2d(moduleDeltas);
         rawGyroRotation = rawGyroRotation.plus(new Rotation2d(twist.dtheta));
       }
@@ -542,5 +550,52 @@ public class Drive extends SubsystemBase {
         .mapToDouble(Module::getFFCharacterizationVelocity)
         .average()
         .orElse(0.0);
+  }
+
+  public static Drive create(RobotType robotType) {
+    switch (robotType) {
+      case REBUILT_2026:
+        return new Drive(
+            new GyroIOPigeon2(DriveConstants.GYRO_CAN_ID, true),
+            new ModuleIOTalonFX(CompetitionConstants.FrontLeft),
+            new ModuleIOTalonFX(CompetitionConstants.FrontRight),
+            new ModuleIOTalonFX(CompetitionConstants.BackLeft),
+            new ModuleIOTalonFX(CompetitionConstants.BackRight));
+      case METALBOT_2:
+        return new Drive(
+            new GyroIOPigeon2(DriveConstants.GYRO_CAN_ID, true),
+            new ModuleIOTalonFX(MetalbotTwoConstants.FrontLeft),
+            new ModuleIOTalonFX(MetalbotTwoConstants.FrontRight),
+            new ModuleIOTalonFX(MetalbotTwoConstants.BackLeft),
+            new ModuleIOTalonFX(MetalbotTwoConstants.BackRight));
+      case PRESEASON_2026:
+        return new Drive(
+            new GyroIOPigeon2(DriveConstants.GYRO_CAN_ID, true),
+            new ModuleIOTalonFX(PreseasonConstants.FrontLeft),
+            new ModuleIOTalonFX(PreseasonConstants.FrontRight),
+            new ModuleIOTalonFX(PreseasonConstants.BackLeft),
+            new ModuleIOTalonFX(PreseasonConstants.BackRight));
+      case CHASSIS_CANNON, WOOD_BOT_2026, REEFSCAPE_2025:
+        return new Drive(
+            new GyroIOPigeon2(DriveConstants.GYRO_CAN_ID, false),
+            new ModuleIOSparkMax(ModuleConstants.FRONT_LEFT_MODULE_CONFIG),
+            new ModuleIOSparkMax(ModuleConstants.FRONT_RIGHT_MODULE_CONFIG),
+            new ModuleIOSparkMax(ModuleConstants.BACK_LEFT_MODULE_CONFIG),
+            new ModuleIOSparkMax(ModuleConstants.BACK_RIGHT_MODULE_CONFIG));
+      case SIM_BOT:
+        return new Drive(
+            new GyroIO() {},
+            new ModuleIOSim(PreseasonConstants.FrontLeft),
+            new ModuleIOSim(PreseasonConstants.FrontRight),
+            new ModuleIOSim(PreseasonConstants.BackLeft),
+            new ModuleIOSim(PreseasonConstants.BackRight));
+      default:
+        return new Drive(
+            new GyroIO() {},
+            new ModuleIO() {},
+            new ModuleIO() {},
+            new ModuleIO() {},
+            new ModuleIO() {});
+    }
   }
 }

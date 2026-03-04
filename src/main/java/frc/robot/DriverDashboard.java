@@ -47,10 +47,6 @@ public class DriverDashboard {
   private static final Debouncer hasVisionEstimateDebounce =
       new Debouncer(0.1, DebounceType.kFalling);
 
-  public static Supplier<String> currentHopperRunModeNameSupplier = () -> "Unknown";
-  public static DoubleSupplier hopperBubblerVelocitySupplier = () -> 0.0;
-  public static DoubleSupplier hopperFeederVelocitySupplier = () -> 0.0;
-
   public static void addSubsystem(SubsystemBase subsystem) {
     SmartDashboard.putData(subsystem);
   }
@@ -119,6 +115,34 @@ public class DriverDashboard {
         "Has Vision", hasVisionEstimateDebounce.calculate(hasVisionEstimate.getAsBoolean()));
 
     SmartDashboard.putString("Drive Mode", currentDriveModeName.get());
+
+    SmartDashboard.putString("Game Data", getStatusReadout());
+  }
+
+  private static String getStatusReadout() {
+    String gameData = DriverStation.getGameSpecificMessage();
+    String insight;
+
+    // The alliance will be provided as a single character representing the color of
+    // the alliance whose goal will go inactive first (i.e. 'R' = red, 'B' = blue).
+    // This alliance’s goal will be active in Shifts 2 and 4.
+    if (gameData.length() > 0) {
+      switch (gameData.charAt(0)) {
+        case 'B':
+          insight = "Red going first. Blue defending.";
+          break;
+        case 'R':
+          insight = "Blue going first. Red defending.";
+          break;
+        default:
+          insight = "Corrupted data received.";
+          break;
+      }
+    } else {
+      insight = "No data received.";
+    }
+
+    return insight;
   }
 
   private static void putCustomWidgets() {
@@ -135,8 +159,7 @@ public class DriverDashboard {
               final int index = i;
               builder.addDoubleProperty(
                   moduleNames[i] + " Angle",
-                  () ->
-                      AllianceMirrorUtil.apply(wheelStatesSupplier.get()[index].angle).getRadians(),
+                  () -> wheelStatesSupplier.get()[index].angle.getRadians(),
                   null);
               builder.addDoubleProperty(
                   moduleNames[i] + " Velocity",
@@ -148,21 +171,6 @@ public class DriverDashboard {
                 "Robot Angle",
                 () -> AllianceMirrorUtil.apply(poseSupplier.get().getRotation()).getRadians(),
                 null);
-          }
-        });
-
-    // Put hopper state on dashboard
-    SmartDashboard.putData(
-        "Hopper State",
-        new Sendable() {
-          @Override
-          public void initSendable(SendableBuilder builder) {
-            builder.addStringProperty("Run Mode", currentHopperRunModeNameSupplier, null);
-
-            builder.addDoubleProperty(
-                "Bubbler Velocity (rad per sec)", hopperBubblerVelocitySupplier, null);
-            builder.addDoubleProperty(
-                "Feeder Velocity (rad per sec)", hopperFeederVelocitySupplier, null);
           }
         });
   }

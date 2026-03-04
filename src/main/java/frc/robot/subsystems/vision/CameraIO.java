@@ -2,7 +2,8 @@ package frc.robot.subsystems.vision;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
-import frc.robot.subsystems.vision.VisionConstants.CameraPosition;
+import edu.wpi.first.math.geometry.Transform3d;
+import frc.robot.subsystems.vision.VisionConstants.CameraPositionName;
 import java.util.List;
 import org.littletonrobotics.junction.AutoLog;
 import org.photonvision.EstimatedRobotPose;
@@ -28,9 +29,14 @@ public interface CameraIO {
     return "";
   }
 
+  /** Get name of io camera */
+  default Transform3d getRobotToCamera() {
+    return Transform3d.kZero;
+  }
+
   /** Get position of camera on robot */
-  default CameraPosition getCameraPosition() {
-    return CameraPosition.UNKNOWN;
+  default CameraPositionName getCameraPosition() {
+    return CameraPositionName.UNKNOWN;
   }
 
   default void setLastRobotPose(Pose2d pose) {}

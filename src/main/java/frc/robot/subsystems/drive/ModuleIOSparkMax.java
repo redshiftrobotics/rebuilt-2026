@@ -183,7 +183,7 @@ public class ModuleIOSparkMax implements ModuleIO {
   public void updateInputs(ModuleIOInputs inputs) {
 
     // --- Drive ---
-    SparkUtil.clearStickyFault();
+    SparkUtil.clearError();
     ifOk(
         driveSpark,
         driveRelativeEncoder::getPosition,
@@ -197,11 +197,10 @@ public class ModuleIOSparkMax implements ModuleIO {
         () -> driveSpark.getAppliedOutput() * driveSpark.getBusVoltage(),
         value -> inputs.driveAppliedVolts = value);
     ifOk(driveSpark, driveSpark::getOutputCurrent, value -> inputs.driveSupplyCurrentAmps = value);
-    inputs.driveMotorBrakeMode = driveBreakMode;
-    inputs.driveMotorConnected = driveConnectedDebounce.calculate(!SparkUtil.hasStickyFault());
+    inputs.driveMotorConnected = driveConnectedDebounce.calculate(!SparkUtil.hasError());
 
     // --- Turn ---
-    SparkUtil.clearStickyFault();
+    SparkUtil.clearError();
 
     ifOk(
         turnSpark,
@@ -216,8 +215,7 @@ public class ModuleIOSparkMax implements ModuleIO {
         () -> turnSpark.getAppliedOutput() * turnSpark.getBusVoltage(),
         value -> inputs.turnAppliedVolts = value);
     ifOk(turnSpark, turnSpark::getOutputCurrent, value -> inputs.turnSupplyCurrentAmps = value);
-    inputs.turnMotorBrakeMode = turnBreakMode;
-    inputs.turnMotorConnected = turnConnectedDebounce.calculate(!SparkUtil.hasStickyFault());
+    inputs.turnMotorConnected = turnConnectedDebounce.calculate(!SparkUtil.hasError());
 
     // --- Absolute Encoder ---
     inputs.turnAbsoluteEncoderConnected = cancoder.isConnected();

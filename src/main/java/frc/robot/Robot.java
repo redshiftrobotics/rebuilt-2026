@@ -73,8 +73,11 @@ public class Robot extends LoggedRobot {
     // Set up data receivers & replay source
     switch (Constants.getMode()) {
       case REAL:
-        // Running on a real robot, log to a USB stick ("/U/logs")
-        Logger.addDataReceiver(new WPILOGWriter());
+        // Running on a real robot
+        if (Constants.AKIT_LOGGER_LOG_TO_USB) {
+          // log to a USB stick ("/U/logs")
+          Logger.addDataReceiver(new WPILOGWriter());
+        }
         Logger.addDataReceiver(new NT4Publisher());
         break;
 
@@ -111,11 +114,11 @@ public class Robot extends LoggedRobot {
       DriverStationSim.notifyNewData();
     }
 
-    DriverDashboard.initDashboard();
-
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our autonomous chooser on the dashboard.
     robotContainer = new RobotContainer();
+
+    DriverDashboard.initDashboard();
   }
 
   /** This function is called periodically during all modes. */

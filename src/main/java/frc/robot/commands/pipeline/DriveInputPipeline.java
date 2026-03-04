@@ -4,7 +4,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.controllers.DriveRotationController;
-import frc.robot.subsystems.drive.controllers.SmartResetDriveRotationController;
 import java.util.StringJoiner;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
@@ -16,14 +15,17 @@ import java.util.function.UnaryOperator;
  */
 public class DriveInputPipeline {
 
+  private final Drive drive;
+
   private final LayeredPipeline<DriveInput> pipeline;
   private final DriveRotationController headingController;
 
   public DriveInputPipeline(Drive drive) {
-    this(drive, () -> new DriveInput(drive));
+    this(drive, DriveInput::new);
   }
 
   public DriveInputPipeline(Drive drive, Supplier<DriveInput> baseSupplier) {
+    this.drive = drive;
     this.headingController =
         new SmartResetDriveRotationController(drive, () -> drive.getRobotPose().getRotation());
     this.pipeline = new LayeredPipeline<>(baseSupplier);
@@ -46,9 +48,8 @@ public class DriveInputPipeline {
    * @return The current {@link ChassisSpeeds}.
    */
   public ChassisSpeeds getChassisSpeeds() {
-    return pipeline.get().getChassisSpeeds(headingController);
+    return pipeline.get().getChassisSpeeds(drive.getRobotPose().getRotation(), headingController);
   }
-
   /**
    * Gets all active layers' labels.
    *

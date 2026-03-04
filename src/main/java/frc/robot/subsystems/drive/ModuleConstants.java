@@ -7,10 +7,11 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
-import frc.robot.generated.MetalBot2Constants;
+import frc.robot.generated.CompetitionConstants;
+import frc.robot.generated.MetalbotTwoConstants;
 import frc.robot.generated.PreseasonConstants;
 import frc.robot.utility.records.FeedForwardConfigRecord;
-import frc.robot.utility.records.PIDConstants;
+import frc.robot.utility.records.PIDConfig;
 
 public class ModuleConstants {
 
@@ -41,15 +42,25 @@ public class ModuleConstants {
 
   static {
     switch (Constants.getRobot()) {
-      case METAL_BOT_2:
-        // DO NOT USE THESE CONSTANTS, USE TUNER CONSTANTS DIRECTLY INSTEAD, HERE FOR REFERENCE
-        FRONT_LEFT_MODULE_CONFIG = new ModuleConfig(MetalBot2Constants.FrontLeft);
-        FRONT_RIGHT_MODULE_CONFIG = new ModuleConfig(MetalBot2Constants.FrontRight);
-        BACK_LEFT_MODULE_CONFIG = new ModuleConfig(MetalBot2Constants.BackLeft);
-        BACK_RIGHT_MODULE_CONFIG = new ModuleConfig(MetalBot2Constants.BackRight);
+      case REBUILT_2026:
+        System.err.println(
+            "DO NOT USE THESE CONSTANTS, USE TUNER CONSTANTS DIRECTLY INSTEAD, HERE FOR REFERENCE");
+        FRONT_LEFT_MODULE_CONFIG = new ModuleConfig(CompetitionConstants.FrontLeft);
+        FRONT_RIGHT_MODULE_CONFIG = new ModuleConfig(CompetitionConstants.FrontRight);
+        BACK_LEFT_MODULE_CONFIG = new ModuleConfig(CompetitionConstants.BackLeft);
+        BACK_RIGHT_MODULE_CONFIG = new ModuleConfig(CompetitionConstants.BackRight);
+        break;
+      case METALBOT_2:
+        System.err.println(
+            "DO NOT USE THESE CONSTANTS, USE TUNER CONSTANTS DIRECTLY INSTEAD, HERE FOR REFERENCE");
+        FRONT_LEFT_MODULE_CONFIG = new ModuleConfig(MetalbotTwoConstants.FrontLeft);
+        FRONT_RIGHT_MODULE_CONFIG = new ModuleConfig(MetalbotTwoConstants.FrontRight);
+        BACK_LEFT_MODULE_CONFIG = new ModuleConfig(MetalbotTwoConstants.BackLeft);
+        BACK_RIGHT_MODULE_CONFIG = new ModuleConfig(MetalbotTwoConstants.BackRight);
         break;
       case PRESEASON_2026:
-        // DO NOT USE THESE CONSTANTS, USE TUNER CONSTANTS DIRECTLY INSTEAD, HERE FOR REFERENCE
+        System.err.println(
+            "DO NOT USE THESE CONSTANTS, USE TUNER CONSTANTS DIRECTLY INSTEAD, HERE FOR REFERENCE");
         FRONT_LEFT_MODULE_CONFIG = new ModuleConfig(PreseasonConstants.FrontLeft);
         FRONT_RIGHT_MODULE_CONFIG = new ModuleConfig(PreseasonConstants.FrontRight);
         BACK_LEFT_MODULE_CONFIG = new ModuleConfig(PreseasonConstants.BackLeft);
@@ -100,48 +111,62 @@ public class ModuleConstants {
 
   public static final DCMotor DRIVE_MOTOR;
   public static final FeedForwardConfigRecord DRIVE_FEEDFORWARD;
-  public static final PIDConstants DRIVE_FEEDBACK;
+  public static final PIDConfig DRIVE_FEEDBACK;
   public static final double DRIVE_MOTOR_CURRENT_LIMIT;
   public static final double DRIVE_REDUCTION;
 
   public static final DCMotor TURN_MOTOR;
-  public static final PIDConstants TURN_FEEDBACK;
+  public static final PIDConfig TURN_FEEDBACK;
   public static final FeedForwardConfigRecord TURN_FEEDFORWARD;
   public static final double TURN_MOTOR_CURRENT_LIMIT;
   public static final double TURN_REDUCTION;
 
   public static final double WHEEL_RADIUS =
       switch (Constants.getRobot()) {
-        case METAL_BOT_2 -> MetalBot2Constants.FrontLeft.WheelRadius;
+        case REBUILT_2026 -> CompetitionConstants.FrontLeft.WheelRadius;
+        case METALBOT_2 -> MetalbotTwoConstants.FrontLeft.WheelRadius;
         case PRESEASON_2026 -> PreseasonConstants.FrontLeft.WheelRadius;
         default -> Units.inchesToMeters(2.000);
       };
 
   static {
     switch (Constants.getRobot()) {
-      case METAL_BOT_2:
+      case REBUILT_2026:
         DRIVE_MOTOR = DCMotor.getKrakenX60Foc(1);
-        DRIVE_FEEDBACK = new PIDConstants(20, 0, 0);
-        DRIVE_FEEDFORWARD = new FeedForwardConfigRecord(2.08355, 0.95069, 0);
-        DRIVE_MOTOR_CURRENT_LIMIT = MetalBot2Constants.FrontLeft.SlipCurrent;
-        DRIVE_REDUCTION = MetalBot2Constants.FrontLeft.DriveMotorGearRatio;
+        DRIVE_FEEDBACK = new PIDConfig(20, 0, 0);
+        DRIVE_FEEDFORWARD = new FeedForwardConfigRecord(2.00544, 1.05719, 0);
+        DRIVE_MOTOR_CURRENT_LIMIT = CompetitionConstants.FrontLeft.SlipCurrent;
+        DRIVE_REDUCTION = CompetitionConstants.FrontLeft.DriveMotorGearRatio;
 
         TURN_MOTOR = DCMotor.getKrakenX44Foc(1);
-        TURN_FEEDBACK = new PIDConstants(1400, 0, 15);
+        TURN_FEEDBACK = new PIDConfig(1400, 0, 15);
         TURN_FEEDFORWARD = new FeedForwardConfigRecord(0.2, 0, 0);
-        TURN_MOTOR_CURRENT_LIMIT = MetalBot2Constants.FrontLeft.SlipCurrent;
-        TURN_REDUCTION = MetalBot2Constants.FrontLeft.SteerMotorGearRatio;
+        TURN_MOTOR_CURRENT_LIMIT = CompetitionConstants.FrontLeft.SlipCurrent;
+        TURN_REDUCTION = CompetitionConstants.FrontLeft.SteerMotorGearRatio;
+        break;
+      case METALBOT_2:
+        DRIVE_MOTOR = DCMotor.getKrakenX60Foc(1);
+        DRIVE_FEEDBACK = new PIDConfig(20, 0, 0);
+        DRIVE_FEEDFORWARD = new FeedForwardConfigRecord(2.00544, 1.05719, 0);
+        DRIVE_MOTOR_CURRENT_LIMIT = MetalbotTwoConstants.FrontLeft.SlipCurrent;
+        DRIVE_REDUCTION = MetalbotTwoConstants.FrontLeft.DriveMotorGearRatio;
+
+        TURN_MOTOR = DCMotor.getKrakenX44Foc(1);
+        TURN_FEEDBACK = new PIDConfig(1400, 0, 15);
+        TURN_FEEDFORWARD = new FeedForwardConfigRecord(0.2, 0, 0);
+        TURN_MOTOR_CURRENT_LIMIT = MetalbotTwoConstants.FrontLeft.SlipCurrent;
+        TURN_REDUCTION = MetalbotTwoConstants.FrontLeft.SteerMotorGearRatio;
         break;
 
       case PRESEASON_2026:
         DRIVE_MOTOR = DCMotor.getKrakenX60Foc(1);
-        DRIVE_FEEDBACK = new PIDConstants(20, 0, 0);
+        DRIVE_FEEDBACK = new PIDConfig(20, 0, 0);
         DRIVE_FEEDFORWARD = new FeedForwardConfigRecord(2.00544, 1.05719, 0);
         DRIVE_MOTOR_CURRENT_LIMIT = PreseasonConstants.FrontLeft.SlipCurrent;
         DRIVE_REDUCTION = PreseasonConstants.FrontLeft.DriveMotorGearRatio;
 
         TURN_MOTOR = DCMotor.getKrakenX44Foc(1);
-        TURN_FEEDBACK = new PIDConstants(1400, 0, 15);
+        TURN_FEEDBACK = new PIDConfig(1400, 0, 15);
         TURN_FEEDFORWARD = new FeedForwardConfigRecord(0.2, 0, 0);
         TURN_MOTOR_CURRENT_LIMIT = PreseasonConstants.FrontLeft.SlipCurrent;
         TURN_REDUCTION = PreseasonConstants.FrontLeft.SteerMotorGearRatio;
@@ -149,13 +174,13 @@ public class ModuleConstants {
 
       case SIM_BOT:
         DRIVE_MOTOR = DCMotor.getKrakenX60Foc(1);
-        DRIVE_FEEDBACK = new PIDConstants(0.05, 0.0, 0.0);
+        DRIVE_FEEDBACK = new PIDConfig(0.05, 0.0, 0.0);
         DRIVE_FEEDFORWARD = new FeedForwardConfigRecord(0.0, 0.144886, 0.0);
         DRIVE_MOTOR_CURRENT_LIMIT = PreseasonConstants.FrontLeft.SlipCurrent;
         DRIVE_REDUCTION = Mk4iReductions.L3.reduction;
 
         TURN_MOTOR = DCMotor.getKrakenX44Foc(1);
-        TURN_FEEDBACK = new PIDConstants(8, 0, 0);
+        TURN_FEEDBACK = new PIDConfig(8, 0, 0);
         TURN_FEEDFORWARD = new FeedForwardConfigRecord(0.0, 0.0, 0.0);
         TURN_MOTOR_CURRENT_LIMIT = 800; // No limit
         TURN_REDUCTION = PreseasonConstants.FrontLeft.SteerMotorGearRatio;
@@ -166,13 +191,13 @@ public class ModuleConstants {
       case WOOD_BOT_2026:
       default:
         DRIVE_MOTOR = DCMotor.getNEO(1);
-        DRIVE_FEEDBACK = new PIDConstants(0.0001, 0.0, 0.0);
+        DRIVE_FEEDBACK = new PIDConfig(0.0001, 0.0, 0.0);
         DRIVE_FEEDFORWARD = new FeedForwardConfigRecord(0.2, 4.35, 0);
         DRIVE_MOTOR_CURRENT_LIMIT = 50;
         DRIVE_REDUCTION = Mk4iReductions.L3.reduction;
 
         TURN_MOTOR = DCMotor.getNEO(1);
-        TURN_FEEDBACK = new PIDConstants(10, 0.0, 0.0);
+        TURN_FEEDBACK = new PIDConfig(10, 0.0, 0.0);
         TURN_FEEDFORWARD = new FeedForwardConfigRecord(0.0, 0.0, 0.0);
         TURN_MOTOR_CURRENT_LIMIT = 20;
         TURN_REDUCTION = Mk4iReductions.TURN_REDUCTION;

@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.5,
+        "y": 2.0
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.0476545604081533,
+        "y": 1.8343111202563203
+      },
+      "isLocked": false,
+      "linkedName": "South Intermediate"
+    },
+    {
+      "anchor": {
+        "x": 0.607491008721146,
+        "y": 2.709651534884584
+      },
+      "prevControl": {
+        "x": 0.7776743649884746,
+        "y": 2.5265187272023244
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "South Hang"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0.0,
+    "rotation": 0.0
+  },
+  "reversed": false,
+  "folder": "Intermediate",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 45.0
+  },
+  "useDefaultConstraints": true
+}

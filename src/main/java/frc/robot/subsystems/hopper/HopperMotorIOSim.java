@@ -2,67 +2,103 @@ package frc.robot.subsystems.hopper;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.Constants;
+import frc.robot.subsystems.hopper.HopperConstants.MotorConstants;
+import frc.robot.utility.records.FeedForwardConfigRecord;
+import frc.robot.utility.records.PIDConfig;
 
+/** Physics sim implementation of motor IO. */
 public class HopperMotorIOSim implements HopperMotorIO {
-  /* Motor and sim */
-  private final DCMotor motor = DCMotor.getNEO(1);
+
   private final DCMotorSim sim;
 
-  /* PID controller */
-  private final PIDController pidController;
-
-  /* Voltage state storage */
   private double appliedVolts = 0.0;
-  private double ffVolts = 0.0;
 
-  public HopperMotorIOSim(double gearRatio) {
-    // Create motor
-    sim = new DCMotorSim(LinearSystemId.createDCMotorSystem(motor, 0.004, gearRatio), motor);
+  private final PIDController feedback =
+      new PIDController(0.0, 0.0, 0.0, Constants.LOOP_PERIOD_SECONDS);
+  private final SimpleMotorFeedforward feedfoward =
+      new SimpleMotorFeedforward(0.0, 0.0, 0.0, Constants.LOOP_PERIOD_SECONDS);
 
-    // Create PID controller
-    pidController = new PIDController(0, 0, 0);
+  private boolean closedLoop = false;
+  private double ffVolts = 0;
+
+  public HopperMotorIOSim(DCMotorSim sim) {
+    this.sim = sim;
   }
 
-  @Override
-  public void configurePID(double kP, double kI, double kD) {
-    // Apply values to PID controller
-    pidController.setPID(kP, kI, kD);
-  }
-
-  @Override
-  public void setVelocity(double velocityRadPerSec, double ffVolts) {
-    // Set PID controller setpoint
-    pidController.setSetpoint(velocityRadPerSec);
-
-    // Store feedforward voltage
-    this.ffVolts = ffVolts;
-  }
-
-  @Override
-  public void stop() {
-    // Stop by setting velocity to 0
-    setVelocity(0.0, 0.0);
+  public HopperMotorIOSim(DCMotor motor, MotorConstants config, double JKgMetersSquared) {
+    this(
+        new DCMotorSim(
+            LinearSystemId.createDCMotorSystem(motor, JKgMetersSquared, 1.0 / config.gearRatio()),
+            motor));
   }
 
   @Override
   public void updateInputs(HopperMotorIOInputs inputs) {
-    // Set new input voltage
-    appliedVolts =
-        MathUtil.clamp(
-            pidController.calculate(sim.getAngularVelocityRadPerSec()) + ffVolts, -12.0, 12.0);
-    sim.setInputVoltage(appliedVolts);
+
+    if (closedLoop) {
+      appliedVolts = feedback.calculate(sim.getAngularVelocityRadPerSec()) + ffVolts;
+    } else {
+      feedback.reset();
+    }
+
+    if (DriverStation.isDisabled()) {
+      appliedVolts = 0.0;
+    }
 
     // Update simulation state
+    sim.setInputVoltage(MathUtil.clamp(appliedVolts, -12.0, 12.0));
     sim.update(Constants.LOOP_PERIOD_SECONDS);
 
-    // Fetch new values
+    // --- Drive ---
+    inputs.motorConnected = true;
     inputs.positionRad = sim.getAngularPositionRad();
     inputs.velocityRadPerSec = sim.getAngularVelocityRadPerSec();
-    inputs.appliedVolts = new double[] {appliedVolts};
-    inputs.supplyCurrentAmps = new double[] {sim.getCurrentDrawAmps()};
+    inputs.appliedVolts = appliedVolts;
+    inputs.supplyCurrentAmps = Math.abs(sim.getCurrentDrawAmps());
+    inputs.appliedDutycycle = appliedVolts / 12.0;
+  }
+
+  @Override
+  public void setDutyCycle(double output) {
+    setOpenLoop(output * 12);
+  }
+
+  @Override
+  public void setOpenLoop(double volts) {
+    closedLoop = false;
+    appliedVolts = volts;
+  }
+
+  @Override
+  public void setVelocity(double velocityRadsPerSec, double arbFeedforward) {
+    closedLoop = true;
+    ffVolts = feedfoward.calculate(velocityRadsPerSec) + arbFeedforward;
+    feedback.setSetpoint(velocityRadsPerSec);
+  }
+
+  @Override
+  public void setPID(PIDConfig pidConfig) {
+    feedback.setPID(pidConfig.kP(), pidConfig.kI(), pidConfig.kD());
+  }
+
+  @Override
+  public void setFF(FeedForwardConfigRecord ffConfig) {
+    feedfoward.setKs(ffConfig.kS());
+    feedfoward.setKv(ffConfig.kV());
+    feedfoward.setKa(ffConfig.kA());
+  }
+
+  @Override
+  public void setBrakeMode(boolean enable) {}
+
+  @Override
+  public void stop() {
+    setOpenLoop(0);
   }
 }

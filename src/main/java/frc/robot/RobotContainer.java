@@ -1,5 +1,7 @@
 package frc.robot;
 
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.MathUtil;
@@ -21,38 +23,26 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.Mode;
+import frc.robot.Constants.RobotType;
 import frc.robot.commands.DriveCharacterizationCommands;
-import frc.robot.commands.DriveCommands;
-import frc.robot.commands.HopperCommands;
 import frc.robot.commands.pipeline.DriveInput;
 import frc.robot.commands.pipeline.DriveInputPipeline;
-import frc.robot.generated.MetalBot2Constants;
-import frc.robot.generated.PreseasonConstants;
+import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.drive.DriveConstants;
-import frc.robot.subsystems.drive.GyroIO;
-import frc.robot.subsystems.drive.GyroIOPigeon2;
-import frc.robot.subsystems.drive.ModuleConstants;
-import frc.robot.subsystems.drive.ModuleIO;
-import frc.robot.subsystems.drive.ModuleIOSim;
-import frc.robot.subsystems.drive.ModuleIOSparkMax;
-import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.hopper.Hopper;
-import frc.robot.subsystems.hopper.HopperConstants;
-import frc.robot.subsystems.hopper.HopperConstants.RunMode;
-import frc.robot.subsystems.hopper.HopperMotorIO;
-import frc.robot.subsystems.hopper.HopperMotorIOSim;
+import frc.robot.subsystems.hopper.HopperConstants.HopperRunMode;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeRunMode;
+import frc.robot.subsystems.launcher.Launcher;
+import frc.robot.subsystems.launcher.Launcher.LauncherRunMode;
+import frc.robot.subsystems.launcher.ManualLauncherControl;
+import frc.robot.subsystems.launcher.ManualLauncherControl.ManualLaunchMode;
 import frc.robot.subsystems.led.BlinkenLEDPattern;
-import frc.robot.subsystems.led.LEDConstants;
-import frc.robot.subsystems.led.LEDStripIOSim;
 import frc.robot.subsystems.led.LEDSubsystem;
 import frc.robot.subsystems.vision.AprilTagVision;
-import frc.robot.subsystems.vision.CameraIOSim;
-import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.utility.Elastic;
 import frc.robot.utility.Elastic.Notification.NotificationLevel;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
+import java.util.HashMap;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -69,12 +59,15 @@ public class RobotContainer {
   private final AprilTagVision vision;
   private final LEDSubsystem leds;
   private final Hopper hopper;
+  private final Launcher launcher;
+  private final Intake intake;
+  private final Climb climb;
 
   // Controller
   private final CommandXboxController driverController = new CommandXboxController(0);
   private final CommandXboxController operatorController = new CommandXboxController(1);
 
-  // Alerts for controller disconnection
+  // Alerts
   private final Alert driverDisconnected =
       new Alert(
           String.format(
@@ -87,91 +80,30 @@ public class RobotContainer {
               "Operator xbox controller disconnected (port %s).",
               operatorController.getHID().getPort()),
           AlertType.kWarning);
+  private final Alert notPrimaryBotAlert =
+      new Alert("Robot type is not the primary robot type.", AlertType.kInfo);
+  private final Alert developmentModeActiveAlert =
+      new Alert("Development mode active, do not use in competition.", AlertType.kWarning);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
 
-  // Alerts
-  private final Alert notPrimaryBotAlert =
-      new Alert("Robot type is not the primary robot type.", AlertType.kInfo);
-  private final Alert tuningModeActiveAlert =
-      new Alert("Tuning mode active, do not use in competition.", AlertType.kWarning);
+  /** Which robot are we running on? */
+  private final RobotType robotType;
 
   /** The container for the robot. Contains subsystems, IO devices, and commands. */
   public RobotContainer() {
-    System.out.println("Initializing for robot ID: " + Constants.getRobot());
-    switch (Constants.getRobot()) {
-      case METAL_BOT_2:
-        drive =
-            new Drive(
-                new GyroIOPigeon2(DriveConstants.GYRO_CAN_ID, true),
-                new ModuleIOTalonFX(MetalBot2Constants.FrontLeft),
-                new ModuleIOTalonFX(MetalBot2Constants.FrontRight),
-                new ModuleIOTalonFX(MetalBot2Constants.BackLeft),
-                new ModuleIOTalonFX(MetalBot2Constants.BackRight));
-        vision = new AprilTagVision(drive::getRobotPose);
-        leds = new LEDSubsystem();
-        hopper = new Hopper(new HopperMotorIO() {}, new HopperMotorIO() {});
-        break;
-      case PRESEASON_2026:
-        drive =
-            new Drive(
-                new GyroIOPigeon2(DriveConstants.GYRO_CAN_ID, true),
-                new ModuleIOTalonFX(PreseasonConstants.FrontLeft),
-                new ModuleIOTalonFX(PreseasonConstants.FrontRight),
-                new ModuleIOTalonFX(PreseasonConstants.BackLeft),
-                new ModuleIOTalonFX(PreseasonConstants.BackRight));
-        vision = new AprilTagVision(drive::getRobotPose);
-        leds = new LEDSubsystem();
-        hopper = new Hopper(new HopperMotorIO() {}, new HopperMotorIO() {});
-        break;
+    robotType = Constants.getRobot();
 
-      case CHASSIS_CANNON:
-      case WOOD_BOT_2026:
-      case REEFSCAPE_2025:
-        drive =
-            new Drive(
-                new GyroIOPigeon2(DriveConstants.GYRO_CAN_ID, false),
-                new ModuleIOSparkMax(ModuleConstants.FRONT_LEFT_MODULE_CONFIG),
-                new ModuleIOSparkMax(ModuleConstants.FRONT_RIGHT_MODULE_CONFIG),
-                new ModuleIOSparkMax(ModuleConstants.BACK_LEFT_MODULE_CONFIG),
-                new ModuleIOSparkMax(ModuleConstants.BACK_RIGHT_MODULE_CONFIG));
-        vision = new AprilTagVision(drive::getRobotPose);
-        leds = new LEDSubsystem();
-        hopper = new Hopper(new HopperMotorIO() {}, new HopperMotorIO() {});
-        break;
+    System.out.println("Initializing for robot ID: " + robotType);
 
-      case SIM_BOT:
-        drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIOSim(PreseasonConstants.FrontLeft),
-                new ModuleIOSim(PreseasonConstants.FrontRight),
-                new ModuleIOSim(PreseasonConstants.BackLeft),
-                new ModuleIOSim(PreseasonConstants.BackRight));
-        vision =
-            new AprilTagVision(
-                drive::getRobotPose, new CameraIOSim(VisionConstants.SIM_FRONT_CAMERA));
-        leds = new LEDSubsystem(new LEDStripIOSim(LEDConstants.DEFAULT_PATTERN));
-        hopper =
-            new Hopper(
-                new HopperMotorIOSim(HopperConstants.BUBBLER_GEAR_RATIO),
-                new HopperMotorIOSim(HopperConstants.FEEDER_GEAR_RATIO));
-        break;
-
-      default:
-        drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {});
-        vision = new AprilTagVision(drive::getRobotPose);
-        leds = new LEDSubsystem();
-        hopper = new Hopper(new HopperMotorIO() {}, new HopperMotorIO() {});
-        break;
-    }
+    drive = Drive.create(robotType);
+    vision = AprilTagVision.create(robotType, drive);
+    leds = LEDSubsystem.create(robotType);
+    hopper = Hopper.create(robotType);
+    intake = Intake.create(robotType);
+    climb = Climb.create(robotType);
+    launcher = Launcher.create(robotType);
 
     // Vision setup
     if (Constants.isOnPlayingField()) {
@@ -188,18 +120,9 @@ public class RobotContainer {
           }
         });
 
-    // Can also use AutoBuilder.buildAutoChooser(); instead of SendableChooser to auto populate
     registerNamedCommands();
-    autoChooser =
-        new LoggedDashboardChooser<>(
-            "Auto Chooser",
-            Constants.INCLUDE_ALL_PATHPLANNER_AUTOS
-                ? AutoBuilder.buildAutoChooser()
-                : new SendableChooser<Command>());
+    autoChooser = new LoggedDashboardChooser<>("Auto Chooser", createSendableChooser());
     autoChooser.addDefaultOption("None", Commands.none());
-
-    // Configure autos
-    configureAutos(autoChooser);
 
     leds.setDefaultCommand(
         leds.runColor(
@@ -208,8 +131,17 @@ public class RobotContainer {
                 BlinkenLEDPattern.WHITE)
             .withName("LED Alliance Color Waves"));
 
+    launcher.configure(
+        drive::getRobotPose,
+        () -> {
+          Rotation2d robotAngle = drive.getRobotPose().getRotation();
+          ChassisSpeeds speeds =
+              ChassisSpeeds.fromRobotRelativeSpeeds(drive.getRobotSpeeds(), robotAngle);
+          return new Translation2d(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond);
+        });
+
     // Alerts for constants to avoid using them in competition
-    tuningModeActiveAlert.set(Constants.TUNING_MODE);
+    developmentModeActiveAlert.set(Constants.DEVELOPMENT_MODE);
     notPrimaryBotAlert.set(Constants.getRobot() != Constants.PRIMARY_ROBOT_TYPE);
 
     // Hide controller missing warnings for sim
@@ -221,6 +153,8 @@ public class RobotContainer {
     configureDriverControllerBindings(driverController);
     configureOperatorControllerBindings(operatorController);
     configureAlertTriggers();
+
+    System.out.println(robotType + " ready.");
   }
 
   /** Configure drive dashboard object */
@@ -231,9 +165,6 @@ public class RobotContainer {
     DriverDashboard.speedsSupplier = drive::getRobotSpeeds;
     DriverDashboard.wheelStatesSupplier = drive::getWheelSpeeds;
     DriverDashboard.hasVisionEstimate = vision::hasSuccessfulEstimate;
-    DriverDashboard.currentHopperRunModeNameSupplier = () -> hopper.getCurrentRunMode().toString();
-    DriverDashboard.hopperBubblerVelocitySupplier = hopper::getBubblerCharacterizationVelocity;
-    DriverDashboard.hopperFeederVelocitySupplier = hopper::getFeederCharacterizationVelocity;
 
     DriverDashboard.currentDriveModeName =
         () -> drive.getCurrentCommand() == null ? "Idle" : drive.getCurrentCommand().getName();
@@ -267,12 +198,12 @@ public class RobotContainer {
   }
 
   private void configureDriverControllerBindings(CommandXboxController xbox) {
-
     Supplier<DriveInput> baseDrive =
         () ->
-            new DriveInput(drive)
-                .linearVelocityStick(-xbox.getLeftY(), -xbox.getLeftX())
-                .angularVelocityStick(-xbox.getRightX())
+            new DriveInput()
+                .linearVelocityStick(
+                    -xbox.getLeftY(), -xbox.getLeftX(), drive.getMaxLinearSpeedMetersPerSec())
+                .angularVelocityStick(-xbox.getRightX(), drive.getMaxAngularSpeedRadPerSec())
                 .fieldRelativeEnabled();
 
     final DriveInputPipeline pipeline = new DriveInputPipeline(drive, baseDrive);
@@ -296,27 +227,40 @@ public class RobotContainer {
             return "[" + pipeline.getLayerInfo() + "]";
           } else if (current != null) {
             return current.getName();
+          } else if (DriverStation.isDisabled()) {
+            return "Disabled";
           }
           return "Idle";
         };
 
     // Toggle robot relative mode, used as backup if gyro fails
-    xbox.y().toggleOnTrue(pipeline.runLayer("Robot Relative", DriveInput::fieldRelativeDisabled));
+    xbox.back()
+        .debounce(0.1)
+        .toggleOnTrue(pipeline.runLayer("Robot Relative", DriveInput::fieldRelativeDisabled));
 
-    // Secondary drive command, right stick will be used to control target angular position instead
-    // of angular velocity
+    // Secondary drive command, use driving stick to control angle as well
+    xbox.leftTrigger().whileTrue(pipeline.runLayer("Locust", DriveInput::locustMode));
+
+    // Slow mode, reduce translation and rotation speeds for fine control
+    xbox.leftBumper()
+        .whileTrue(
+            pipeline.runLayer(
+                "Slow Mode", input -> input.linearCoefficient(0.3).angularCoefficient(0.3)));
+
+    xbox.rightTrigger()
+        .whileTrue(
+            pipeline.runLayer("Aim at Hub", input -> input.headingTarget(launcher.getRobotYaw())));
+
+    // Secondary drive command, right stick will be used to control target angular
+    // position instead of angular velocity
     xbox.rightBumper()
         .whileTrue(
             pipeline.runLayer(
                 "Heading Controlled",
                 input -> input.headingStick(-xbox.getRightY(), -xbox.getRightX())));
 
-    // Slow mode, reduce translation and rotation speeds for fine control
-    xbox.leftBumper()
-        .whileTrue(pipeline.runLayer("Slow Mode", input -> input.coefficients(0.3, 0.3)));
-
-    // Cause the robot to resist movement by forming an X shape with the swerve modules
-    // Helps prevent getting pushed around
+    // Cause the robot to resist movement by forming an X shape with the swerve
+    // modules. Helps prevent getting pushed around
     xbox.x().whileTrue(drive.run(drive::stopUsingBrakeArrangement).withName("Hold Position"));
 
     // Stop the robot and cancel any running commands
@@ -352,69 +296,218 @@ public class RobotContainer {
               String.format(
                   "Strafe %.0f", MathUtil.inputModulus(rotation.getDegrees(), -180, +180)),
               input ->
-                  input.linearVelocity(translation).fieldRelativeDisabled().coefficients(1, 0.3));
+                  input
+                      .linearVelocity(translation)
+                      .fieldRelativeDisabled()
+                      .angularCoefficient(0.3));
       xbox.pov(pov).whileTrue(activateLayer);
-    }
-
-    xbox.back()
-        .toggleOnTrue(
-            Commands.startEnd(
-                    () -> SmartDashboard.putBoolean(DriverDashboard.driveBrakeModeInput, false),
-                    () -> SmartDashboard.putBoolean(DriverDashboard.driveBrakeModeInput, true))
-                .withName("Coast Mode"));
-
-    if (Constants.isDemoMode()) {
-
-      SmartDashboard.putBoolean("Slow Mode", false);
-      Trigger dashboardSlowMode = new Trigger(() -> SmartDashboard.getBoolean("Slow Mode", false));
-      dashboardSlowMode.whileTrue(
-          pipeline.runLayer("Slow Mode", input -> input.coefficients(0.1, 0.2)));
-
-      AtomicReference<Pose2d> setpoint = new AtomicReference<>(null);
-
-      xbox.a()
-          .whileTrue(
-              pipeline
-                  .runLayer(
-                      "Face Setpoint", input -> input.facingPoint(setpoint.get().getTranslation()))
-                  .onlyIf(() -> setpoint.get() != null));
-
-      // Drive to pose setpoint reset
-      RobotModeTriggers.disabled()
-          .onTrue(Commands.runOnce(() -> setpoint.set(null)).withName("Reset Pose Controller"));
-
-      // Save current pose as setpoint
-      xbox.leftTrigger()
-          .onTrue(rumbleController(xbox, 0.4).withTimeout(0.1))
-          .onTrue(
-              Commands.runOnce(() -> setpoint.set(drive.getRobotPose())).withName("Save Setpoint"));
-
-      // Drive to pose setpoint
-      xbox.rightTrigger()
-          .whileTrue(
-              DriveCommands.driveWithPoseController(drive, setpoint::get)
-                  .andThen(rumbleController(xbox, 1, RumbleType.kRightRumble).withTimeout(0.2))
-                  .onlyIf(() -> setpoint.get() != null)
-                  .withName("Drive to Setpoint"));
     }
   }
 
   private void configureOperatorControllerBindings(CommandXboxController xbox) {
-    // This is the input for firing; when the shooter is added, it should be triggered by this as
-    // well
+
+    final ManualLauncherControl manualLaunchControl = new ManualLauncherControl(ManualLaunchMode.Y);
+
+    launcher.setManualModeSupplier(manualLaunchControl::get);
+    launcher.setMode(LauncherRunMode.MANUAL);
+
+    final Trigger manualLaunch = xbox.back();
+    final Trigger resetShift = xbox.start().debounce(0.01);
+
+    // --- INTAKE CONTROL ---
+
+    // Intake button (hold)
+    xbox.leftTrigger()
+        .whileTrue(
+            Commands.parallel(
+                    intake.run(() -> intake.setMode(IntakeRunMode.INTAKING)),
+                    hopper.run(() -> hopper.setMode(HopperRunMode.IDLE)))
+                .finallyDo(
+                    () -> {
+                      intake.setMode(IntakeRunMode.UP);
+                      hopper.setMode(HopperRunMode.STOPPED);
+                    })
+                .withName("Intake"));
+
+    // Dump through intake button (hold)
+    xbox.leftBumper()
+        .debounce(0.1)
+        .whileTrue(
+            Commands.parallel(
+                    intake.run(() -> intake.setMode(IntakeRunMode.OUTTAKING)),
+                    hopper.run(() -> hopper.setMode(HopperRunMode.REVERSE)))
+                .finallyDo(
+                    () -> {
+                      intake.setMode(IntakeRunMode.UP);
+                      hopper.setMode(HopperRunMode.STOPPED);
+                    })
+                .withName("Intake"));
+
+    // Deploy intake tap button
+    xbox.leftStick()
+        .onTrue(
+            intake
+                .runOnce(() -> intake.setModeNoWheels(IntakeRunMode.INTAKING))
+                .withName("Deploy intake"));
+
+    // Retract intake tap button
+    xbox.rightStick()
+        .onTrue(
+            intake
+                .runOnce(() -> intake.setModeNoWheels(IntakeRunMode.UP))
+                .withName("Retract intake"));
+
+    // Intake shift up button
+    xbox.povUp()
+        .onTrue(
+            Commands.runOnce(() -> intake.shiftSetpoint(Rotation2d.fromDegrees(+1)))
+                .withName("Shift intake up"));
+
+    // Intake shift down button
+    xbox.povDown()
+        .and(manualLaunch.negate())
+        .onTrue(
+            Commands.runOnce(() -> intake.shiftSetpoint(Rotation2d.fromDegrees(-1)))
+                .withName("Shift intake down"));
+
+    // Reset intake shift button
+    resetShift
+        .and(manualLaunch.negate())
+        .onTrue(Commands.runOnce(intake::unshiftSetpoint).withName("Reset intake shift"));
+
+    // --- OUTTAKE CONTROL ---
+
+    // Spin up then launch button
     xbox.rightTrigger()
-        .whileTrue(HopperCommands.setHopperMode(hopper, RunMode.FIRING))
-        .onFalse(HopperCommands.setHopperMode(hopper, RunMode.STOPPED));
+        .whileTrue(
+            launcher
+                .runOnce(launcher::start)
+                .andThen(launcher.idle().until(launcher::isReady))
+                .andThen(hopper.runOnce(() -> hopper.setMode(HopperRunMode.FIRING)))
+                .andThen(launcher.idle())
+                .finallyDo(
+                    () -> {
+                      launcher.stop();
+                      hopper.setMode(HopperRunMode.STOPPED);
+                    })
+                .withName("Spin up and Launch"));
 
-    // Run the bubbler at low speed to send fuel towards the back without firing
+    // Force launch button
+    xbox.rightBumper()
+        .whileTrue(
+            launcher
+                .run(launcher::start)
+                .alongWith(hopper.run(() -> hopper.setMode(HopperRunMode.FIRING)))
+                .finallyDo(
+                    () -> {
+                      launcher.stop();
+                      hopper.setMode(HopperRunMode.STOPPED);
+                    })
+                .withName("Force Launch"));
+
+    // Start spin up button
+    xbox.y()
+        .and(manualLaunch.negate())
+        .onTrue(launcher.runOnce(launcher::start).withName("Spin Up"));
+
+    // Cancel spin up button
     xbox.b()
-        .whileTrue(HopperCommands.setHopperMode(hopper, RunMode.FUEL_STORE))
-        .onFalse(HopperCommands.setHopperMode(hopper, RunMode.STOPPED));
+        .and(manualLaunch.negate())
+        .onTrue(
+            launcher
+                .runOnce(launcher::stop)
+                .andThen(hopper.runOnce(() -> hopper.setMode(HopperRunMode.STOPPED)))
+                .withName("Cancel Spin Up"));
 
-    // Run the hopper motors in reverse to deal with jams
-    xbox.start()
-        .whileTrue(HopperCommands.setHopperMode(hopper, RunMode.REVERSE))
-        .onFalse(HopperCommands.setHopperMode(hopper, RunMode.STOPPED));
+    // Reverse lifter & outtake button
+    xbox.x()
+        .and(manualLaunch.negate())
+        .whileTrue(
+            Commands.parallel(
+                    launcher.run(() -> launcher.setDutyCycle(-0.1)),
+                    hopper.run(() -> hopper.setMode(HopperRunMode.PREP_SHOT)))
+                .finallyDo(
+                    () -> {
+                      launcher.stop();
+                      hopper.setMode(HopperRunMode.STOPPED);
+                    })
+                .withName("Reverse Launcher and Hopper"));
+
+    // Reverse lifter button
+    xbox.a()
+        .and(manualLaunch.negate())
+        .whileTrue(
+            hopper
+                .run(() -> hopper.setMode(HopperRunMode.PREP_SHOT))
+                .finallyDo(() -> hopper.setMode(HopperRunMode.STOPPED))
+                .withName("Reverse Hopper"));
+
+    // --- MANUAL LAUNCH MODE CONTROLS ---
+
+    manualLaunch
+        .and(resetShift)
+        .multiPress(2, 0.2)
+        .toggleOnTrue(
+            Commands.startEnd(
+                    () -> launcher.setMode(LauncherRunMode.INTERPOLATION),
+                    () -> launcher.setMode(LauncherRunMode.MANUAL))
+                .ignoringDisable(true)
+                .withName("Automatic Launch Preferred Mode"));
+
+    // Outtake shift up button
+    xbox.povRight()
+        .onTrue(
+            Commands.runOnce(() -> manualLaunchControl.shiftVelocity(RadiansPerSecond.of(+10)))
+                .ignoringDisable(true)
+                .withName("Shift Velocity Up"));
+
+    // Outtake shift down button
+    xbox.povLeft()
+        .onTrue(
+            Commands.runOnce(() -> manualLaunchControl.shiftVelocity(RadiansPerSecond.of(-10)))
+                .ignoringDisable(true)
+                .withName("Shift Velocity Down"));
+
+    // Outtake shift reset button
+    resetShift
+        .and(manualLaunch)
+        .onTrue(
+            Commands.runOnce(manualLaunchControl::resetShift)
+                .ignoringDisable(true)
+                .withName("Reset Shift"));
+
+    xbox.a()
+        .and(manualLaunch)
+        .onTrue(
+            Commands.runOnce(() -> manualLaunchControl.setMode(ManualLaunchMode.A))
+                .ignoringDisable(true)
+                .withName("Set Manual Launch Mode A"));
+    xbox.b()
+        .and(manualLaunch)
+        .onTrue(
+            Commands.runOnce(() -> manualLaunchControl.setMode(ManualLaunchMode.B))
+                .ignoringDisable(true)
+                .withName("Set Manual Launch Mode B"));
+    xbox.x()
+        .and(manualLaunch)
+        .onTrue(
+            Commands.runOnce(() -> manualLaunchControl.setMode(ManualLaunchMode.X))
+                .ignoringDisable(true)
+                .withName("Set Manual Launch Mode X"));
+    xbox.y()
+        .and(manualLaunch)
+        .onTrue(
+            Commands.runOnce(() -> manualLaunchControl.setMode(ManualLaunchMode.Y))
+                .ignoringDisable(true)
+                .withName("Set Manual Launch Mode Y"));
+
+    // --- HANG/MANUAL CONTROL ---
+
+    // Hang up/down axis
+    xbox.getRightY();
+
+    // Manual mechanism axis
+    xbox.getLeftY();
   }
 
   private Command rumbleController(
@@ -458,37 +551,40 @@ public class RobotContainer {
         .onTrue(Commands.runOnce(() -> Elastic.selectTab("Autonomous")));
   }
 
+  /** Make commands accessible to PathPlanner autos. */
   private void registerNamedCommands() {
-    // Set up named commands for path planner auto
-    NamedCommands.registerCommand("LEDS", leds.runColor(BlinkenLEDPattern.RED));
-  }
+    HashMap<String, Command> namedCommands = new HashMap<String, Command>();
 
-  private void configureAutos(LoggedDashboardChooser<Command> dashboardChooser) {
+    namedCommands.put("LEDS", leds.runColor(BlinkenLEDPattern.RED));
 
-    // Path planner Autos
-    // https://pathplanner.dev/gui-editing-paths-and-autos.html#autos
+    // Hopper commands
+    namedCommands.put("StopHopper", hopper.runOnce(() -> hopper.setMode(HopperRunMode.STOPPED)));
+    namedCommands.put("IdleHopper", hopper.runOnce(() -> hopper.setMode(HopperRunMode.IDLE)));
+    namedCommands.put("FireHopper", hopper.runOnce(() -> hopper.setMode(HopperRunMode.FIRING)));
+    namedCommands.put("ReverseHopper", hopper.runOnce(() -> hopper.setMode(HopperRunMode.REVERSE)));
 
-    // Choreo Autos
-    // https://pathplanner.dev/pplib-choreo-interop.html#load-choreo-trajectory-as-a-pathplannerpath
+    // Intake commands
+    namedCommands.put(
+        "ExtendSlapdown", intake.runOnce(() -> intake.setModeNoWheels(IntakeRunMode.INTAKING)));
+    namedCommands.put(
+        "RetractSlapdown", intake.runOnce(() -> intake.setModeNoWheels(IntakeRunMode.UP)));
+    namedCommands.put("StartIntake", intake.runOnce(() -> intake.setMode(IntakeRunMode.INTAKING)));
+    namedCommands.put("StopIntake", intake.runOnce(() -> intake.setMode(IntakeRunMode.UP)));
 
-    if (Constants.RUNNING_TEST_PLANS) {
-      dashboardChooser.addOption(
-          "[Characterization] Drive Feed Forward",
-          DriveCharacterizationCommands.feedforwardCharacterization(drive));
-      dashboardChooser.addOption(
-          "[Characterization] Drive Wheel Radius",
-          DriveCharacterizationCommands.wheelRadiusCharacterization(drive));
+    // Launcher commands
 
-      dashboardChooser.addOption(
-          "[SysId] Drive Quasistatic Forward",
-          drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-      dashboardChooser.addOption(
-          "[SysId] Drive Quasistatic Reverse",
-          drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-      dashboardChooser.addOption(
-          "[SysId] Drive Dynamic Forward", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
-      dashboardChooser.addOption(
-          "[SysId] Drive Dynamic Reverse", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    // Hang commands
+    namedCommands.put("HangUp", null);
+    namedCommands.put("HangDown", null);
+
+    System.out.println("Named commands:");
+    for (var commandName : namedCommands.keySet()) {
+      try {
+        NamedCommands.registerCommand(commandName, namedCommands.get(commandName));
+        System.out.println("[ OK ] " + commandName);
+      } catch (Exception e) {
+        System.err.println("[FAIL] " + commandName);
+      }
     }
   }
 
@@ -507,5 +603,41 @@ public class RobotContainer {
       return null;
     }
     return autoChooser.get();
+  }
+
+  private SendableChooser<Command> createSendableChooser() {
+    // Path planner Autos
+    // https://pathplanner.dev/gui-editing-paths-and-autos.html#autos
+    // Choreo Autos
+    // https://pathplanner.dev/pplib-choreo-interop.html#load-choreo-trajectory-as-a-pathplannerpath
+
+    var chooser =
+        Constants.DEVELOPMENT_MODE
+            ? AutoBuilder.buildAutoChooser()
+            : new SendableChooser<Command>();
+
+    if (Constants.DEVELOPMENT_MODE) {
+      chooser.addOption(
+          "[Characterization] Drive Feed Forward",
+          DriveCharacterizationCommands.feedforwardCharacterization(drive));
+      chooser.addOption(
+          "[Characterization] Drive Wheel Radius",
+          DriveCharacterizationCommands.wheelRadiusCharacterization(drive));
+
+      chooser.addOption(
+          "[SysId] Drive Quasistatic Forward",
+          drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+      chooser.addOption(
+          "[SysId] Drive Quasistatic Reverse",
+          drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+      chooser.addOption(
+          "[SysId] Drive Dynamic Forward", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
+      chooser.addOption(
+          "[SysId] Drive Dynamic Reverse", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    } else {
+      chooser.addOption("Nothing", Commands.none()); // TODO Add useful autos
+    }
+
+    return chooser;
   }
 }

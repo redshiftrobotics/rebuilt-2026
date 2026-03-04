@@ -4,6 +4,8 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.RobotType;
+import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.vision.Camera.ProcessedEstimatedRobotPose;
 import frc.robot.utility.Elastic;
 import frc.robot.utility.Elastic.Notification;
@@ -135,6 +137,27 @@ public class AprilTagVision extends SubsystemBase {
               String.format(
                   "Failed to send command %s to PhotonVision at %s due to %s",
                   command, ipString, exception.getMessage())));
+    }
+  }
+
+  public static AprilTagVision create(RobotType robotType, Drive drivetrain) {
+    switch (robotType) {
+      case REBUILT_2026:
+        return new AprilTagVision(
+            drivetrain::getRobotPose, new CameraIOPhotonVision(VisionConstants.TOP_CAMERA_ANGLED));
+      case METALBOT_2:
+        return new AprilTagVision(
+            drivetrain::getRobotPose,
+            new CameraIOPhotonVision(VisionConstants.METAL_BOT_2_FRONT),
+            new CameraIOPhotonVision(VisionConstants.METAL_BOT_2_BACK));
+      case SIM_BOT:
+        return new AprilTagVision(
+            drivetrain::getRobotPose,
+            new CameraIOSim(VisionConstants.TOP_CAMERA_FLAT),
+            new CameraIOSim(VisionConstants.TOP_CAMERA_ANGLED));
+      default:
+        System.err.println("Default vision built");
+        return new AprilTagVision(drivetrain::getRobotPose);
     }
   }
 }

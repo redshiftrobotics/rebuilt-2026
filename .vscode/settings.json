@@ -58,6 +58,8 @@
     "edu.wpi.first.math.**.struct.*",
   ],
   "java.dependency.enableDependencyCheckup": false,
+  "editor.tabSize": 2,
+  "editor.detectIndentation": false,
   "chat.disableAIFeatures": true,
   // For some reason the Java LSP will hallucinate errors.
   // At first I thought this was a Linux issue, but it's spread around.

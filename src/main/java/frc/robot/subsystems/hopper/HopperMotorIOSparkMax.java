@@ -1,83 +1,136 @@
 package frc.robot.subsystems.hopper;
 
+import static frc.robot.utility.SparkUtil.*;
+
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkClosedLoopController.ArbFFUnits;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.util.Units;
+import frc.robot.subsystems.hopper.HopperConstants.MotorConstants;
+import frc.robot.utility.SparkUtil;
+import frc.robot.utility.records.FeedForwardConfigRecord;
+import frc.robot.utility.records.PIDConfig;
 
+/** Motor IO implementation for SparkMax motor controller */
 public class HopperMotorIOSparkMax implements HopperMotorIO {
-  /* Motor */
+
   private final SparkMax motor;
+  private final RelativeEncoder relativeEncoder;
+  private final SparkClosedLoopController feedback;
 
-  /* PID controller */
-  private final SparkClosedLoopController pidController;
+  private final SparkMaxConfig config = new SparkMaxConfig();
 
-  /* Encoder */
-  private final RelativeEncoder encoder;
+  private boolean brakeMode = true;
 
-  /* Gear ratio */
-  private final double gearRatio;
+  private final Debouncer connectedDebouncer = new Debouncer(0.5);
 
-  public HopperMotorIOSparkMax(int motorID, double gearRatio) {
-    this.gearRatio = gearRatio;
+  public HopperMotorIOSparkMax(MotorConstants constants) {
 
-    // Create motor
-    motor = new SparkMax(motorID, MotorType.kBrushless);
+    motor = new SparkMax(constants.deviceId(), MotorType.kBrushless);
+    relativeEncoder = motor.getEncoder();
+    feedback = motor.getClosedLoopController();
 
-    // Get motor resources
-    pidController = motor.getClosedLoopController();
-    encoder = motor.getEncoder();
-  }
+    brakeMode = constants.brakeMode();
 
-  @Override
-  public void configurePID(double kP, double kI, double kD) {
-    // Setup config object
-    SparkMaxConfig config = new SparkMaxConfig();
-    config.closedLoop.pid(kP, kI, kD);
+    config
+        .idleMode(brakeMode ? IdleMode.kBrake : IdleMode.kCoast)
+        .smartCurrentLimit((int) constants.stallCurrent())
+        .voltageCompensation(12.0)
+        .inverted(constants.inverted());
+    config
+        .encoder
+        .positionConversionFactor(constants.gearRatio())
+        .velocityConversionFactor(constants.gearRatio());
+    config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(0.0, 0.0, 0.0);
 
-    // Apply config
-    motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
-  }
+    tryUntilOk(motor, 5, () -> relativeEncoder.setPosition(0.0));
 
-  @Override
-  public void setVelocity(double velocityRadPerSec, double ffVolts) {
-    // Set setpoint
-    pidController.setSetpoint(
-        Units.radiansPerSecondToRotationsPerMinute(velocityRadPerSec),
-        ControlType.kVelocity,
-        ClosedLoopSlot.kSlot0,
-        ffVolts,
-        ArbFFUnits.kVoltage);
-  }
-
-  @Override
-  public void stop() {
-    // Stop
-    motor.stopMotor();
+    pushConfig();
   }
 
   @Override
   public void updateInputs(HopperMotorIOInputs inputs) {
-    // Motor position
-    inputs.positionRad = Units.rotationsToRadians(encoder.getPosition() / gearRatio);
 
-    // Motor velocity
-    inputs.velocityRadPerSec = Units.rotationsToRadians(encoder.getVelocity() / gearRatio);
+    SparkUtil.clearError();
+    ifOk(
+        motor,
+        relativeEncoder::getPosition,
+        value -> inputs.positionRad = Units.rotationsToRadians(value));
+    ifOk(
+        motor,
+        relativeEncoder::getVelocity,
+        value -> inputs.velocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(value));
+    ifOk(
+        motor,
+        () -> motor.getAppliedOutput() * motor.getBusVoltage(),
+        value -> inputs.appliedVolts = value);
+    ifOk(motor, motor::getOutputCurrent, value -> inputs.supplyCurrentAmps = value);
+    ifOk(motor, motor::getAppliedOutput, value -> inputs.appliedDutycycle = value);
+    inputs.motorConnected = connectedDebouncer.calculate(!SparkUtil.hasError());
+  }
 
-    // Voltage input to the motor
-    inputs.appliedVolts =
-        new double[] {
-          motor.getAppliedOutput() * motor.getBusVoltage(),
-        };
+  @Override
+  public void setDutyCycle(double dutyCycle) {
+    motor.set(dutyCycle);
+  }
 
-    // Motor output current
-    inputs.supplyCurrentAmps = new double[] {motor.getOutputCurrent()};
+  @Override
+  public void setOpenLoop(double volts) {
+    motor.setVoltage(volts);
+  }
+
+  @Override
+  public void setVelocity(double velocityRadsPerSec, double arbFeedforward) {
+    feedback.setSetpoint(
+        Units.radiansPerSecondToRotationsPerMinute(velocityRadsPerSec),
+        ControlType.kVelocity,
+        ClosedLoopSlot.kSlot0,
+        arbFeedforward,
+        ArbFFUnits.kVoltage);
+  }
+
+  @Override
+  public void setPID(PIDConfig pidConfig) {
+    config.closedLoop.pid(pidConfig.kP(), pidConfig.kI(), pidConfig.kD());
+    pushConfig();
+  }
+
+  @Override
+  public void setFF(FeedForwardConfigRecord ffConfig) {
+    config.closedLoop.feedForward.sva(ffConfig.kS(), ffConfig.kV(), ffConfig.kA());
+    pushConfig();
+  }
+
+  @Override
+  public void setBrakeMode(boolean enable) {
+    if (brakeMode != enable) {
+      brakeMode = enable;
+      config.idleMode(enable ? IdleMode.kBrake : IdleMode.kCoast);
+      pushConfig();
+    }
+  }
+
+  @Override
+  public void stop() {
+    motor.stopMotor();
+  }
+
+  private void pushConfig() {
+    tryUntilOk(
+        motor,
+        5,
+        () ->
+            motor.configure(
+                config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
   }
 }

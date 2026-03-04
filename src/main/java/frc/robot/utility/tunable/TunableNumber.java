@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.DoubleConsumer;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
@@ -59,7 +60,7 @@ public class TunableNumber implements DoubleSupplier {
     if (!hasDefault) {
       hasDefault = true;
       this.defaultValue = defaultValue;
-      if (Constants.TUNING_MODE) {
+      if (Constants.DEVELOPMENT_MODE) {
         dashboardNumber = new LoggedNetworkNumber(key, defaultValue);
       }
     }
@@ -71,7 +72,7 @@ public class TunableNumber implements DoubleSupplier {
    * @return The current value
    */
   public double get() {
-    if (!Constants.TUNING_MODE) return defaultValue;
+    if (!Constants.DEVELOPMENT_MODE) return defaultValue;
 
     if (!hasDefault) {
       return 0.0;
@@ -89,7 +90,7 @@ public class TunableNumber implements DoubleSupplier {
    *     otherwise.
    */
   public boolean hasChanged(int id) {
-    if (!Constants.TUNING_MODE) return false;
+    if (!Constants.DEVELOPMENT_MODE) return false;
 
     double currentValue = get();
     Double lastValue = lastHasChangedValues.get(id);
@@ -107,10 +108,24 @@ public class TunableNumber implements DoubleSupplier {
    *     objects. Recommended approach is to pass the result of "hashCode()"
    * @param action Callback to run when any of the tunable numbers have changed. Access tunable
    *     numbers in order inputted in method
+   */
+  public void ifChanged(int id, DoubleConsumer action) {
+    if (hasChanged(id)) {
+      action.accept(get());
+    }
+  }
+
+  /**
+   * Runs action if any of the tunableNumbers have changed
+   *
+   * @param id Unique identifier for the caller to avoid conflicts when shared between multiple *
+   *     objects. Recommended approach is to pass the result of "hashCode()"
+   * @param action Callback to run when any of the tunable numbers have changed. Access tunable
+   *     numbers in order inputted in method
    * @param tunableNumbers All tunable numbers to check
    */
   public static void ifChanged(int id, Consumer<double[]> action, TunableNumber... tunableNumbers) {
-    if (!Constants.TUNING_MODE) return;
+    if (!Constants.DEVELOPMENT_MODE) return;
 
     if (Arrays.stream(tunableNumbers).anyMatch(tunableNumber -> tunableNumber.hasChanged(id))) {
       action.accept(Arrays.stream(tunableNumbers).mapToDouble(TunableNumber::get).toArray());
@@ -119,7 +134,7 @@ public class TunableNumber implements DoubleSupplier {
 
   /** Runs action if any of the tunableNumbers have changed */
   public static void ifChanged(int id, Runnable action, TunableNumber... tunableNumbers) {
-    if (!Constants.TUNING_MODE) return;
+    if (!Constants.DEVELOPMENT_MODE) return;
 
     if (Arrays.stream(tunableNumbers).anyMatch(tunableNumber -> tunableNumber.hasChanged(id))) {
       action.run();

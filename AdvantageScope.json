@@ -7,13 +7,61 @@
       "height": 832,
       "state": {
         "sidebar": {
-          "width": 300,
+          "width": 306,
           "expanded": [
-            "/RealOutputs"
+            "/SmartDashboard/Intake",
+            "/AdvantageKit",
+            "/AdvantageKit/RealOutputs/Intake",
+            "/RealOutputs/Vision/robotPosesAccepted",
+            "/RealOutputs/Vision/seenTagPoses",
+            "/RealOutputs/ChassisStates/ModuleDesiredSpeeds",
+            "/RealOutputs/Drive/RobotPose",
+            "/RealOutputs/Intake/AbsoluteMeasured",
+            "/RealOutputs/Intake/Measured",
+            "/RealOutputs/Intake/Setpoint",
+            "/Tuning/Intake/Slapdown",
+            "/Tuning/Intake/Slapdown/Pid",
+            "/RealOutputs/Intake/Visuization",
+            "/RealOutputs/Hopper/Visualization",
+            "/RealOutputs/Hopper/Visuization",
+            "/Tuning/Hopper/LifterPID",
+            "/Tuning/Hopper/FeederPID",
+            "/Hopper/Lifter",
+            "/Hopper/Feeder",
+            "/Intake/Slapdown",
+            "/Intake/Wheel",
+            "/Tuning/Intake/SlapdownPID",
+            "/Tuning/Hopper",
+            "/Tuning/HeadingController/PID",
+            "/Outtake/Left",
+            "/Outtake/Middle",
+            "/Outtake/Right",
+            "/RealOutputs",
+            "/RealOutputs/Outtake",
+            "/Tuning",
+            "/Tuning/Outtake",
+            "/Tuning/Outtake/PID",
+            "/Outtake",
+            "/Tuning/Launcher",
+            "/Tuning/Launcher/PID",
+            "/RealOutputs/Launcher",
+            "/Launcher",
+            "/Launcher/ChannelCenter",
+            "/Launcher/ChannelLeft",
+            "/Launcher/ChannelRight",
+            "/Tuning/HeadingController",
+            "/RealOutputs/Launcher/ShotCalculator",
+            "/RealOutputs/Hopper",
+            "/RealOutputs/Hopper/Visualization/Setpoint",
+            "/RealOutputs/Intake",
+            "/RealOutputs/Intake/Visuization/Setpoint/wheel/slapdownArm",
+            "/RealOutputs/Intake/Visuization/Setpoint/wheel/slapdownArm/wheelArm2",
+            "/Tuning/Launcher/FF",
+            "/AdvantageKit/PowerDistribution"
           ]
         },
         "tabs": {
-          "selected": 4,
+          "selected": 10,
           "tabs": [
             {
               "type": 0,
@@ -34,7 +82,17 @@
                     "logType": "Pose2d",
                     "visible": true,
                     "options": {
-                      "model": "demo_8032"
+                      "model": "comp_2026_8032"
+                    }
+                  },
+                  {
+                    "type": "vision",
+                    "logKey": "/RealOutputs/Vision/seenTagPoses",
+                    "logType": "Pose3d[]",
+                    "visible": false,
+                    "options": {
+                      "color": "#00ff00",
+                      "size": "normal"
                     }
                   },
                   {
@@ -48,13 +106,21 @@
                     }
                   },
                   {
-                    "type": "vision",
-                    "logKey": "/RealOutputs/Vision/seenTagPoses",
-                    "logType": "Pose3d[]",
-                    "visible": false,
+                    "type": "mechanism",
+                    "logKey": "/RealOutputs/Intake/Visualization",
+                    "logType": "Mechanism2d",
+                    "visible": true,
                     "options": {
-                      "color": "#00ff00",
-                      "size": "normal"
+                      "plane": "xz"
+                    }
+                  },
+                  {
+                    "type": "mechanism",
+                    "logKey": "/RealOutputs/Intake/Visuization/Measured",
+                    "logType": "Mechanism2d",
+                    "visible": true,
+                    "options": {
+                      "plane": "xz"
                     }
                   },
                   {
@@ -73,7 +139,7 @@
                     "logType": "Pose2d",
                     "visible": false,
                     "options": {
-                      "model": "2026 KitBot",
+                      "model": "KitBot",
                       "color": "#00ff00"
                     }
                   },
@@ -81,9 +147,9 @@
                     "type": "ghost",
                     "logKey": "/RealOutputs/Vision/robotPosesAccepted",
                     "logType": "Pose3d[]",
-                    "visible": false,
+                    "visible": true,
                     "options": {
-                      "model": "2026 KitBot",
+                      "model": "KitBot",
                       "color": "#ff00ff"
                     }
                   },
@@ -91,9 +157,9 @@
                     "type": "ghost",
                     "logKey": "/RealOutputs/Vision/robotPosesRejected",
                     "logType": "Pose3d[]",
-                    "visible": false,
+                    "visible": true,
                     "options": {
-                      "model": "2026 KitBot",
+                      "model": "KitBot",
                       "color": "#ffff00"
                     }
                   }
@@ -105,9 +171,9 @@
                 "cameraIndex": -5,
                 "orbitFov": 50,
                 "cameraPosition": [
-                  -10.28116,
+                  -9.760701186975597,
                   1.5748000000000002,
-                  -1.88861845282827e-15
+                  -1.4750935014646167
                 ],
                 "cameraTarget": [
                   0,
@@ -115,7 +181,182 @@
                   0
                 ]
               },
-              "controlsHeight": 0
+              "controlsHeight": 177
+            },
+            {
+              "type": 10,
+              "title": "Intake",
+              "controller": [
+                {
+                  "type": "mechanism",
+                  "logKey": "/RealOutputs/Intake/Visuization/AbsoluteMeasured",
+                  "logType": "Mechanism2d",
+                  "visible": true,
+                  "options": {}
+                },
+                {
+                  "type": "mechanism",
+                  "logKey": "/RealOutputs/Intake/Visuization/Measured",
+                  "logType": "Mechanism2d",
+                  "visible": true,
+                  "options": {}
+                },
+                {
+                  "type": "mechanism",
+                  "logKey": "/RealOutputs/Intake/Visuization/Setpoint",
+                  "logType": "Mechanism2d",
+                  "visible": true,
+                  "options": {}
+                }
+              ],
+              "controllerUUID": "xt7xf0jv36kofs0j6txw0fd9ef4oz9sg",
+              "renderer": null,
+              "controlsHeight": 200
+            },
+            {
+              "type": 10,
+              "title": "Hopper",
+              "controller": [
+                {
+                  "type": "mechanism",
+                  "logKey": "/RealOutputs/Hopper/Visualization/Measured",
+                  "logType": "Mechanism2d",
+                  "visible": true,
+                  "options": {}
+                },
+                {
+                  "type": "mechanism",
+                  "logKey": "/RealOutputs/Hopper/Visualization/Setpoint",
+                  "logType": "Mechanism2d",
+                  "visible": true,
+                  "options": {}
+                }
+              ],
+              "controllerUUID": "w0x5ruft9o4qydhot3oh9co1tp1djl4u",
+              "renderer": null,
+              "controlsHeight": 200
+            },
+            {
+              "type": 1,
+              "title": "Outtake",
+              "controller": {
+                "leftSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/Launcher/desiredVelocity",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#3b875a",
+                      "size": "verybold"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/Launcher/averageVelocity",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#2b66a2",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/Launcher/ChannelCenter/VelocityRadPerSec",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#af2437",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/Launcher/ChannelLeft/VelocityRadPerSec",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#80588e",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/Launcher/ChannelRight/VelocityRadPerSec",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#e48b32",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "rightSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "/Launcher/ChannelCenter/AppliedDutyCycle",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#c0b487",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/Launcher/ChannelLeft/AppliedDutyCycle",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#858584",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/Launcher/ChannelRight/AppliedDutyCycle",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#3b875a",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "discreteSources": [
+                  {
+                    "type": "stripes",
+                    "logKey": "/RealOutputs/Launcher/isRunning",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#d993aa"
+                    }
+                  }
+                ],
+                "leftLockedRange": [
+                  -10,
+                  500
+                ],
+                "rightLockedRange": [
+                  -1,
+                  1
+                ],
+                "leftUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "rightUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "v4qvaoiymft8pu71e3ahi82wd6apyl6w",
+              "renderer": null,
+              "controlsHeight": 200
             },
             {
               "type": 2,
@@ -126,7 +367,7 @@
                     "type": "robot",
                     "logKey": "/RealOutputs/Odometry/Robot",
                     "logType": "Pose2d",
-                    "visible": true,
+                    "visible": false,
                     "options": {
                       "bumpers": ""
                     }
@@ -145,7 +386,7 @@
                     "type": "swerveStates",
                     "logKey": "/RealOutputs/SwerveStates/ModuleDesiredWheelSpeeds",
                     "logType": "SwerveModuleState[]",
-                    "visible": true,
+                    "visible": false,
                     "options": {
                       "color": "#ff0000",
                       "arrangement": "0,1,2,3"
@@ -178,10 +419,28 @@
                     "options": {
                       "color": "#00ff00"
                     }
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "/RealOutputs/Launcher/ShotCalculator/ShotParamYaw",
+                    "logType": "Pose2d",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ff00"
+                    }
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "/RealOutputs/Launcher/ShotCalculator/SimpleYaw",
+                    "logType": "Pose2d",
+                    "visible": true,
+                    "options": {
+                      "color": "#ff0000"
+                    }
                   }
                 ],
                 "field": "FRC:2026 Field",
-                "orientation": 2,
+                "orientation": 3,
                 "size": "large"
               },
               "controllerUUID": "rdy54xgxb86v999c510rijuebtpjrgc5",
@@ -317,7 +576,7 @@
                     }
                   }
                 ],
-                "maxSpeed": 5,
+                "maxSpeed": 6,
                 "sizeX": 0.65,
                 "sizeY": 0.65,
                 "orientation": 1
@@ -401,62 +660,26 @@
             },
             {
               "type": 1,
-              "title": "SlipCurrent",
+              "title": "Battery",
               "controller": {
                 "leftSources": [
                   {
                     "type": "stepped",
-                    "logKey": "/Drive/LeftBackSwerveModule/DriveSupplyCurrentAmps",
+                    "logKey": "NT:/AdvantageKit/SystemStats/BatteryVoltage",
                     "logType": "Number",
                     "visible": true,
                     "options": {
                       "color": "#2b66a2",
                       "size": "normal"
                     }
-                  }
-                ],
-                "rightSources": [
+                  },
                   {
                     "type": "stepped",
-                    "logKey": "/Drive/LeftBackSwerveModule/DriveVelocityRadPerSec",
+                    "logKey": "NT:/AdvantageKit/PowerDistribution/Voltage",
                     "logType": "Number",
                     "visible": true,
                     "options": {
                       "color": "#e5b31b",
-                      "size": "normal"
-                    }
-                  }
-                ],
-                "discreteSources": [],
-                "leftLockedRange": null,
-                "rightLockedRange": null,
-                "leftUnitConversion": {
-                  "autoTarget": null,
-                  "preset": null
-                },
-                "rightUnitConversion": {
-                  "autoTarget": null,
-                  "preset": null
-                },
-                "leftFilter": 0,
-                "rightFilter": 0
-              },
-              "controllerUUID": "6pnon7du20liwf6ybzh51iupnxb69l3x",
-              "renderer": null,
-              "controlsHeight": 200
-            },
-            {
-              "type": 1,
-              "title": "TurnVelocity",
-              "controller": {
-                "leftSources": [
-                  {
-                    "type": "stepped",
-                    "logKey": "/Drive/LeftBackSwerveModule/TurnVelocityRadPerSec",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#2b66a2",
                       "size": "normal"
                     }
                   }
@@ -476,7 +699,7 @@
                 "leftFilter": 0,
                 "rightFilter": 0
               },
-              "controllerUUID": "1eqm5lzmejuem5dfddpp656ky0o5cj0h",
+              "controllerUUID": "v1bc029gwgo6xdjid48ur0tv5nthw1hj",
               "renderer": null,
               "controlsHeight": 200
             }

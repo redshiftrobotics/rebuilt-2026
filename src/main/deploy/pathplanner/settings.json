@@ -4,9 +4,22 @@
   "holonomicMode": true,
   "pathFolders": [
     "Demo Auto",
-    "Demo Shapes"
+    "Demo Shapes",
+    "GraysonPaths",
+    "Intermediate",
+    "north goto mid",
+    "North Intermediate to outpost",
+    "South Intermediate to Outpost",
+    "Start Middle",
+    "south goto mid"
   ],
-  "autoFolders": [],
+  "autoFolders": [
+    "Middle Start",
+    "No Preload",
+    "North Start",
+    "Practice Autos",
+    "South Start"
+  ],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,
   "defaultMaxAngVel": 540.0,
