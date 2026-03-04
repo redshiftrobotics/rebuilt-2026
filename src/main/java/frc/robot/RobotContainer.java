@@ -43,6 +43,7 @@ import frc.robot.subsystems.vision.AprilTagVision;
 import frc.robot.utility.Elastic;
 import frc.robot.utility.Elastic.Notification.NotificationLevel;
 import java.util.HashMap;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 

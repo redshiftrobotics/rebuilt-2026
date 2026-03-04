@@ -148,8 +148,8 @@ public class AprilTagVision extends SubsystemBase {
       case METALBOT_2:
         return new AprilTagVision(
             drivetrain::getRobotPose,
-            new CameraIOPhotonVision(VisionConstants.METAL_BOT_2_FRONT),
-            new CameraIOPhotonVision(VisionConstants.METAL_BOT_2_BACK));
+            new CameraIOPhotonVision(VisionConstants.METALBOT_2_FRONT),
+            new CameraIOPhotonVision(VisionConstants.METALBOT_2_BACK));
       case SIM_BOT:
         return new AprilTagVision(
             drivetrain::getRobotPose,

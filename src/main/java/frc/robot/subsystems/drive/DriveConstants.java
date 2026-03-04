@@ -141,7 +141,7 @@ public class DriveConstants {
 
   static {
     switch (Constants.getRobot()) {
-      case PRESEASON_2026, METAL_BOT_2, SIM_BOT:
+      case PRESEASON_2026, METALBOT_2, SIM_BOT:
         robotMassKg = 40.0; // Mass from scale
         robotMOI =
             (1.0 / 12.0)

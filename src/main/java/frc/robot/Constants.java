@@ -110,7 +110,7 @@ public final class Constants {
       unrecognizedRobotType.set(false);
       switch (RobotController.getSerialNumber()) {
         case "03238024":
-          return RobotType.METAL_BOT_2;
+          return RobotType.METALBOT_2;
         case "023AC95B":
           return RobotType.PRESEASON_2026;
         case "032D2143":
@@ -119,8 +119,6 @@ public final class Constants {
           return RobotType.REEFSCAPE_2025;
         case "032D216B":
           return RobotType.WOOD_BOT_2026;
-        case "03238024":
-          return RobotType.METALBOT_2;
         case "0240C1FA":
           return RobotType.REBUILT_2026;
         default:
