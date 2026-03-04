@@ -139,6 +139,11 @@ task(replayWatch, type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
 }
 
+// Set encoding
+compileJava {
+    options.encoding = "UTF-8"
+}
+
 // Create version file
 project.compileJava.dependsOn(createVersionFile)
 gversion {
