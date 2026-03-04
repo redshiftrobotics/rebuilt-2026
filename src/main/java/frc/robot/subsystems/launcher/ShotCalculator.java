@@ -1,95 +1,61 @@
 package frc.robot.subsystems.launcher;
 
-import static edu.wpi.first.units.Units.Feet;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
+import java.util.function.Function;
 
 public class ShotCalculator {
-  public record ShotParameters(LinearVelocity velocity, Rotation2d pitch, Rotation2d yaw) {
+  public record ShotParameters(LinearVelocity velocity, Rotation2d pitch) {
     @Override
     public final String toString() {
       return String.format(
           "ShotParameters(velocity=%.2f m/s, pitch=%.2f deg, yaw=%.2f deg)",
-          velocity.in(MetersPerSecond), pitch.getDegrees(), yaw.getDegrees());
+          velocity.in(MetersPerSecond), pitch.getDegrees());
     }
   }
-
-  // Adjust distance, then calculate pitch, then calculate velocity based on pitch
-  public static ShotParameters method1(
-      Translation2d hubPosition, Translation2d robotVelocityMetersPerSecond, HoodType hoodType) {
-
-    Translation2d adjustedHub =
-        adjustedHubPosition(hubPosition, robotVelocityMetersPerSecond.unaryMinus(), hoodType);
-    Distance adjustedDistance =
-        Meters.of(adjustedHub.getNorm() - LauncherConstants.LAUNCHER_X_OFFSET.in(Meters));
-
-    Rotation2d pitch = calculatePitch(adjustedDistance, hoodType);
-    LinearVelocity velocity = calculateVelocity(adjustedDistance, pitch);
-    return new ShotParameters(velocity, pitch, adjustedHub.getAngle());
-  }
-
-  private static Translation2d adjustedHubPosition(
-      Translation2d hubPosition, Translation2d hubVelocityMetersPerSecond, HoodType hoodType) {
+  /**
+   * @param hubPosition the position of the hub relative to the robot
+   * @param robotVelocityMetersPerSecond the velocity of the robot
+   * @param pitchProvider a function that takes the hub distance and returns the desired shot pitch
+   * @return the position of the hub accounting for robot velocity
+   */
+  public static Translation2d adjustedHubPosition(
+      Translation2d hubPosition,
+      Translation2d robotVelocityMetersPerSecond,
+      Function<Double, Rotation2d> pitchProvider) {
     Translation2d adjustedHubPosition = hubPosition;
     for (int i = 0; i < 5; i++) {
+      Rotation2d pitch = pitchProvider.apply(adjustedHubPosition.getNorm());
       ShotParameters parameters =
-          calculateTrajectory(adjustedHubPosition, hubVelocityMetersPerSecond, hoodType);
+          new ShotParameters(calculateVelocity(adjustedHubPosition.getNorm(), pitch), pitch);
       double time = timeOfFlight(parameters, adjustedHubPosition);
       // Shift hubPosition, not adjustedHubPosition, to avoid positive feedback
-      adjustedHubPosition = shiftHubPosition(hubPosition, hubVelocityMetersPerSecond, time);
+      adjustedHubPosition = hubPosition.minus(robotVelocityMetersPerSecond.times(time));
     }
     return adjustedHubPosition;
   }
 
-  private static ShotParameters calculateTrajectory(
-      Translation2d hubPosition, Translation2d robotVelocityMetersPerSecond, HoodType hoodType) {
-    Distance distance =
-        Meters.of(hubPosition.getNorm() - LauncherConstants.LAUNCHER_X_OFFSET.in(Meters));
-    // Formula acquired through experimentation
-    Rotation2d pitch = calculatePitch(distance, hoodType);
-
-    return new ShotParameters(calculateVelocity(distance, pitch), pitch, hubPosition.getAngle());
+  public static LinearVelocity calculateVelocity(double distanceMeters, Rotation2d pitch) {
+    // https://www.desmos.com/3d/enuvzskzsh
+    double velocity =
+        distanceMeters
+            * Math.sqrt(
+                9.81
+                    / (2
+                        * (distanceMeters * pitch.getTan()
+                            - LauncherConstants.HUB_Z_OFFSET.in(Meters)
+                            + LauncherConstants.LAUNCHER_Z_OFFSET.in(Meters))))
+            / pitch.getCos();
+    return MetersPerSecond.of(velocity);
   }
 
-  static Rotation2d calculatePitch(Distance distance, HoodType hoodType) {
-    return switch (hoodType) {
-      case FIXED -> LauncherConstants.FIXED_LAUNCH_ANGLE;
-        // Formula from experimentation
-      case ACTUATOR -> Rotation2d.fromDegrees(
-          75.0 - 15.0 * Math.tanh(2.0 * distance.in(Feet) / 25.0));
-    };
-  }
-
-  static LinearVelocity calculateVelocity(Distance distance, Rotation2d pitch) {
-    return MetersPerSecond.of(10.0);
-  }
-
-  // static LinearVelocity calculateVelocity(Distance distance, Rotation2d pitch) {
-  //   // https://www.desmos.com/3d/enuvzskzsh
-  //   double velocity =
-  //       distance.in(Meters)
-  //           * Math.sqrt(
-  //               9.81
-  //                   / (2 * distance.in(Meters) * pitch.getTan()
-  //                       - LauncherConstants.HUB_Z_OFFSET.in(Meters)
-  //                       + LauncherConstants.LAUNCHER_Z_OFFSET.in(Meters)))
-  //           / pitch.getCos();
-  //   return MetersPerSecond.of(velocity);
-  // }
-
-  private static double timeOfFlight(ShotParameters parameters, Translation2d hubPosition) {
+  public static double timeOfFlight(ShotParameters parameters, Translation2d hubPosition) {
     // Distance divided by horizontal shot speed
     return (hubPosition.getNorm() + LauncherConstants.LAUNCHER_X_OFFSET.in(Meters))
         / (parameters.pitch.getCos() * parameters.velocity.in(MetersPerSecond));
-  }
-
-  private static Translation2d shiftHubPosition(
-      Translation2d hubPosition, Translation2d robotVelocity, double timeOfFlight) {
-    return hubPosition.plus(robotVelocity.times(timeOfFlight));
   }
 }
