@@ -15,7 +15,7 @@ public class IntakeConstants {
 
   /** Constants for the intake wheel motor. */
   public class IntakeWheelConstants {
-    public static final int CAN_ID = 5;
+    public static final int CAN_ID = 13;
     public static final double GEAR_RATIO = 1.0 / 3.0;
     public static final boolean INVERTED = true;
     public static final boolean BRAKE_MODE = false;
@@ -25,7 +25,7 @@ public class IntakeConstants {
 
   /** Constants for the intake slapdown mechanism. */
   public class SlapdownConstants {
-    public static final int CAN_ID = 14;
+    public static final int CAN_ID = 17;
     public static final double GEAR_RATIO = (1.0 / 4.0) * (1.0 / 4.0) * (1.0 / 2.0);
     public static final boolean MOTOR_INVERTED = false;
 

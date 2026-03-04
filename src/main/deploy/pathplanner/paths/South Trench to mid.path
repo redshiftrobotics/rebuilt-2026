@@ -4,28 +4,28 @@
     {
       "anchor": {
         "x": 3.5,
-        "y": 6.0
+        "y": 0.5
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.80506098612164,
-        "y": 5.968507700061119
+        "x": 4.603175761458354,
+        "y": 0.5689348721024747
       },
       "isLocked": false,
-      "linkedName": "North Bump"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.5,
-        "y": 6.0
+        "x": 6.3,
+        "y": 0.65
       },
       "prevControl": {
-        "x": 3.224121077180397,
-        "y": 5.9717486922065675
+        "x": 5.949780360716141,
+        "y": 0.6418941913326949
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "North Intermediate"
+      "linkedName": "Ready to go under south bump"
     }
   ],
   "rotationTargets": [],
@@ -42,10 +42,10 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -46.24536426676836
+    "rotation": 0.0
   },
   "reversed": false,
-  "folder": "Intermediate",
+  "folder": "south goto mid",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0

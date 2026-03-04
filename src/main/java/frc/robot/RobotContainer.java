@@ -245,10 +245,7 @@ public class RobotContainer {
 
     xbox.rightTrigger()
         .whileTrue(
-            Commands.parallel(
-                pipeline.runLayer(
-                    "Aim at Hub", input -> input.headingTarget(launcher.getRobotYaw())),
-                launcher.runOnce(launcher::start)));
+            pipeline.runLayer("Aim at Hub", input -> input.headingTarget(launcher.getRobotYaw())));
 
     // Secondary drive command, right stick will be used to control target angular
     // position instead of angular velocity
@@ -606,7 +603,6 @@ public class RobotContainer {
   }
 
   private SendableChooser<Command> createSendableChooser() {
-
     // Path planner Autos
     // https://pathplanner.dev/gui-editing-paths-and-autos.html#autos
     // Choreo Autos
@@ -635,6 +631,8 @@ public class RobotContainer {
           "[SysId] Drive Dynamic Forward", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
       chooser.addOption(
           "[SysId] Drive Dynamic Reverse", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    } else {
+      chooser.addOption("Nothing", Commands.none()); // TODO Add useful autos
     }
 
     return chooser;

@@ -4,28 +4,28 @@
     {
       "anchor": {
         "x": 3.5,
-        "y": 6.0
+        "y": 7.5
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.80506098612164,
-        "y": 5.968507700061119
+        "x": 3.23109649122807,
+        "y": 6.496754385964912
       },
       "isLocked": false,
-      "linkedName": "North Bump"
+      "linkedName": "North Trench"
     },
     {
       "anchor": {
-        "x": 2.5,
-        "y": 6.0
+        "x": 0.5000877192982456,
+        "y": 0.6789364035087715
       },
       "prevControl": {
-        "x": 3.224121077180397,
-        "y": 5.9717486922065675
+        "x": 1.5674890350877195,
+        "y": 0.8904934210526312
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "North Intermediate"
+      "linkedName": "Outpost Pickup"
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -46.24536426676836
+    "rotation": 180.0
   },
   "reversed": false,
-  "folder": "Intermediate",
+  "folder": "GraysonPaths",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -90.0
   },
   "useDefaultConstraints": true
 }
