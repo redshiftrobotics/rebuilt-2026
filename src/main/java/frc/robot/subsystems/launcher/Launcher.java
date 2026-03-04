@@ -21,7 +21,6 @@ import frc.robot.utility.tunable.TunableNumbers.TunableFF;
 import frc.robot.utility.tunable.TunableNumbers.TunablePID;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -101,18 +100,6 @@ public class Launcher extends SubsystemBase {
     }
 
     stop();
-  }
-
-  public void start() {
-    running = true;
-  }
-
-  public void stop() {
-    running = false;
-  }
-
-  public void setMode(LauncherRunMode mode) {
-    this.mode = mode;
   }
 
   public void setManualModeVelocitySupplier(Supplier<AngularVelocity> setpoint) {
