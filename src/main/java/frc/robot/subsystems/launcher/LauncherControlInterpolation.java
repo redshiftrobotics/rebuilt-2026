@@ -6,9 +6,9 @@ import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 /** Dead simple interpolation shot calculator */
 public class LauncherControlInterpolation {
 
-  private static InterpolatingDoubleTreeMap fixedHoodSpeeds = new InterpolatingDoubleTreeMap();
-  private static InterpolatingDoubleTreeMap hoodPitchDegrees = new InterpolatingDoubleTreeMap();
-  private static InterpolatingDoubleTreeMap actuatingHoodSpeeds = new InterpolatingDoubleTreeMap();
+  private static final InterpolatingDoubleTreeMap fixedHoodSpeeds = new InterpolatingDoubleTreeMap();
+  private static final InterpolatingDoubleTreeMap hoodPitchDegrees = new InterpolatingDoubleTreeMap();
+  private static final InterpolatingDoubleTreeMap actuatingHoodSpeeds = new InterpolatingDoubleTreeMap();
 
   static {
     // Map distances (meters) to launcher wheel speeds.
