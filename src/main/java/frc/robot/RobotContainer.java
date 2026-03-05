@@ -12,10 +12,12 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
@@ -40,10 +42,12 @@ import frc.robot.subsystems.launcher.LauncherControlManual.ManualLaunchMode;
 import frc.robot.subsystems.led.BlinkenLEDPattern;
 import frc.robot.subsystems.led.LEDSubsystem;
 import frc.robot.subsystems.vision.AprilTagVision;
+import frc.robot.utility.AllianceMirrorUtil;
 import frc.robot.utility.Elastic;
 import frc.robot.utility.Elastic.Notification.NotificationLevel;
 import frc.robot.utility.HubTracker;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -109,6 +113,7 @@ public class RobotContainer {
     // Vision setup
     if (Constants.isOnPlayingField()) {
       vision.setAprilTagFieldLayout(FieldConstants.apriltagLayout);
+      setupInitPose();
     }
 
     vision.setVisionPoseConsumer(
@@ -627,5 +632,37 @@ public class RobotContainer {
     }
 
     return chooser;
+  }
+
+  private void setupInitPose() {
+    drive.resetPose(
+        new Pose2d(
+            new Translation2d(FieldConstants.fieldLength, FieldConstants.fieldWidth).div(2),
+            AllianceMirrorUtil.apply(Rotation2d.kCW_90deg)));
+
+    // Vision setup
+    if (Constants.isOnPlayingField()) {
+      vision.setAprilTagFieldLayout(FieldConstants.apriltagLayout);
+
+      Runnable initPoseRunnable =
+          () -> {
+            Optional<Alliance> alliance = DriverStation.getAlliance();
+
+            if (alliance.isPresent()) {
+              drive.resetPose(
+                  new Pose2d(
+                      AllianceMirrorUtil.applyX(FieldConstants.LinesVertical.starting),
+                      FieldConstants.fieldWidth / 2.0,
+                      AllianceMirrorUtil.apply(Rotation2d.kZero)));
+            }
+          };
+
+      CommandScheduler.getInstance()
+          .schedule(
+              Commands.waitSeconds(0.1)
+                  .andThen(Commands.runOnce(initPoseRunnable))
+                  .ignoringDisable(true)
+                  .withName("Init Pose"));
+    }
   }
 }
