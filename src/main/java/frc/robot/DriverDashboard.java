@@ -117,10 +117,15 @@ public class DriverDashboard {
     SmartDashboard.putString("Drive Mode", currentDriveModeName.get());
 
     SmartDashboard.putString(
+        "Shifts/Remaining Shift Time (Formatted)",
+        HubTracker.timeRemainingInCurrentShift()
+            .map(t -> String.format("%.2f", t.in(Second)))
+            .orElse("--"));
+    SmartDashboard.putNumber(
         "Shifts/Remaining Shift Time",
         HubTracker.timeRemainingInCurrentShift()
-            .map(t -> String.format("%.1f", t.in(Second)))
-            .orElse("--"));
+            .map(t -> t.in(Second))
+            .orElse(Double.NaN));
     SmartDashboard.putBoolean("Shifts/Shift Active", HubTracker.isActive());
     SmartDashboard.putString(
         "Shifts/Shift Game State",
