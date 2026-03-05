@@ -246,19 +246,21 @@ public class RobotContainer {
     xbox.leftBumper()
         .whileTrue(
             pipeline.runLayer(
-                "Slow Mode", input -> input.linearCoefficient(0.3).angularCoefficient(0.3)));
+                "Slow", input -> input.linearCoefficient(0.3).angularCoefficient(0.3)));
 
     xbox.rightTrigger()
-        .whileTrue(
-            pipeline.runLayer("Aim at Hub", input -> input.headingTarget(launcher.getRobotYaw())));
+        .whileTrue(pipeline.runLayer("Aim", input -> input.headingTarget(launcher.getRobotYaw())));
 
     // Secondary drive command, right stick will be used to control target angular
     // position instead of angular velocity
     xbox.rightBumper()
         .whileTrue(
             pipeline.runLayer(
-                "Heading Controlled",
-                input -> input.headingStick(-xbox.getRightY(), -xbox.getRightX())));
+                "Heading", input -> input.headingStick(-xbox.getRightY(), -xbox.getRightX())));
+
+    xbox.rightBumper()
+        .multiPress(2, 0.05)
+        .toggleOnTrue(pipeline.runLayer("Hold", DriveInput::passiveHoldHeading));
 
     // Cause the robot to resist movement by forming an X shape with the swerve
     // modules. Helps prevent getting pushed around
@@ -653,7 +655,7 @@ public class RobotContainer {
                   new Pose2d(
                       AllianceMirrorUtil.applyX(FieldConstants.LinesVertical.starting),
                       FieldConstants.fieldWidth / 2.0,
-                      AllianceMirrorUtil.apply(Rotation2d.kZero)));
+                      AllianceMirrorUtil.apply(Rotation2d.k180deg)));
             }
           };
 
