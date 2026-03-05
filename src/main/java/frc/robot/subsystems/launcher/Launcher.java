@@ -18,6 +18,7 @@ import frc.robot.Constants.RobotType;
 import frc.robot.FieldConstants;
 import frc.robot.subsystems.launcher.ShotCalculator.ShotParameters;
 import frc.robot.utility.tunable.TunableNumber;
+import frc.robot.utility.tunable.TunableNumberGroup;
 import frc.robot.utility.tunable.TunableNumbers.TunableFF;
 import frc.robot.utility.tunable.TunableNumbers.TunablePID;
 import java.util.ArrayList;
@@ -36,12 +37,16 @@ public class Launcher extends SubsystemBase {
     AUTOMATIC;
   }
 
-  public final TunablePID flywheelPID =
-      new TunablePID(getName() + "/PID", LauncherConstants.FLYWHEEL_PID);
-  public final TunableFF flywheelFF = new TunableFF(getName() + "/FF", LauncherConstants.FF);
+  public static final TunableNumberGroup group = new TunableNumberGroup("Launcher");
 
-  public final TunableNumber LAUNCHER_VELOCITY_TOLERANCE =
-      new TunableNumber(getName() + "/VelocityTolerance", 5.0); // in radians per second
+  public static final TunablePID flywheelPID = group.pid("PID", LauncherConstants.FLYWHEEL_PID);
+  // new TunablePID(getName() + "/PID", LauncherConstants.FLYWHEEL_PID);
+  public static final TunableFF flywheelFF = group.ff("FF", LauncherConstants.FF);
+
+  public static final TunableNumber LAUNCHER_VELOCITY_TOLERANCE =
+      group.number("VelocityTolerance", 5.0); // in radians per second
+  public static final TunableNumber AT_GOAL_DEBOUNCE_TIME =
+      group.number("IsReadyDebounceTime", 0.1); // in seconds
 
   private final HoodIO hoodIO;
   private final HoodIOInputsAutoLogged hoodInputs = new HoodIOInputsAutoLogged();
@@ -62,7 +67,8 @@ public class Launcher extends SubsystemBase {
 
   private Rotation2d robotYaw = Rotation2d.kZero;
 
-  private final Debouncer atGoalDebouncer = new Debouncer(0.1);
+  private final Debouncer atGoalDebouncer =
+      new Debouncer(AT_GOAL_DEBOUNCE_TIME.get(), Debouncer.DebounceType.kRising);
   private boolean atGoalDebounced;
 
   public static Launcher create(RobotType robotType) {
@@ -181,6 +187,7 @@ public class Launcher extends SubsystemBase {
     flywheelPID.ifChanged(hashCode(), this::updatePID);
     flywheelFF.ifChanged(hashCode(), this::updateFF);
 
+    AT_GOAL_DEBOUNCE_TIME.ifChanged(hashCode(), atGoalDebouncer::setDebounceTime);
     atGoalDebounced = atGoalDebouncer.calculate(isReady());
 
     Pose2d robotPose = robotPoseSupplier.get();
