@@ -386,7 +386,7 @@ public class RobotContainer {
         .whileTrue(
             launcher
                 .runOnce(launcher::start)
-                .andThen(launcher.idle().until(launcher::isReady))
+                .andThen(launcher.idle().until(launcher::isReadyDebounced))
                 .andThen(hopper.runOnce(() -> hopper.setMode(HopperRunMode.FIRING)))
                 .andThen(launcher.idle())
                 .finallyDo(

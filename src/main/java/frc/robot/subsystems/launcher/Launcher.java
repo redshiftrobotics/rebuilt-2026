@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -40,7 +41,7 @@ public class Launcher extends SubsystemBase {
   public final TunableFF flywheelFF = new TunableFF(getName() + "/FF", LauncherConstants.FF);
 
   public final TunableNumber LAUNCHER_VELOCITY_TOLERANCE =
-      new TunableNumber(getName() + "/VelocityTolerance", 15.0); // in radians per second
+      new TunableNumber(getName() + "/VelocityTolerance", 5.0); // in radians per second
 
   private final HoodIO hoodIO;
   private final HoodIOInputsAutoLogged hoodInputs = new HoodIOInputsAutoLogged();
@@ -60,6 +61,9 @@ public class Launcher extends SubsystemBase {
   private AngularVelocity desiredVelocity = RadiansPerSecond.zero();
 
   private Rotation2d robotYaw = Rotation2d.kZero;
+
+  private final Debouncer atGoalDebouncer = new Debouncer(0.1);
+  private boolean atGoalDebounced;
 
   public static Launcher create(RobotType robotType) {
     switch (robotType) {
@@ -177,6 +181,8 @@ public class Launcher extends SubsystemBase {
     flywheelPID.ifChanged(hashCode(), this::updatePID);
     flywheelFF.ifChanged(hashCode(), this::updateFF);
 
+    atGoalDebounced = atGoalDebouncer.calculate(isReady());
+
     Pose2d robotPose = robotPoseSupplier.get();
 
     Translation2d hubLocation =
@@ -247,6 +253,11 @@ public class Launcher extends SubsystemBase {
       ready = ready && channelReady;
     }
     return ready;
+  }
+
+  @AutoLogOutput(key = "Launcher/isReadyDebounced")
+  public boolean isReadyDebounced() {
+    return atGoalDebounced;
   }
 
   private void updatePID() {
