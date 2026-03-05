@@ -12,7 +12,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -42,12 +41,11 @@ import frc.robot.subsystems.launcher.LauncherControlManual.ManualLaunchMode;
 import frc.robot.subsystems.led.BlinkenLEDPattern;
 import frc.robot.subsystems.led.LEDSubsystem;
 import frc.robot.subsystems.vision.AprilTagVision;
-import frc.robot.utility.AllianceMirrorUtil;
 import frc.robot.utility.Elastic;
 import frc.robot.utility.Elastic.Notification.NotificationLevel;
+import frc.robot.utility.FieldFlipUtil;
 import frc.robot.utility.HubTracker;
 import java.util.HashMap;
-import java.util.Optional;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -637,34 +635,27 @@ public class RobotContainer {
   }
 
   private void setupInitPose() {
-    drive.resetPose(
+
+    Pose2d startingPose =
+        new Pose2d(
+            FieldConstants.LinesVertical.starting,
+            FieldConstants.fieldWidth / 2.0,
+            Rotation2d.k180deg);
+
+    Pose2d staringPoseFallback =
         new Pose2d(
             new Translation2d(FieldConstants.fieldLength, FieldConstants.fieldWidth).div(2),
-            AllianceMirrorUtil.apply(Rotation2d.kCW_90deg)));
+            Rotation2d.kCW_90deg);
 
-    // Vision setup
-    if (Constants.isOnPlayingField()) {
-      vision.setAprilTagFieldLayout(FieldConstants.apriltagLayout);
-
-      Runnable initPoseRunnable =
-          () -> {
-            Optional<Alliance> alliance = DriverStation.getAlliance();
-
-            if (alliance.isPresent()) {
-              drive.resetPose(
-                  new Pose2d(
-                      AllianceMirrorUtil.applyX(FieldConstants.LinesVertical.starting),
-                      FieldConstants.fieldWidth / 2.0,
-                      AllianceMirrorUtil.apply(Rotation2d.k180deg)));
-            }
-          };
-
-      CommandScheduler.getInstance()
-          .schedule(
-              Commands.waitSeconds(0.1)
-                  .andThen(Commands.runOnce(initPoseRunnable))
-                  .ignoringDisable(true)
-                  .withName("Init Pose"));
-    }
+    CommandScheduler.getInstance()
+        .schedule(
+            Commands.waitUntil(() -> DriverStation.getAlliance().isPresent())
+                .andThen(Commands.runOnce(() -> drive.resetPose(FieldFlipUtil.apply(startingPose))))
+                .raceWith(
+                    Commands.waitSeconds(3)
+                        .andThen(Commands.runOnce(() -> drive.resetPose(staringPoseFallback))))
+                .onlyWhile(() -> drive.getRobotPose() == Pose2d.kZero)
+                .ignoringDisable(true)
+                .withName("Init Pose"));
   }
 }
