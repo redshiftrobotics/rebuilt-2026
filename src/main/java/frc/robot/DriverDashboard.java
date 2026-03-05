@@ -123,9 +123,7 @@ public class DriverDashboard {
             .orElse("--"));
     SmartDashboard.putNumber(
         "Shifts/Remaining Shift Time",
-        HubTracker.timeRemainingInCurrentShift()
-            .map(t -> t.in(Second))
-            .orElse(Double.NaN));
+        HubTracker.timeRemainingInCurrentShift().map(t -> t.in(Second)).orElse(Double.NaN));
     SmartDashboard.putBoolean("Shifts/Shift Active", HubTracker.isActive());
     SmartDashboard.putString(
         "Shifts/Shift Game State",
