@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -512,7 +511,7 @@ public class RobotContainer {
       CommandXboxController controller, double rumbleIntensity, RumbleType type) {
     return Commands.startEnd(
             () -> controller.setRumble(type, rumbleIntensity), () -> controller.setRumble(type, 0))
-        .withName("RumbleController");
+        .withName("Rumble Controller " + controller.getHID().getPort());
   }
 
   private Command rumbleController(CommandXboxController controller, double rumbleIntensity) {
@@ -521,24 +520,13 @@ public class RobotContainer {
 
   private Command rumbleControllers(double rumbleIntensity) {
     return Commands.parallel(
-        rumbleController(driverController, rumbleIntensity),
-        rumbleController(operatorController, rumbleIntensity));
+            rumbleController(driverController, rumbleIntensity),
+            rumbleController(operatorController, rumbleIntensity))
+        .withName("Rumble Both Controllers");
   }
 
   private void configureAlertTriggers() {
-    new Trigger(() -> HubTracker.isActive()).onChange(rumbleControllers(.25));
-
-    // Endgame alert triggers
-    new Trigger(
-            () ->
-                DriverStation.isTeleopEnabled()
-                    && DriverStation.getMatchTime() > 0
-                    && DriverStation.getMatchTime() <= 20)
-        .onTrue(rumbleControllers(0.5).withTimeout(0.5));
-
-    RobotModeTriggers.teleop()
-        .and(RobotBase::isReal)
-        .onChange(rumbleControllers(0.2).withTimeout(0.2));
+    new Trigger(HubTracker::isActive).onChange(rumbleControllers(1.0).withTimeout(0.25));
 
     Trigger isMatch = new Trigger(() -> DriverStation.getMatchTime() != -1);
 

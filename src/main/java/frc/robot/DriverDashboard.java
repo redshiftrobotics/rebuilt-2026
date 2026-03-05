@@ -1,5 +1,7 @@
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Second;
+
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -19,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utility.AllianceMirrorUtil;
+import frc.robot.utility.HubTracker;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -113,33 +116,17 @@ public class DriverDashboard {
 
     SmartDashboard.putString("Drive Mode", currentDriveModeName.get());
 
-    SmartDashboard.putString("Game Data", getStatusReadout());
-  }
-
-  private static String getStatusReadout() {
-    String gameData = DriverStation.getGameSpecificMessage();
-    String insight;
-
-    // The alliance will be provided as a single character representing the color of
-    // the alliance whose goal will go inactive first (i.e. 'R' = red, 'B' = blue).
-    // This alliance’s goal will be active in Shifts 2 and 4.
-    if (gameData.length() > 0) {
-      switch (gameData.charAt(0)) {
-        case 'B':
-          insight = "Red going first. Blue defending.";
-          break;
-        case 'R':
-          insight = "Blue going first. Red defending.";
-          break;
-        default:
-          insight = "Corrupted data received.";
-          break;
-      }
-    } else {
-      insight = "No data received.";
-    }
-
-    return insight;
+    SmartDashboard.putString(
+        "Shifts/Remaining Shift Time",
+        HubTracker.timeRemainingInCurrentShift()
+            .map(t -> String.format("%.1f", t.in(Second)))
+            .orElse("--"));
+    SmartDashboard.putBoolean("Shifts/Shift Active", HubTracker.isActive());
+    SmartDashboard.putString(
+        "Shifts/Shift Game State",
+        HubTracker.getCurrentShift().map(HubTracker.Shift::name).orElse("Unknown"));
+    SmartDashboard.putBoolean(
+        "Shifts/Active First?", DriverStation.getAlliance().equals(HubTracker.getAutoWinner()));
   }
 
   private static void putCustomWidgets() {
