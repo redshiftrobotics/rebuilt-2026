@@ -640,21 +640,21 @@ public class RobotContainer {
         new Pose2d(
             FieldConstants.LinesVertical.starting,
             FieldConstants.fieldWidth / 2.0,
-            Rotation2d.k180deg);
+            Rotation2d.kZero);
 
     Pose2d staringPoseFallback =
         new Pose2d(
             new Translation2d(FieldConstants.fieldLength, FieldConstants.fieldWidth).div(2),
             Rotation2d.kCW_90deg);
 
+    drive.resetPose(staringPoseFallback);
+
     CommandScheduler.getInstance()
         .schedule(
             Commands.waitUntil(() -> DriverStation.getAlliance().isPresent())
                 .andThen(Commands.runOnce(() -> drive.resetPose(FieldFlipUtil.apply(startingPose))))
-                .raceWith(
-                    Commands.waitSeconds(3)
-                        .andThen(Commands.runOnce(() -> drive.resetPose(staringPoseFallback))))
-                .onlyWhile(() -> drive.getRobotPose() == Pose2d.kZero)
+                .withTimeout(3)
+                .onlyWhile(() -> drive.getRobotPose() == staringPoseFallback)
                 .ignoringDisable(true)
                 .withName("Init Pose"));
   }
