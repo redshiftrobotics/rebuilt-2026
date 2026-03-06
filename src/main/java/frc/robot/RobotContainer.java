@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.Mode;
 import frc.robot.Constants.RobotType;
 import frc.robot.commands.DriveCharacterizationCommands;
+import frc.robot.commands.SelfDrivingCommands;
 import frc.robot.commands.pipeline.DriveInput;
 import frc.robot.commands.pipeline.DriveInputPipeline;
 import frc.robot.subsystems.climb.Climb;
@@ -274,6 +275,8 @@ public class RobotContainer {
         .debounce(1)
         .onTrue(rumbleController(xbox, 0.3).withTimeout(0.25))
         .whileTrue(drive.run(drive::stopUsingForwardArrangement).withName("Stop and Orient"));
+
+    xbox.y().whileTrue(SelfDrivingCommands.selfDriveToOtherZone(drive));
 
     // Reset the gyro heading
     xbox.start()
