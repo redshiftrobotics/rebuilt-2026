@@ -35,12 +35,21 @@ public class VisionConstants {
       new CameraConfig(
           "spencercam",
           CameraPositionName.TOP_ANGLE,
-          new Transform3d(
-              new Translation3d(
-                  Units.inchesToMeters(0.257),
-                  Units.inchesToMeters(10.015),
-                  Units.inchesToMeters(19.137)),
-              new Rotation3d(0, Units.degreesToRadians(-90 + 70), 0)));
+          fromOnShape(10.470732, -2.076919, 16.956726 + 3.710392, -20, 0));
+
+  public static Transform3d fromOnShape(
+      double xInches, double yInches, double zInches, double pitchDegrees, double yawDegrees) {
+    // x and y are flipped because of the different coordinate system conventions between OnShape
+    // and PhotonVision
+    // https://docs.wpilib.org/en/stable/docs/software/basic-programming/coordinate-system.html
+    return new Transform3d(
+        new Translation3d(
+            Units.inchesToMeters(yInches),
+            Units.inchesToMeters(xInches),
+            Units.inchesToMeters(zInches)),
+        new Rotation3d(
+            0, Units.degreesToRadians(pitchDegrees), Units.degreesToRadians(yawDegrees)));
+  }
 
   // --- Old ---
 
