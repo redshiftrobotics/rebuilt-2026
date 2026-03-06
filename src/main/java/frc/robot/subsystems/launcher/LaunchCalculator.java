@@ -287,6 +287,9 @@ public class LaunchCalculator extends VirtualSubsystem {
 
   private static final TunableNumber driveLaunchKp = launchingGroup.number("kP", 8.0);
   private static final TunableNumber driveLaunchKd = launchingGroup.number("kD", 0.5);
+  private static final TunableNumber driveControllerYawToleranceDeg =
+      launchingGroup.number("ControllerYawToleranceDeg", 1.0);
+
   private static final TunableNumber driveYawLaunchToleranceDeg =
       launchingGroup.number("YawToleranceDeg", 5.0);
   private static final TunableNumber drivePitchLaunchToleranceDeg =
@@ -324,7 +327,7 @@ public class LaunchCalculator extends VirtualSubsystem {
           if (MathUtil.isNear(
               parameters.driveAngle().getDegrees(),
               measuredRobotAngle.getDegrees(),
-              driveYawLaunchToleranceDeg.get())) {
+              driveControllerYawToleranceDeg.get())) {
             omegaOutput = 0.0;
           }
 
