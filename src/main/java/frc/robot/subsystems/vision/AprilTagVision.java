@@ -145,16 +145,9 @@ public class AprilTagVision extends SubsystemBase {
       case REBUILT_2026:
         return new AprilTagVision(
             drivetrain::getRobotPose, new CameraIOPhotonVision(VisionConstants.TOP_CAMERA_ANGLED));
-      case METALBOT_2:
-        return new AprilTagVision(
-            drivetrain::getRobotPose,
-            new CameraIOPhotonVision(VisionConstants.METAL_BOT_2_FRONT),
-            new CameraIOPhotonVision(VisionConstants.METAL_BOT_2_BACK));
       case SIM_BOT:
         return new AprilTagVision(
-            drivetrain::getRobotPose,
-            new CameraIOSim(VisionConstants.TOP_CAMERA_FLAT),
-            new CameraIOSim(VisionConstants.TOP_CAMERA_ANGLED));
+            drivetrain::getRobotPose, new CameraIOSim(VisionConstants.TOP_CAMERA_ANGLED));
       default:
         System.err.println("Default vision built");
         return new AprilTagVision(drivetrain::getRobotPose);

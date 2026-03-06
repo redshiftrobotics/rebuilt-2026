@@ -35,14 +35,14 @@
                 }
               },
               {
-                "title": "Remaining Shift Time",
+                "title": "Remaining Shift Time (Formatted)",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/Shifts/Remaining Shift Time",
+                  "topic": "/SmartDashboard/Shifts/Remaining Shift Time (Formatted)",
                   "period": 0.06,
                   "data_type": "string",
                   "show_submit_button": false
@@ -77,6 +77,22 @@
                   "period": 0.06,
                   "data_type": "string",
                   "show_submit_button": false
+                }
+              },
+              {
+                "title": "Remaining Shift Time",
+                "x": 1088.0,
+                "y": 448.0,
+                "width": 256.0,
+                "height": 128.0,
+                "type": "Match Time",
+                "properties": {
+                  "topic": "/SmartDashboard/Shifts/Remaining Shift Time",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "time_display_mode": "Seconds Only",
+                  "red_start_time": 3,
+                  "yellow_start_time": 10
                 }
               }
             ]
@@ -118,8 +134,8 @@
               "topic": "/AdvantageKit/SystemStats/BrownedOut",
               "period": 0.06,
               "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
+              "true_color": 4294924544,
+              "false_color": 4278190080,
               "true_icon": "None",
               "false_icon": "None"
             }
@@ -193,54 +209,10 @@
               "topic": "/SmartDashboard/Has Vision",
               "period": 0.06,
               "data_type": "boolean",
-              "true_color": 4283215696,
+              "true_color": 4279126544,
               "false_color": 4278190080,
               "true_icon": "None",
               "false_icon": "None"
-            }
-          },
-          {
-            "title": "Game Time",
-            "x": 1024.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Match Time",
-            "properties": {
-              "topic": "/SmartDashboard/Game Time",
-              "period": 0.06,
-              "data_type": "double",
-              "time_display_mode": "Minutes and Seconds",
-              "red_start_time": 15,
-              "yellow_start_time": 30
-            }
-          },
-          {
-            "title": "mode",
-            "x": 768.0,
-            "y": 256.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Intake/mode",
-              "period": 0.06,
-              "data_type": "string",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "mode",
-            "x": 768.0,
-            "y": 384.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Hopper/mode",
-              "period": 0.06,
-              "data_type": "string",
-              "show_submit_button": false
             }
           },
           {
@@ -249,12 +221,11 @@
             "y": 256.0,
             "width": 128.0,
             "height": 128.0,
-            "type": "Text Display",
+            "type": "Large Text Display",
             "properties": {
               "topic": "/AdvantageKit/RealOutputs/Launcher/averageVelocity",
               "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
+              "data_type": "double"
             }
           },
           {
@@ -280,34 +251,16 @@
             "y": 256.0,
             "width": 128.0,
             "height": 128.0,
-            "type": "Text Display",
+            "type": "Large Text Display",
             "properties": {
               "topic": "/AdvantageKit/RealOutputs/Launcher/desiredVelocity",
               "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "isRunning",
-            "x": 384.0,
-            "y": 384.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Boolean Box",
-            "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Launcher/isRunning",
-              "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
+              "data_type": "double"
             }
           },
           {
             "title": "manualLaunchMode",
-            "x": 640.0,
+            "x": 512.0,
             "y": 384.0,
             "width": 128.0,
             "height": 128.0,
@@ -321,7 +274,7 @@
           },
           {
             "title": "runMode",
-            "x": 512.0,
+            "x": 384.0,
             "y": 384.0,
             "width": 128.0,
             "height": 128.0,
@@ -351,6 +304,22 @@
               "robot_color": 4294198070,
               "trajectory_color": 4294967295,
               "show_robot_outside_widget": true
+            }
+          },
+          {
+            "title": "Game Time",
+            "x": 1024.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Match Time",
+            "properties": {
+              "topic": "/SmartDashboard/Game Time",
+              "period": 0.06,
+              "data_type": "double",
+              "time_display_mode": "Minutes and Seconds",
+              "red_start_time": 15,
+              "yellow_start_time": 30
             }
           }
         ]
@@ -436,23 +405,6 @@
             }
           },
           {
-            "title": "Has Vision",
-            "x": 896.0,
-            "y": 0.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Boolean Box",
-            "properties": {
-              "topic": "/SmartDashboard/Has Vision",
-              "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4279990047,
-              "false_color": 4278190080,
-              "true_icon": "None",
-              "false_icon": "None"
-            }
-          },
-          {
             "title": "BrakeModeEnabled",
             "x": 896.0,
             "y": 128.0,
@@ -480,23 +432,6 @@
               "topic": "/AdvantageKit/SystemStats/CommsDisableCount",
               "period": 0.06,
               "data_type": "int"
-            }
-          },
-          {
-            "title": "BrownedOut",
-            "x": 1408.0,
-            "y": 0.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Boolean Box",
-            "properties": {
-              "topic": "/AdvantageKit/SystemStats/BrownedOut",
-              "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
             }
           },
           {
@@ -543,6 +478,40 @@
               "divisions": 4,
               "inverted": false,
               "orientation": "vertical"
+            }
+          },
+          {
+            "title": "Has Vision",
+            "x": 896.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/SmartDashboard/Has Vision",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4279126544,
+              "false_color": 4278190080,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "BrownedOut",
+            "x": 1408.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/SystemStats/BrownedOut",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4294924544,
+              "false_color": 4278190080,
+              "true_icon": "None",
+              "false_icon": "None"
             }
           }
         ]
@@ -1340,23 +1309,6 @@
             }
           },
           {
-            "title": "BrownedOut",
-            "x": 640.0,
-            "y": 0.0,
-            "width": 512.0,
-            "height": 128.0,
-            "type": "Boolean Box",
-            "properties": {
-              "topic": "/AdvantageKit/SystemStats/BrownedOut",
-              "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
-            }
-          },
-          {
             "title": "BrownoutVoltage",
             "x": 1152.0,
             "y": 0.0,
@@ -1394,6 +1346,23 @@
               "period": 0.06,
               "data_type": "int",
               "show_submit_button": false
+            }
+          },
+          {
+            "title": "BrownedOut",
+            "x": 640.0,
+            "y": 0.0,
+            "width": 512.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/SystemStats/BrownedOut",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4294924544,
+              "false_color": 4278190080,
+              "true_icon": "None",
+              "false_icon": "None"
             }
           }
         ]

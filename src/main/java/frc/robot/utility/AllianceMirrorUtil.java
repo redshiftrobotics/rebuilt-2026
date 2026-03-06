@@ -25,11 +25,11 @@ public class AllianceMirrorUtil {
 
   private AllianceMirrorUtil() {}
 
-  private static double applyX(double x) {
+  public static double applyX(double x) {
     return shouldFlip() ? FieldConstants.fieldLength - x : x;
   }
 
-  private static double applyY(double y) {
+  public static double applyY(double y) {
     return shouldFlip() ? FieldConstants.fieldWidth - y : y;
   }
 

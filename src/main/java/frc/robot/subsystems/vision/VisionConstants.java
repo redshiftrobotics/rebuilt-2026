@@ -33,25 +33,24 @@ public class VisionConstants {
 
   public static final CameraConfig TOP_CAMERA_ANGLED =
       new CameraConfig(
-          "neilcam",
+          "spencercam",
           CameraPositionName.TOP_ANGLE,
-          new Transform3d(
-              new Translation3d(
-                  Units.inchesToMeters(0.257),
-                  Units.inchesToMeters(10.015),
-                  Units.inchesToMeters(19.137)),
-              new Rotation3d(0, Units.degreesToRadians(-90 + 70), 0)));
+          fromOnShape(10.470732, -2.076919, 16.956726 + 3.710392, -20, 0));
 
-  public static final CameraConfig TOP_CAMERA_FLAT =
-      new CameraConfig(
-          "a2",
-          CameraPositionName.TOP_FLAT,
-          new Transform3d(
-              new Translation3d(
-                  Units.inchesToMeters(0.158),
-                  Units.inchesToMeters(-10.015),
-                  Units.inchesToMeters(18.096)),
-              new Rotation3d(0, Units.degreesToRadians(0), 0)));
+  public static Transform3d fromOnShape(
+      double xInches, double yInches, double zInches, double pitchDegrees, double yawDegrees) {
+    // x and y are flipped because of the different coordinate system conventions between OnShape
+    // and PhotonVision
+    // https://docs.wpilib.org/en/stable/docs/software/basic-programming/coordinate-system.html
+    return new Transform3d(
+        new Translation3d(
+            Units.inchesToMeters(yInches),
+            Units.inchesToMeters(xInches),
+            Units.inchesToMeters(zInches)),
+        new Rotation3d(
+            0, Units.degreesToRadians(pitchDegrees), Units.degreesToRadians(yawDegrees)));
+  }
+
   // --- Old ---
 
   public static final CameraConfig SIM_FRONT_CAMERA =
@@ -97,18 +96,4 @@ public class VisionConstants {
               new Translation3d(
                   Units.inchesToMeters(-12.5), Units.inchesToMeters(-8), Units.inchesToMeters(8)),
               new Rotation3d(0, Units.degreesToRadians(-20), Units.degreesToRadians(-225))));
-  public static final CameraConfig METAL_BOT_2_FRONT =
-      new CameraConfig(
-          "neilcam",
-          CameraPositionName.FRONT,
-          new Transform3d(
-              new Translation3d(Units.inchesToMeters(28.5 / 2.0), 0, Units.inchesToMeters(7.6)),
-              new Rotation3d(0, Units.degreesToRadians(0), 0)));
-  public static final CameraConfig METAL_BOT_2_BACK =
-      new CameraConfig(
-          "geraldcam",
-          CameraPositionName.BACK,
-          new Transform3d(
-              new Translation3d(-Units.inchesToMeters(28.5 / 2.0), 0, Units.inchesToMeters(7.6)),
-              new Rotation3d(0, Units.degreesToRadians(0), 0)));
 }
