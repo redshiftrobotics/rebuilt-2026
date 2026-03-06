@@ -236,7 +236,7 @@ public class RobotContainer {
         .toggleOnTrue(pipeline.runLayer("Robot Relative", DriveInput::fieldRelativeDisabled));
 
     // Secondary drive command, use driving stick to control angle as well
-    xbox.leftTrigger().whileTrue(pipeline.runLayer("Locust", DriveInput::locustMode));
+    xbox.leftTrigger().whileTrue(pipeline.runLayer("Intake", DriveInput::locustMode));
 
     // Slow mode, reduce translation and rotation speeds for fine control
     xbox.leftBumper()
@@ -244,10 +244,6 @@ public class RobotContainer {
             pipeline.runLayer(
                 "Slow", input -> input.linearCoefficient(0.3).angularCoefficient(0.3)));
 
-    // xbox.rightTrigger()
-    //     .whileTrue(
-    //         pipeline.runLayer("Aim at Hub", input ->
-    // input.headingTarget(launcher.getRobotYaw())));
     xbox.rightTrigger().whileTrue(aimDrive);
 
     // Secondary drive command, right stick will be used to control target angular
