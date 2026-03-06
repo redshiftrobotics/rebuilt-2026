@@ -103,9 +103,6 @@ public class ChannelIOSim implements ChannelIO {
   }
 
   @Override
-  public void setBrakeMode(boolean enable) {}
-
-  @Override
   public void stop() {
     setOpenLoop(0);
   }
