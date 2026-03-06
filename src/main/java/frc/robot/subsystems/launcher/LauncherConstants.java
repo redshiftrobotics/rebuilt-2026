@@ -12,6 +12,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.units.measure.MomentOfInertia;
@@ -29,6 +31,7 @@ public class LauncherConstants {
   public record ChannelConstants(int deviceId, double gearRatio, boolean inverted) {}
 
   public static final DCMotor motor = DCMotor.getKrakenX60(1);
+  public static final DCMotor motor = DCMotor.getKrakenX60(1);
   public static final ChannelConstants LEFT_CONSTANTS = new ChannelConstants(3, 1, false);
   public static final ChannelConstants CENTER_CONSTANTS = new ChannelConstants(15, 1, false);
   public static final ChannelConstants RIGHT_CONSTANTS = new ChannelConstants(4, 1, true);
@@ -41,6 +44,8 @@ public class LauncherConstants {
       };
   public static final FeedForwardConfigRecord FF =
       switch (Constants.getRobot()) {
+        case REBUILT_2026 -> new FeedForwardConfigRecord(
+            0.0, 12.0 / Units.radiansToRotations(motor.freeSpeedRadPerSec), 0.0);
         case REBUILT_2026 -> new FeedForwardConfigRecord(
             0.0, 12.0 / Units.radiansToRotations(motor.freeSpeedRadPerSec), 0.0);
         case SIM_BOT -> new FeedForwardConfigRecord(0.0, 0.019, 0.0);

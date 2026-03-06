@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -19,6 +20,7 @@ import frc.robot.FieldConstants;
 import frc.robot.subsystems.launcher.LaunchCalculator.LaunchingParameters;
 import frc.robot.subsystems.launcher.MathematicalShotCalculator.ShotParameters;
 import frc.robot.utility.tunable.TunableNumber;
+import frc.robot.utility.tunable.TunableNumberGroup;
 import frc.robot.utility.tunable.TunableNumbers.TunableFF;
 import frc.robot.utility.tunable.TunableNumbers.TunablePID;
 import java.util.ArrayList;
@@ -73,6 +75,10 @@ public class Launcher extends SubsystemBase {
   private LauncherState measuredState = LauncherState.zero();
 
   private Rotation2d robotYaw = Rotation2d.kZero;
+
+  private final Debouncer atGoalDebouncer =
+      new Debouncer(atGoalDebounceTime.get(), Debouncer.DebounceType.kRising);
+  private boolean atGoalDebounced;
 
   public static Launcher create(RobotType robotType) {
     switch (robotType) {
@@ -181,6 +187,9 @@ public class Launcher extends SubsystemBase {
 
     flywheelPID.ifChanged(hashCode(), this::updatePID);
     flywheelFF.ifChanged(hashCode(), this::updateFF);
+
+    atGoalDebounceTime.ifChanged(hashCode(), atGoalDebouncer::setDebounceTime);
+    atGoalDebounced = atGoalDebouncer.calculate(isReady());
 
     Pose2d robotPose = robotPoseSupplier.get();
     ChassisSpeeds robotRelativeVelocity = robotVelocitySupplier.get();

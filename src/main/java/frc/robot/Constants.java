@@ -121,6 +121,7 @@ public final class Constants {
         case "03238024":
           return RobotType.METALBOT_2;
         case "0240C1FA":
+        case "0240570E":
           return RobotType.REBUILT_2026;
         default:
           unrecognizedRobotType.set(true);

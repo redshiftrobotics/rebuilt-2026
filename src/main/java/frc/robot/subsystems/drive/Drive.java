@@ -70,8 +70,8 @@ public class Drive extends SubsystemBase {
 
   private SwerveModulePosition[] lastModulePositions;
 
-  private Rotation2d rawGyroRotation = new Rotation2d();
-  private Pose2d robotPose = new Pose2d();
+  private Rotation2d rawGyroRotation = Rotation2d.kZero;
+  private Pose2d robotPose = Pose2d.kZero;
   private ChassisSpeeds robotSpeeds = new ChassisSpeeds();
 
   /**
