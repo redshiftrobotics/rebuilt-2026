@@ -45,9 +45,6 @@ public interface ChannelIO {
   /** Configure FF */
   public default void setFF(FeedForwardConfigRecord ffConfig) {}
 
-  /** Enable or disable brake mode on the motor. */
-  public default void setBrakeMode(boolean enable) {}
-
   /** Disable output to brake and turn motor */
   public default void stop() {}
 }

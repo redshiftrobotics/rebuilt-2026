@@ -18,7 +18,6 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
@@ -31,10 +30,15 @@ import frc.robot.utility.records.PIDConfig;
 /** Hardware implementation of the TemplateIO. */
 public class ChannelIOTalonFX implements ChannelIO {
 
-  public static final double PEAK_REVERSE_PERCENTAGE = 0; // TODO COMP TESTING CHANGE
-  public static final double RAMP_RATE_SECONDS = 0;
-  public static final boolean BRAKE_MODE = false;
-  public static final double STALL_CURRENT = 120.0; // in amps
+  public enum OutputType {
+    Voltage,
+    TorqueCurrentFOC
+  }
+
+  public static final double PEAK_REVERSE_PERCENTAGE = 0;
+  public static final double STALL_CURRENT_LIMIT = 120.0; // in amps
+  public static final double SUPPLY_CURRENT_LIMIT = 70.0; // in amps
+  private static final OutputType OUTPUT_TYPE = OutputType.Voltage;
 
   private final String name;
   private final TalonFX motor;
@@ -47,7 +51,6 @@ public class ChannelIOTalonFX implements ChannelIO {
   private final VelocityTorqueCurrentFOC velocityTorqueCurrentRequest =
       new VelocityTorqueCurrentFOC(0.0);
 
-  private final StatusSignal<Angle> position;
   private final StatusSignal<AngularVelocity> velocity;
   private final StatusSignal<Voltage> appliedVolts;
   private final StatusSignal<Current> current;
@@ -55,51 +58,34 @@ public class ChannelIOTalonFX implements ChannelIO {
 
   private boolean pushedConfigFault = false;
 
-  public enum OutputType {
-    Voltage,
-    TorqueCurrentFOC
-  }
-
-  private final OutputType outputType;
-
-  private boolean brakeMode = true;
-
   private final Debouncer connectedDebouncer = new Debouncer(0.5);
 
   public ChannelIOTalonFX(String name, ChannelConstants constants) {
-    this(name, constants, OutputType.TorqueCurrentFOC);
-  }
-
-  public ChannelIOTalonFX(String name, ChannelConstants constants, OutputType outputType) {
     this.name = name;
     motor = new TalonFX(constants.deviceId());
-    brakeMode = BRAKE_MODE;
-    this.outputType = outputType;
 
-    config.MotorOutput.NeutralMode = brakeMode ? NeutralModeValue.Brake : NeutralModeValue.Coast;
+    config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     config.Slot0 = new Slot0Configs();
     config.Feedback.SensorToMechanismRatio = constants.gearRatio();
-    config.TorqueCurrent.PeakForwardTorqueCurrent = STALL_CURRENT;
-    config.TorqueCurrent.PeakReverseTorqueCurrent = STALL_CURRENT * PEAK_REVERSE_PERCENTAGE;
-    config.CurrentLimits.StatorCurrentLimit = STALL_CURRENT;
+
+    config.CurrentLimits.StatorCurrentLimit = STALL_CURRENT_LIMIT;
     config.CurrentLimits.StatorCurrentLimitEnable = true;
     config.MotorOutput.Inverted =
         constants.inverted()
             ? InvertedValue.Clockwise_Positive
             : InvertedValue.CounterClockwise_Positive;
 
+    config.CurrentLimits.SupplyCurrentLimit = SUPPLY_CURRENT_LIMIT;
+    config.CurrentLimits.SupplyCurrentLimitEnable = true;
+
     config.Audio.BeepOnBoot = Constants.TALON_BEEP_ON_BOOT;
     config.Audio.BeepOnConfig = Constants.TALON_BEEP_ON_CONFIG;
 
-    config.MotorOutput.PeakForwardDutyCycle = 1.0;
-    config.MotorOutput.PeakReverseDutyCycle = -1.0 * PEAK_REVERSE_PERCENTAGE;
-
-    config.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = RAMP_RATE_SECONDS;
-    config.ClosedLoopRamps.TorqueClosedLoopRampPeriod = RAMP_RATE_SECONDS;
+    config.Voltage.PeakReverseVoltage *= PEAK_REVERSE_PERCENTAGE;
+    config.TorqueCurrent.PeakReverseTorqueCurrent *= PEAK_REVERSE_PERCENTAGE;
 
     pushConfig();
 
-    position = motor.getPosition();
     velocity = motor.getVelocity();
     appliedVolts = motor.getMotorVoltage();
     current = motor.getStatorCurrent();
@@ -115,8 +101,7 @@ public class ChannelIOTalonFX implements ChannelIO {
 
   @Override
   public void updateInputs(ChannelIOInputs inputs) {
-    StatusCode status =
-        BaseStatusSignal.refreshAll(position, velocity, appliedVolts, current, dutyCycle);
+    StatusCode status = BaseStatusSignal.refreshAll(velocity, appliedVolts, current, dutyCycle);
 
     inputs.motorConnected = connectedDebouncer.calculate(status.isOK());
     inputs.velocityRadPerSec = Units.rotationsToRadians(velocity.getValueAsDouble());
@@ -134,7 +119,7 @@ public class ChannelIOTalonFX implements ChannelIO {
   @Override
   public void setOpenLoop(double output) {
     motor.setControl(
-        switch (outputType) {
+        switch (OUTPUT_TYPE) {
           case Voltage -> voltageRequest.withOutput(output);
           case TorqueCurrentFOC -> torqueCurrentRequest.withOutput(output);
         });
@@ -142,32 +127,22 @@ public class ChannelIOTalonFX implements ChannelIO {
 
   @Override
   public void setVelocity(AngularVelocity velocity, double arbFeedforward) {
-    double velocityRotPerSec = velocity.in(RotationsPerSecond);
     SmartDashboard.putString(
-        "Flywheel Debug", "RadPerSec " + String.valueOf(velocity.in(RotationsPerSecond)));
+        "Flywheel Debug", "RotPerSec " + String.valueOf(velocity.in(RotationsPerSecond)));
     motor.setControl(
-        switch (outputType) {
+        switch (OUTPUT_TYPE) {
           case Voltage -> velocityVoltageRequest
-              .withVelocity(velocityRotPerSec)
+              .withVelocity(velocity)
               .withFeedForward(arbFeedforward);
           case TorqueCurrentFOC -> velocityTorqueCurrentRequest
-              .withVelocity(velocityRotPerSec)
+              .withVelocity(velocity)
               .withFeedForward(arbFeedforward);
         });
   }
 
   @Override
-  public void setBrakeMode(boolean enable) {
-    if (this.brakeMode != enable) {
-      this.brakeMode = enable;
-      motor.setNeutralMode(enable ? NeutralModeValue.Brake : NeutralModeValue.Coast);
-    }
-  }
-
-  @Override
   public void setPID(PIDConfig pid) {
     SmartDashboard.putString("Launcher PID Debug", pid.toString());
-    System.out.println("Launcher PID Debug Set " + pid.toString());
     config.Slot0.kP = pid.kP();
     config.Slot0.kI = pid.kI();
     config.Slot0.kD = pid.kD();
@@ -177,7 +152,6 @@ public class ChannelIOTalonFX implements ChannelIO {
   @Override
   public void setFF(FeedForwardConfigRecord ffConfig) {
     SmartDashboard.putString("Launcher FF Debug", ffConfig.toString());
-    System.out.println("Launcher PID Debug Set " + ffConfig.toString());
     config.Slot0.kS = ffConfig.kS();
     config.Slot0.kV = ffConfig.kV();
     config.Slot0.kA = ffConfig.kA();
