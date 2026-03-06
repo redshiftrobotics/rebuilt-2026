@@ -1,5 +1,7 @@
 package frc.robot;
 
+import com.pathplanner.lib.commands.PathfindingCommand;
+import com.pathplanner.lib.pathfinding.Pathfinding;
 import edu.wpi.first.hal.AllianceStationID;
 import edu.wpi.first.hal.can.CANStatus;
 import edu.wpi.first.wpilibj.Alert;
@@ -11,6 +13,7 @@ import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.RobotType;
+import frc.robot.utility.LocalADStarAK;
 import frc.robot.utility.VirtualSubsystem;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -70,6 +73,9 @@ public class Robot extends LoggedRobot {
           default -> "Unknown";
         });
 
+    // Tell the Pathfinding system to use an AdvantageKit compatible pathfinder
+    Pathfinding.setPathfinder(new LocalADStarAK());
+
     // Set up data receivers & replay source
     switch (Constants.getMode()) {
       case REAL:
@@ -105,7 +111,8 @@ public class Robot extends LoggedRobot {
     disabledTimer.restart();
     canErrorTimer.restart();
 
-    // Set the voltage the roboRIO will brownout and disable all outputs. (Only works on roboRIO 2s)
+    // Set the voltage the roboRIO will brownout and disable all outputs. (Only
+    // works on roboRIO 2s)
     RobotController.setBrownoutVoltage(6.0);
 
     // Configure DriverStation for sim
@@ -114,11 +121,16 @@ public class Robot extends LoggedRobot {
       DriverStationSim.notifyNewData();
     }
 
-    // Instantiate our RobotContainer. This will perform all our button bindings,
-    // and put our autonomous chooser on the dashboard.
+    // Instantiate our RobotContainer, the backbone of the command framework.
     robotContainer = new RobotContainer();
 
+    // Set up our dashboard for monitoring.
     DriverDashboard.initDashboard();
+
+    // Due to the nature of Java, the first run of a pathfinding command could have
+    // a significantly higher delay compared with subsequent runs. To alleviate this
+    // issue, we run a warmup command in the background when code starts.
+    CommandScheduler.getInstance().schedule(PathfindingCommand.warmupCommand());
   }
 
   /** This function is called periodically during all modes. */
