@@ -39,7 +39,7 @@ public final class Constants {
   private static final boolean IS_ON_PLAYING_FIELD = true;
 
   /** If true, enables demo mode features throughout the codebase. */
-  private static final boolean DEMO_MODE = true;
+  private static final boolean DEMO_MODE = false;
 
   /** Talon noises */
   public static final boolean TALON_BEEP_ON_CONFIG = false;
@@ -80,6 +80,7 @@ public final class Constants {
     return DriverStation.isFMSAttached() || IS_ON_PLAYING_FIELD;
   }
 
+  @SuppressWarnings("unused")
   public static boolean isDemoMode() {
     return DEMO_MODE && !DriverStation.isFMSAttached();
   }

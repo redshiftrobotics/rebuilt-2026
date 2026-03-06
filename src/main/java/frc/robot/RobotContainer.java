@@ -8,7 +8,6 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -32,6 +31,7 @@ import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.hopper.HopperConstants.HopperRunMode;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeRunMode;
+import frc.robot.subsystems.launcher.LaunchCalculator;
 import frc.robot.subsystems.launcher.Launcher;
 import frc.robot.subsystems.launcher.Launcher.LauncherRunMode;
 import frc.robot.subsystems.launcher.LauncherConstants;
@@ -132,14 +132,7 @@ public class RobotContainer {
                 BlinkenLEDPattern.WHITE)
             .withName("LED Alliance Color Waves"));
 
-    launcher.configure(
-        drive::getRobotPose,
-        () -> {
-          Rotation2d robotAngle = drive.getRobotPose().getRotation();
-          ChassisSpeeds speeds =
-              ChassisSpeeds.fromRobotRelativeSpeeds(drive.getRobotSpeeds(), robotAngle);
-          return new Translation2d(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond);
-        });
+    launcher.configure(drive::getRobotPose, drive::getRobotSpeeds);
 
     // Alerts for constants to avoid using them in competition
     developmentModeActiveAlert.set(Constants.DEVELOPMENT_MODE);
@@ -210,17 +203,22 @@ public class RobotContainer {
     final DriveInputPipeline pipeline = new DriveInputPipeline(drive, baseDrive);
 
     // Default command, normal joystick drive
-    drive.setDefaultCommand(
-        drive
-            .run(() -> drive.setRobotSpeeds(pipeline.getChassisSpeeds()))
-            .finallyDo(drive::stop)
-            .withName("Pipeline Drive"));
+
+    final Command aimDrive =
+        LaunchCalculator.driveWhileLaunching(drive, pipeline::getChassisSpeeds);
+
+    drive.setDefaultCommand(drive
+        .run(() -> drive.setRobotSpeeds(pipeline.getChassisSpeeds()))
+        .finallyDo(drive::stop)
+        .withName("Pipeline Drive"));
 
     DriverDashboard.currentDriveModeName =
         () -> {
           Command current = drive.getCurrentCommand();
           if (current == drive.getDefaultCommand()) {
             return "[" + pipeline.getLayerInfo() + "]";
+          } else if (current == aimDrive) {
+            return "Aim[" + pipeline.getLayerInfo() + "]";
           } else if (current != null) {
             return current.getName();
           } else if (DriverStation.isDisabled()) {
@@ -243,9 +241,11 @@ public class RobotContainer {
             pipeline.runLayer(
                 "Slow Mode", input -> input.linearCoefficient(0.3).angularCoefficient(0.3)));
 
-    xbox.rightTrigger()
-        .whileTrue(
-            pipeline.runLayer("Aim at Hub", input -> input.headingTarget(launcher.getRobotYaw())));
+    // xbox.rightTrigger()
+    //     .whileTrue(
+    //         pipeline.runLayer("Aim at Hub", input ->
+    // input.headingTarget(launcher.getRobotYaw())));
+    xbox.rightTrigger().onTrue(aimDrive);
 
     // Secondary drive command, right stick will be used to control target angular
     // position instead of angular velocity
@@ -306,7 +306,7 @@ public class RobotContainer {
 
     launcher.setManualModeVelocitySupplier(manualLaunchControl::get);
     launcher.setManualModeAngleSupplier(() -> LauncherConstants.FIXED_LAUNCH_ANGLE);
-    launcher.setMode(LauncherRunMode.MANUAL);
+    launcher.setMode(LauncherRunMode.INTERPOLATION);
 
     final Trigger manualLaunch = xbox.back();
     final Trigger resetShift = xbox.start().debounce(0.01);
@@ -446,7 +446,7 @@ public class RobotContainer {
         .multiPress(2, 0.2)
         .toggleOnTrue(
             Commands.startEnd(
-                    () -> launcher.setMode(LauncherRunMode.AUTOMATIC),
+                    () -> launcher.setMode(LauncherRunMode.INTERPOLATION),
                     () -> launcher.setMode(LauncherRunMode.MANUAL))
                 .ignoringDisable(true)
                 .withName("Automatic Launch Preferred Mode"));

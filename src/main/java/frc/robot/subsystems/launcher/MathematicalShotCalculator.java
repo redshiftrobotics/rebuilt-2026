@@ -5,10 +5,11 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.LinearVelocity;
 import java.util.function.Function;
 
-public class ShotCalculator {
+public class MathematicalShotCalculator {
   public record ShotParameters(LinearVelocity velocity, Rotation2d pitch) {
     @Override
     public final String toString() {
@@ -51,6 +52,11 @@ public class ShotCalculator {
                             + LauncherConstants.LAUNCHER_Z_OFFSET.in(Meters))))
             / pitch.getCos();
     return MetersPerSecond.of(velocity);
+  }
+
+  public static Rotation2d calculatePitch(double distanceMeters) {
+    // Formula from experimentation
+    return Rotation2d.fromDegrees(75.0 - 15.0 * Math.tanh(2.0 * Units.metersToFeet(distanceMeters) / 25.0));
   }
 
   public static double timeOfFlight(ShotParameters parameters, Translation2d hubPosition) {
