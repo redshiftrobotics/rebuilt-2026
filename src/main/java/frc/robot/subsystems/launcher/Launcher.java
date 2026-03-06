@@ -40,12 +40,11 @@ public class Launcher extends SubsystemBase {
   public static final TunableNumberGroup group = new TunableNumberGroup("Launcher");
 
   public static final TunablePID flywheelPID = group.pid("PID", LauncherConstants.FLYWHEEL_PID);
-  // new TunablePID(getName() + "/PID", LauncherConstants.FLYWHEEL_PID);
   public static final TunableFF flywheelFF = group.ff("FF", LauncherConstants.FF);
 
-  public static final TunableNumber LAUNCHER_VELOCITY_TOLERANCE =
+  public static final TunableNumber launcherVelocityTolerance =
       group.number("VelocityTolerance", 5.0); // in radians per second
-  public static final TunableNumber AT_GOAL_DEBOUNCE_TIME =
+  public static final TunableNumber atGoalDebounceTime =
       group.number("IsReadyDebounceTime", 0.1); // in seconds
 
   private final HoodIO hoodIO;
@@ -68,7 +67,7 @@ public class Launcher extends SubsystemBase {
   private Rotation2d robotYaw = Rotation2d.kZero;
 
   private final Debouncer atGoalDebouncer =
-      new Debouncer(AT_GOAL_DEBOUNCE_TIME.get(), Debouncer.DebounceType.kRising);
+      new Debouncer(atGoalDebounceTime.get(), Debouncer.DebounceType.kRising);
   private boolean atGoalDebounced;
 
   public static Launcher create(RobotType robotType) {
@@ -187,7 +186,7 @@ public class Launcher extends SubsystemBase {
     flywheelPID.ifChanged(hashCode(), this::updatePID);
     flywheelFF.ifChanged(hashCode(), this::updateFF);
 
-    AT_GOAL_DEBOUNCE_TIME.ifChanged(hashCode(), atGoalDebouncer::setDebounceTime);
+    atGoalDebounceTime.ifChanged(hashCode(), atGoalDebouncer::setDebounceTime);
     atGoalDebounced = atGoalDebouncer.calculate(isReady());
 
     Pose2d robotPose = robotPoseSupplier.get();
@@ -256,7 +255,7 @@ public class Launcher extends SubsystemBase {
           MathUtil.isNear(
               desiredVelocity.in(RadiansPerSecond),
               channelIO.velocityRadPerSec,
-              LAUNCHER_VELOCITY_TOLERANCE.get());
+              launcherVelocityTolerance.get());
       ready = ready && channelReady;
     }
     return ready;

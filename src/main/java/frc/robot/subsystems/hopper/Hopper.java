@@ -32,7 +32,7 @@ public class Hopper extends SubsystemBase {
   /* Run mode storage */
   private HopperRunMode runMode = HopperRunMode.STOPPED;
 
-  /* Tunable numbers (you're welcome Aceius) */
+  /* Tunable numbers */
   private static final TunableNumberGroup lifterGains = new TunableNumberGroup("Hopper");
   private static final TunablePID lifterPID =
       lifterGains.pid("Lifter_PID", HopperConstants.LIFTER_FEEDBACK);

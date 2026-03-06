@@ -635,7 +635,6 @@ public class RobotContainer {
   }
 
   private void setupInitPose() {
-
     Pose2d startingPose =
         new Pose2d(
             FieldConstants.LinesVertical.starting,
