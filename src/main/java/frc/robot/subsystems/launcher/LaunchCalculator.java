@@ -7,6 +7,8 @@
 
 package frc.robot.subsystems.launcher;
 
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -32,9 +34,6 @@ import frc.robot.utility.geometry.AllianceMirrorUtil;
 import frc.robot.utility.geometry.GeomUtil;
 import frc.robot.utility.tunable.TunableNumber;
 import frc.robot.utility.tunable.TunableNumberGroup;
-
-import static edu.wpi.first.units.Units.RadiansPerSecond;
-
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 

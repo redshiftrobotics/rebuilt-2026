@@ -37,19 +37,21 @@ public class Launcher extends SubsystemBase {
     INTERPOLATION;
   }
 
-  public record LauncherState(
-    AngularVelocity flywheelVelocity,
-    double hoodAngle,
-    Rotation2d robotYaw
-  ) {
+  public record LauncherState(AngularVelocity flywheelVelocity, Rotation2d hoodAngle) {
+    public static LauncherState zero() {
+      return new LauncherState(RadiansPerSecond.zero(), Rotation2d.kZero);
+    }
   }
 
   public final TunablePID flywheelPID =
       new TunablePID(getName() + "/PID", LauncherConstants.FLYWHEEL_PID);
   public final TunableFF flywheelFF = new TunableFF(getName() + "/FF", LauncherConstants.FF);
 
-  public final TunableNumber LAUNCHER_VELOCITY_TOLERANCE =
-      new TunableNumber(getName() + "/VelocityTolerance", 15.0); // in radians per second
+  public final TunableNumber LAUNCHER_VELOCITY_TOLERANCE_RAD_PER_SEC =
+      new TunableNumber(getName() + "/VelocityToleranceRadPerSec", 15.0);
+
+  public static TunableNumber HOOD_ANGLE_TOLERANCE_DEG =
+      new TunableNumber("Launcher/HoodAngleToleranceDeg", 2.0);
 
   private final HoodIO hoodIO;
   private final HoodIOInputsAutoLogged hoodInputs = new HoodIOInputsAutoLogged();
@@ -64,9 +66,11 @@ public class Launcher extends SubsystemBase {
   private boolean running = false;
   private LauncherRunMode mode = LauncherRunMode.MANUAL;
 
-  private Supplier<AngularVelocity> manualModeDesiredVelocity = () -> RadiansPerSecond.zero();
-  private Supplier<Rotation2d> manualModeDesiredAngle = () -> LauncherConstants.FIXED_LAUNCH_ANGLE;
-  private AngularVelocity desiredVelocity = RadiansPerSecond.zero();
+  private Supplier<LauncherState> manualModeState = () -> LauncherState.zero();
+
+  private LauncherState runningDesiredState = LauncherState.zero();
+  private LauncherState desiredState = LauncherState.zero();
+  private LauncherState measuredState = LauncherState.zero();
 
   private Rotation2d robotYaw = Rotation2d.kZero;
 
@@ -112,40 +116,21 @@ public class Launcher extends SubsystemBase {
     stop();
   }
 
-  public void setManualModeVelocitySupplier(Supplier<AngularVelocity> setpoint) {
-    this.manualModeDesiredVelocity = setpoint;
-  }
-
-  public void setManualModeAngleSupplier(Supplier<Rotation2d> setpoint) {
-    this.manualModeDesiredAngle = setpoint;
-  }
-
-  public void setDutyCycle(double dutyCycle) {
-    desiredVelocity = RadiansPerSecond.zero();
-    for (ChannelIO channel : channelIOs) {
-      channel.setDutyCycle(dutyCycle);
-    }
+  public void setManualModeState(Supplier<LauncherState> manualModeState) {
+    this.manualModeState = manualModeState;
   }
 
   private void stopChannelMotors() {
-    desiredVelocity = RadiansPerSecond.of(0.0);
     for (ChannelIO channel : channelIOs) {
       channel.stop();
     }
-    Logger.recordOutput(getName() + "/desiredVelocityRadPerSec", 0);
   }
 
   public void stop() {
     running = false;
-    stopChannelMotors();
   }
 
   public void start() {
-    running = true;
-  }
-
-  public void start(LauncherRunMode mode) {
-    this.mode = mode;
     running = true;
   }
 
@@ -157,8 +142,13 @@ public class Launcher extends SubsystemBase {
     this.mode = mode;
   }
 
+  public void setDutyCycle(double dutyCycle) {
+    for (ChannelIO channel : channelIOs) {
+      channel.setDutyCycle(dutyCycle);
+    }
+  }
+
   private void setChannelVelocities(AngularVelocity wheelVelocity) {
-    this.desiredVelocity = wheelVelocity;
     for (ChannelIO channel : channelIOs) {
       channel.setVelocity(wheelVelocity);
     }
@@ -169,6 +159,11 @@ public class Launcher extends SubsystemBase {
     this.robotPoseSupplier = robotPoseSupplier;
     this.robotVelocitySupplier = robotVelocitySupplier;
     ;
+  }
+
+  public void setRunningDesiredState(LauncherState runningDesiredState) {
+    this.runningDesiredState = runningDesiredState;
+    Logger.recordOutput(getName() + "/runningDesiredState", runningDesiredState);
   }
 
   @Override
@@ -190,28 +185,23 @@ public class Launcher extends SubsystemBase {
     Pose2d robotPose = robotPoseSupplier.get();
     ChassisSpeeds robotRelativeVelocity = robotVelocitySupplier.get();
 
-    AngularVelocity runningVelocity = RadiansPerSecond.zero();
-    Rotation2d runningHoodPitch = Rotation2d.kZero;
-
     if (mode == LauncherRunMode.INTERPOLATION) {
       LaunchingParameters parameters =
           LaunchCalculator.getInstance().getParameters(robotPose, robotRelativeVelocity);
-      runningVelocity = parameters.flywheelSpeed();
-      runningHoodPitch = parameters.hoodAngle();
+
+      setRunningDesiredState(new LauncherState(parameters.flywheelSpeed(), parameters.hoodAngle()));
       robotYaw = parameters.driveAngle();
-    } else {
+
+    } else if (mode == LauncherRunMode.MATHEMATICAL) {
+
+      Function<Double, Rotation2d> pitchCalculator =
+          switch (hoodIO.hoodType()) {
+            case FIXED -> d -> hoodIO.getAngle();
+            case ACTUATOR -> d -> MathematicalShotCalculator.calculatePitch(d);
+          };
+
       Translation2d hubLocation =
           FieldConstants.Hub.topCenterPoint.toTranslation2d().minus(robotPose.getTranslation());
-
-      Function<Double, Rotation2d> pitchCalculator = getPitchCalculator();
-
-      ShotParameters parameters =
-          new ShotParameters(
-              MathematicalShotCalculator.calculateVelocity(
-                  hubLocation.getNorm(), pitchCalculator.apply(hubLocation.getNorm())),
-              pitchCalculator.apply(hubLocation.getNorm()));
-      double timeOfFlight = MathematicalShotCalculator.timeOfFlight(parameters, hubLocation);
-      Logger.recordOutput(getName() + "/timeOfFlight", Math.round(timeOfFlight * 10.0) / 10.0);
 
       ChassisSpeeds fieldRelativeSpeeds =
           ChassisSpeeds.fromRobotRelativeSpeeds(robotRelativeVelocity, robotPose.getRotation());
@@ -225,24 +215,49 @@ public class Launcher extends SubsystemBase {
       Logger.recordOutput(
           getName() + "/HubAdjustment", hubTranslation.minus(hubLocation).getNorm());
 
-      robotYaw = hubTranslation.getAngle();
-
       double distance = hubTranslation.getNorm();
-      runningHoodPitch = pitchCalculator.apply(distance);
-      runningVelocity = calculateVelocity(hubTranslation.getNorm());
+      Rotation2d runningHoodPitch = pitchCalculator.apply(distance);
+
+      ShotParameters parameters =
+          new ShotParameters(
+              MathematicalShotCalculator.calculateVelocity(hubLocation.getNorm(), runningHoodPitch),
+              runningHoodPitch);
+
+      double timeOfFlight = MathematicalShotCalculator.timeOfFlight(parameters, hubLocation);
+      Logger.recordOutput(getName() + "/timeOfFlight", Math.round(timeOfFlight * 10.0) / 10.0);
+
+      LinearVelocity velocity =
+          MathematicalShotCalculator.calculateVelocity(distance, runningHoodPitch);
+      velocity = velocity.times(LauncherConstants.LAUNCHER_VELOCITY_MULTIPLIER.get());
+
+      AngularVelocity runningVelocity =
+          RadiansPerSecond.of(
+              velocity.in(MetersPerSecond) / LauncherConstants.LAUNCHER_WHEEL_RADIUS.in(Meters));
+
+      measuredState =
+          new LauncherState(
+              RadiansPerSecond.of(
+                  channelInputs.stream()
+                      .mapToDouble(c -> c.velocityRadPerSec)
+                      .average()
+                      .orElse(0.0)),
+              hoodIO.getAngle());
+
+      setRunningDesiredState(new LauncherState(runningVelocity, runningHoodPitch));
+      this.robotYaw = hubTranslation.getAngle();
     }
 
     Logger.recordOutput(
         getName() + "/desiredRobotPose", new Pose2d(robotPose.getTranslation(), robotYaw));
-    Logger.recordOutput(getName() + "/desiredHoodAngle", runningHoodPitch.getDegrees());
-    Logger.recordOutput(getName() + "/desiredRunVelocity", runningVelocity.in(RadiansPerSecond));
-    
+
+    desiredState = running ? runningDesiredState : LauncherState.zero();
+
     if (running) {
-      hoodIO.setAngle(runningHoodPitch);
-      setChannelVelocities(runningVelocity);
+      hoodIO.setAngle(runningDesiredState.hoodAngle());
+      setChannelVelocities(runningDesiredState.flywheelVelocity());
     } else {
-      stopChannelMotors(); // Coast to slow down
       hoodIO.setAngle(Rotation2d.kZero); // Lower the hood to avoid collisions when not in use
+      stopChannelMotors(); // Coast to slow down
     }
   }
 
@@ -251,33 +266,38 @@ public class Launcher extends SubsystemBase {
     return running;
   }
 
-  @AutoLogOutput(key = "Launcher/desiredVelocity")
-  public AngularVelocity getDesiredVelocity() {
-    return desiredVelocity;
-  }
-
-  @AutoLogOutput(key = "Launcher/averageVelocity")
-  public double getAverageVelocity() {
-    return channelInputs.stream().mapToDouble(c -> c.velocityRadPerSec).average().orElse(0.0);
-  }
-
   @AutoLogOutput(key = "Launcher/runMode")
   public LauncherRunMode getRunMode() {
     return mode;
   }
 
+  @AutoLogOutput(key = "Launcher/desiredState")
+  public LauncherState getDesiredState() {
+    return desiredState;
+  }
+
+  @AutoLogOutput(key = "Launcher/measuredState")
+  public LauncherState getMeasuredState() {
+    return measuredState;
+  }
+
   @AutoLogOutput(key = "Launcher/isReady")
   public boolean isReady() {
-    boolean ready = true;
     for (ChannelIO.ChannelIOInputs channelIO : channelInputs) {
-      boolean channelReady =
-          MathUtil.isNear(
-              desiredVelocity.in(RadiansPerSecond),
-              channelIO.velocityRadPerSec,
-              LAUNCHER_VELOCITY_TOLERANCE.get());
-      ready = ready && channelReady;
+      if (MathUtil.isNear(
+          desiredState.flywheelVelocity().in(RadiansPerSecond),
+          channelIO.velocityRadPerSec,
+          LAUNCHER_VELOCITY_TOLERANCE_RAD_PER_SEC.get())) {
+        return false;
+      }
     }
-    return ready;
+    if (!MathUtil.isNear(
+        desiredState.hoodAngle().getDegrees(),
+        hoodIO.getAngle().getDegrees(),
+        HOOD_ANGLE_TOLERANCE_DEG.get())) {
+      return false;
+    }
+    return true;
   }
 
   private void updatePID() {
@@ -290,42 +310,5 @@ public class Launcher extends SubsystemBase {
 
   public Rotation2d getRobotYaw() {
     return robotYaw;
-  }
-  /**
-   * @param double the distance in meters from the hub
-   * @return the pitch of the launch trajectory
-   */
-  private Function<Double, Rotation2d> getPitchCalculator() {
-    if (hoodIO.hoodType() == HoodType.FIXED) {
-      return distance -> LauncherConstants.FIXED_LAUNCH_ANGLE;
-    }
-    switch (mode) {
-      case MANUAL:
-        return distance -> manualModeDesiredAngle.get();
-      case MATHEMATICAL:
-        return distance -> MathematicalShotCalculator.calculatePitch(distance);
-      default:
-        return distance -> Rotation2d.kZero;
-    }
-  }
-
-  private AngularVelocity calculateVelocity(double distance) {
-    switch (mode) {
-      case MANUAL:
-        return manualModeDesiredVelocity.get();
-      case MATHEMATICAL:
-        Rotation2d pitch =
-            switch (hoodIO.hoodType()) {
-              case FIXED -> Rotation2d.fromDegrees(75);
-              case ACTUATOR -> MathematicalShotCalculator.calculatePitch(distance);
-            };
-        LinearVelocity velocity = MathematicalShotCalculator.calculateVelocity(distance, pitch);
-        velocity = velocity.times(LauncherConstants.LAUNCHER_VELOCITY_MULTIPLIER.get());
-
-        return RadiansPerSecond.of(
-            velocity.in(MetersPerSecond) / LauncherConstants.LAUNCHER_WHEEL_RADIUS.in(Meters));
-      default:
-        return RadiansPerSecond.zero();
-    }
   }
 }

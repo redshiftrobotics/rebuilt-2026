@@ -34,7 +34,6 @@ import frc.robot.subsystems.intake.IntakeRunMode;
 import frc.robot.subsystems.launcher.LaunchCalculator;
 import frc.robot.subsystems.launcher.Launcher;
 import frc.robot.subsystems.launcher.Launcher.LauncherRunMode;
-import frc.robot.subsystems.launcher.LauncherConstants;
 import frc.robot.subsystems.launcher.LauncherControlManual;
 import frc.robot.subsystems.launcher.LauncherControlManual.ManualLaunchMode;
 import frc.robot.subsystems.led.BlinkenLEDPattern;
@@ -207,10 +206,11 @@ public class RobotContainer {
     final Command aimDrive =
         LaunchCalculator.driveWhileLaunching(drive, pipeline::getChassisSpeeds);
 
-    drive.setDefaultCommand(drive
-        .run(() -> drive.setRobotSpeeds(pipeline.getChassisSpeeds()))
-        .finallyDo(drive::stop)
-        .withName("Pipeline Drive"));
+    drive.setDefaultCommand(
+        drive
+            .run(() -> drive.setRobotSpeeds(pipeline.getChassisSpeeds()))
+            .finallyDo(drive::stop)
+            .withName("Pipeline Drive"));
 
     DriverDashboard.currentDriveModeName =
         () -> {
@@ -304,8 +304,7 @@ public class RobotContainer {
 
     final LauncherControlManual manualLaunchControl = new LauncherControlManual(ManualLaunchMode.Y);
 
-    launcher.setManualModeVelocitySupplier(manualLaunchControl::get);
-    launcher.setManualModeAngleSupplier(() -> LauncherConstants.FIXED_LAUNCH_ANGLE);
+    launcher.setManualModeState(manualLaunchControl::get);
     launcher.setMode(LauncherRunMode.INTERPOLATION);
 
     final Trigger manualLaunch = xbox.back();

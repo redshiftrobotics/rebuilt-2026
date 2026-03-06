@@ -2,40 +2,57 @@ package frc.robot.subsystems.launcher;
 
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.AngularVelocity;
+import frc.robot.subsystems.launcher.Launcher.LauncherState;
 import org.littletonrobotics.junction.AutoLogOutput;
 
 public class LauncherControlManual {
 
   public enum ManualLaunchMode {
-    Y(RadiansPerSecond.of(500.0)),
-    X(RadiansPerSecond.of(400.0)),
-    A(RadiansPerSecond.of(300.0)),
-    B(RadiansPerSecond.of(200.0));
+    Y(RadiansPerSecond.of(500.0), Rotation2d.fromDegrees(0.0)),
+    X(RadiansPerSecond.of(400.0), Rotation2d.fromDegrees(0.0)),
+    A(RadiansPerSecond.of(300.0), Rotation2d.fromDegrees(0.0)),
+    B(RadiansPerSecond.of(200.0), Rotation2d.fromDegrees(0.0));
 
     private final AngularVelocity channelVelocity;
     private AngularVelocity shift;
 
-    private ManualLaunchMode(AngularVelocity velocity) {
+    private final Rotation2d hoodAngle;
+    private Rotation2d hoodAngleShift;
+
+    private ManualLaunchMode(AngularVelocity velocity, Rotation2d hoodAngle) {
       this.channelVelocity = velocity;
+      this.hoodAngle = hoodAngle;
       resetShift();
     }
 
     public void resetShift() {
       this.shift = RadiansPerSecond.zero();
+      this.hoodAngleShift = Rotation2d.kZero;
     }
 
-    public void shift(AngularVelocity shift) {
+    public void shiftVelocity(AngularVelocity shift) {
       this.shift = this.shift.plus(shift);
     }
 
-    public AngularVelocity get() {
+    public void shiftHoodAngle(Rotation2d shift) {
+      this.hoodAngleShift = this.hoodAngleShift.plus(shift);
+    }
+
+    public AngularVelocity getVelocity() {
       return channelVelocity.plus(shift);
+    }
+
+    public Rotation2d getHoodAngle() {
+      return hoodAngle.plus(hoodAngleShift);
     }
 
     @Override
     public String toString() {
-      return String.format("%s(%.2f r/s)", name(), get().in(RadiansPerSecond));
+      return String.format(
+          "%s(%.2f r/s, %.2f deg)",
+          name(), getVelocity().in(RadiansPerSecond), getHoodAngle().getDegrees());
     }
   }
 
@@ -50,8 +67,9 @@ public class LauncherControlManual {
     return currentManualLaunchMode.toString();
   }
 
-  public AngularVelocity get() {
-    return currentManualLaunchMode.get();
+  public LauncherState get() {
+    return new LauncherState(
+        currentManualLaunchMode.getVelocity(), currentManualLaunchMode.getHoodAngle());
   }
 
   public void setMode(ManualLaunchMode mode) {
@@ -59,7 +77,7 @@ public class LauncherControlManual {
   }
 
   public void shiftVelocity(AngularVelocity shift) {
-    currentManualLaunchMode.shift(shift);
+    currentManualLaunchMode.shiftVelocity(shift);
   }
 
   public void resetShift() {

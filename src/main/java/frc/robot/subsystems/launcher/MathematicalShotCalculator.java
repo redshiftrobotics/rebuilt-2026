@@ -56,7 +56,8 @@ public class MathematicalShotCalculator {
 
   public static Rotation2d calculatePitch(double distanceMeters) {
     // Formula from experimentation
-    return Rotation2d.fromDegrees(75.0 - 15.0 * Math.tanh(2.0 * Units.metersToFeet(distanceMeters) / 25.0));
+    return Rotation2d.fromDegrees(
+        75.0 - 15.0 * Math.tanh(2.0 * Units.metersToFeet(distanceMeters) / 25.0));
   }
 
   public static double timeOfFlight(ShotParameters parameters, Translation2d hubPosition) {
