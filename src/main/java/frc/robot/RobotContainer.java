@@ -248,7 +248,7 @@ public class RobotContainer {
     //     .whileTrue(
     //         pipeline.runLayer("Aim at Hub", input ->
     // input.headingTarget(launcher.getRobotYaw())));
-    xbox.rightTrigger().onTrue(aimDrive);
+    xbox.rightTrigger().whileTrue(aimDrive);
 
     // Secondary drive command, right stick will be used to control target angular
     // position instead of angular velocity

@@ -49,7 +49,7 @@ public class Launcher extends SubsystemBase {
   public final TunableFF flywheelFF = new TunableFF(getName() + "/FF", LauncherConstants.FF);
 
   public final TunableNumber LAUNCHER_VELOCITY_TOLERANCE_RAD_PER_SEC =
-      new TunableNumber(getName() + "/VelocityToleranceRadPerSec", 15.0);
+      new TunableNumber(getName() + "/VelocityToleranceRadPerSec", 5.0);
 
   public static TunableNumber HOOD_ANGLE_TOLERANCE_DEG =
       new TunableNumber("Launcher/HoodAngleToleranceDeg", 2.0);
@@ -171,7 +171,12 @@ public class Launcher extends SubsystemBase {
 
   public void setRunningDesiredState(LauncherState runningDesiredState) {
     this.runningDesiredState = runningDesiredState;
-    Logger.recordOutput(getName() + "/runningDesiredState", runningDesiredState);
+    Logger.recordOutput(
+        getName() + "/runningDesiredState/flywheelVelocityRadPersec",
+        runningDesiredState.flywheelVelocity().in(RadiansPerSecond));
+    Logger.recordOutput(
+        getName() + "/runningDesiredState/hoodAngleDeg",
+        runningDesiredState.hoodAngle().getDegrees());
   }
 
   @Override
@@ -204,7 +209,6 @@ public class Launcher extends SubsystemBase {
       robotYaw = parameters.driveAngle();
 
     } else if (mode == LauncherRunMode.MATHEMATICAL) {
-
       Function<Double, Rotation2d> pitchCalculator =
           switch (hoodIO.hoodType()) {
             case FIXED -> d -> hoodIO.getAngle();
@@ -245,15 +249,6 @@ public class Launcher extends SubsystemBase {
           RadiansPerSecond.of(
               velocity.in(MetersPerSecond) / LauncherConstants.LAUNCHER_WHEEL_RADIUS.in(Meters));
 
-      measuredState =
-          new LauncherState(
-              RadiansPerSecond.of(
-                  channelInputs.stream()
-                      .mapToDouble(c -> c.velocityRadPerSec)
-                      .average()
-                      .orElse(0.0)),
-              hoodIO.getAngle());
-
       setRunningDesiredState(new LauncherState(runningVelocity, runningHoodPitch));
       this.robotYaw = hubTranslation.getAngle();
     } else if (mode == LauncherRunMode.MANUAL) {
@@ -263,7 +258,23 @@ public class Launcher extends SubsystemBase {
     Logger.recordOutput(
         getName() + "/desiredRobotPose", new Pose2d(robotPose.getTranslation(), robotYaw));
 
+    measuredState =
+        new LauncherState(
+            RadiansPerSecond.of(
+                channelInputs.stream().mapToDouble(c -> c.velocityRadPerSec).average().orElse(0.0)),
+            hoodIO.getAngle());
+    Logger.recordOutput(
+        getName() + "/measuredState/flywheelVelocityRadPerSec",
+        measuredState.flywheelVelocity().in(RadiansPerSecond));
+    Logger.recordOutput(
+        getName() + "/measuredState/hoodAngleDeg", measuredState.hoodAngle().getDegrees());
+
     desiredState = running ? runningDesiredState : LauncherState.zero();
+    Logger.recordOutput(
+        getName() + "/desiredState/flywheelVelocityRadPerSec",
+        measuredState.flywheelVelocity().in(RadiansPerSecond));
+    Logger.recordOutput(
+        getName() + "/desiredState/hoodAngleDeg", measuredState.hoodAngle().getDegrees());
 
     if (running) {
       hoodIO.setAngle(runningDesiredState.hoodAngle());
@@ -284,12 +295,10 @@ public class Launcher extends SubsystemBase {
     return mode;
   }
 
-  @AutoLogOutput(key = "Launcher/desiredState")
   public LauncherState getDesiredState() {
     return desiredState;
   }
 
-  @AutoLogOutput(key = "Launcher/measuredState")
   public LauncherState getMeasuredState() {
     return measuredState;
   }
@@ -304,10 +313,11 @@ public class Launcher extends SubsystemBase {
         return false;
       }
     }
-    if (!MathUtil.isNear(
-        desiredState.hoodAngle().getDegrees(),
-        hoodIO.getAngle().getDegrees(),
-        HOOD_ANGLE_TOLERANCE_DEG.get())) {
+    if (hoodIO.hoodType() == HoodType.ACTUATOR
+        && !MathUtil.isNear(
+            desiredState.hoodAngle().getDegrees(),
+            hoodIO.getAngle().getDegrees(),
+            HOOD_ANGLE_TOLERANCE_DEG.get())) {
       return false;
     }
     return true;
