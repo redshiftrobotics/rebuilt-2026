@@ -320,6 +320,14 @@ public class LaunchCalculator extends VirtualSubsystem {
                           - measuredRobotRelativeSpeeds.omegaRadiansPerSecond)
                       * driveLaunchKd.get());
 
+          // within tolerance, no need to drive
+          if (MathUtil.isNear(
+              parameters.driveAngle().getDegrees(),
+              measuredRobotAngle.getDegrees(),
+              driveYawLaunchToleranceDeg.get())) {
+            omegaOutput = 0.0;
+          }
+
           ChassisSpeeds initialFieldRelativeSpeeds =
               ChassisSpeeds.fromRobotRelativeSpeeds(
                   initialRobotRelativeSpeedsSupplier.get(),
