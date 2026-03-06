@@ -20,7 +20,6 @@ import frc.robot.FieldConstants;
 import frc.robot.subsystems.launcher.LaunchCalculator.LaunchingParameters;
 import frc.robot.subsystems.launcher.MathematicalShotCalculator.ShotParameters;
 import frc.robot.utility.tunable.TunableNumber;
-import frc.robot.utility.tunable.TunableNumberGroup;
 import frc.robot.utility.tunable.TunableNumbers.TunableFF;
 import frc.robot.utility.tunable.TunableNumbers.TunablePID;
 import java.util.ArrayList;
@@ -55,6 +54,9 @@ public class Launcher extends SubsystemBase {
   public static TunableNumber HOOD_ANGLE_TOLERANCE_DEG =
       new TunableNumber("Launcher/HoodAngleToleranceDeg", 2.0);
 
+  public static TunableNumber DEBOUNCE_TIME_AT_GOAL =
+      new TunableNumber("Launcher/DebounceTimeAtGoal", 0.5);
+
   private final HoodIO hoodIO;
   private final HoodIOInputsAutoLogged hoodInputs = new HoodIOInputsAutoLogged();
   private final List<ChannelIO> channelIOs;
@@ -77,7 +79,7 @@ public class Launcher extends SubsystemBase {
   private Rotation2d robotYaw = Rotation2d.kZero;
 
   private final Debouncer atGoalDebouncer =
-      new Debouncer(atGoalDebounceTime.get(), Debouncer.DebounceType.kRising);
+      new Debouncer(DEBOUNCE_TIME_AT_GOAL.get(), Debouncer.DebounceType.kRising);
   private boolean atGoalDebounced;
 
   public static Launcher create(RobotType robotType) {
@@ -188,7 +190,7 @@ public class Launcher extends SubsystemBase {
     flywheelPID.ifChanged(hashCode(), this::updatePID);
     flywheelFF.ifChanged(hashCode(), this::updateFF);
 
-    atGoalDebounceTime.ifChanged(hashCode(), atGoalDebouncer::setDebounceTime);
+    DEBOUNCE_TIME_AT_GOAL.ifChanged(hashCode(), atGoalDebouncer::setDebounceTime);
     atGoalDebounced = atGoalDebouncer.calculate(isReady());
 
     Pose2d robotPose = robotPoseSupplier.get();
@@ -254,6 +256,8 @@ public class Launcher extends SubsystemBase {
 
       setRunningDesiredState(new LauncherState(runningVelocity, runningHoodPitch));
       this.robotYaw = hubTranslation.getAngle();
+    } else if (mode == LauncherRunMode.MANUAL) {
+      setRunningDesiredState(manualModeState.get());
     }
 
     Logger.recordOutput(
@@ -307,6 +311,10 @@ public class Launcher extends SubsystemBase {
       return false;
     }
     return true;
+  }
+
+  public boolean isReadyDebounced() {
+    return atGoalDebounced;
   }
 
   private void updatePID() {
