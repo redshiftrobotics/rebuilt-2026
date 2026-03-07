@@ -1,30 +1,27 @@
 package frc.robot.subsystems.launcher;
 
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import frc.robot.FieldConstants;
-import frc.robot.subsystems.launcher.Launcher.LauncherState;
 import frc.robot.subsystems.launcher.LauncherConstants.LauncherMathConstants;
-
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.MetersPerSecond;
-
-import edu.wpi.first.math.util.Units;
-
 import java.util.function.Function;
-
 import org.littletonrobotics.junction.Logger;
 
 public class MathematicalShotCalculator {
-  public record MathematicalShotParameters(LinearVelocity velocity, Rotation2d pitch, Rotation2d yaw) {
+  public record MathematicalShotParameters(
+      LinearVelocity velocity, Rotation2d pitch, Rotation2d yaw) {
     public MathematicalShotParameters(LinearVelocity velocity, Rotation2d pitch) {
       this(velocity, pitch, Rotation2d.kZero);
     }
+
     @Override
     public final String toString() {
       return String.format(
@@ -43,40 +40,48 @@ public class MathematicalShotCalculator {
 
   public static MathematicalShotParameters calculateAndSetShot(
       Pose2d robotPose, ChassisSpeeds robotRelativeVelocity, boolean isHoodAdjustable) {
-    
-      Function<Double, Rotation2d> pitchCalculator = isHoodAdjustable ? MathematicalShotCalculator::calculatePitch : d -> LauncherMathConstants.FIXED_LAUNCH_ANGLE;
 
-      Translation2d hubLocation =
-          FieldConstants.Hub.topCenterPoint.toTranslation2d().minus(robotPose.getTranslation());
+    Function<Double, Rotation2d> pitchCalculator =
+        isHoodAdjustable
+            ? MathematicalShotCalculator::calculatePitch
+            : d -> LauncherMathConstants.FIXED_LAUNCH_ANGLE;
 
-      ChassisSpeeds fieldRelativeSpeeds =
-          ChassisSpeeds.fromRobotRelativeSpeeds(robotRelativeVelocity, robotPose.getRotation());
+    Translation2d hubLocation =
+        FieldConstants.Hub.topCenterPoint.toTranslation2d().minus(robotPose.getTranslation());
 
-      Translation2d hubTranslation =
-          MathematicalShotCalculator.adjustedHubPosition(
-              hubLocation,
-              new Translation2d(
-                  fieldRelativeSpeeds.vxMetersPerSecond, fieldRelativeSpeeds.vyMetersPerSecond),
-              pitchCalculator);
-      Logger.recordOutput(
-          "MathematicalLauncherCalculator/HubAdjustment", hubTranslation.minus(hubLocation).getNorm());
+    ChassisSpeeds fieldRelativeSpeeds =
+        ChassisSpeeds.fromRobotRelativeSpeeds(robotRelativeVelocity, robotPose.getRotation());
 
-      double distance = hubTranslation.getNorm();
-      Rotation2d runningHoodPitch = pitchCalculator.apply(distance);
+    Translation2d hubTranslation =
+        MathematicalShotCalculator.adjustedHubPosition(
+            hubLocation,
+            new Translation2d(
+                fieldRelativeSpeeds.vxMetersPerSecond, fieldRelativeSpeeds.vyMetersPerSecond),
+            pitchCalculator);
+    Logger.recordOutput(
+        "MathematicalLauncherCalculator/HubAdjustment",
+        hubTranslation.minus(hubLocation).getNorm());
 
-      MathematicalShotParameters parameters =
-          new MathematicalShotParameters(
-              MathematicalShotCalculator.calculateVelocity(hubLocation.getNorm(), runningHoodPitch),
-              runningHoodPitch, hubTranslation.getAngle());
+    double distance = hubTranslation.getNorm();
+    Rotation2d runningHoodPitch = pitchCalculator.apply(distance);
 
-      double timeOfFlight = MathematicalShotCalculator.timeOfFlight(parameters, hubLocation);
-      Logger.recordOutput("MathematicalLauncherCalculator/timeOfFlight", Math.round(timeOfFlight * 10.0) / 10.0);
+    MathematicalShotParameters parameters =
+        new MathematicalShotParameters(
+            MathematicalShotCalculator.calculateVelocity(hubLocation.getNorm(), runningHoodPitch),
+            runningHoodPitch,
+            hubTranslation.getAngle());
 
-      LinearVelocity ballLinearVelocity =
-          MathematicalShotCalculator.calculateVelocity(distance, runningHoodPitch);
-      ballLinearVelocity = ballLinearVelocity.times(LauncherMathConstants.LAUNCHER_VELOCITY_MULTIPLIER.get());
+    double timeOfFlight = MathematicalShotCalculator.timeOfFlight(parameters, hubLocation);
+    Logger.recordOutput(
+        "MathematicalLauncherCalculator/timeOfFlight", Math.round(timeOfFlight * 10.0) / 10.0);
 
-      return new MathematicalShotParameters(ballLinearVelocity, runningHoodPitch, hubTranslation.getAngle());
+    LinearVelocity ballLinearVelocity =
+        MathematicalShotCalculator.calculateVelocity(distance, runningHoodPitch);
+    ballLinearVelocity =
+        ballLinearVelocity.times(LauncherMathConstants.LAUNCHER_VELOCITY_MULTIPLIER.get());
+
+    return new MathematicalShotParameters(
+        ballLinearVelocity, runningHoodPitch, hubTranslation.getAngle());
   }
 
   /**
@@ -93,7 +98,8 @@ public class MathematicalShotCalculator {
     for (int i = 0; i < 5; i++) {
       Rotation2d pitch = pitchProvider.apply(adjustedHubPosition.getNorm());
       MathematicalShotParameters parameters =
-          new MathematicalShotParameters(calculateVelocity(adjustedHubPosition.getNorm(), pitch), pitch);
+          new MathematicalShotParameters(
+              calculateVelocity(adjustedHubPosition.getNorm(), pitch), pitch);
       double time = timeOfFlight(parameters, adjustedHubPosition);
       // Shift hubPosition, not adjustedHubPosition, to avoid positive feedback
       adjustedHubPosition = hubPosition.minus(robotVelocityMetersPerSecond.times(time));
@@ -121,7 +127,8 @@ public class MathematicalShotCalculator {
         75.0 - 15.0 * Math.tanh(2.0 * Units.metersToFeet(distanceMeters) / 25.0));
   }
 
-  public static double timeOfFlight(MathematicalShotParameters parameters, Translation2d hubPosition) {
+  public static double timeOfFlight(
+      MathematicalShotParameters parameters, Translation2d hubPosition) {
     // Distance divided by horizontal shot speed
     return (hubPosition.getNorm() + LauncherMathConstants.LAUNCHER_X_OFFSET.in(Meters))
         / (parameters.pitch.getCos() * parameters.velocity.in(MetersPerSecond));

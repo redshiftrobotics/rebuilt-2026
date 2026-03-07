@@ -187,7 +187,8 @@ public class Launcher extends SubsystemBase {
 
     } else if (mode == LauncherRunMode.MATHEMATICAL) {
       MathematicalShotCalculator.MathematicalShotParameters parameters =
-          MathematicalShotCalculator.calculateAndSetShot(robotPose, robotRelativeVelocity, !hoodInputs.isAdjustable);
+          MathematicalShotCalculator.calculateAndSetShot(
+              robotPose, robotRelativeVelocity, !hoodInputs.isAdjustable);
 
       setRunningDesiredState(
           new LauncherState(parameters.getWheelRadPerSec(), parameters.getHoodPosition()));
@@ -248,11 +249,9 @@ public class Launcher extends SubsystemBase {
       double desiredHood = desired.hoodPosition();
       double hoodTolerance = HOOD_POSITION_TOLERANCE.get();
 
-      boolean leftReady =
-          MathUtil.isNear(desiredHood, hoodInputs.positionLeft, hoodTolerance);
+      boolean leftReady = MathUtil.isNear(desiredHood, hoodInputs.positionLeft, hoodTolerance);
 
-      boolean rightReady =
-          MathUtil.isNear(desiredHood, hoodInputs.positionRight, hoodTolerance);
+      boolean rightReady = MathUtil.isNear(desiredHood, hoodInputs.positionRight, hoodTolerance);
 
       if (!leftReady || !rightReady) {
         return false;
