@@ -18,22 +18,26 @@ public class SelfDrivingCommands {
 
   public static Command selfDriveToOtherZone(Drive drivetrain) {
     return Commands.either(
-        selfDriveToAllianceZone(),
-        selfDriveToNeutralZone(),
-        () -> isInNeutralZone(drivetrain.getRobotPose()));
+            selfDriveToAllianceZone(),
+            selfDriveToNeutralZone(),
+            () -> isInNeutralZone(drivetrain.getRobotPose()))
+        .withName("Drive to other zone");
   }
 
   public static Command selfDriveToAllianceZone() {
     return AutoBuilder.pathfindToPose(
-        new Pose2d( // TODO WRONG POSE
-            FieldConstants.fieldWidth / 2, FieldConstants.fieldLength / 2, Rotation2d.kZero),
-        constraints);
+            new Pose2d( // TODO WRONG POSE
+                FieldConstants.fieldWidth / 2, FieldConstants.fieldLength / 2, Rotation2d.kZero),
+            constraints)
+        .alongWith(Commands.run(() -> System.out.println("DriveToAllianceZone")));
   }
 
   public static Command selfDriveToNeutralZone() {
     return AutoBuilder.pathfindToPose(
-        new Pose2d(FieldConstants.fieldWidth / 2, FieldConstants.fieldLength / 2, Rotation2d.kZero),
-        constraints);
+            new Pose2d(
+                FieldConstants.fieldWidth / 2, FieldConstants.fieldLength / 2, Rotation2d.kZero),
+            constraints)
+        .alongWith(Commands.run(() -> System.out.println("DriveToNeutralZone")));
   }
 
   private static boolean isInNeutralZone(Pose2d pose) {

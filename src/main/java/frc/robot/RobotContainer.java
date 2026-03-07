@@ -276,7 +276,9 @@ public class RobotContainer {
         .onTrue(rumbleController(xbox, 0.3).withTimeout(0.25))
         .whileTrue(drive.run(drive::stopUsingForwardArrangement).withName("Stop and Orient"));
 
-    xbox.y().whileTrue(SelfDrivingCommands.selfDriveToOtherZone(drive));
+    xbox.y()
+        .whileTrue(SelfDrivingCommands.selfDriveToOtherZone(drive))
+        .onTrue(Commands.runOnce(() -> System.out.println("y pressed")));
 
     // Reset the gyro heading
     xbox.start()
