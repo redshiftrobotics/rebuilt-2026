@@ -1,7 +1,5 @@
 package frc.robot;
 
-import static edu.wpi.first.units.Units.RadiansPerSecond;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.MathUtil;
@@ -306,7 +304,7 @@ public class RobotContainer {
 
     final LauncherControlManual manualLaunchControl = new LauncherControlManual(ManualLaunchMode.Y);
 
-    launcher.setManualModeState(manualLaunchControl::get);
+    launcher.setManualModeState(manualLaunchControl);
     launcher.setMode(LauncherRunMode.INTERPOLATION);
 
     final Trigger manualLaunch = xbox.back();
@@ -455,14 +453,14 @@ public class RobotContainer {
     // Outtake shift up button
     xbox.povRight()
         .onTrue(
-            Commands.runOnce(() -> manualLaunchControl.shiftVelocity(RadiansPerSecond.of(+10)))
+            Commands.runOnce(() -> manualLaunchControl.incrementVelocity(+10))
                 .ignoringDisable(true)
                 .withName("Shift Velocity Up"));
 
     // Outtake shift down button
     xbox.povLeft()
         .onTrue(
-            Commands.runOnce(() -> manualLaunchControl.shiftVelocity(RadiansPerSecond.of(-10)))
+            Commands.runOnce(() -> manualLaunchControl.incrementVelocity(-10))
                 .ignoringDisable(true)
                 .withName("Shift Velocity Down"));
 
@@ -470,7 +468,7 @@ public class RobotContainer {
     resetShift
         .and(manualLaunch)
         .onTrue(
-            Commands.runOnce(manualLaunchControl::resetShift)
+            Commands.runOnce(manualLaunchControl::reset)
                 .ignoringDisable(true)
                 .withName("Reset Shift"));
 

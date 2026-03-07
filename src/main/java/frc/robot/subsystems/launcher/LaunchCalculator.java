@@ -7,8 +7,6 @@
 
 package frc.robot.subsystems.launcher;
 
-import static edu.wpi.first.units.Units.RadiansPerSecond;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -18,11 +16,8 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
-import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
-import edu.wpi.first.math.interpolation.InverseInterpolator;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
@@ -47,7 +42,7 @@ public class LaunchCalculator extends VirtualSubsystem {
 
   private static LaunchCalculator instance;
 
-  private double hoodAngleOffsetDeg = 0.0;
+  private double hoodPositionOffset = 0.0;
 
   private final LinearFilter hoodAngleFilter =
       LinearFilter.movingAverage((int) (0.1 / Constants.LOOP_PERIOD_SECONDS));
@@ -66,9 +61,9 @@ public class LaunchCalculator extends VirtualSubsystem {
       boolean isValid,
       Rotation2d driveAngle,
       double driveAngularVelocityRadPerSec,
-      Rotation2d hoodAngle,
-      double hoodVelocityRadPerSec,
-      AngularVelocity flywheelSpeed,
+      double hoodPosition,
+      double hoodVelocity,
+      Double wheelRadPerSec,
       double distance,
       double distanceNoLookahead,
       double timeOfFlight,
@@ -84,9 +79,9 @@ public class LaunchCalculator extends VirtualSubsystem {
   }
 
   // Launching Maps
-  private static final InterpolatingTreeMap<Double, Rotation2d> hoodAngleMap =
-      new InterpolatingTreeMap<>(InverseInterpolator.forDouble(), Rotation2d::interpolate);
-  private static final InterpolatingDoubleTreeMap flywheelSpeedMap =
+  private static final InterpolatingDoubleTreeMap hoodPositionMap =
+      new InterpolatingDoubleTreeMap();
+  private static final InterpolatingDoubleTreeMap wheelRadPerSecMap =
       new InterpolatingDoubleTreeMap();
   private static final InterpolatingDoubleTreeMap timeOfFlightMap =
       new InterpolatingDoubleTreeMap();
@@ -96,36 +91,34 @@ public class LaunchCalculator extends VirtualSubsystem {
   private static final double phaseDelay = 0.03; // estimate
 
   static {
+    hoodPositionMap.put(minDistance, 0.0);
+    hoodPositionMap.put(0.96, 0.10);
+    hoodPositionMap.put(1.16, 0.12);
+    hoodPositionMap.put(1.58, 0.14);
+    hoodPositionMap.put(2.07, 0.18);
+    hoodPositionMap.put(2.37, 0.22);
+    hoodPositionMap.put(2.47, 0.23);
+    hoodPositionMap.put(2.70, 0.24);
+    hoodPositionMap.put(2.94, 0.25);
+    hoodPositionMap.put(3.48, 0.27);
+    hoodPositionMap.put(3.92, 0.32);
+    hoodPositionMap.put(4.35, 0.34);
+    hoodPositionMap.put(4.84, 0.38);
+    hoodPositionMap.put(maxDistance, 1.0);
 
-    // Distances are from LauncherToTargetDistance
-    hoodAngleMap.put(0.96, Rotation2d.fromDegrees(10.0));
-    hoodAngleMap.put(1.16, Rotation2d.fromDegrees(12.0));
-    hoodAngleMap.put(1.58, Rotation2d.fromDegrees(14.0));
-    hoodAngleMap.put(2.07, Rotation2d.fromDegrees(18.5));
-    hoodAngleMap.put(2.37, Rotation2d.fromDegrees(22.0));
-    hoodAngleMap.put(2.47, Rotation2d.fromDegrees(23.0));
-    hoodAngleMap.put(2.70, Rotation2d.fromDegrees(24.0));
-    hoodAngleMap.put(2.94, Rotation2d.fromDegrees(25.0));
-    hoodAngleMap.put(3.48, Rotation2d.fromDegrees(27.0));
-    hoodAngleMap.put(3.92, Rotation2d.fromDegrees(32.0));
-    hoodAngleMap.put(4.35, Rotation2d.fromDegrees(34.0));
-    hoodAngleMap.put(4.84, Rotation2d.fromDegrees(38.0));
+    wheelRadPerSecMap.put(0.96, 150.0);
+    wheelRadPerSecMap.put(1.16, 155.0);
+    wheelRadPerSecMap.put(1.58, 160.0);
+    wheelRadPerSecMap.put(2.07, 165.0);
+    wheelRadPerSecMap.put(2.37, 170.0);
+    wheelRadPerSecMap.put(2.47, 170.0);
+    wheelRadPerSecMap.put(2.70, 170.0);
+    wheelRadPerSecMap.put(2.94, 175.0);
+    wheelRadPerSecMap.put(3.48, 175.0);
+    wheelRadPerSecMap.put(3.92, 180.0);
+    wheelRadPerSecMap.put(4.35, 185.0);
+    wheelRadPerSecMap.put(4.84, 190.0);
 
-    // radians per second
-    flywheelSpeedMap.put(0.96, 150.0);
-    flywheelSpeedMap.put(1.16, 155.0);
-    flywheelSpeedMap.put(1.58, 160.0);
-    flywheelSpeedMap.put(2.07, 165.0);
-    flywheelSpeedMap.put(2.37, 170.0);
-    flywheelSpeedMap.put(2.47, 170.0);
-    flywheelSpeedMap.put(2.70, 170.0);
-    flywheelSpeedMap.put(2.94, 175.0);
-    flywheelSpeedMap.put(3.48, 175.0);
-    flywheelSpeedMap.put(3.92, 180.0);
-    flywheelSpeedMap.put(4.35, 185.0);
-    flywheelSpeedMap.put(4.84, 190.0);
-
-    // seconds
     timeOfFlightMap.put(5.68, 1.16);
     timeOfFlightMap.put(4.55, 1.12);
     timeOfFlightMap.put(3.15, 1.11);
@@ -195,14 +188,14 @@ public class LaunchCalculator extends VirtualSubsystem {
     Rotation2d driveAngle = getDriveAngleWithLauncherOffset(lookaheadRobotPose, target);
 
     // Calculate interpolated values from maps
-    double hoodAngle = hoodAngleMap.get(lookaheadLauncherToTargetDistance).getRadians();
-    double flywheelVelocity = flywheelSpeedMap.get(lookaheadLauncherToTargetDistance);
+    double wheelRadPerSec = wheelRadPerSecMap.get(lookaheadLauncherToTargetDistance);
+    double hoodPosition = hoodPositionMap.get(lookaheadLauncherToTargetDistance);
 
     // Calculate average hood velocity
-    if (Double.isNaN(lastHoodAngle)) lastHoodAngle = hoodAngle;
+    if (Double.isNaN(lastHoodAngle)) lastHoodAngle = hoodPosition;
     double hoodVelocity =
-        hoodAngleFilter.calculate((hoodAngle - lastHoodAngle) / Constants.LOOP_PERIOD_SECONDS);
-    lastHoodAngle = hoodAngle;
+        hoodAngleFilter.calculate((hoodPosition - lastHoodAngle) / Constants.LOOP_PERIOD_SECONDS);
+    lastHoodAngle = hoodPosition;
 
     // Calculate average drive angular velocity
     if (lastDriveAngle == null) lastDriveAngle = driveAngle;
@@ -218,9 +211,9 @@ public class LaunchCalculator extends VirtualSubsystem {
                 && lookaheadLauncherToTargetDistance <= maxDistance,
             driveAngle,
             driveAngularVelocity.getRadians(),
-            Rotation2d.fromDegrees(hoodAngle + Units.degreesToRadians(hoodAngleOffsetDeg)),
+            hoodPosition + hoodPositionOffset,
             hoodVelocity,
-            RadiansPerSecond.of(flywheelVelocity),
+            wheelRadPerSec,
             lookaheadLauncherToTargetDistance,
             launcherToTargetDistance,
             timeOfFlight,
@@ -274,12 +267,12 @@ public class LaunchCalculator extends VirtualSubsystem {
   }
 
   /** Adjusts the hood angle offset up or down the specified amount. */
-  public void incrementHoodAngleOffset(double incrementDegrees) {
-    hoodAngleOffsetDeg += incrementDegrees;
+  public void incrementHoodPosition(double delta) {
+    hoodPositionOffset += delta;
   }
 
-  public double getHoodAngleOffsetDeg() {
-    return hoodAngleOffsetDeg;
+  public double getHoodPositionOffset() {
+    return hoodPositionOffset;
   }
 
   private static final TunableNumberGroup launchingGroup =

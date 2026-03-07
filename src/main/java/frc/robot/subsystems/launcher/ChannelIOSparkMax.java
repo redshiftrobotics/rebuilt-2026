@@ -1,53 +1,74 @@
 package frc.robot.subsystems.launcher;
 
-import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static frc.robot.utility.SparkUtil.*;
 
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkClosedLoopController.ArbFFUnits;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.measure.AngularVelocity;
-import frc.robot.subsystems.examples.flywheel.MotorConstants;
+import frc.robot.subsystems.launcher.LauncherConstants.ChannelConstants;
+import frc.robot.utility.SparkUtil;
+import frc.robot.utility.records.FeedForwardConfigRecord;
 import frc.robot.utility.records.PIDConfig;
 
-/** Hardware implementation of the TemplateIO. */
+/** Channel IO implementation for SparkMax motor controller */
 public class ChannelIOSparkMax implements ChannelIO {
-  private final String name;
+
   private final SparkMax motor;
-  private final SparkClosedLoopController controller;
+  private final RelativeEncoder relativeEncoder;
+  private final SparkClosedLoopController feedback;
 
-  private final RelativeEncoder encoder;
+  private final SparkMaxConfig config = new SparkMaxConfig();
 
-  public ChannelIOSparkMax(String name, MotorConstants constants) {
-    this.name = name;
+  private final Debouncer connectedDebouncer = new Debouncer(0.5);
 
-    SparkMaxConfig leaderConfig = new SparkMaxConfig();
-
-    leaderConfig.voltageCompensation(12.0).smartCurrentLimit(30).idleMode(IdleMode.kCoast);
-    leaderConfig.encoder.velocityConversionFactor(1.0);
-    leaderConfig.inverted(constants.inverted());
+  public ChannelIOSparkMax(String name, ChannelConstants constants) {
 
     motor = new SparkMax(constants.deviceId(), MotorType.kBrushless);
-    encoder = motor.getEncoder();
-    controller = motor.getClosedLoopController();
-    motor.configure(leaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-  }
+    relativeEncoder = motor.getEncoder();
+    feedback = motor.getClosedLoopController();
 
-  @Override
-  public String getName() {
-    return name;
+    config
+        .idleMode(IdleMode.kCoast)
+        .smartCurrentLimit(50)
+        .voltageCompensation(12.0)
+        .inverted(constants.inverted());
+    config
+        .encoder
+        .positionConversionFactor(constants.gearRatio())
+        .velocityConversionFactor(constants.gearRatio());
+    config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(0.0, 0.0, 0.0);
+
+    tryUntilOk(motor, 5, () -> relativeEncoder.setPosition(0.0));
+
+    pushConfig();
   }
 
   @Override
   public void updateInputs(ChannelIOInputs inputs) {
-    inputs.velocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(encoder.getVelocity());
+
+    SparkUtil.clearError();
+    ifOk(
+        motor,
+        relativeEncoder::getVelocity,
+        value -> inputs.velocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(value));
+    ifOk(
+        motor,
+        () -> motor.getAppliedOutput() * motor.getBusVoltage(),
+        value -> inputs.appliedVolts = value);
+    ifOk(motor, motor::getOutputCurrent, value -> inputs.supplyCurrentAmps = value);
+    ifOk(motor, motor::getAppliedOutput, value -> inputs.appliedDutyCycle = value);
+    inputs.motorConnected = connectedDebouncer.calculate(!SparkUtil.hasError());
   }
 
   @Override
@@ -56,19 +77,43 @@ public class ChannelIOSparkMax implements ChannelIO {
   }
 
   @Override
-  public void setVelocity(AngularVelocity velocity) {
-    controller.setSetpoint(
-        velocity.in(RotationsPerSecond) * 60, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
+  public void setOpenLoop(double volts) {
+    motor.setVoltage(volts);
   }
 
+  @Override
+  public void setVelocity(double velocityRadsPerSec, double arbFeedforward) {
+    feedback.setSetpoint(
+        Units.radiansPerSecondToRotationsPerMinute(velocityRadsPerSec),
+        ControlType.kVelocity,
+        ClosedLoopSlot.kSlot0,
+        arbFeedforward,
+        ArbFFUnits.kVoltage);
+  }
+
+  @Override
+  public void setPID(PIDConfig pidConfig) {
+    config.closedLoop.pid(pidConfig.kP(), pidConfig.kI(), pidConfig.kD());
+    pushConfig();
+  }
+
+  @Override
+  public void setFF(FeedForwardConfigRecord ffConfig) {
+    config.closedLoop.feedForward.sva(ffConfig.kS(), ffConfig.kV(), ffConfig.kA());
+    pushConfig();
+  }
+
+  @Override
   public void stop() {
     motor.stopMotor();
   }
 
-  @Override
-  public void setPID(PIDConfig pid) {
-    SparkMaxConfig config = new SparkMaxConfig();
-    config.closedLoop.pid(pid.kP(), pid.kI(), pid.kD());
-    motor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+  private void pushConfig() {
+    tryUntilOk(
+        motor,
+        5,
+        () ->
+            motor.configure(
+                config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
   }
 }
