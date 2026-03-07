@@ -53,7 +53,7 @@ public class CameraIOPhotonVision implements CameraIO {
   }
 
   @Override
-  public CameraPositionName getCameraPosition() {
+  public CameraPositionName getPositionName() {
     return cameraPosition;
   }
 

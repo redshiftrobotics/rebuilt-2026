@@ -35,7 +35,7 @@ public interface CameraIO {
   }
 
   /** Get position of camera on robot */
-  default CameraPositionName getCameraPosition() {
+  default CameraPositionName getPositionName() {
     return CameraPositionName.UNKNOWN;
   }
 
