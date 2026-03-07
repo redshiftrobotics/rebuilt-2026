@@ -27,10 +27,8 @@ public class Camera {
 
   private static final TunableNumberGroup group = new TunableNumberGroup("VisionResultsStatus");
 
-  private static final TunableNumber xyStdDevBaseline =
-      group.number("xyStdDevBaseline", 0.02);
-  private static final TunableNumber thetaStdDevBaseline =
-      group.number("thetaStdDevBaseline", 0.1);
+  private static final TunableNumber xyStdDevBaseline = group.number("xyStdDevBaseline", 0.02);
+  private static final TunableNumber thetaStdDevBaseline = group.number("thetaStdDevBaseline", 0.1);
   private static final TunableNumber xyStdDevBaselineSingleTag =
       group.number("xyStdDevBaselineSingleTag", 0.15);
   private static final TunableNumber thetaStdDevBaselineSingleTag =
