@@ -1,11 +1,14 @@
-Cameras on bot:
+Cameras on 2025 robot:
 - FrontRight8032 (front left)
 - Arducam_OV9281_USB_Camera (front right)
 - BackRightCamera8032 (back right)
-- jessiecam (back left)
+- jessiecam (back left) - KIA
+
+Cameras on 2026 bot:
+- spencercam (hub camera)
 
 Cameras not on bot:
-- FrontLeftCamera8032 (broken)
+- FrontLeftCamera8032
 - geraldcam (backup)
 - spencercam (backup)
 - willycam (backup)

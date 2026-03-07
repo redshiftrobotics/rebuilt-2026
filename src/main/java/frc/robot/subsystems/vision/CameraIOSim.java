@@ -21,7 +21,7 @@ public class CameraIOSim extends CameraIOPhotonVision {
     SimCameraProperties cameraProperties = new SimCameraProperties();
 
     // These values depend on photonvision config, update them as well as in assets config
-    cameraProperties.setCalibration(800, 600, Rotation2d.fromDegrees(100));
+    cameraProperties.setCalibration(800, 600, Rotation2d.fromDegrees(75));
     cameraProperties.setCalibError(0.01, 0.10);
     cameraProperties.setFPS(15);
 

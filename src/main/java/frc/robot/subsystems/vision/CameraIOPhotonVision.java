@@ -44,12 +44,7 @@ public class CameraIOPhotonVision implements CameraIO {
     // https://docs.photonvision.org/en/latest/docs/programming/photonlib/robot-pose-estimator.html#using-a-photonposeestimator
 
     photonPoseEstimator =
-        new PhotonPoseEstimator(
-            FieldConstants.emptyFieldLayout,
-            PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-            config.robotToCamera());
-
-    photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+        new PhotonPoseEstimator(FieldConstants.emptyFieldLayout, config.robotToCamera());
   }
 
   @Override
@@ -86,7 +81,11 @@ public class CameraIOPhotonVision implements CameraIO {
     estimates.clear();
 
     for (PhotonPipelineResult result : pipelineResults) {
-      Optional<EstimatedRobotPose> estimatedRobotPose = photonPoseEstimator.update(result);
+      Optional<EstimatedRobotPose> estimatedRobotPose =
+          photonPoseEstimator.estimateCoprocMultiTagPose(result);
+      if (estimatedRobotPose.isEmpty()) {
+        estimatedRobotPose = photonPoseEstimator.estimateLowestAmbiguityPose(result);
+      }
       estimatedRobotPose.ifPresent(estimates::add);
     }
 

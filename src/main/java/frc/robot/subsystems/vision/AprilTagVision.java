@@ -86,8 +86,7 @@ public class AprilTagVision extends SubsystemBase {
             "Vision/" + camera.getPositionName() + "/standardDeviations",
             result.standardDeviations().getData());
         Logger.recordOutput(
-            "Vision/" + camera.getPositionName() + "/timestampSeconds",
-            result.timestampSeconds());
+            "Vision/" + camera.getPositionName() + "/timestampSeconds", result.timestampSeconds());
         Logger.recordOutput(
             "Vision/" + camera.getPositionName() + "/tagPositionsOnField",
             result.tagPositionsOnField().toArray(Pose3d[]::new));
