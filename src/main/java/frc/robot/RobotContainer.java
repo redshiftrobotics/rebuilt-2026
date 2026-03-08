@@ -319,7 +319,7 @@ public class RobotContainer {
           }
         });
 
-    launcher.setMode(LauncherRunMode.INTERPOLATION);
+    launcher.setMode(LauncherRunMode.MANUAL);
 
     final Trigger manualLaunch = xbox.back();
     final Trigger resetShift = xbox.start().debounce(0.01);

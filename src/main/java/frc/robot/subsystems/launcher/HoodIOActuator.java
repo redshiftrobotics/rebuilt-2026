@@ -16,7 +16,8 @@ public class HoodIOActuator implements HoodIO {
 
   @Override
   public void setPosition(double position) {
-    position = MathUtil.clamp(position, 0.0, 1.0); // TODO, FOR TESTING SETUP ONLY
+    // TODO, FOR TESTING SETUP ONLY. Do not remove until hood v2 mounted.
+    position = MathUtil.clamp(position, 0.1, 0.55);
     actuatorLeft.set(position);
     actuatorRight.set(position);
   }
