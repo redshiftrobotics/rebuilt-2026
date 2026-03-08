@@ -9,9 +9,9 @@
           {
             "title": "Shifts",
             "x": 1024.0,
-            "y": 128.0,
+            "y": 0.0,
             "width": 256.0,
-            "height": 384.0,
+            "height": 320.0,
             "type": "List Layout",
             "properties": {
               "label_position": "TOP"
@@ -79,20 +79,6 @@
                   "time_display_mode": "Seconds Only",
                   "red_start_time": 3,
                   "yellow_start_time": 10
-                }
-              },
-              {
-                "title": "Remaining Shift Time (Formatted)",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/SmartDashboard/Shifts/Remaining Shift Time (Formatted)",
-                  "period": 0.06,
-                  "data_type": "string",
-                  "show_submit_button": false
                 }
               }
             ]
@@ -285,26 +271,9 @@
             }
           },
           {
-            "title": "LauncherIsReady",
-            "x": 640.0,
-            "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Boolean Box",
-            "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Launcher/isReady",
-              "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
-            }
-          },
-          {
             "title": "runMode",
-            "x": 640.0,
-            "y": 384.0,
+            "x": 768.0,
+            "y": 256.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Large Text Display",
@@ -337,10 +306,10 @@
           },
           {
             "title": "Game Time",
-            "x": 1024.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 128.0,
+            "x": 0.0,
+            "y": 512.0,
+            "width": 384.0,
+            "height": 192.0,
             "type": "Match Time",
             "properties": {
               "topic": "/SmartDashboard/Game Time",
@@ -353,14 +322,48 @@
           },
           {
             "title": "Scheduler",
-            "x": 768.0,
-            "y": 256.0,
+            "x": 1024.0,
+            "y": 320.0,
             "width": 256.0,
-            "height": 320.0,
+            "height": 384.0,
             "type": "Scheduler",
             "properties": {
               "topic": "/SmartDashboard/Scheduler",
               "period": 0.06
+            }
+          },
+          {
+            "title": "isRunning",
+            "x": 640.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Launcher/isRunning",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "isReady",
+            "x": 640.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Launcher/isReady",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
             }
           }
         ]
