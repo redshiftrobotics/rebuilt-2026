@@ -43,6 +43,10 @@ public class LauncherControlManual implements Supplier<LauncherState> {
       hoodShift += delta;
     }
 
+    void setHood(double position) {
+      hoodShift = position - base.hoodPosition();
+    }
+
     void reset() {
       velocityShift = 0;
       hoodShift = 0;
@@ -82,6 +86,10 @@ public class LauncherControlManual implements Supplier<LauncherState> {
 
   public void incrementHood(double delta) {
     setpoints.get(mode).incrementHood(delta);
+  }
+
+  public void setHood(double position) {
+    setpoints.get(mode).setHood(position);
   }
 
   public void reset() {

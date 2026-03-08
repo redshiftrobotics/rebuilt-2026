@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RobotType;
 import frc.robot.utility.tunable.TunableNumber;
@@ -72,7 +73,7 @@ public class Launcher extends SubsystemBase {
     switch (robotType) {
       case REBUILT_2026:
         return new Launcher(
-            new HoodIOSim(false),
+            new HoodIOActuator(),
             new ChannelIOTalonFX("Left", LauncherConstants.LEFT_CONSTANTS),
             new ChannelIOTalonFX("Center", LauncherConstants.CENTER_CONSTANTS),
             new ChannelIOTalonFX("Right", LauncherConstants.RIGHT_CONSTANTS));
@@ -200,6 +201,9 @@ public class Launcher extends SubsystemBase {
 
     Logger.recordOutput(
         getName() + "/desiredRobotPose", new Pose2d(robotPose.getTranslation(), robotYaw));
+
+    SmartDashboard.putNumber(
+        "LauncherTuning/MeasuredFlywheelRadPerSec", getMeasuredState().wheelRadPerSec());
 
     if (running) {
       hoodIO.setPosition(runningDesiredState.hoodPosition());

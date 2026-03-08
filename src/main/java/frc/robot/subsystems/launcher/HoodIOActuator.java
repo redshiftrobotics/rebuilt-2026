@@ -1,5 +1,6 @@
 package frc.robot.subsystems.launcher;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Servo;
 
 /** Hardware implementation of the Hood IO. */
@@ -15,6 +16,7 @@ public class HoodIOActuator implements HoodIO {
 
   @Override
   public void setPosition(double position) {
+    position = MathUtil.clamp(position, 0.0, 1.0); // TODO, FOR TESTING SETUP ONLY
     actuatorLeft.set(position);
     actuatorRight.set(position);
   }

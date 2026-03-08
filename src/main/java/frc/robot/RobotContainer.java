@@ -304,7 +304,21 @@ public class RobotContainer {
 
     final LauncherControlManual manualLaunchControl = new LauncherControlManual(ManualLaunchMode.Y);
 
-    launcher.setManualModeState(manualLaunchControl);
+    SmartDashboard.putBoolean("LauncherTuning/Active", false);
+    SmartDashboard.putNumber("LauncherTuning/FlywheelRadPerSec", 0);
+    SmartDashboard.putNumber("LauncherTuning/HoodPosition", 0);
+
+    launcher.setManualModeState(
+        () -> {
+          if (SmartDashboard.getBoolean("LauncherTuning/Active", false)) {
+            double velocity = SmartDashboard.getNumber("LauncherTuning/FlywheelRadPerSec", 0);
+            double hood = SmartDashboard.getNumber("LauncherTuning/HoodPosition", 0);
+            return new Launcher.LauncherState(velocity, hood);
+          } else {
+            return manualLaunchControl.get();
+          }
+        });
+
     launcher.setMode(LauncherRunMode.INTERPOLATION);
 
     final Trigger manualLaunch = xbox.back();

@@ -23,8 +23,8 @@ import frc.robot.utility.tunable.TunableNumber;
 /** Constants for the Template subsystem. */
 public class LauncherConstants {
 
-  public static final int ACTUATOR_LEFT_ID = 1;
-  public static final int ACTUATOR_RIGHT_ID = 2;
+  public static final int ACTUATOR_LEFT_ID = 0;
+  public static final int ACTUATOR_RIGHT_ID = 1;
 
   public record ChannelConstants(int deviceId, double gearRatio, boolean inverted) {}
 
