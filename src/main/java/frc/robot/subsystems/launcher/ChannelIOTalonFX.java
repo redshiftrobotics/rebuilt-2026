@@ -97,13 +97,14 @@ public class ChannelIOTalonFX implements ChannelIO {
 
   @Override
   public void setOpenLoop(double output) {
-    voltageRequest.withOutput(output);
+    motor.setControl(voltageRequest.withOutput(output));
   }
 
   @Override
   public void setVelocity(double radPerSec, double arbFeedforward) {
     double rotationsPerSec = Units.radiansToRotations(radPerSec);
-    velocityVoltageRequest.withVelocity(rotationsPerSec).withFeedForward(arbFeedforward);
+    motor.setControl(
+        velocityVoltageRequest.withVelocity(rotationsPerSec).withFeedForward(arbFeedforward));
   }
 
   @Override
