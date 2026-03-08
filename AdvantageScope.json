@@ -214,7 +214,7 @@
                   },
                   {
                     "type": "stepped",
-                    "logKey": "/RealOutputs/Launcher/runningDesiredState//wheelRadPerSec",
+                    "logKey": "/RealOutputs/Launcher/runningDesiredState/wheelRadPerSec",
                     "logType": "Number",
                     "visible": true,
                     "options": {

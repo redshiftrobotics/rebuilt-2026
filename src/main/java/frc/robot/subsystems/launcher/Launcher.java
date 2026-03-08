@@ -26,6 +26,7 @@ public class Launcher extends SubsystemBase {
     MANUAL,
     MATHEMATICAL,
     INTERPOLATION,
+    DASHBOARD_TUNING
   }
 
   public record LauncherState(double wheelRadPerSec, double hoodPosition) {
@@ -106,6 +107,9 @@ public class Launcher extends SubsystemBase {
     }
 
     stop();
+
+    SmartDashboard.putNumber("LauncherTuning/DesiredWheelRadPerSec", 0);
+    SmartDashboard.putNumber("LauncherTuning/DesiredHoodPosition", 0);
   }
 
   public void setManualModeState(Supplier<LauncherState> manualModeState) {
@@ -172,9 +176,6 @@ public class Launcher extends SubsystemBase {
     flywheelPID.ifChanged(hashCode(), this::updatePID);
     flywheelFF.ifChanged(hashCode(), this::updateFF);
 
-    DEBOUNCE_TIME_AT_GOAL.ifChanged(hashCode(), atGoalDebouncer::setDebounceTime);
-    atGoalDebounced = atGoalDebouncer.calculate(isReady());
-
     Pose2d robotPose = robotPoseSupplier.get();
     ChassisSpeeds robotRelativeVelocity = robotVelocitySupplier.get();
 
@@ -197,13 +198,35 @@ public class Launcher extends SubsystemBase {
 
     } else if (mode == LauncherRunMode.MANUAL) {
       setRunningDesiredState(manualModeState.get());
+    } else if (mode == LauncherRunMode.DASHBOARD_TUNING) {
+
+      LaunchCalculator.LaunchingParameters parameters =
+          LaunchCalculator.getInstance().getParameters(robotPose, robotRelativeVelocity);
+
+      double velocity = SmartDashboard.getNumber("LauncherTuning/DesiredWheelRadPerSec", 0);
+      double hood = SmartDashboard.getNumber("LauncherTuning/DesiredHoodPosition", 0);
+      setRunningDesiredState(new LauncherState(velocity, hood));
+
+      // NOTE: This distance is launcher to center of target (and is what the calculator uses)
+      // When entering distances, use this over measuring by hand if possible (assuming good tags),
+      SmartDashboard.putNumber("LauncherTuning/CalculatorDistance", parameters.distance());
+
+      robotYaw = parameters.driveAngle();
     }
+
+    boolean atGoal = isReady();
+    DEBOUNCE_TIME_AT_GOAL.ifChanged(hashCode(), atGoalDebouncer::setDebounceTime);
+    atGoalDebounced = atGoalDebouncer.calculate(atGoal);
 
     Logger.recordOutput(
         getName() + "/desiredRobotPose", new Pose2d(robotPose.getTranslation(), robotYaw));
 
     SmartDashboard.putNumber(
-        "LauncherTuning/MeasuredFlywheelRadPerSec", getMeasuredState().wheelRadPerSec());
+        "LauncherTuning/MeasuredWheelRadPerSec", getMeasuredState().wheelRadPerSec());
+    SmartDashboard.putNumber(
+        "LauncherTuning/DesiredWheelRadPerSec", runningDesiredState.wheelRadPerSec());
+    SmartDashboard.putNumber(
+        "LauncherTuning/DesiredHoodPosition", runningDesiredState.hoodPosition());
 
     if (running) {
       hoodIO.setPosition(runningDesiredState.hoodPosition());
@@ -265,7 +288,7 @@ public class Launcher extends SubsystemBase {
     return true;
   }
 
-  public boolean isReadyDebounced() {
+  public boolean atGoalDebounced() {
     return atGoalDebounced;
   }
 
