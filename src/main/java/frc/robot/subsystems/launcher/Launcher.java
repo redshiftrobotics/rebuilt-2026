@@ -229,10 +229,12 @@ public class Launcher extends SubsystemBase {
         "LauncherTuning/DesiredHoodPosition", runningDesiredState.hoodPosition());
 
     if (running) {
-      hoodIO.setPosition(runningDesiredState.hoodPosition());
+      // TODO FOR TESTING ONLY 3/9 : FORCE TO KEEP ANGLE WHILE BUILDING INTERP TABLE
+      // hoodIO.setPosition(runningDesiredState.hoodPosition());
       setChannelVelocities(runningDesiredState.wheelRadPerSec());
     } else {
-      hoodIO.setPosition(0); // Lower the hood to avoid collisions when not in use
+      // TODO FOR TESTING ONLY 3/9 : DISABLE HOOD LOWERING
+      // hoodIO.setPosition(0); // Lower the hood to avoid collisions when not in use
       stopChannelMotors(); // Coast to slow down
     }
   }
@@ -257,6 +259,21 @@ public class Launcher extends SubsystemBase {
     return new LauncherState(
         channelInputs.stream().mapToDouble(c -> c.velocityRadPerSec).average().orElse(0.0),
         (hoodInputs.positionLeft + hoodInputs.positionRight) / 2);
+  }
+
+  public double getHoodPosition() {
+    if (!MathUtil.isNear(
+        hoodInputs.positionLeft, hoodInputs.positionRight, HOOD_POSITION_TOLERANCE.get())) {
+      System.err.println("LEFT HOOD & RIGHT HOOD NOT ALIGNED!");
+    }
+
+    return hoodInputs.positionLeft;
+  }
+
+  public void setHoodPosition(double _new) {
+    // TODO FOR TESTING ONLY : 3/9 : FORCE SET HOOD POSITION
+    hoodIO.setPosition(_new);
+    SmartDashboard.putNumber("DEBUG HOOD POSITION", _new);
   }
 
   @AutoLogOutput(key = "Launcher/isReady")

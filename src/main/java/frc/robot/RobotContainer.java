@@ -498,6 +498,13 @@ public class RobotContainer {
                 .ignoringDisable(true)
                 .withName("Set Manual Launch Mode Y"));
 
+    xbox.rightStick()
+        .whileTrue(
+            Commands.run(
+                () -> {
+                  launcher.setHoodPosition(launcher.getHoodPosition() + (xbox.getRightY() / 2));
+                }));
+
     // --- HANG/MANUAL CONTROL ---
 
     // Hang up/down axis
