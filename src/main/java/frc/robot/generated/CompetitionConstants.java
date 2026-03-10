@@ -172,7 +172,8 @@ public class CompetitionConstants {
   private static final int kBackRightDriveMotorId = 18;
   private static final int kBackRightSteerMotorId = 19;
   private static final int kBackRightEncoderId = 23;
-  private static final Angle kBackRightEncoderOffset = Rotations.of(-0.43115234375);
+  private static final Angle kBackRightEncoderOffset =
+      Rotations.of(-0.43115234375 + 0.132805556 + .5);
   private static final boolean kBackRightSteerMotorInverted = false;
   private static final boolean kBackRightEncoderInverted = false;
 
