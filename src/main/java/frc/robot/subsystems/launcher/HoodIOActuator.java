@@ -16,6 +16,10 @@ public class HoodIOActuator implements HoodIO {
     actuatorRight.setBoundsMicroseconds(2000, 1800, 1500, 1200, 1000);
   }
 
+  public double getPosition() {
+    return (actuatorLeft.getPosition() + actuatorRight.getPosition()) / 2.0;
+  }
+
   @Override
   public void setPosition(double position) {
     // TODO, FOR TESTING SETUP ONLY. Do not remove until hood v2 mounted.

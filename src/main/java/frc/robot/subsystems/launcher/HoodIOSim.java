@@ -11,6 +11,11 @@ public class HoodIOSim implements HoodIO {
   }
 
   @Override
+  public double getPosition() {
+    return position;
+  }
+
+  @Override
   public void setPosition(double position) {
     if (isAdjustable) {
       this.position = position;
