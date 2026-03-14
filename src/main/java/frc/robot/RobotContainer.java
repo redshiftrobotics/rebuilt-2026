@@ -41,7 +41,7 @@ import frc.robot.utility.Elastic;
 import frc.robot.utility.Elastic.Notification.NotificationLevel;
 import frc.robot.utility.HubTracker;
 import frc.robot.utility.geometry.FieldFlipUtil;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -201,8 +201,7 @@ public class RobotContainer {
 
     // Default command, normal joystick drive
 
-    final Command aimDrive =
-        LaunchCommands.driveWhileLaunching(drive, pipeline::getChassisSpeeds);
+    final Command aimDrive = LaunchCommands.driveWhileLaunching(drive, pipeline::getChassisSpeeds);
 
     drive.setDefaultCommand(
         drive
@@ -538,7 +537,7 @@ public class RobotContainer {
 
   /** Make commands accessible to PathPlanner autos. */
   private void registerNamedCommands() {
-    HashMap<String, Command> namedCommands = new HashMap<String, Command>();
+    LinkedHashMap<String, Command> namedCommands = new LinkedHashMap<String, Command>();
 
     namedCommands.put("LEDS", leds.runColor(BlinkenLEDPattern.RED));
 
@@ -572,6 +571,7 @@ public class RobotContainer {
         System.err.println("[FAIL] " + commandName);
       }
     }
+    System.out.println("Named commands registered.");
   }
 
   /**

@@ -127,7 +127,8 @@ public class LaunchCalculator extends VirtualSubsystem {
                 robotRelativeVelocity.vyMetersPerSecond * phaseDelay,
                 robotRelativeVelocity.omegaRadiansPerSecond * phaseDelay));
 
-    Pose2d launcherPosition = estimatedPose.transformBy(GeomUtil.toTransform2d(LauncherConstants.ROBOT_TO_LAUNCHER));
+    Pose2d launcherPosition =
+        estimatedPose.transformBy(GeomUtil.toTransform2d(LauncherConstants.ROBOT_TO_LAUNCHER));
     double launcherToTargetDistance = target.getDistance(launcherPosition.getTranslation());
 
     Rotation2d robotAngle = estimatedPose.getRotation();
@@ -137,7 +138,9 @@ public class LaunchCalculator extends VirtualSubsystem {
     // Calculate field relative launcher velocity
     ChassisSpeeds launcherVelocity =
         GeomUtil.transformVelocity(
-            robotVelocity, LauncherConstants.ROBOT_TO_LAUNCHER.getTranslation().toTranslation2d(), robotAngle);
+            robotVelocity,
+            LauncherConstants.ROBOT_TO_LAUNCHER.getTranslation().toTranslation2d(),
+            robotAngle);
 
     // Account for imparted velocity by robot (launcher) to offset
     double timeOfFlight = timeOfFlightMap.get(launcherToTargetDistance);
@@ -157,7 +160,8 @@ public class LaunchCalculator extends VirtualSubsystem {
 
     // Account for launcher being off center
     Pose2d lookaheadRobotPose =
-        lookaheadPose.transformBy(GeomUtil.toTransform2d(LauncherConstants.ROBOT_TO_LAUNCHER).inverse());
+        lookaheadPose.transformBy(
+            GeomUtil.toTransform2d(LauncherConstants.ROBOT_TO_LAUNCHER).inverse());
     Rotation2d driveAngle = getDriveAngleWithLauncherOffset(lookaheadRobotPose, target);
 
     // Calculate interpolated values from maps
@@ -215,7 +219,9 @@ public class LaunchCalculator extends VirtualSubsystem {
                     -1.0,
                     1.0)));
     Rotation2d driveAngle =
-        fieldToHubAngle.plus(hubAngle).plus(LauncherConstants.ROBOT_TO_LAUNCHER.getRotation().toRotation2d());
+        fieldToHubAngle
+            .plus(hubAngle)
+            .plus(LauncherConstants.ROBOT_TO_LAUNCHER.getRotation().toRotation2d());
     return driveAngle;
   }
 

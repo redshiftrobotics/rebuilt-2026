@@ -51,7 +51,7 @@ public class LauncherConstants {
         case SIM_BOT -> new FeedForwardConfigRecord(0.0, 0.019, 0.0);
         default -> new FeedForwardConfigRecord(0.0, 0.0, 0.0);
       };
-  
+
   public static final Transform3d ROBOT_TO_LAUNCHER =
       new Transform3d(
           Units.inchesToMeters(-9.937105),

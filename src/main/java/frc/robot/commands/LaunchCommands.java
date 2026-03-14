@@ -1,9 +1,5 @@
 package frc.robot.commands;
 
-import java.util.function.Supplier;
-
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -25,6 +21,8 @@ import frc.robot.utility.geometry.AllianceMirrorUtil;
 import frc.robot.utility.geometry.GeomUtil;
 import frc.robot.utility.tunable.TunableNumber;
 import frc.robot.utility.tunable.TunableNumberGroup;
+import java.util.function.Supplier;
+import org.littletonrobotics.junction.Logger;
 
 public class LaunchCommands {
 
@@ -57,7 +55,7 @@ public class LaunchCommands {
               launcher.start();
             }));
   }
-  
+
   public static Command driveWhileLaunching(
       Drive drive, final Supplier<ChassisSpeeds> initialRobotRelativeSpeedsSupplier) {
     return drive.run(
