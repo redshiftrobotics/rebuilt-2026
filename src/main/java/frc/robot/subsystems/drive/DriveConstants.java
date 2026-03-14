@@ -78,7 +78,7 @@ public class DriveConstants {
 
   public static final Translation2d BUMPER_TO_BUMPER =
       switch (Constants.getRobot()) {
-        default -> new Translation2d(Units.inchesToMeters(34.5), Units.inchesToMeters(34.5));
+        default -> new Translation2d(Units.inchesToMeters(34.5), Units.inchesToMeters(33.5));
       };
 
   public static final DriveConfig DRIVE_CONFIG =

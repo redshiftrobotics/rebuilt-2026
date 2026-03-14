@@ -18,6 +18,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
 import frc.robot.FieldConstants;
+import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.utility.MeanAngleFilter;
 import frc.robot.utility.VirtualSubsystem;
 import frc.robot.utility.geometry.AllianceMirrorUtil;
@@ -92,7 +93,8 @@ public class LaunchCalculator extends VirtualSubsystem {
 
   public static void putTableData(
       double distanceInches, double speedRadiansPerSecond, double hoodPosition) {
-    double distanceMeters = Units.inchesToMeters(distanceInches);
+    // Add half the hub width and bot width to convert from closest distance to center-based distance
+    double distanceMeters = Units.inchesToMeters(distanceInches + FieldConstants.Hub.width / 2 + DriveConstants.BUMPER_TO_BUMPER.getX() / 2);
 
     hoodPositionMap.put(distanceMeters, hoodPosition);
     wheelRadPerSecMap.put(distanceMeters, speedRadiansPerSecond);
