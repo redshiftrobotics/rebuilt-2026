@@ -13,6 +13,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants;
 import frc.robot.FieldConstants;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.hopper.Hopper;
+import frc.robot.subsystems.hopper.HopperConstants.HopperRunMode;
 import frc.robot.subsystems.launcher.LaunchCalculator;
 import frc.robot.subsystems.launcher.LaunchCalculator.LaunchingParameters;
 import frc.robot.subsystems.launcher.Launcher;
@@ -54,6 +56,17 @@ public class LaunchCommands {
             () -> {
               launcher.start();
             }));
+  }
+
+  public static Command launchInPlace(Drive drive, Launcher launcher, Hopper hopper) {
+    return Commands.parallel(
+      DriveCommands.rotateWithRotationController(drive, launcher::getRobotYaw),
+      launcher.startEnd(launcher::start, launcher::stop),
+      hopper.run(() -> hopper.setMode(HopperRunMode.PREP_SHOT))
+          .onlyWhile(() -> !launcher.isReady())
+          .andThen(hopper.runOnce(() -> hopper.setMode(HopperRunMode.FIRING)))
+          .finallyDo(() -> hopper.setMode(HopperRunMode.STOPPED))
+    );
   }
 
   public static Command driveWhileLaunching(
