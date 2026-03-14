@@ -9,6 +9,8 @@ import static edu.wpi.first.units.Units.Millimeters;
 import static edu.wpi.first.units.Units.Pounds;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
@@ -49,6 +51,16 @@ public class LauncherConstants {
         case SIM_BOT -> new FeedForwardConfigRecord(0.0, 0.019, 0.0);
         default -> new FeedForwardConfigRecord(0.0, 0.0, 0.0);
       };
+  
+  public static final Transform3d ROBOT_TO_LAUNCHER =
+      new Transform3d(
+          Units.inchesToMeters(-9.937105),
+          0.0,
+          Units.inchesToMeters(17.731846 + (4.0 / 2.0)),
+          Rotation3d.kZero); // From CAD
+
+  public static final Translation2d LAUNCHER_TO_ROBOT =
+      ROBOT_TO_LAUNCHER.getTranslation().toTranslation2d().unaryMinus();
 
   public static final Distance LAUNCHER_WHEEL_RADIUS = Inches.of(2);
   public static final Mass LAUNCHER_WHEEL_MASS = Pounds.of(2.2);

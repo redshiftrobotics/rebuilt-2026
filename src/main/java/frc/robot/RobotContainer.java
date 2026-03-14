@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.Mode;
 import frc.robot.Constants.RobotType;
 import frc.robot.commands.DriveCharacterizationCommands;
+import frc.robot.commands.LaunchCommands;
 import frc.robot.commands.pipeline.DriveInput;
 import frc.robot.commands.pipeline.DriveInputPipeline;
 import frc.robot.subsystems.drive.Drive;
@@ -29,7 +30,6 @@ import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.hopper.HopperConstants.HopperRunMode;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeRunMode;
-import frc.robot.subsystems.launcher.LaunchCalculator;
 import frc.robot.subsystems.launcher.Launcher;
 import frc.robot.subsystems.launcher.Launcher.LauncherRunMode;
 import frc.robot.subsystems.launcher.LauncherControlManual;
@@ -202,7 +202,7 @@ public class RobotContainer {
     // Default command, normal joystick drive
 
     final Command aimDrive =
-        LaunchCalculator.driveWhileLaunching(drive, pipeline::getChassisSpeeds);
+        LaunchCommands.driveWhileLaunching(drive, pipeline::getChassisSpeeds);
 
     drive.setDefaultCommand(
         drive
