@@ -60,13 +60,13 @@ public class LaunchCommands {
 
   public static Command launchInPlace(Drive drive, Launcher launcher, Hopper hopper) {
     return Commands.parallel(
-      DriveCommands.rotateWithRotationController(drive, launcher::getRobotYaw),
-      launcher.startEnd(launcher::start, launcher::stop),
-      hopper.run(() -> hopper.setMode(HopperRunMode.PREP_SHOT))
-          .onlyWhile(() -> !launcher.isReady())
-          .andThen(hopper.runOnce(() -> hopper.setMode(HopperRunMode.FIRING)))
-          .finallyDo(() -> hopper.setMode(HopperRunMode.STOPPED))
-    );
+        DriveCommands.rotateWithRotationController(drive, launcher::getRobotYaw),
+        launcher.startEnd(launcher::start, launcher::stop),
+        hopper
+            .run(() -> hopper.setMode(HopperRunMode.PREP_SHOT))
+            .onlyWhile(() -> !launcher.isReady())
+            .andThen(hopper.runOnce(() -> hopper.setMode(HopperRunMode.FIRING)))
+            .finallyDo(() -> hopper.setMode(HopperRunMode.STOPPED)));
   }
 
   public static Command driveWhileLaunching(
