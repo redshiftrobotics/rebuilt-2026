@@ -7,3 +7,11 @@
 Two environment variubles can be set to change default simulation behaviour:
 * `REBUILT_USE_SIM_GUI` enables the simulation GUI.
 * `REBUILT_USE_REAL_DRIVER_STATION` enables the NI Driver Station.
+
+## Autos
+
+Autos and paths follow a naming convention: North and South, Trench and Bump
+
+Preload Only for only shooting the preloads
+Field only forstarting empty and shooting what you pick up
+Preload and Field for shooting preloads, then retreiving from the field
