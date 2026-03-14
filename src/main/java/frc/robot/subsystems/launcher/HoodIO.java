@@ -2,11 +2,10 @@ package frc.robot.subsystems.launcher;
 
 import static edu.wpi.first.units.Units.Meters;
 
-import org.littletonrobotics.junction.AutoLog;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.subsystems.launcher.LauncherConstants.LauncherMathConstants;
+import org.littletonrobotics.junction.AutoLog;
 
 /** Interface for the IO layers of the Launcher subsystem's hood. */
 public interface HoodIO {
@@ -22,9 +21,10 @@ public interface HoodIO {
   public default void updateInputs(HoodIOInputs inputs) {}
 
   public default void setPosition(double position) {}
-  
-  public default double getPosition() {return 0.0;}
 
+  public default double getPosition() {
+    return 0.0;
+  }
 
   public default void setAngle(Rotation2d launchAngle) {
     double radius = LauncherMathConstants.HOOD_RADIUS.in(Meters);

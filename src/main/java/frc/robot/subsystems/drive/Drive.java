@@ -221,8 +221,11 @@ public class Drive extends SubsystemBase {
     Logger.recordOutput("ChassisStates/ModuleDesiredSpeeds", getDesiredRobotSpeeds());
 
     Logger.recordOutput("Drive/RobotPose", robotPose);
-    
-    SmartDashboard.putBoolean("In Range", Hub.center.getDistance(getRobotPose().getTranslation()) < edu.wpi.first.math.util.Units.inchesToMeters(139));
+
+    SmartDashboard.putBoolean(
+        "In Range",
+        Hub.center.getDistance(getRobotPose().getTranslation())
+            < edu.wpi.first.math.util.Units.inchesToMeters(139));
 
     // Update odometry
     double[] sampleTimestamps =
