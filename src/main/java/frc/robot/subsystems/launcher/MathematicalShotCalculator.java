@@ -65,8 +65,10 @@ public class MathematicalShotCalculator {
     double distance = hubTranslation.getNorm();
     Rotation2d runningHoodPitch = pitchCalculator.apply(distance);
 
-    LinearVelocity velocity = MathematicalShotCalculator.calculateVelocity(hubLocation.getNorm(), runningHoodPitch);
-    double timeOfFlight = MathematicalShotCalculator.timeOfFlight(runningHoodPitch, velocity, hubLocation.getNorm());
+    LinearVelocity velocity =
+        MathematicalShotCalculator.calculateVelocity(hubLocation.getNorm(), runningHoodPitch);
+    double timeOfFlight =
+        MathematicalShotCalculator.timeOfFlight(runningHoodPitch, velocity, hubLocation.getNorm());
     Logger.recordOutput(
         "MathematicalLauncherCalculator/timeOfFlight", Math.round(timeOfFlight * 10.0) / 10.0);
 
@@ -121,8 +123,7 @@ public class MathematicalShotCalculator {
         75.0 - 15.0 * Math.tanh(2.0 * Units.metersToFeet(distanceMeters) / 25.0));
   }
 
-  public static double timeOfFlight(
-      Rotation2d pitch, LinearVelocity velocity, double hubDistance) {
+  public static double timeOfFlight(Rotation2d pitch, LinearVelocity velocity, double hubDistance) {
     // Distance divided by horizontal shot speed
     return (hubDistance + LauncherMathConstants.LAUNCHER_X_OFFSET.in(Meters))
         / (pitch.getCos() * velocity.in(MetersPerSecond));

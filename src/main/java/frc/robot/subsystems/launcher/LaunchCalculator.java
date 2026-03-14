@@ -89,7 +89,7 @@ public class LaunchCalculator extends VirtualSubsystem {
   private static final InterpolatingDoubleTreeMap wheelRadPerSecMap =
       new InterpolatingDoubleTreeMap();
   private static final InterpolatingDoubleTreeMap timeOfFlightMap = null;
-      // new InterpolatingDoubleTreeMap();
+  // new InterpolatingDoubleTreeMap();
 
   private static final double minDistance = 0.9;
   private static final double maxDistance = 4.9;
@@ -255,10 +255,7 @@ public class LaunchCalculator extends VirtualSubsystem {
     if (timeOfFlightMap == null) {
       Rotation2d angle = HoodIO.getAngle(hoodPositionMap.get(distance));
       return MathematicalShotCalculator.timeOfFlight(
-        angle,
-        MathematicalShotCalculator.calculateVelocity(distance, angle),
-        distance
-      );
+          angle, MathematicalShotCalculator.calculateVelocity(distance, angle), distance);
     }
     return timeOfFlightMap.get(distance);
   }
