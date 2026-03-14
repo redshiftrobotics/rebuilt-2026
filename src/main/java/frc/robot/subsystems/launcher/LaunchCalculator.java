@@ -93,8 +93,13 @@ public class LaunchCalculator extends VirtualSubsystem {
 
   public static void putTableData(
       double distanceInches, double speedRadiansPerSecond, double hoodPosition) {
-    // Add half the hub width and bot width to convert from closest distance to center-based distance
-    double distanceMeters = Units.inchesToMeters(distanceInches + FieldConstants.Hub.width / 2 + DriveConstants.BUMPER_TO_BUMPER.getX() / 2);
+    // Add half the hub width and bot width to convert from closest distance to center-based
+    // distance
+    double distanceMeters =
+        Units.inchesToMeters(
+            distanceInches
+                + FieldConstants.Hub.width / 2
+                + DriveConstants.BUMPER_TO_BUMPER.getX() / 2);
 
     hoodPositionMap.put(distanceMeters, hoodPosition);
     wheelRadPerSecMap.put(distanceMeters, speedRadiansPerSecond);
