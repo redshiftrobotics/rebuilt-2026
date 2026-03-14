@@ -557,10 +557,11 @@ public class RobotContainer {
     namedCommands.put("StopIntake", intake.runOnce(() -> intake.setMode(IntakeRunMode.UP)));
 
     // Launcher commands
+    namedCommands.put("LaunchInPlaceAutomatic", Commands.none());
 
     // Hang commands
-    namedCommands.put("HangUp", null);
-    namedCommands.put("HangDown", null);
+    namedCommands.put("HangUp", Commands.none());
+    namedCommands.put("HangDown", Commands.none());
 
     System.out.println("Named commands:");
     for (var commandName : namedCommands.keySet()) {

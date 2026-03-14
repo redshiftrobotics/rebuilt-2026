@@ -81,14 +81,13 @@ public class LaunchCalculator extends VirtualSubsystem {
     clearLaunchingParameters();
   }
 
-  public static final InterpolatingDoubleTreeMap hoodAngleMap = null;
   // Launching Maps
   private static final InterpolatingDoubleTreeMap hoodPositionMap =
       new InterpolatingDoubleTreeMap();
   private static final InterpolatingDoubleTreeMap wheelRadPerSecMap =
       new InterpolatingDoubleTreeMap();
-  private static final InterpolatingDoubleTreeMap timeOfFlightMap = null;
-  // new InterpolatingDoubleTreeMap();
+  private static final InterpolatingDoubleTreeMap timeOfFlightMap =
+      new InterpolatingDoubleTreeMap();
 
   private static final double minDistance = 0.9;
   private static final double maxDistance = 4.9;
