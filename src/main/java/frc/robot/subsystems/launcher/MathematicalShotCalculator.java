@@ -65,13 +65,8 @@ public class MathematicalShotCalculator {
     double distance = hubTranslation.getNorm();
     Rotation2d runningHoodPitch = pitchCalculator.apply(distance);
 
-    MathematicalShotParameters parameters =
-        new MathematicalShotParameters(
-            MathematicalShotCalculator.calculateVelocity(hubLocation.getNorm(), runningHoodPitch),
-            runningHoodPitch,
-            hubTranslation.getAngle());
-
-    double timeOfFlight = MathematicalShotCalculator.timeOfFlight(parameters, hubLocation);
+    LinearVelocity velocity = MathematicalShotCalculator.calculateVelocity(hubLocation.getNorm(), runningHoodPitch);
+    double timeOfFlight = MathematicalShotCalculator.timeOfFlight(runningHoodPitch, velocity, hubLocation.getNorm());
     Logger.recordOutput(
         "MathematicalLauncherCalculator/timeOfFlight", Math.round(timeOfFlight * 10.0) / 10.0);
 
@@ -95,12 +90,11 @@ public class MathematicalShotCalculator {
       Translation2d robotVelocityMetersPerSecond,
       Function<Double, Rotation2d> pitchProvider) {
     Translation2d adjustedHubPosition = hubPosition;
-    for (int i = 0; i < 5; i++) {
-      Rotation2d pitch = pitchProvider.apply(adjustedHubPosition.getNorm());
-      MathematicalShotParameters parameters =
-          new MathematicalShotParameters(
-              calculateVelocity(adjustedHubPosition.getNorm(), pitch), pitch);
-      double time = timeOfFlight(parameters, adjustedHubPosition);
+    for (int i = 0; i < 20; i++) {
+      double adjustedDistance = adjustedHubPosition.getNorm();
+      Rotation2d pitch = pitchProvider.apply(adjustedDistance);
+      LinearVelocity velocity = calculateVelocity(adjustedDistance, pitch);
+      double time = timeOfFlight(pitch, velocity, adjustedDistance);
       // Shift hubPosition, not adjustedHubPosition, to avoid positive feedback
       adjustedHubPosition = hubPosition.minus(robotVelocityMetersPerSecond.times(time));
     }
@@ -128,10 +122,10 @@ public class MathematicalShotCalculator {
   }
 
   public static double timeOfFlight(
-      MathematicalShotParameters parameters, Translation2d hubPosition) {
+      Rotation2d pitch, LinearVelocity velocity, double hubDistance) {
     // Distance divided by horizontal shot speed
-    return (hubPosition.getNorm() + LauncherMathConstants.LAUNCHER_X_OFFSET.in(Meters))
-        / (parameters.pitch.getCos() * parameters.velocity.in(MetersPerSecond));
+    return (hubDistance + LauncherMathConstants.LAUNCHER_X_OFFSET.in(Meters))
+        / (pitch.getCos() * velocity.in(MetersPerSecond));
   }
 
   public static double getHoodPositionFromAngle(Rotation2d angle) {

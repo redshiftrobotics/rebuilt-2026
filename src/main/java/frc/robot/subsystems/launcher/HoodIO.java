@@ -39,10 +39,10 @@ public interface HoodIO {
             / (LauncherMathConstants.ACTUATOR_EXTENSION.in(Meters));
     setPosition(position);
   }
-
-  public default Rotation2d getAngle() {
+  
+  public static Rotation2d getAngle(double position) {
     double actuatorLength =
-        getPosition() * LauncherMathConstants.ACTUATOR_EXTENSION.in(Meters)
+        position * LauncherMathConstants.ACTUATOR_EXTENSION.in(Meters)
             + LauncherMathConstants.ACTUATOR_LENGTH_MIN.in(Meters);
     double radius = LauncherMathConstants.HOOD_RADIUS.in(Meters);
     double actuatorDistance = LauncherMathConstants.ACTUATOR_LOCATION.getNorm();
@@ -61,5 +61,8 @@ public interface HoodIO {
     return relativeAngle
         .plus(LauncherMathConstants.ACTUATOR_LOCATION.getAngle())
         .minus(Rotation2d.kCCW_90deg);
+  }
+  public default Rotation2d getAngle() {
+    return getAngle(getPosition());
   }
 }

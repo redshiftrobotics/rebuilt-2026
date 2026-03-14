@@ -82,13 +82,14 @@ public class LaunchCalculator extends VirtualSubsystem {
     clearLaunchingParameters();
   }
 
+  public static final InterpolatingDoubleTreeMap hoodAngleMap = null;
   // Launching Maps
   private static final InterpolatingDoubleTreeMap hoodPositionMap =
       new InterpolatingDoubleTreeMap();
   private static final InterpolatingDoubleTreeMap wheelRadPerSecMap =
       new InterpolatingDoubleTreeMap();
-  private static final InterpolatingDoubleTreeMap timeOfFlightMap =
-      new InterpolatingDoubleTreeMap();
+  private static final InterpolatingDoubleTreeMap timeOfFlightMap = null;
+      // new InterpolatingDoubleTreeMap();
 
   private static final double minDistance = 0.9;
   private static final double maxDistance = 4.9;
@@ -123,11 +124,11 @@ public class LaunchCalculator extends VirtualSubsystem {
     wheelRadPerSecMap.put(4.35, 185.0);
     wheelRadPerSecMap.put(4.84, 190.0);
 
-    timeOfFlightMap.put(5.68, 1.16);
-    timeOfFlightMap.put(4.55, 1.12);
-    timeOfFlightMap.put(3.15, 1.11);
-    timeOfFlightMap.put(1.88, 1.09);
-    timeOfFlightMap.put(1.38, 0.90);
+    // timeOfFlightMap.put(5.68, 1.16);
+    // timeOfFlightMap.put(4.55, 1.12);
+    // timeOfFlightMap.put(3.15, 1.11);
+    // timeOfFlightMap.put(1.88, 1.09);
+    // timeOfFlightMap.put(1.38, 0.90);
   }
 
   public static double getMinTimeOfFlight() {
@@ -251,6 +252,14 @@ public class LaunchCalculator extends VirtualSubsystem {
   }
 
   public double getNaiveTOF(double distance) {
+    if (timeOfFlightMap == null) {
+      Rotation2d angle = HoodIO.getAngle(hoodPositionMap.get(distance));
+      return MathematicalShotCalculator.timeOfFlight(
+        angle,
+        MathematicalShotCalculator.calculateVelocity(distance, angle),
+        distance
+      );
+    }
     return timeOfFlightMap.get(distance);
   }
 
