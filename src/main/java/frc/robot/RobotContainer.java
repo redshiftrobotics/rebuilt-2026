@@ -24,7 +24,6 @@ import frc.robot.Constants.RobotType;
 import frc.robot.commands.DriveCharacterizationCommands;
 import frc.robot.commands.pipeline.DriveInput;
 import frc.robot.commands.pipeline.DriveInputPipeline;
-import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.hopper.HopperConstants.HopperRunMode;
@@ -61,7 +60,6 @@ public class RobotContainer {
   private final Hopper hopper;
   private final Launcher launcher;
   private final Intake intake;
-  private final Climb climb;
 
   // Controller
   private final CommandXboxController driverController = new CommandXboxController(0);
@@ -102,7 +100,6 @@ public class RobotContainer {
     leds = LEDSubsystem.create(robotType);
     hopper = Hopper.create(robotType);
     intake = Intake.create(robotType);
-    climb = Climb.create(robotType);
     launcher = Launcher.create(robotType);
 
     // Vision setup
