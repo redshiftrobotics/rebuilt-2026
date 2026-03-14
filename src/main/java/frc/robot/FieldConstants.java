@@ -87,15 +87,16 @@ public class FieldConstants {
 
     // Relevant reference points on alliance side
     public static final Translation3d topCenterPoint =
-    new Translation3d(
-      apriltagLayout.getTagPose(26).get().getX() + width / 2.0, fieldWidth / 2.0, height);
-      public static final Translation3d innerCenterPoint =
-      new Translation3d(
-        apriltagLayout.getTagPose(26).get().getX() + width / 2.0,
-        fieldWidth / 2.0,
-        innerHeight);
+        new Translation3d(
+            apriltagLayout.getTagPose(26).get().getX() + width / 2.0, fieldWidth / 2.0, height);
+    public static final Translation3d innerCenterPoint =
+        new Translation3d(
+            apriltagLayout.getTagPose(26).get().getX() + width / 2.0,
+            fieldWidth / 2.0,
+            innerHeight);
 
-        public static final Translation2d center = new Translation2d(Hub.topCenterPoint.getX(), Hub.topCenterPoint.getY());
+    public static final Translation2d center =
+        new Translation2d(Hub.topCenterPoint.getX(), Hub.topCenterPoint.getY());
 
     public static final Translation2d nearLeftCorner =
         new Translation2d(topCenterPoint.getX() - width / 2.0, fieldWidth / 2.0 + width / 2.0);

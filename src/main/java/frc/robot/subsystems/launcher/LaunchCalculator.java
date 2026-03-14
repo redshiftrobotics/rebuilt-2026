@@ -42,7 +42,6 @@ public class LaunchCalculator extends VirtualSubsystem {
 
   private static final Translation2d launcherToRobot =
       robotToLauncher.getTranslation().toTranslation2d().unaryMinus();
-          
 
   private static LaunchCalculator instance;
 
@@ -96,39 +95,26 @@ public class LaunchCalculator extends VirtualSubsystem {
   private static final double phaseDelay = 0.03; // estimate
 
   static {
-    hoodPositionMap.put(minDistance, 0.0);
-    hoodPositionMap.put(0.96, 0.10);
-    hoodPositionMap.put(1.16, 0.12);
-    hoodPositionMap.put(1.58, 0.14);
-    hoodPositionMap.put(2.07, 0.18);
-    hoodPositionMap.put(2.37, 0.22);
-    hoodPositionMap.put(2.47, 0.23);
-    hoodPositionMap.put(2.70, 0.24);
-    hoodPositionMap.put(2.94, 0.25);
-    hoodPositionMap.put(3.48, 0.27);
-    hoodPositionMap.put(3.92, 0.32);
-    hoodPositionMap.put(4.35, 0.34);
-    hoodPositionMap.put(4.84, 0.38);
-    hoodPositionMap.put(maxDistance, 1.0);
+    putTableData(8, 300, 0.1);
+    putTableData(21, 325, 0.1);
+    putTableData(35, 325, 0.15);
+    putTableData(48, 370, 0.15);
+    putTableData(62, 370, 0.2);
+    putTableData(78, 400, 0.2);
+    putTableData(90, 400, 0.25);
+    putTableData(101, 400, 0.3);
+    putTableData(112, 410, 0.3);
+    putTableData(124, 425, 0.35);
+    putTableData(139, 425, 0.4);
+  }
 
-    wheelRadPerSecMap.put(0.96, 150.0);
-    wheelRadPerSecMap.put(1.16, 155.0);
-    wheelRadPerSecMap.put(1.58, 160.0);
-    wheelRadPerSecMap.put(2.07, 165.0);
-    wheelRadPerSecMap.put(2.37, 170.0);
-    wheelRadPerSecMap.put(2.47, 170.0);
-    wheelRadPerSecMap.put(2.70, 170.0);
-    wheelRadPerSecMap.put(2.94, 175.0);
-    wheelRadPerSecMap.put(3.48, 175.0);
-    wheelRadPerSecMap.put(3.92, 180.0);
-    wheelRadPerSecMap.put(4.35, 185.0);
-    wheelRadPerSecMap.put(4.84, 190.0);
+  public static void putTableData(
+      double distanceInches, double speedRadiansPerSecond, double hoodPosition) {
+    double distanceMeters = Units.inchesToMeters(distanceInches);
 
-    // timeOfFlightMap.put(5.68, 1.16);
-    // timeOfFlightMap.put(4.55, 1.12);
-    // timeOfFlightMap.put(3.15, 1.11);
-    // timeOfFlightMap.put(1.88, 1.09);
-    // timeOfFlightMap.put(1.38, 0.90);
+    hoodPositionMap.put(distanceMeters, hoodPosition);
+    wheelRadPerSecMap.put(distanceMeters, speedRadiansPerSecond);
+    // timeOfFlightMap.put(distanceMeters, null);
   }
 
   public static double getMinTimeOfFlight() {
@@ -347,7 +333,8 @@ public class LaunchCalculator extends VirtualSubsystem {
           if (!parameters.passing()) {
             // Calculate max linear velocity magnitude based on the max polar velocity
             // Basically, if the robot is moving (linearly) faster than it can rotate
-            // to correct its angle to the hub, we cap the velocity so that it can always face the hub
+            // to correct its angle to the hub, we cap the velocity so that it can always face the
+            // hub
             double maxLinearVelocityMagnitude = Double.POSITIVE_INFINITY;
             double robotDriveAngle =
                 Math.abs(
