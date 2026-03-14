@@ -86,10 +86,12 @@ public class LauncherConstants {
     public static final Distance HUB_Z_OFFSET = Feet.of(6);
 
     public static final Rotation2d FIXED_LAUNCH_ANGLE = Rotation2d.fromDegrees(75);
-    public static final Distance HOOD_RADIUS = Inches.of(7.4144);
+    public static final Distance HOOD_RADIUS = Inches.of(7.414316);
+    // The angle between the actuator point of attachment and the end of the hood
+    public static final Rotation2d ANGLE_ADJUSTMENT = Rotation2d.fromDegrees(6.6153321);
 
     public static final Translation2d ACTUATOR_LOCATION =
-        new Translation2d(Inches.of(-5.709), Inches.of(-4.784));
+        new Translation2d(Inches.of(-5.834047), Inches.of(-4.899));
     public static final Distance ACTUATOR_LENGTH_MIN = Inches.of(6.610);
     public static final Distance ACTUATOR_EXTENSION = Millimeters.of(100);
 

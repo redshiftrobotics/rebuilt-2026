@@ -60,6 +60,7 @@ public interface HoodIO {
     // Convert from relative angle to absolute angle, then to launch angle
     return relativeAngle
         .plus(LauncherMathConstants.ACTUATOR_LOCATION.getAngle())
+        .plus(LauncherMathConstants.ANGLE_ADJUSTMENT)
         .minus(Rotation2d.kCCW_90deg);
   }
 
