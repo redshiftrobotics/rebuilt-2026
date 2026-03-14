@@ -40,6 +40,10 @@ public class LaunchCalculator extends VirtualSubsystem {
           Units.inchesToMeters(17.731846 + (4.0 / 2.0)),
           Rotation3d.kZero); // From CAD
 
+  private static final Translation2d launcherToRobot =
+      robotToLauncher.getTranslation().toTranslation2d().unaryMinus();
+          
+
   private static LaunchCalculator instance;
 
   private double hoodPositionOffset = 0.0;
@@ -336,8 +340,10 @@ public class LaunchCalculator extends VirtualSubsystem {
           // Only limit if launching, not passing
           if (!parameters.passing()) {
             // Calculate max linear velocity magnitude based on the max polar velocity
+            // Basically, if the robot is moving (linearly) faster than it can rotate
+            // to correct its angle to the hub, we cap the velocity so that it can always face the hub
             double maxLinearVelocityMagnitude = Double.POSITIVE_INFINITY;
-            double robotAngle =
+            double robotDriveAngle =
                 Math.abs(
                     AllianceMirrorUtil.apply(FieldConstants.Hub.topCenterPoint.toTranslation2d())
                         .minus(robotPose.getTranslation())
@@ -348,10 +354,13 @@ public class LaunchCalculator extends VirtualSubsystem {
             double hubAngle =
                 driveLaunchMaxPolarVelocityRadPerSec.get()
                     * LaunchCalculator.getInstance().getNaiveTOF(robotHubDistance);
-            double lookaheadAngle = Math.PI - robotAngle - hubAngle;
+            double lookaheadAngle = Math.PI - robotDriveAngle - hubAngle;
 
             // Calculate limit if triangle is valid (otherwise no limit)
+            // Basically, if robot can't rotate fast enough to keep up with the error caused by
+            // the initial velocity, we limit it.
             if (lookaheadAngle > 0) {
+              // Law of sines
               double robotLookaheadDistance =
                   robotHubDistance * Math.sin(hubAngle) / Math.sin(lookaheadAngle);
               maxLinearVelocityMagnitude =
@@ -375,8 +384,6 @@ public class LaunchCalculator extends VirtualSubsystem {
                       / (driveLauncherCORMaxErrorDeg.get() - driveLauncherCORMinErrorDeg.get()),
                   0.0,
                   1.0);
-          Translation2d launcherToRobot =
-              robotToLauncher.getTranslation().toTranslation2d().unaryMinus();
           ChassisSpeeds fieldRelativeSpeedsWithOffset =
               GeomUtil.transformVelocity(
                   new ChassisSpeeds(
