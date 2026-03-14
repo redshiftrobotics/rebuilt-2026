@@ -47,7 +47,7 @@ public class LaunchCommands {
   private static final TunableNumber driveLauncherCORMaxErrorDeg =
       launchingGroup.number("DriveLauncherCORMaxErrorDeg", 30.0);
 
-  public static Command PrimeToLaunch(Drive drive, Launcher launcher) {
+  public static Command primeToLaunch(Drive drive, Launcher launcher) {
     return Commands.parallel(
         DriveCommands.rotateWithRotationController(drive, () -> launcher.getRobotYaw()),
         launcher.runOnce(

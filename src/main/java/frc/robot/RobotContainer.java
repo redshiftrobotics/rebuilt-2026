@@ -556,7 +556,8 @@ public class RobotContainer {
     namedCommands.put("StopIntake", intake.runOnce(() -> intake.setMode(IntakeRunMode.UP)));
 
     // Launcher commands
-    namedCommands.put("LaunchInPlaceAutomatic", Commands.none());
+    namedCommands.put("PrimeToLaunch", LaunchCommands.primeToLaunch(drive, launcher));
+    namedCommands.put("LaunchInPlace", Commands.none());
 
     // Hang commands
     namedCommands.put("HangUp", Commands.none());
