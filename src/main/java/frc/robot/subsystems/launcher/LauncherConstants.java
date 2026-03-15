@@ -1,6 +1,5 @@
 package frc.robot.subsystems.launcher;
 
-import static edu.wpi.first.units.Units.Feet;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.KilogramSquareMeters;
 import static edu.wpi.first.units.Units.Kilograms;
@@ -62,6 +61,11 @@ public class LauncherConstants {
   public static final Translation2d LAUNCHER_TO_ROBOT =
       ROBOT_TO_LAUNCHER.getTranslation().toTranslation2d().unaryMinus();
 
+  // TODO find out real min_distance value
+  public static final double MIN_DISTANCE = 0.9;
+  public static final double MAX_DISTANCE = 4.9;
+  public static final double PHASE_DELAY = 0.03; // estimate
+
   public static final Distance LAUNCHER_WHEEL_RADIUS = Inches.of(2);
   public static final Mass LAUNCHER_WHEEL_MASS = Pounds.of(2.2);
   public static final MomentOfInertia FLYWHEEL_MOI = KilogramSquareMeters.of(0.0007901271);
@@ -81,21 +85,14 @@ public class LauncherConstants {
     public static final TunableNumber LAUNCHER_VELOCITY_MULTIPLIER =
         new TunableNumber("Launcher/VelocityMultiplier", 2.3);
 
-    public static final Distance LAUNCHER_X_OFFSET = Inches.of(-12);
-    public static final Distance LAUNCHER_Z_OFFSET = Inches.of(20);
-    public static final Distance HUB_Z_OFFSET = Feet.of(6);
-
     public static final Rotation2d FIXED_LAUNCH_ANGLE = Rotation2d.fromDegrees(75);
     public static final Distance HOOD_RADIUS = Inches.of(7.414316);
     // The angle between the actuator point of attachment and the end of the hood
     public static final Rotation2d ANGLE_ADJUSTMENT = Rotation2d.fromDegrees(6.6153321);
 
-    public static final Translation2d ACTUATOR_LOCATION =
+    public static final Translation2d LAUNCHER_AXLE_TO_ACTUATOR =
         new Translation2d(Inches.of(-5.834047), Inches.of(-4.899));
     public static final Distance ACTUATOR_LENGTH_MIN = Inches.of(6.610);
     public static final Distance ACTUATOR_EXTENSION = Millimeters.of(100);
-
-    public static final Distance MIN_DISTANCE = Feet.of(5);
-    public static final Distance MAX_DISTANCE = Feet.of(25);
   }
 }

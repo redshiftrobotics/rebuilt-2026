@@ -73,10 +73,6 @@ public class LaunchCalculator extends VirtualSubsystem {
   private static final InterpolatingDoubleTreeMap timeOfFlightMap =
       new InterpolatingDoubleTreeMap();
 
-  private static final double minDistance = 0.9;
-  private static final double maxDistance = 4.9;
-  private static final double phaseDelay = 0.03; // estimate
-
   static {
     putTableData(8, 300, 0.1);
     putTableData(21, 325, 0.1);
@@ -98,8 +94,8 @@ public class LaunchCalculator extends VirtualSubsystem {
     double distanceMeters =
         Units.inchesToMeters(
             distanceInches
-            + FieldConstants.Hub.width / 2
-            + DriveConstants.BUMPER_TO_BUMPER.getX() / 2);
+                + FieldConstants.Hub.width / 2
+                + DriveConstants.BUMPER_TO_BUMPER.getX() / 2);
     //        - LauncherConstants.ROBOT_TO_LAUNCHER.getX();
     // Brayden TODO: accounting for the launcher offset backward, which we forgot to do
     // By adding this value to the distance, the calculator will use smaller values
@@ -112,11 +108,11 @@ public class LaunchCalculator extends VirtualSubsystem {
   }
 
   public static double getMinTimeOfFlight() {
-    return timeOfFlightMap.get(minDistance);
+    return timeOfFlightMap.get(LauncherConstants.MIN_DISTANCE);
   }
 
   public static double getMaxTimeOfFlight() {
-    return timeOfFlightMap.get(maxDistance);
+    return timeOfFlightMap.get(LauncherConstants.MAX_DISTANCE);
   }
 
   public static Translation2d getTarget() {
@@ -135,9 +131,9 @@ public class LaunchCalculator extends VirtualSubsystem {
     estimatedPose =
         estimatedPose.exp(
             new Twist2d(
-                robotRelativeVelocity.vxMetersPerSecond * phaseDelay,
-                robotRelativeVelocity.vyMetersPerSecond * phaseDelay,
-                robotRelativeVelocity.omegaRadiansPerSecond * phaseDelay));
+                robotRelativeVelocity.vxMetersPerSecond * LauncherConstants.PHASE_DELAY,
+                robotRelativeVelocity.vyMetersPerSecond * LauncherConstants.PHASE_DELAY,
+                robotRelativeVelocity.omegaRadiansPerSecond * LauncherConstants.PHASE_DELAY));
 
     Pose2d launcherPosition =
         estimatedPose.transformBy(GeomUtil.toTransform2d(LauncherConstants.ROBOT_TO_LAUNCHER));
@@ -196,8 +192,8 @@ public class LaunchCalculator extends VirtualSubsystem {
     // Constructor parameters
     latestParameters =
         new LaunchingParameters(
-            lookaheadLauncherToTargetDistance >= minDistance
-                && lookaheadLauncherToTargetDistance <= maxDistance,
+            lookaheadLauncherToTargetDistance >= LauncherConstants.MIN_DISTANCE
+                && lookaheadLauncherToTargetDistance <= LauncherConstants.MAX_DISTANCE,
             driveAngle,
             driveAngularVelocity.getRadians(),
             hoodPosition + hoodPositionOffset,

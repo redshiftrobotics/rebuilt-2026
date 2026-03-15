@@ -32,7 +32,7 @@ public interface HoodIO {
     Rotation2d hoodAngle = launchAngle.plus(Rotation2d.kCCW_90deg);
     Translation2d hoodPosition = new Translation2d(radius, hoodAngle);
 
-    double lengthMeters = hoodPosition.getDistance(LauncherMathConstants.ACTUATOR_LOCATION);
+    double lengthMeters = hoodPosition.getDistance(LauncherMathConstants.LAUNCHER_AXLE_TO_ACTUATOR);
 
     double position =
         (lengthMeters - LauncherMathConstants.ACTUATOR_LENGTH_MIN.in(Meters))
@@ -45,7 +45,7 @@ public interface HoodIO {
         position * LauncherMathConstants.ACTUATOR_EXTENSION.in(Meters)
             + LauncherMathConstants.ACTUATOR_LENGTH_MIN.in(Meters);
     double radius = LauncherMathConstants.HOOD_RADIUS.in(Meters);
-    double actuatorDistance = LauncherMathConstants.ACTUATOR_LOCATION.getNorm();
+    double actuatorDistance = LauncherMathConstants.LAUNCHER_AXLE_TO_ACTUATOR.getNorm();
 
     // Law of cosines solved for angle
     // https://www.desmos.com/calculator/pkbsecs465
@@ -59,7 +59,7 @@ public interface HoodIO {
                         / (2 * radius * actuatorDistance)));
     // Convert from relative angle to absolute angle, then to launch angle
     return relativeAngle
-        .plus(LauncherMathConstants.ACTUATOR_LOCATION.getAngle())
+        .plus(LauncherMathConstants.LAUNCHER_AXLE_TO_ACTUATOR.getAngle())
         .plus(LauncherMathConstants.ANGLE_ADJUSTMENT)
         .minus(Rotation2d.kCCW_90deg);
   }

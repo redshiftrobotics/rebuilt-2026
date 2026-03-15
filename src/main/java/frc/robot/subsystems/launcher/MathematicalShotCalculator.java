@@ -111,8 +111,8 @@ public class MathematicalShotCalculator {
                 9.81
                     / (2
                         * (distanceMeters * pitch.getTan()
-                            - LauncherMathConstants.HUB_Z_OFFSET.in(Meters)
-                            + LauncherMathConstants.LAUNCHER_Z_OFFSET.in(Meters))))
+                            - FieldConstants.Hub.topCenterPoint.getZ()
+                            + LauncherConstants.ROBOT_TO_LAUNCHER.getZ())))
             / pitch.getCos();
     return MetersPerSecond.of(velocity);
   }
@@ -125,7 +125,7 @@ public class MathematicalShotCalculator {
 
   public static double timeOfFlight(Rotation2d pitch, LinearVelocity velocity, double hubDistance) {
     // Distance divided by horizontal shot speed
-    return (hubDistance + LauncherMathConstants.LAUNCHER_X_OFFSET.in(Meters))
+    return (hubDistance + LauncherConstants.ROBOT_TO_LAUNCHER.getX())
         / (pitch.getCos() * velocity.in(MetersPerSecond));
   }
 
@@ -136,7 +136,7 @@ public class MathematicalShotCalculator {
     Translation2d hoodPosition =
         new Translation2d(r.times(angle.getCos()), r.times(angle.getSin()));
 
-    double lengthMeters = hoodPosition.getDistance(LauncherMathConstants.ACTUATOR_LOCATION);
+    double lengthMeters = hoodPosition.getDistance(LauncherMathConstants.LAUNCHER_AXLE_TO_ACTUATOR);
 
     double position =
         (lengthMeters - LauncherMathConstants.ACTUATOR_LENGTH_MIN.in(Meters))
@@ -149,7 +149,7 @@ public class MathematicalShotCalculator {
         position * LauncherMathConstants.ACTUATOR_EXTENSION.in(Meters)
             + LauncherMathConstants.ACTUATOR_LENGTH_MIN.in(Meters);
     double radius = LauncherMathConstants.HOOD_RADIUS.in(Meters);
-    double actuatorDistance = LauncherMathConstants.ACTUATOR_LOCATION.getNorm();
+    double actuatorDistance = LauncherMathConstants.LAUNCHER_AXLE_TO_ACTUATOR.getNorm();
 
     // https://www.desmos.com/calculator/pkbsecs465
     // https://www.youtube.com/watch?v=Qji5x8gBVX4
@@ -163,7 +163,7 @@ public class MathematicalShotCalculator {
                         / (2 * radius * actuatorDistance)));
     // Convert from relative angle to absolute angle, then to launch angle
     return relativeAngle
-        .plus(LauncherMathConstants.ACTUATOR_LOCATION.getAngle())
+        .plus(LauncherMathConstants.LAUNCHER_AXLE_TO_ACTUATOR.getAngle())
         .minus(Rotation2d.kCCW_90deg);
   }
 }
