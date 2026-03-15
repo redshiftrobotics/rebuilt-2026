@@ -8,8 +8,8 @@ import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import frc.robot.Constants;
-import frc.robot.subsystems.launcher.LauncherConstants.LauncherMathConstants;
 import frc.robot.subsystems.launcher.LauncherConstants.ChannelConstants.ChannelConfig;
+import frc.robot.subsystems.launcher.LauncherConstants.LauncherMathConstants;
 import frc.robot.utility.records.FeedForwardConfigRecord;
 import frc.robot.utility.records.PIDConfig;
 
@@ -36,7 +36,9 @@ public class ChannelIOSim implements ChannelIO {
     sim =
         new FlywheelSim(
             LinearSystemId.createFlywheelSystem(
-                motor, LauncherMathConstants.FLYWHEEL_MOI.baseUnitMagnitude(), constants.gearRatio()),
+                motor,
+                LauncherMathConstants.FLYWHEEL_MOI.baseUnitMagnitude(),
+                constants.gearRatio()),
             motor);
   }
 
