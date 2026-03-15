@@ -21,6 +21,7 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.subsystems.launcher.LauncherConstants.ChannelConstants;
+import frc.robot.subsystems.launcher.LauncherConstants.ChannelConstants.ChannelConfig;
 import frc.robot.utility.records.FeedForwardConfigRecord;
 import frc.robot.utility.records.PIDConfig;
 
@@ -41,7 +42,7 @@ public class ChannelIOTalonFX implements ChannelIO {
 
   private final Debouncer connectedDebouncer = new Debouncer(0.5);
 
-  public ChannelIOTalonFX(String name, ChannelConstants constants) {
+  public ChannelIOTalonFX(String name, ChannelConfig constants) {
     this.name = name;
     motor = new TalonFX(constants.deviceId());
 
@@ -62,7 +63,7 @@ public class ChannelIOTalonFX implements ChannelIO {
     config.Audio.BeepOnBoot = Constants.TALON_BEEP_ON_BOOT;
     config.Audio.BeepOnConfig = Constants.TALON_BEEP_ON_CONFIG;
 
-    config.Voltage.PeakReverseVoltage *= LauncherConstants.PEAK_REVERSE_VOLTAGE_PERCENTAGE;
+    config.Voltage.PeakReverseVoltage *= ChannelConstants.PEAK_REVERSE_VOLTAGE_PERCENTAGE;
 
     pushConfig();
 

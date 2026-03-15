@@ -16,7 +16,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.util.Units;
-import frc.robot.subsystems.launcher.LauncherConstants.ChannelConstants;
+import frc.robot.subsystems.launcher.LauncherConstants.ChannelConstants.ChannelConfig;
 import frc.robot.utility.SparkUtil;
 import frc.robot.utility.records.FeedForwardConfigRecord;
 import frc.robot.utility.records.PIDConfig;
@@ -32,7 +32,7 @@ public class ChannelIOSparkMax implements ChannelIO {
 
   private final Debouncer connectedDebouncer = new Debouncer(0.5);
 
-  public ChannelIOSparkMax(String name, ChannelConstants constants) {
+  public ChannelIOSparkMax(String name, ChannelConfig constants) {
 
     motor = new SparkMax(constants.deviceId(), MotorType.kBrushless);
     relativeEncoder = motor.getEncoder();

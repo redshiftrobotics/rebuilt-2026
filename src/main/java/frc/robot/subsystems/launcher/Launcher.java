@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RobotType;
+import frc.robot.subsystems.launcher.LauncherConstants.ChannelConstants;
 import frc.robot.utility.tunable.TunableNumber;
 import frc.robot.utility.tunable.TunableNumbers.TunableFF;
 import frc.robot.utility.tunable.TunableNumbers.TunablePID;
@@ -36,8 +37,8 @@ public class Launcher extends SubsystemBase {
   }
 
   public final TunablePID flywheelPID =
-      new TunablePID(getName() + "/PID", LauncherConstants.FLYWHEEL_PID);
-  public final TunableFF flywheelFF = new TunableFF(getName() + "/FF", LauncherConstants.FF);
+      new TunablePID(getName() + "/PID", ChannelConstants.FLYWHEEL_PID);
+  public final TunableFF flywheelFF = new TunableFF(getName() + "/FF", ChannelConstants.FF);
 
   public final TunableNumber WHEEL_TOLERANCE_RAD_PER_SEC =
       new TunableNumber(getName() + "/WheelToleranceRadPerSec", 5.0);
@@ -75,15 +76,15 @@ public class Launcher extends SubsystemBase {
       case REBUILT_2026:
         return new Launcher(
             new HoodIOActuator(),
-            new ChannelIOTalonFX("Left", LauncherConstants.LEFT_CONSTANTS),
-            new ChannelIOTalonFX("Center", LauncherConstants.CENTER_CONSTANTS),
-            new ChannelIOTalonFX("Right", LauncherConstants.RIGHT_CONSTANTS));
+            new ChannelIOTalonFX("Left", ChannelConstants.LEFT_CONFIG),
+            new ChannelIOTalonFX("Center", ChannelConstants.CENTER_CONFIG),
+            new ChannelIOTalonFX("Right", ChannelConstants.RIGHT_CONFIG));
       case SIM_BOT:
         return new Launcher(
             new HoodIOSim(false),
-            new ChannelIOSim("Left", LauncherConstants.LEFT_CONSTANTS),
-            new ChannelIOSim("Center", LauncherConstants.CENTER_CONSTANTS),
-            new ChannelIOSim("Right", LauncherConstants.RIGHT_CONSTANTS));
+            new ChannelIOSim("Left", ChannelConstants.LEFT_CONFIG),
+            new ChannelIOSim("Center", ChannelConstants.CENTER_CONFIG),
+            new ChannelIOSim("Right", ChannelConstants.RIGHT_CONFIG));
       default:
         return new Launcher(new HoodIO() {});
     }
@@ -100,7 +101,7 @@ public class Launcher extends SubsystemBase {
     channelInputs = new ArrayList<ChannelIOInputsAutoLogged>();
     channelDisconnectedAlerts = new ArrayList<Alert>();
     for (int i = 0; i < channelIOs.length; i++) {
-      this.channelIOs.get(i).setPID(LauncherConstants.FLYWHEEL_PID);
+      this.channelIOs.get(i).setPID(ChannelConstants.FLYWHEEL_PID);
       channelInputs.add(new ChannelIOInputsAutoLogged());
       channelDisconnectedAlerts.add(
           new Alert(channelIOs[i].getName() + " channel disconnected", AlertType.kError));

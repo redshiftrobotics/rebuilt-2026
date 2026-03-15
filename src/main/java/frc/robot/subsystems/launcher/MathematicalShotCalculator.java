@@ -11,6 +11,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import frc.robot.FieldConstants;
+import frc.robot.subsystems.launcher.LauncherConstants.HoodConstants;
 import frc.robot.subsystems.launcher.LauncherConstants.LauncherMathConstants;
 import java.util.function.Function;
 import org.littletonrobotics.junction.Logger;
@@ -30,7 +31,7 @@ public class MathematicalShotCalculator {
     }
 
     public double getWheelRadPerSec() {
-      return velocity.in(MetersPerSecond) / LauncherConstants.LAUNCHER_WHEEL_RADIUS.in(Meters);
+      return velocity.in(MetersPerSecond) / LauncherMathConstants.LAUNCHER_WHEEL_RADIUS.in(Meters);
     }
 
     public double getHoodPosition() {
@@ -44,7 +45,7 @@ public class MathematicalShotCalculator {
     Function<Double, Rotation2d> pitchCalculator =
         isHoodAdjustable
             ? MathematicalShotCalculator::calculatePitch
-            : d -> LauncherMathConstants.FIXED_LAUNCH_ANGLE;
+            : d -> HoodConstants.FIXED_LAUNCH_ANGLE;
 
     Translation2d hubLocation =
         FieldConstants.Hub.topCenterPoint.toTranslation2d().minus(robotPose.getTranslation());
@@ -130,26 +131,26 @@ public class MathematicalShotCalculator {
   }
 
   public static double getHoodPositionFromAngle(Rotation2d angle) {
-    Distance r = LauncherMathConstants.HOOD_RADIUS;
+    Distance r = HoodConstants.HOOD_RADIUS;
     // Convert launch angle to hood angle
     angle = angle.plus(Rotation2d.kCCW_90deg);
     Translation2d hoodPosition =
         new Translation2d(r.times(angle.getCos()), r.times(angle.getSin()));
 
-    double lengthMeters = hoodPosition.getDistance(LauncherMathConstants.LAUNCHER_AXLE_TO_ACTUATOR);
+    double lengthMeters = hoodPosition.getDistance(HoodConstants.LAUNCHER_AXLE_TO_ACTUATOR);
 
     double position =
-        (lengthMeters - LauncherMathConstants.ACTUATOR_LENGTH_MIN.in(Meters))
-            / (LauncherMathConstants.ACTUATOR_EXTENSION.in(Meters));
+        (lengthMeters - HoodConstants.ACTUATOR_LENGTH_MIN.in(Meters))
+            / (HoodConstants.ACTUATOR_EXTENSION.in(Meters));
     return position;
   }
 
   public static Rotation2d getAngleFromHoodPosition(double position) {
     double actuatorLength =
-        position * LauncherMathConstants.ACTUATOR_EXTENSION.in(Meters)
-            + LauncherMathConstants.ACTUATOR_LENGTH_MIN.in(Meters);
-    double radius = LauncherMathConstants.HOOD_RADIUS.in(Meters);
-    double actuatorDistance = LauncherMathConstants.LAUNCHER_AXLE_TO_ACTUATOR.getNorm();
+        position * HoodConstants.ACTUATOR_EXTENSION.in(Meters)
+            + HoodConstants.ACTUATOR_LENGTH_MIN.in(Meters);
+    double radius = HoodConstants.HOOD_RADIUS.in(Meters);
+    double actuatorDistance = HoodConstants.LAUNCHER_AXLE_TO_ACTUATOR.getNorm();
 
     // https://www.desmos.com/calculator/pkbsecs465
     // https://www.youtube.com/watch?v=Qji5x8gBVX4
@@ -163,7 +164,7 @@ public class MathematicalShotCalculator {
                         / (2 * radius * actuatorDistance)));
     // Convert from relative angle to absolute angle, then to launch angle
     return relativeAngle
-        .plus(LauncherMathConstants.LAUNCHER_AXLE_TO_ACTUATOR.getAngle())
+        .plus(HoodConstants.LAUNCHER_AXLE_TO_ACTUATOR.getAngle())
         .minus(Rotation2d.kCCW_90deg);
   }
 }

@@ -8,7 +8,8 @@ import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import frc.robot.Constants;
-import frc.robot.subsystems.launcher.LauncherConstants.ChannelConstants;
+import frc.robot.subsystems.launcher.LauncherConstants.LauncherMathConstants;
+import frc.robot.subsystems.launcher.LauncherConstants.ChannelConstants.ChannelConfig;
 import frc.robot.utility.records.FeedForwardConfigRecord;
 import frc.robot.utility.records.PIDConfig;
 
@@ -29,13 +30,13 @@ public class ChannelIOSim implements ChannelIO {
   private boolean closedLoop = false;
   private double FFVolts = 0;
 
-  public ChannelIOSim(String name, ChannelConstants constants) {
+  public ChannelIOSim(String name, ChannelConfig constants) {
     this.name = name;
     final DCMotor motor = DCMotor.getKrakenX60(1);
     sim =
         new FlywheelSim(
             LinearSystemId.createFlywheelSystem(
-                motor, LauncherConstants.FLYWHEEL_MOI.baseUnitMagnitude(), constants.gearRatio()),
+                motor, LauncherMathConstants.FLYWHEEL_MOI.baseUnitMagnitude(), constants.gearRatio()),
             motor);
   }
 

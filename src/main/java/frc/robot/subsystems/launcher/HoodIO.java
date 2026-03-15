@@ -4,7 +4,7 @@ import static edu.wpi.first.units.Units.Meters;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import frc.robot.subsystems.launcher.LauncherConstants.LauncherMathConstants;
+import frc.robot.subsystems.launcher.LauncherConstants.HoodConstants;
 import org.littletonrobotics.junction.AutoLog;
 
 /** Interface for the IO layers of the Launcher subsystem's hood. */
@@ -27,25 +27,25 @@ public interface HoodIO {
   }
 
   public default void setAngle(Rotation2d launchAngle) {
-    double radius = LauncherMathConstants.HOOD_RADIUS.in(Meters);
+    double radius = HoodConstants.HOOD_RADIUS.in(Meters);
     // Convert launch angle to hood angle
     Rotation2d hoodAngle = launchAngle.plus(Rotation2d.kCCW_90deg);
     Translation2d hoodPosition = new Translation2d(radius, hoodAngle);
 
-    double lengthMeters = hoodPosition.getDistance(LauncherMathConstants.LAUNCHER_AXLE_TO_ACTUATOR);
+    double lengthMeters = hoodPosition.getDistance(HoodConstants.LAUNCHER_AXLE_TO_ACTUATOR);
 
     double position =
-        (lengthMeters - LauncherMathConstants.ACTUATOR_LENGTH_MIN.in(Meters))
-            / (LauncherMathConstants.ACTUATOR_EXTENSION.in(Meters));
+        (lengthMeters - HoodConstants.ACTUATOR_LENGTH_MIN.in(Meters))
+            / (HoodConstants.ACTUATOR_EXTENSION.in(Meters));
     setPosition(position);
   }
 
   public static Rotation2d getAngle(double position) {
     double actuatorLength =
-        position * LauncherMathConstants.ACTUATOR_EXTENSION.in(Meters)
-            + LauncherMathConstants.ACTUATOR_LENGTH_MIN.in(Meters);
-    double radius = LauncherMathConstants.HOOD_RADIUS.in(Meters);
-    double actuatorDistance = LauncherMathConstants.LAUNCHER_AXLE_TO_ACTUATOR.getNorm();
+        position * HoodConstants.ACTUATOR_EXTENSION.in(Meters)
+            + HoodConstants.ACTUATOR_LENGTH_MIN.in(Meters);
+    double radius = HoodConstants.HOOD_RADIUS.in(Meters);
+    double actuatorDistance = HoodConstants.LAUNCHER_AXLE_TO_ACTUATOR.getNorm();
 
     // Law of cosines solved for angle
     // https://www.desmos.com/calculator/pkbsecs465
@@ -59,8 +59,8 @@ public interface HoodIO {
                         / (2 * radius * actuatorDistance)));
     // Convert from relative angle to absolute angle, then to launch angle
     return relativeAngle
-        .plus(LauncherMathConstants.LAUNCHER_AXLE_TO_ACTUATOR.getAngle())
-        .plus(LauncherMathConstants.ANGLE_ADJUSTMENT)
+        .plus(HoodConstants.LAUNCHER_AXLE_TO_ACTUATOR.getAngle())
+        .plus(HoodConstants.ANGLE_ADJUSTMENT)
         .minus(Rotation2d.kCCW_90deg);
   }
 

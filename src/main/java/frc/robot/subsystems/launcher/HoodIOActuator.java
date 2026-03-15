@@ -2,12 +2,13 @@ package frc.robot.subsystems.launcher;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Servo;
+import frc.robot.subsystems.launcher.LauncherConstants.HoodConstants;
 
 /** Hardware implementation of the Hood IO. */
 public class HoodIOActuator implements HoodIO {
 
-  private final Servo actuatorLeft = new Servo(LauncherConstants.ACTUATOR_LEFT_ID);
-  private final Servo actuatorRight = new Servo(LauncherConstants.ACTUATOR_RIGHT_ID);
+  private final Servo actuatorLeft = new Servo(HoodConstants.ACTUATOR_LEFT_ID);
+  private final Servo actuatorRight = new Servo(HoodConstants.ACTUATOR_RIGHT_ID);
 
   public HoodIOActuator() {
     // See Page 9, Sample code
