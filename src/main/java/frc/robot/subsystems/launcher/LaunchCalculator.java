@@ -100,10 +100,11 @@ public class LaunchCalculator extends VirtualSubsystem {
             distanceInches
             + FieldConstants.Hub.width / 2
             + DriveConstants.BUMPER_TO_BUMPER.getX() / 2);
-    //        + LauncherConstants.ROBOT_TO_LAUNCHER.getX();
+    //        - LauncherConstants.ROBOT_TO_LAUNCHER.getX();
     // Brayden TODO: accounting for the launcher offset backward, which we forgot to do
     // By adding this value to the distance, the calculator will use smaller values
-    // in the table and stop overshooting
+    // in the table and stop overshooting (it should be relative to launcher so we
+    // subtract the launcher position)
 
     hoodPositionMap.put(distanceMeters, hoodPosition);
     wheelRadPerSecMap.put(distanceMeters, speedRadiansPerSecond);
