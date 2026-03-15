@@ -93,13 +93,17 @@ public class LaunchCalculator extends VirtualSubsystem {
 
   public static void putTableData(
       double distanceInches, double speedRadiansPerSecond, double hoodPosition) {
-    // Add half the hub width and bot width to convert from closest distance to center-based
-    // distance
+    // Add half the hub width, half the bot width, and the launcher position
+    // to convert from edge-to-edge to launcher-based distance to the goal
     double distanceMeters =
         Units.inchesToMeters(
             distanceInches
-                + FieldConstants.Hub.width / 2
-                + DriveConstants.BUMPER_TO_BUMPER.getX() / 2);
+            + FieldConstants.Hub.width / 2
+            + DriveConstants.BUMPER_TO_BUMPER.getX() / 2);
+    //        + LauncherConstants.ROBOT_TO_LAUNCHER.getX();
+    // Brayden TODO: accounting for the launcher offset backward, which we forgot to do
+    // By adding this value to the distance, the calculator will use smaller values
+    // in the table and stop overshooting
 
     hoodPositionMap.put(distanceMeters, hoodPosition);
     wheelRadPerSecMap.put(distanceMeters, speedRadiansPerSecond);
