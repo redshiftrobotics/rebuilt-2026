@@ -179,40 +179,46 @@ public class Launcher extends SubsystemBase {
 
     Pose2d robotPose = robotPoseSupplier.get();
     ChassisSpeeds robotRelativeVelocity = robotVelocitySupplier.get();
+    
+    switch (mode) {
+      case INTERPOLATION: {
+        LaunchCalculator.LaunchingParameters parameters =
+            LaunchCalculator.getInstance().getParameters(robotPose, robotRelativeVelocity);
 
-    if (mode == LauncherRunMode.INTERPOLATION) {
-      LaunchCalculator.LaunchingParameters parameters =
-          LaunchCalculator.getInstance().getParameters(robotPose, robotRelativeVelocity);
+        setRunningDesiredState(
+            new LauncherState(parameters.wheelRadPerSec(), parameters.hoodPosition()));
+        robotYaw = parameters.driveAngle();
+        break;
+      }
+      case MATHEMATICAL: {
+        MathematicalShotCalculator.MathematicalShotParameters parameters =
+            MathematicalShotCalculator.calculateAndSetShot(
+                robotPose, robotRelativeVelocity, !hoodInputs.isAdjustable);
 
-      setRunningDesiredState(
-          new LauncherState(parameters.wheelRadPerSec(), parameters.hoodPosition()));
-      robotYaw = parameters.driveAngle();
+        setRunningDesiredState(
+            new LauncherState(parameters.getWheelRadPerSec(), parameters.getHoodPosition()));
+        robotYaw = parameters.yaw();
+        break;
+      }
+      case MANUAL: {
+        setRunningDesiredState(manualModeState.get());
+        break;
+      }
+      case DASHBOARD_TUNING: {
+        LaunchCalculator.LaunchingParameters parameters =
+            LaunchCalculator.getInstance().getParameters(robotPose, robotRelativeVelocity);
 
-    } else if (mode == LauncherRunMode.MATHEMATICAL) {
-      MathematicalShotCalculator.MathematicalShotParameters parameters =
-          MathematicalShotCalculator.calculateAndSetShot(
-              robotPose, robotRelativeVelocity, !hoodInputs.isAdjustable);
+        double velocity = SmartDashboard.getNumber("LauncherTuning/DesiredWheelRadPerSec", 0);
+        double hood = SmartDashboard.getNumber("LauncherTuning/DesiredHoodPosition", 0);
+        setRunningDesiredState(new LauncherState(velocity, hood));
 
-      setRunningDesiredState(
-          new LauncherState(parameters.getWheelRadPerSec(), parameters.getHoodPosition()));
-      robotYaw = parameters.yaw();
+        // NOTE: This distance is launcher to center of target (and is what the calculator uses)
+        // When entering distances, use this over measuring by hand if possible (assuming good tags),
+        SmartDashboard.putNumber("LauncherTuning/CalculatorDistance", parameters.distance());
 
-    } else if (mode == LauncherRunMode.MANUAL) {
-      setRunningDesiredState(manualModeState.get());
-    } else if (mode == LauncherRunMode.DASHBOARD_TUNING) {
-
-      LaunchCalculator.LaunchingParameters parameters =
-          LaunchCalculator.getInstance().getParameters(robotPose, robotRelativeVelocity);
-
-      double velocity = SmartDashboard.getNumber("LauncherTuning/DesiredWheelRadPerSec", 0);
-      double hood = SmartDashboard.getNumber("LauncherTuning/DesiredHoodPosition", 0);
-      setRunningDesiredState(new LauncherState(velocity, hood));
-
-      // NOTE: This distance is launcher to center of target (and is what the calculator uses)
-      // When entering distances, use this over measuring by hand if possible (assuming good tags),
-      SmartDashboard.putNumber("LauncherTuning/CalculatorDistance", parameters.distance());
-
-      robotYaw = parameters.driveAngle();
+        robotYaw = parameters.driveAngle();
+        break;
+      }
     }
 
     boolean atGoal = isReady();
