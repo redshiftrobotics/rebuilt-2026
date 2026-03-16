@@ -541,42 +541,28 @@ public class RobotContainer {
   }
 
   private void configureLEDs() {
-    LoggedDashboardChooser<BlinkinLEDPattern> ledPatternChooser =
+    LoggedDashboardChooser<BlinkinLEDPattern> ledFallbackPatternChooser =
         new LoggedDashboardChooser<>(
             "LED Pattern Chooser", new SendableChooser<BlinkinLEDPattern>());
 
     final BlinkinLEDPattern defaultPattern = BlinkinLEDPattern.GOLD;
 
-    SmartDashboard.putData(ledPatternChooser.getSendableChooser());
+    SmartDashboard.putData(ledFallbackPatternChooser.getSendableChooser());
 
-    ledPatternChooser.addDefaultOption(
+    ledFallbackPatternChooser.addDefaultOption(
         String.format("Default (%s)", defaultPattern), defaultPattern);
 
     for (BlinkinLEDPattern pattern : BlinkinLEDPattern.values()) {
-      ledPatternChooser.addOption(pattern.toString(), pattern);
+      ledFallbackPatternChooser.addOption(pattern.toString(), pattern);
     }
 
     leds.setDefaultCommand(
         leds.runColor(
                 () -> {
-                  if (DriverStation.isAutonomous()) {
-                    return BlinkinLEDPattern.FIRE_LARGE;
-                  }
 
-                  Optional<Shift> currentShift = HubTracker.getCurrentShift();
+                  // TODO, logic for determining LED pattern based on robot state goes here
 
-                  if (currentShift.isPresent() && currentShift.get() == Shift.TRANSITION) {
-                    if (HubTracker.isActiveFirst()) {
-                      return BlinkinLEDPattern.GREEN;
-                    } else {
-                      return BlinkinLEDPattern.RED;
-                    }
-                  }
-
-                  // TODO, launch calculator is valid check
-                  // if ()
-
-                  return ledPatternChooser.get();
+                  return ledFallbackPatternChooser.get();
                 })
             .withName("LED"));
   }
