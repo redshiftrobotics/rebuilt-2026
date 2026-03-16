@@ -85,6 +85,13 @@ public class LaunchCalculator extends VirtualSubsystem {
     putTableData(112, 410, 0.3);
     putTableData(124, 425, 0.35);
     putTableData(139, 425, 0.4);
+
+    // TODO, replace with real values (currently just guesses)
+    timeOfFlightMap.put(5.68, 1.16);
+    timeOfFlightMap.put(4.55, 1.12);
+    timeOfFlightMap.put(3.15, 1.11);
+    timeOfFlightMap.put(1.88, 1.09);
+    timeOfFlightMap.put(1.38, 0.90);
   }
 
   public static void putTableData(
