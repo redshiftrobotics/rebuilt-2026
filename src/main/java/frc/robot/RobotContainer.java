@@ -401,6 +401,8 @@ public class RobotContainer {
                     })
                 .withName("Force Launch"));
 
+    // --- LAUNCH PREP CONTROLS ---
+
     // Start spin up button
     xbox.y()
         .and(manualButton.negate())
@@ -440,26 +442,34 @@ public class RobotContainer {
 
     // --- MANUAL LAUNCH MODE CONTROLS ---
 
-    final Trigger anyLetterButton = xbox.a().or(xbox.b()).or(xbox.x()).or(xbox.y());
+    final Trigger anyManualModeLetterButton = xbox.a().or(xbox.b()).or(xbox.x()).or(xbox.y());
     final Trigger isManualMode = new Trigger(() -> launcher.getMode() == LauncherRunMode.MANUAL);
 
+    // Manual mode is turned on when preset is chosen
     manualButton
-        .and(anyLetterButton)
+        .and(anyManualModeLetterButton)
         .onTrue(
             Commands.runOnce(() -> launcher.setMode(LauncherRunMode.MANUAL))
                 .ignoringDisable(true)
                 .withName("Manual Launch Mode"));
 
+    // Manual mode is turned off on double tap
     manualButton
         .multiPress(2, 0.3)
-        .and(anyLetterButton.negate())
+        .and(anyManualModeLetterButton.negate())
         .onFalse(
             Commands.runOnce(() -> launcher.setMode(DEFAULT_LAUNCH))
                 .ignoringDisable(true)
                 .withName("Default Launch Mode"));
 
-    // Outtake adjustment buttons.
-    // Since nothing else uses theses buttons, manual mode can be checked implicitly
+    // Manual mode preset buttons
+    xbox.y().and(manualButton).onTrue(manualLaunchControl.setModeCommand(ManualLaunchMode.Y));
+    xbox.x().and(manualButton).onTrue(manualLaunchControl.setModeCommand(ManualLaunchMode.X));
+    xbox.a().and(manualButton).onTrue(manualLaunchControl.setModeCommand(ManualLaunchMode.A));
+    xbox.b().and(manualButton).onTrue(manualLaunchControl.setModeCommand(ManualLaunchMode.B));
+
+    // Manual mode preset adjustment buttons
+    // These have no overlap so can be turned on whenever manual mode is active
     xbox.povRight()
         .and(manualButton.or(isManualMode))
         .onTrue(manualLaunchControl.incrementHoodCommand(+0.025));
@@ -467,17 +477,10 @@ public class RobotContainer {
         .and(manualButton.or(isManualMode))
         .onTrue(manualLaunchControl.incrementHoodCommand(-0.025));
 
-    // Outtake velocity adjustment buttons
+    // Manual mode preset adjustment buttons
     xbox.povUp().and(manualButton).onTrue(manualLaunchControl.incrementVelocityCommand(+20));
     xbox.povDown().and(manualButton).onTrue(manualLaunchControl.incrementVelocityCommand(-20));
-
-    // Outtake shift reset button
     resetButton.and(manualButton).onTrue(manualLaunchControl.resetCommand());
-
-    xbox.y().and(manualButton).onTrue(manualLaunchControl.setModeCommand(ManualLaunchMode.Y));
-    xbox.x().and(manualButton).onTrue(manualLaunchControl.setModeCommand(ManualLaunchMode.X));
-    xbox.a().and(manualButton).onTrue(manualLaunchControl.setModeCommand(ManualLaunchMode.A));
-    xbox.b().and(manualButton).onTrue(manualLaunchControl.setModeCommand(ManualLaunchMode.B));
 
     // --- HANG/MANUAL CONTROL ---
 
