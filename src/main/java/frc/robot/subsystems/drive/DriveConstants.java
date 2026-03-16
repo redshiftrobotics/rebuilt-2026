@@ -137,8 +137,9 @@ public class DriveConstants {
   // Currently just an estimate
   public static final double robotMassKg = Units.lbsToKilograms(115 + 10.0);
 
-  // MOI from https://choreo.autos/usage/estimating-moi/
-  public static final double robotMOI = (1.0 / 12.0) * robotMassKg * TRACK_SIZE.getSquaredNorm();
+  // https://choreo.autos/usage/estimating-moi/
+  // Value from CAD model when intake was mostly extended (Izz in mass properties from OnShape)
+  public static final double robotMOI = 5.70281;
 
   // Coefficient of friction from
   // https://www.chiefdelphi.com/t/spectrum-3847-build-blog-2025/478254/420
