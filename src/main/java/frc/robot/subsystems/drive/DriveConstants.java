@@ -134,9 +134,16 @@ public class DriveConstants {
 
   // --- Pathplanner Config ---
 
-  public static final double robotMassKg = 74.088;
-  public static final double robotMOI = 6.883;
-  public static final double wheelCOF = 1.2;
+  // Currently just an estimate
+  public static final double robotMassKg = Units.lbsToKilograms(115 + 10.0);
+
+  // MOI from https://choreo.autos/usage/estimating-moi/
+  public static final double robotMOI = (1.0 / 12.0) * robotMassKg * TRACK_SIZE.getSquaredNorm();
+
+  // Coefficient of friction from
+  // https://www.chiefdelphi.com/t/spectrum-3847-build-blog-2025/478254/420
+  public static final double wheelCOF = 2.255;
+
   public static final Translation2d[] MODULE_TRANSLATION = {
     DriveConstants.FRONT_LEFT_MODULE_DISTANCE_FROM_CENTER,
     DriveConstants.FRONT_RIGHT_MODULE_DISTANCE_FROM_CENTER,
