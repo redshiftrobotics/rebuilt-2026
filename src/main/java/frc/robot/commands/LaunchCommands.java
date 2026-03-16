@@ -123,7 +123,7 @@ public class LaunchCommands {
             double robotHubDistance = parameters.distanceNoLookahead();
             double hubAngle =
                 driveLaunchMaxPolarVelocityRadPerSec.get()
-                    * LaunchCalculator.getInstance().getNaiveTOF(robotHubDistance);
+                    * LaunchCalculator.getTimeOfFlight(robotHubDistance);
             double lookaheadAngle = Math.PI - robotDriveAngle - hubAngle;
 
             // Calculate limit if triangle is valid (otherwise no limit)
@@ -135,7 +135,7 @@ public class LaunchCommands {
                   robotHubDistance * Math.sin(hubAngle) / Math.sin(lookaheadAngle);
               maxLinearVelocityMagnitude =
                   robotLookaheadDistance
-                      / LaunchCalculator.getInstance().getNaiveTOF(robotHubDistance);
+                      / LaunchCalculator.getTimeOfFlight(robotHubDistance);
             }
 
             // Apply limit to velocity

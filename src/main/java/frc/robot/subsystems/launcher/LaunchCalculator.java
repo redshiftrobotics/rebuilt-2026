@@ -108,11 +108,11 @@ public class LaunchCalculator extends VirtualSubsystem {
   }
 
   public static double getMinTimeOfFlight() {
-    return timeOfFlightMap.get(LauncherConstants.MIN_DISTANCE);
+    return getTimeOfFlight(LauncherConstants.MIN_DISTANCE);
   }
 
   public static double getMaxTimeOfFlight() {
-    return timeOfFlightMap.get(LauncherConstants.MAX_DISTANCE);
+    return getTimeOfFlight(LauncherConstants.MAX_DISTANCE);
   }
 
   public static Translation2d getTarget() {
@@ -151,12 +151,12 @@ public class LaunchCalculator extends VirtualSubsystem {
             robotAngle);
 
     // Account for imparted velocity by robot (launcher) to offset
-    double timeOfFlight = timeOfFlightMap.get(launcherToTargetDistance);
+    double timeOfFlight = getTimeOfFlight(launcherToTargetDistance);
     Pose2d lookaheadPose = launcherPosition;
     double lookaheadLauncherToTargetDistance = launcherToTargetDistance;
 
     for (int i = 0; i < 20; i++) { // number of iterations to converge, should be more than enough
-      timeOfFlight = timeOfFlightMap.get(lookaheadLauncherToTargetDistance);
+      timeOfFlight = getTimeOfFlight(lookaheadLauncherToTargetDistance);
       double offsetX = launcherVelocity.vxMetersPerSecond * timeOfFlight;
       double offsetY = launcherVelocity.vyMetersPerSecond * timeOfFlight;
       lookaheadPose =
@@ -233,7 +233,7 @@ public class LaunchCalculator extends VirtualSubsystem {
     return driveAngle;
   }
 
-  public double getNaiveTOF(double distance) {
+  public static double getTimeOfFlight(double distance) {
     Double value = timeOfFlightMap.get(distance);
     if (value == null) {
       Rotation2d angle = HoodIO.getAngle(hoodPositionMap.get(distance));
