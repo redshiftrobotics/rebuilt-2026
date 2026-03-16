@@ -38,7 +38,7 @@ import frc.robot.subsystems.launcher.Launcher.LauncherRunMode;
 import frc.robot.subsystems.launcher.LauncherConstants;
 import frc.robot.subsystems.launcher.LauncherControlManual;
 import frc.robot.subsystems.launcher.LauncherControlManual.ManualLaunchMode;
-import frc.robot.subsystems.led.BlinkenLEDPattern;
+import frc.robot.subsystems.led.BlinkinLEDPattern;
 import frc.robot.subsystems.led.LEDSubsystem;
 import frc.robot.subsystems.vision.AprilTagVision;
 import frc.robot.utility.Elastic;
@@ -130,9 +130,9 @@ public class RobotContainer {
 
     leds.setDefaultCommand(
         leds.runColor(
-                BlinkenLEDPattern.COLORWAVES_OCEAN,
-                BlinkenLEDPattern.COLORWAVES_LAVA,
-                BlinkenLEDPattern.WHITE)
+                BlinkinLEDPattern.COLORWAVES_OCEAN,
+                BlinkinLEDPattern.COLORWAVES_LAVA,
+                BlinkinLEDPattern.WHITE)
             .withName("LED Alliance Color Waves"));
 
     launcher.configure(
@@ -548,7 +548,7 @@ public class RobotContainer {
   private void registerNamedCommands() {
     HashMap<String, Command> namedCommands = new HashMap<String, Command>();
 
-    namedCommands.put("LEDS", leds.runColor(BlinkenLEDPattern.RED));
+    namedCommands.put("LEDS", leds.runColor(BlinkinLEDPattern.RED));
 
     // Hopper commands
     namedCommands.put("StopHopper", hopper.runOnce(() -> hopper.setMode(HopperRunMode.STOPPED)));

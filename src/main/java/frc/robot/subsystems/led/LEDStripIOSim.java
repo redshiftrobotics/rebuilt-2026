@@ -2,10 +2,10 @@ package frc.robot.subsystems.led;
 
 public class LEDStripIOSim implements LEDStripIO {
 
-  private BlinkenLEDPattern pattern;
+  private BlinkinLEDPattern pattern;
   private boolean runSetup;
 
-  public LEDStripIOSim(BlinkenLEDPattern initialPattern) {
+  public LEDStripIOSim(BlinkinLEDPattern initialPattern) {
     pattern = initialPattern;
   }
 
@@ -28,7 +28,7 @@ public class LEDStripIOSim implements LEDStripIO {
   }
 
   @Override
-  public void setPattern(BlinkenLEDPattern pattern) {
+  public void setPattern(BlinkinLEDPattern pattern) {
     this.pattern = pattern;
   }
 }
