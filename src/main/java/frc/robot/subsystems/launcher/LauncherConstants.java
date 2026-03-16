@@ -35,7 +35,7 @@ public class LauncherConstants {
       ROBOT_TO_LAUNCHER.getTranslation().toTranslation2d().unaryMinus();
 
   // TODO find out real min_distance value
-  public static final double MIN_DISTANCE = 0.9;
+  public static final double MIN_DISTANCE = 0.0;
   public static final double MAX_DISTANCE = 4.9;
   public static final double PHASE_DELAY = 0.03; // estimate
 
