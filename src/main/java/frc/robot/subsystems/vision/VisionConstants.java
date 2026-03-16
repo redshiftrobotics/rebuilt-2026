@@ -17,7 +17,7 @@ public class VisionConstants {
 
   enum CameraPositionName {
     FRONT,
-    OUTTAKE_LEFT,
+    LAUNCHER_LEFT,
     UNKNOWN,
   }
 
@@ -27,7 +27,7 @@ public class VisionConstants {
   public static final CameraConfig TOP_CAMERA_ANGLED =
       new CameraConfig(
           "spencercam",
-          CameraPositionName.OUTTAKE_LEFT,
+          CameraPositionName.LAUNCHER_LEFT,
           fromOnShape(10.470732, 2.344, 16.864 + 3.710392, -20, 0));
 
   public static Transform3d fromOnShape(
