@@ -67,7 +67,7 @@ public class VisionConstants {
           CameraPositionName.TOP,
           new Transform3d(
               new Translation3d(
-                  Units.inchesToMeters(-6), Units.inchesToMeters(12.5), Units.inchesToMeters(21)),
+                  Units.inchesToMeters(6), Units.inchesToMeters(12.5), Units.inchesToMeters(21)),
               new Rotation3d(0, Units.degreesToRadians(-10), Units.degreesToRadians(0))));
 
   public static final CameraConfig RIGHT_CAMERA =
