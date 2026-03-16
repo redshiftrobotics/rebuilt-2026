@@ -136,6 +136,46 @@ public class HubTracker {
   }
 
   /**
+   * Returns whether the specified {@link Alliance} won auto as specified by the FMS/Driver
+   * Station's game specific message data. Will return {@code false} if no game message or alliance
+   * is available.
+   */
+  public static boolean isAutoWinner(Alliance alliance) {
+    Optional<Alliance> autoWinner = getAutoWinner();
+    return autoWinner.isPresent() && autoWinner.get() == alliance;
+  }
+
+  /**
+   * Returns whether the robot's {@link Alliance} won auto as specified by the FMS/Driver Station's
+   * game specific message data. Will return {@code false} if no game message or alliance is
+   * available.
+   */
+  public static boolean isAutoWinner() {
+    Optional<Alliance> autoWinner = getAutoWinner();
+    Optional<Alliance> alliance = DriverStation.getAlliance();
+    return autoWinner.isPresent() && alliance.isPresent() && autoWinner.get() == alliance.get();
+  }
+
+  /**
+   * Returns whether the specified {@link Alliance} is active first (i.e. lost auto) as specified by
+   * the FMS/Driver Station's game specific message data. Will return {@code false} if no game
+   * message or alliance is available.
+   */
+  public static boolean isActiveFirst(Alliance alliance) {
+    return !isAutoWinner(alliance);
+  }
+
+  /**
+   * Returns whether the robot's {@link Alliance} is active first (i.e. lost auto) as specified by
+   * the FMS/Driver Station's game specific message data. Will return {@code false} if no game
+   * message or alliance is available.
+   */
+  public static boolean isActiveFirst() {
+    Optional<Alliance> alliance = DriverStation.getAlliance();
+    return alliance.isPresent() && !isAutoWinner(alliance.get());
+  }
+
+  /**
    * Counts up from 0 to 160 seconds as match progresses. Returns -1 if not match isn't running or
    * if in between auto and teleop
    */

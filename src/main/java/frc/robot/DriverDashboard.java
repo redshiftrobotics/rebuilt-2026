@@ -128,8 +128,7 @@ public class DriverDashboard {
     SmartDashboard.putString(
         "Shifts/Shift Game State",
         HubTracker.getCurrentShift().map(HubTracker.Shift::name).orElse("Unknown"));
-    SmartDashboard.putBoolean(
-        "Shifts/Active First?", DriverStation.getAlliance().equals(HubTracker.getAutoWinner()));
+    SmartDashboard.putBoolean("Shifts/Active First?", HubTracker.isActiveFirst());
   }
 
   private static void putCustomWidgets() {
