@@ -458,7 +458,8 @@ public class RobotContainer {
                 .ignoringDisable(true)
                 .withName("Default Launch Mode"));
 
-    // Outtake adjustment buttons. Since nothing else uses theses buttons, manual mode can be checked implicitly
+    // Outtake adjustment buttons.
+    // Since nothing else uses theses buttons, manual mode can be checked implicitly
     xbox.povRight()
         .and(manualButton.or(isManualMode))
         .onTrue(manualLaunchControl.incrementHoodCommand(+0.025));
