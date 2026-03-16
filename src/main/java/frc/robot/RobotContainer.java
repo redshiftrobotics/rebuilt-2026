@@ -130,13 +130,6 @@ public class RobotContainer {
     autoChooser = new LoggedDashboardChooser<>("Auto Chooser", createSendableChooser());
     autoChooser.addDefaultOption("None", Commands.none());
 
-    leds.setDefaultCommand(
-        leds.runColor(
-                BlinkinLEDPattern.COLORWAVES_OCEAN,
-                BlinkinLEDPattern.COLORWAVES_LAVA,
-                BlinkinLEDPattern.WHITE)
-            .withName("LED Alliance Color Waves"));
-
     launcher.configure(
         drive::getRobotPose,
         () -> {
