@@ -25,6 +25,10 @@ public class LEDSubsystem extends SubsystemBase {
 
   public static LEDSubsystem create(RobotType robotType) {
     switch (robotType) {
+      case REBUILT_2026:
+        return new LEDSubsystem(
+            new LEDStripIOBlinkin(LEDConstants.LED_STRIP_BACK, BlinkinLEDPattern.OFF));
+
       case SIM_BOT:
         return new LEDSubsystem(new LEDStripIOSim(BlinkinLEDPattern.HEARTBEAT_RED));
 

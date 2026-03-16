@@ -6,8 +6,8 @@ import frc.robot.subsystems.led.LEDConstants.LEDConfig;
 
 /**
  * Implementation of LEDStripIO for REV Blinkin LED Driver. Uses PWM to set the pattern.
- * 
- * {@link https://www.revrobotics.com/rev-11-1105/} 
+ *
+ * <p>{@link https://www.revrobotics.com/rev-11-1105/}
  */
 public class LEDStripIOBlinkin implements LEDStripIO {
 

@@ -19,4 +19,6 @@ public class LEDConstants {
 
   public static final LEDConfig LEDS_STRIP_2025_LEFT = new LEDConfig(0, BlinkenMode.STRIP_5V);
   public static final LEDConfig LEDS_STRIP_2025_RIGHT = new LEDConfig(1, BlinkenMode.STRIP_5V);
+
+  public static final LEDConfig LED_STRIP_BACK = new LEDConfig(0, BlinkenMode.STRIP_5V);
 }
