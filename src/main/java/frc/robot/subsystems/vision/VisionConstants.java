@@ -35,7 +35,7 @@ public class VisionConstants {
       new CameraConfig(
           "spencercam",
           CameraPositionName.TOP_ANGLE,
-          fromOnShape(10.470732, 2.344, 16.864 + 3.710392, -20, 0));
+          fromOnShape(-10.470732, 2.076919, 16.956726 + 3.710392, -20, 0));
 
   public static Transform3d fromOnShape(
       double xInches, double yInches, double zInches, double pitchDegrees, double yawDegrees) {
