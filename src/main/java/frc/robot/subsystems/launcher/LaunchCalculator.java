@@ -85,13 +85,6 @@ public class LaunchCalculator extends VirtualSubsystem {
     putTableData(112, 410, 0.3);
     putTableData(124, 425, 0.35);
     putTableData(139, 425, 0.4);
-
-    // TODO, replace with real values (currently just guesses)
-    timeOfFlightMap.put(5.68, 1.16);
-    timeOfFlightMap.put(4.55, 1.12);
-    timeOfFlightMap.put(3.15, 1.11);
-    timeOfFlightMap.put(1.88, 1.09);
-    timeOfFlightMap.put(1.38, 0.90);
   }
 
   public static void putTableData(
@@ -241,12 +234,13 @@ public class LaunchCalculator extends VirtualSubsystem {
   }
 
   public double getNaiveTOF(double distance) {
-    if (timeOfFlightMap == null) {
+    Double value = timeOfFlightMap.get(distance);
+    if (value == null) {
       Rotation2d angle = HoodIO.getAngle(hoodPositionMap.get(distance));
       return MathematicalShotCalculator.timeOfFlight(
           angle, MathematicalShotCalculator.calculateVelocity(distance, angle), distance);
     }
-    return timeOfFlightMap.get(distance);
+    return value;
   }
 
   public void clearLaunchingParameters() {
