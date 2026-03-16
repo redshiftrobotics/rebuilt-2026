@@ -74,34 +74,60 @@ public class LaunchCalculator extends VirtualSubsystem {
       new InterpolatingDoubleTreeMap();
 
   static {
-    putTableData(8, 300, 0.1);
-    putTableData(21, 325, 0.1);
-    putTableData(35, 325, 0.15);
-    putTableData(48, 370, 0.15);
-    putTableData(62, 370, 0.2);
-    putTableData(78, 400, 0.2);
-    putTableData(90, 400, 0.25);
-    putTableData(101, 400, 0.3);
-    putTableData(112, 410, 0.3);
-    putTableData(124, 425, 0.35);
-    putTableData(139, 425, 0.4);
+    putTableDataTapeMeasure(8, 300, 0.1);
+    putTableDataTapeMeasure(21, 325, 0.1);
+    putTableDataTapeMeasure(35, 325, 0.15);
+    putTableDataTapeMeasure(48, 370, 0.15);
+    putTableDataTapeMeasure(62, 370, 0.2);
+    putTableDataTapeMeasure(78, 400, 0.2);
+    putTableDataTapeMeasure(90, 400, 0.25);
+    putTableDataTapeMeasure(101, 400, 0.3);
+    putTableDataTapeMeasure(112, 410, 0.3);
+    putTableDataTapeMeasure(124, 425, 0.35);
+    putTableDataTapeMeasure(139, 425, 0.4);
   }
 
-  public static void putTableData(
+  /**
+   * Adds data to the launching maps based on tape measure readings from near edge of robot to near
+   * edge of hub
+   *
+   * <p>Less ideal to use compared to getting distance from robot estimation due to potentially
+   * mismatch of reality and robot estimation
+   *
+   * @param distanceInches edge-to-edge distance in inches from robot to hub, should be measured
+   *     from near edge of robot bumper to near edge of hub
+   * @param speedRadiansPerSecond outtake wheel speed in radians per second for the given distance
+   * @param hoodPosition outtake hood position the given distance
+   */
+  public static void putTableDataTapeMeasure(
       double distanceInches, double speedRadiansPerSecond, double hoodPosition) {
     // Add half the hub width, half the bot width, and the launcher position
     // to convert from edge-to-edge to launcher-based distance to the goal
     double distanceMeters =
-        Units.inchesToMeters(
-            distanceInches
-                + FieldConstants.Hub.width / 2
-                + DriveConstants.BUMPER_TO_BUMPER.getX() / 2);
-    //        - LauncherConstants.ROBOT_TO_LAUNCHER.getX();
-    // Brayden TODO: accounting for the launcher offset backward, which we forgot to do
+        Units.inchesToMeters(distanceInches)
+            + FieldConstants.Hub.width / 2
+            + DriveConstants.BUMPER_TO_BUMPER.getX() / 2
+            - LauncherConstants.ROBOT_TO_LAUNCHER.getX();
     // By adding this value to the distance, the calculator will use smaller values
     // in the table and stop overshooting (it should be relative to launcher so we
     // subtract the launcher position)
 
+    putTableData(distanceMeters, speedRadiansPerSecond, hoodPosition);
+  }
+
+  /**
+   * Add data to the launching maps. Distance should be from the launcher to the goal.
+   *
+   * <p>It is recommended to let the robot calculate the distance in meters instead of measuring by
+   * hand. Read the distance from "LauncherTuning/CalculatorDistance" when launcher is in Dashboard
+   * Tuning mode
+   *
+   * @param distanceMeters
+   * @param speedRadiansPerSecond outtake wheel speed in radians per second for the given distance
+   * @param hoodPosition outtake hood position the given distance
+   */
+  public static void putTableData(
+      double distanceMeters, double speedRadiansPerSecond, double hoodPosition) {
     hoodPositionMap.put(distanceMeters, hoodPosition);
     wheelRadPerSecMap.put(distanceMeters, speedRadiansPerSecond);
     // timeOfFlightMap.put(distanceMeters, null);
@@ -121,6 +147,8 @@ public class LaunchCalculator extends VirtualSubsystem {
 
   public LaunchingParameters getParameters(
       Pose2d estimatedPose, ChassisSpeeds robotRelativeVelocity) {
+
+    if (latestParameters != null) return latestParameters;
 
     boolean passing =
         AllianceMirrorUtil.applyX(estimatedPose.getX()) > FieldConstants.LinesVertical.hubCenter;
@@ -192,8 +220,8 @@ public class LaunchCalculator extends VirtualSubsystem {
     // Constructor parameters
     latestParameters =
         new LaunchingParameters(
-            lookaheadLauncherToTargetDistance >= LauncherConstants.MIN_DISTANCE
-                && lookaheadLauncherToTargetDistance <= LauncherConstants.MAX_DISTANCE,
+            lookaheadLauncherToTargetDistance >= LauncherConstants.MAX_DISTANCE
+                && lookaheadLauncherToTargetDistance <= LauncherConstants.MIN_DISTANCE,
             driveAngle,
             driveAngularVelocity.getRadians(),
             hoodPosition + hoodPositionOffset,
