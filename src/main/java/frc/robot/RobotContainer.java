@@ -45,7 +45,9 @@ import frc.robot.utility.Elastic;
 import frc.robot.utility.Elastic.Notification.NotificationLevel;
 import frc.robot.utility.FieldFlipUtil;
 import frc.robot.utility.HubTracker;
+import frc.robot.utility.HubTracker.Shift;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -157,6 +159,7 @@ public class RobotContainer {
     configureDriverControllerBindings(driverController);
     configureOperatorControllerBindings(operatorController);
     configureAlertTriggers();
+    configureLEDs();
 
     System.out.println(robotType + " ready.");
   }
@@ -542,6 +545,47 @@ public class RobotContainer {
     RobotModeTriggers.autonomous()
         .and(isMatch)
         .onTrue(Commands.runOnce(() -> Elastic.selectTab("Autonomous")));
+  }
+
+  private void configureLEDs() {
+    LoggedDashboardChooser<BlinkinLEDPattern> ledPatternChooser =
+        new LoggedDashboardChooser<>(
+            "LED Pattern Chooser", new SendableChooser<BlinkinLEDPattern>());
+
+    final BlinkinLEDPattern defaultPattern = BlinkinLEDPattern.GOLD;
+
+    SmartDashboard.putData(ledPatternChooser.getSendableChooser());
+
+    ledPatternChooser.addDefaultOption(
+        String.format("Default (%s)", defaultPattern), defaultPattern);
+
+    for (BlinkinLEDPattern pattern : BlinkinLEDPattern.values()) {
+      ledPatternChooser.addOption(pattern.toString(), pattern);
+    }
+
+    leds.setDefaultCommand(
+        leds.runColor(
+                () -> {
+                  if (DriverStation.isAutonomous()) {
+                    return BlinkinLEDPattern.FIRE_LARGE;
+                  }
+
+                  Optional<Shift> currentShift = HubTracker.getCurrentShift();
+
+                  if (currentShift.isPresent() && currentShift.get() == Shift.TRANSITION) {
+                    if (HubTracker.isActiveFirst()) {
+                      return BlinkinLEDPattern.GREEN;
+                    } else {
+                      return BlinkinLEDPattern.RED;
+                    }
+                  }
+
+                  // TODO, launch calculator is valid check
+                  // if ()
+
+                  return ledPatternChooser.get();
+                })
+            .withName("LED"));
   }
 
   /** Make commands accessible to PathPlanner autos. */
