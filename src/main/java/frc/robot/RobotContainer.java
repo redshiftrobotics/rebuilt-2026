@@ -302,10 +302,12 @@ public class RobotContainer {
 
     launcher.setManualModeState(manualLaunchControl);
 
-    launcher.setMode(LauncherRunMode.DASHBOARD_TUNING);
+    final LauncherRunMode DEFAULT_LAUNCH = LauncherRunMode.INTERPOLATION;
 
-    final Trigger manualLaunch = xbox.back();
-    final Trigger resetShift = xbox.start().debounce(0.01);
+    launcher.setMode(DEFAULT_LAUNCH);
+
+    final Trigger manualButton = xbox.back();
+    final Trigger resetButton = xbox.start().debounce(0.01);
 
     // --- INTAKE CONTROL ---
 
@@ -352,20 +354,21 @@ public class RobotContainer {
 
     // Intake shift up button
     xbox.povUp()
+        .and(manualButton.negate())
         .onTrue(
             Commands.runOnce(() -> intake.shiftSetpoint(Rotation2d.fromDegrees(+1)))
                 .withName("Shift intake up"));
 
     // Intake shift down button
     xbox.povDown()
-        .and(manualLaunch.negate())
+        .and(manualButton.negate())
         .onTrue(
             Commands.runOnce(() -> intake.shiftSetpoint(Rotation2d.fromDegrees(-1)))
                 .withName("Shift intake down"));
 
     // Reset intake shift button
-    resetShift
-        .and(manualLaunch.negate())
+    resetButton
+        .and(manualButton.negate())
         .onTrue(Commands.runOnce(intake::unshiftSetpoint).withName("Reset intake shift"));
 
     // --- OUTTAKE CONTROL ---
@@ -400,12 +403,12 @@ public class RobotContainer {
 
     // Start spin up button
     xbox.y()
-        .and(manualLaunch.negate())
+        .and(manualButton.negate())
         .onTrue(launcher.runOnce(launcher::start).withName("Spin Up"));
 
     // Cancel spin up button
     xbox.b()
-        .and(manualLaunch.negate())
+        .and(manualButton.negate())
         .onTrue(
             launcher
                 .runOnce(launcher::stop)
@@ -414,7 +417,7 @@ public class RobotContainer {
 
     // Reverse lifter & outtake button
     xbox.x()
-        .and(manualLaunch.negate())
+        .and(manualButton.negate())
         .whileTrue(
             Commands.parallel(
                     launcher.run(() -> launcher.setDutyCycle(-0.1)),
@@ -428,7 +431,7 @@ public class RobotContainer {
 
     // Reverse lifter button
     xbox.a()
-        .and(manualLaunch.negate())
+        .and(manualButton.negate())
         .whileTrue(
             hopper
                 .run(() -> hopper.setMode(HopperRunMode.PREP_SHOT))
@@ -437,70 +440,48 @@ public class RobotContainer {
 
     // --- MANUAL LAUNCH MODE CONTROLS ---
 
-    manualLaunch
-        .and(resetShift)
-        .multiPress(2, 0.2)
-        .toggleOnTrue(
-            Commands.startEnd(
-                    () -> launcher.setMode(LauncherRunMode.INTERPOLATION),
-                    () -> launcher.setMode(LauncherRunMode.MANUAL))
-                .ignoringDisable(true)
-                .withName("Automatic Launch Preferred Mode"));
+    final Trigger anyLetterButton = xbox.a().or(xbox.b()).or(xbox.x()).or(xbox.y());
+    final Trigger isManualMode = new Trigger(() -> launcher.getMode() == LauncherRunMode.MANUAL);
 
-    // Outtake shift up button
+    manualButton
+        .and(anyLetterButton)
+        .onTrue(
+            Commands.runOnce(() -> launcher.setMode(LauncherRunMode.MANUAL))
+                .ignoringDisable(true)
+                .withName("Manual Launch Mode"));
+
+    manualButton
+        .multiPress(2, 0.3)
+        .and(anyLetterButton.negate())
+        .onFalse(
+            Commands.runOnce(() -> launcher.setMode(DEFAULT_LAUNCH))
+                .ignoringDisable(true)
+                .withName("Default Launch Mode"));
+
+    // Outtake adjustment buttons. Since nothing else uses theses buttons, manual mode can be checked implicitly
     xbox.povRight()
-        .onTrue(
-            Commands.runOnce(() -> manualLaunchControl.incrementVelocity(+10))
-                .ignoringDisable(true)
-                .withName("Shift Velocity Up"));
-
-    // Outtake shift down button
+        .and(manualButton.or(isManualMode))
+        .onTrue(manualLaunchControl.incrementHoodCommand(+0.025));
     xbox.povLeft()
-        .onTrue(
-            Commands.runOnce(() -> manualLaunchControl.incrementVelocity(-10))
-                .ignoringDisable(true)
-                .withName("Shift Velocity Down"));
+        .and(manualButton.or(isManualMode))
+        .onTrue(manualLaunchControl.incrementHoodCommand(-0.025));
+
+    // Outtake velocity adjustment buttons
+    xbox.povUp().and(manualButton).onTrue(manualLaunchControl.incrementVelocityCommand(+20));
+    xbox.povDown().and(manualButton).onTrue(manualLaunchControl.incrementVelocityCommand(-20));
 
     // Outtake shift reset button
-    resetShift
-        .and(manualLaunch)
-        .onTrue(
-            Commands.runOnce(manualLaunchControl::reset)
-                .ignoringDisable(true)
-                .withName("Reset Shift"));
+    resetButton.and(manualButton).onTrue(manualLaunchControl.resetCommand());
 
-    xbox.a()
-        .and(manualLaunch)
-        .onTrue(
-            Commands.runOnce(() -> manualLaunchControl.setMode(ManualLaunchMode.A))
-                .ignoringDisable(true)
-                .withName("Set Manual Launch Mode A"));
-    xbox.b()
-        .and(manualLaunch)
-        .onTrue(
-            Commands.runOnce(() -> manualLaunchControl.setMode(ManualLaunchMode.B))
-                .ignoringDisable(true)
-                .withName("Set Manual Launch Mode B"));
-    xbox.x()
-        .and(manualLaunch)
-        .onTrue(
-            Commands.runOnce(() -> manualLaunchControl.setMode(ManualLaunchMode.X))
-                .ignoringDisable(true)
-                .withName("Set Manual Launch Mode X"));
-    xbox.y()
-        .and(manualLaunch)
-        .onTrue(
-            Commands.runOnce(() -> manualLaunchControl.setMode(ManualLaunchMode.Y))
-                .ignoringDisable(true)
-                .withName("Set Manual Launch Mode Y"));
+    xbox.y().and(manualButton).onTrue(manualLaunchControl.setModeCommand(ManualLaunchMode.Y));
+    xbox.x().and(manualButton).onTrue(manualLaunchControl.setModeCommand(ManualLaunchMode.X));
+    xbox.a().and(manualButton).onTrue(manualLaunchControl.setModeCommand(ManualLaunchMode.A));
+    xbox.b().and(manualButton).onTrue(manualLaunchControl.setModeCommand(ManualLaunchMode.B));
 
     // --- HANG/MANUAL CONTROL ---
 
     // Hang up/down axis
     xbox.getRightY();
-
-    // Manual mechanism axis
-    xbox.getLeftY();
   }
 
   private Command rumbleController(

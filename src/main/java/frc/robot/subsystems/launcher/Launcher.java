@@ -139,6 +139,10 @@ public class Launcher extends SubsystemBase {
     this.mode = mode;
   }
 
+  public LauncherRunMode getMode() {
+    return mode;
+  }
+
   public void setDutyCycle(double dutyCycle) {
     for (ChannelIO channel : channelIOs) {
       channel.setDutyCycle(dutyCycle);
@@ -189,6 +193,9 @@ public class Launcher extends SubsystemBase {
           setRunningDesiredState(
               new LauncherState(parameters.wheelRadPerSec(), parameters.hoodPosition()));
           robotYaw = parameters.driveAngle();
+
+          SmartDashboard.putNumber("LauncherTuning/CalculatorDistance", parameters.distance());
+
           break;
         }
       case MATHEMATICAL:

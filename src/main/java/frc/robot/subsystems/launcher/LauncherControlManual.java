@@ -1,5 +1,8 @@
 package frc.robot.subsystems.launcher;
 
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.launcher.Launcher.LauncherState;
 import java.util.EnumMap;
 import java.util.function.Supplier;
@@ -8,10 +11,10 @@ import org.littletonrobotics.junction.AutoLogOutput;
 public class LauncherControlManual implements Supplier<LauncherState> {
 
   public enum ManualLaunchMode {
-    Y(500.0, 0.0),
-    X(400.0, 0.0),
-    A(300.0, 0.0),
-    B(200.0, 0.0);
+    Y(DCMotor.getKrakenX60(1).freeSpeedRadPerSec, 1),
+    X(450.0, 0.3),
+    A(425.0, 0.2),
+    B(400.0, 0.0);
 
     final LauncherState base;
 
@@ -43,10 +46,6 @@ public class LauncherControlManual implements Supplier<LauncherState> {
       hoodShift += delta;
     }
 
-    void setHood(double position) {
-      hoodShift = position - base.hoodPosition();
-    }
-
     void reset() {
       velocityShift = 0;
       hoodShift = 0;
@@ -76,23 +75,27 @@ public class LauncherControlManual implements Supplier<LauncherState> {
     return mode.name();
   }
 
-  public void setMode(ManualLaunchMode mode) {
-    this.mode = mode;
+  public Command setModeCommand(ManualLaunchMode mode) {
+    return Commands.runOnce(() -> this.mode = mode)
+        .ignoringDisable(true)
+        .withName(String.format("Set Manual Launch Mode %s", mode.name()));
   }
 
-  public void incrementVelocity(double delta) {
-    setpoints.get(mode).incrementVelocity(delta);
+  public Command incrementVelocityCommand(double delta) {
+    return Commands.runOnce(() -> setpoints.get(mode).incrementVelocity(delta))
+        .ignoringDisable(true)
+        .withName(String.format("Increment Launch Mode %+f", delta));
   }
 
-  public void incrementHood(double delta) {
-    setpoints.get(mode).incrementHood(delta);
+  public Command incrementHoodCommand(double delta) {
+    return Commands.runOnce(() -> setpoints.get(mode).incrementHood(delta))
+        .ignoringDisable(true)
+        .withName(String.format("Increment Hood Position %+f", delta));
   }
 
-  public void setHood(double position) {
-    setpoints.get(mode).setHood(position);
-  }
-
-  public void reset() {
-    setpoints.get(mode).reset();
+  public Command resetCommand() {
+    return Commands.runOnce(() -> setpoints.get(mode).reset())
+        .ignoringDisable(true)
+        .withName("Reset Manual Launch Adjustments");
   }
 }
