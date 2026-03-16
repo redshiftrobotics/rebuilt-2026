@@ -45,9 +45,7 @@ import frc.robot.utility.Elastic;
 import frc.robot.utility.Elastic.Notification.NotificationLevel;
 import frc.robot.utility.FieldFlipUtil;
 import frc.robot.utility.HubTracker;
-import frc.robot.utility.HubTracker.Shift;
 import java.util.HashMap;
-import java.util.Optional;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
