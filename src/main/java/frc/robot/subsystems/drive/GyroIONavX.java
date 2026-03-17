@@ -44,6 +44,7 @@ public class GyroIONavX implements GyroIO {
 
     inputs.yawPosition = navX.getRotation2d();
     inputs.yawVelocityRadPerSec = Units.degreesToRadians(-navX.getRawGyroZ());
+    inputs.rotation3d = navX.getRotation3d();
 
     inputs.odometryYawTimestamps =
         yawTimestampQueue.stream().mapToDouble(Double::doubleValue).toArray();

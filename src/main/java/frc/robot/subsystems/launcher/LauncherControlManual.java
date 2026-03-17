@@ -1,68 +1,101 @@
 package frc.robot.subsystems.launcher;
 
-import static edu.wpi.first.units.Units.RadiansPerSecond;
-
-import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.subsystems.launcher.Launcher.LauncherState;
+import java.util.EnumMap;
+import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 
-public class LauncherControlManual {
+public class LauncherControlManual implements Supplier<LauncherState> {
 
   public enum ManualLaunchMode {
-    Y(RadiansPerSecond.of(500.0)),
-    X(RadiansPerSecond.of(400.0)),
-    A(RadiansPerSecond.of(300.0)),
-    B(RadiansPerSecond.of(200.0));
+    Y(DCMotor.getKrakenX60(1).freeSpeedRadPerSec, 1),
+    X(450.0, 0.3),
+    A(425.0, 0.2),
+    B(400.0, 0.0);
 
-    private final AngularVelocity channelVelocity;
-    private AngularVelocity shift;
+    final LauncherState base;
 
-    private ManualLaunchMode(AngularVelocity velocity) {
-      this.channelVelocity = velocity;
-      resetShift();
-    }
-
-    public void resetShift() {
-      this.shift = RadiansPerSecond.zero();
-    }
-
-    public void shift(AngularVelocity shift) {
-      this.shift = this.shift.plus(shift);
-    }
-
-    public AngularVelocity get() {
-      return channelVelocity.plus(shift);
-    }
-
-    @Override
-    public String toString() {
-      return String.format("%s(%.2f r/s)", name(), get().in(RadiansPerSecond));
+    ManualLaunchMode(double velocity, double hood) {
+      this.base = new LauncherState(velocity, hood);
     }
   }
 
-  public ManualLaunchMode currentManualLaunchMode;
+  private static class AdjustableSetpoint {
+    final LauncherState base;
+
+    double velocityShift = 0;
+    double hoodShift = 0;
+
+    AdjustableSetpoint(LauncherState base) {
+      this.base = base;
+    }
+
+    LauncherState get() {
+      return new LauncherState(
+          base.wheelRadPerSec() + velocityShift, base.hoodPosition() + hoodShift);
+    }
+
+    void incrementVelocity(double delta) {
+      velocityShift += delta;
+    }
+
+    void incrementHood(double delta) {
+      hoodShift += delta;
+    }
+
+    void reset() {
+      velocityShift = 0;
+      hoodShift = 0;
+    }
+  }
+
+  private final EnumMap<ManualLaunchMode, AdjustableSetpoint> setpoints =
+      new EnumMap<>(ManualLaunchMode.class);
+
+  private ManualLaunchMode mode;
 
   public LauncherControlManual(ManualLaunchMode initialMode) {
-    this.currentManualLaunchMode = initialMode;
+    this.mode = initialMode;
+
+    for (ManualLaunchMode m : ManualLaunchMode.values()) {
+      setpoints.put(m, new AdjustableSetpoint(m.base));
+    }
   }
 
-  @AutoLogOutput(key = "Launcher/ManualLauncherControl/manualLaunchMode")
+  @Override
+  public LauncherState get() {
+    return setpoints.get(mode).get();
+  }
+
+  @AutoLogOutput(key = "Launcher/ManualLauncherControl/manualMode")
   public String getMode() {
-    return currentManualLaunchMode.toString();
+    return mode.name();
   }
 
-  public AngularVelocity get() {
-    return currentManualLaunchMode.get();
+  public Command setModeCommand(ManualLaunchMode mode) {
+    return Commands.runOnce(() -> this.mode = mode)
+        .ignoringDisable(true)
+        .withName(String.format("Set Manual Launch Mode %s", mode.name()));
   }
 
-  public void setMode(ManualLaunchMode mode) {
-    this.currentManualLaunchMode = mode;
+  public Command incrementVelocityCommand(double delta) {
+    return Commands.runOnce(() -> setpoints.get(mode).incrementVelocity(delta))
+        .ignoringDisable(true)
+        .withName(String.format("Increment Launch Mode %+f", delta));
   }
 
-  public void shiftVelocity(AngularVelocity shift) {
-    currentManualLaunchMode.shift(shift);
+  public Command incrementHoodCommand(double delta) {
+    return Commands.runOnce(() -> setpoints.get(mode).incrementHood(delta))
+        .ignoringDisable(true)
+        .withName(String.format("Increment Hood Position %+f", delta));
   }
 
-  public void resetShift() {
-    currentManualLaunchMode.resetShift();
+  public Command resetCommand() {
+    return Commands.runOnce(() -> setpoints.get(mode).reset())
+        .ignoringDisable(true)
+        .withName("Reset Manual Launch Adjustments");
   }
 }

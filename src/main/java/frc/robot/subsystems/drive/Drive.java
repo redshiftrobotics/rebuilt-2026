@@ -14,6 +14,7 @@ import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -37,8 +38,9 @@ import frc.robot.FieldConstants.Hub;
 import frc.robot.generated.CompetitionConstants;
 import frc.robot.generated.MetalbotTwoConstants;
 import frc.robot.generated.PreseasonConstants;
-import frc.robot.utility.AllianceMirrorUtil;
+import frc.robot.subsystems.launcher.LaunchCalculator;
 import frc.robot.utility.LocalADStarAK;
+import frc.robot.utility.geometry.AllianceMirrorUtil;
 import java.util.Arrays;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -216,8 +218,7 @@ public class Drive extends SubsystemBase {
 
     // Log current chassis speeds
     Logger.recordOutput("ChassisStates/MeasuredRobotSpeeds", getRobotSpeeds());
-    Logger.recordOutput(
-        "ChassisStates/ModuleDesiredSpeeds", kinematics.toChassisSpeeds(getDesiredWheelSpeeds()));
+    Logger.recordOutput("ChassisStates/ModuleDesiredSpeeds", getDesiredRobotSpeeds());
 
     Logger.recordOutput("Drive/RobotPose", robotPose);
 
@@ -331,6 +332,10 @@ public class Drive extends SubsystemBase {
     return robotSpeeds;
   }
 
+  public ChassisSpeeds getDesiredRobotSpeeds() {
+    return kinematics.toChassisSpeeds(getDesiredWheelSpeeds());
+  }
+
   /**
    * Set desired robot relative velocity of robot chassis.
    *
@@ -340,6 +345,7 @@ public class Drive extends SubsystemBase {
     Logger.recordOutput("ChassisStates/DesiredRobotSpeeds", speeds);
 
     speeds = ChassisSpeeds.discretize(speeds, Constants.LOOP_PERIOD_SECONDS);
+    LaunchCalculator.getInstance().setDesiredFieldRelativeSpeedsOverride(speeds);
 
     SwerveModuleState[] wheelSpeeds = kinematics.toSwerveModuleStates(speeds);
 
@@ -402,6 +408,13 @@ public class Drive extends SubsystemBase {
 
   public Rotation2d getRawGyroRotation() {
     return rawGyroRotation;
+  }
+
+  public Rotation3d getRawGyroRotation3d() {
+    if (!gyroInputs.connected) {
+      return new Rotation3d(rawGyroRotation);
+    }
+    return gyroInputs.rotation3d;
   }
 
   // --- Stops ---
