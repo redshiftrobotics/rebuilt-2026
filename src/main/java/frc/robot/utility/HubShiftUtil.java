@@ -9,8 +9,8 @@ package frc.robot.utility;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import frc.robot.subsystems.launcher.LaunchCalculator;
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.subsystems.launcher.LaunchCalculator;
 import java.util.Optional;
 import java.util.function.Supplier;
 

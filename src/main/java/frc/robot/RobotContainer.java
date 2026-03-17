@@ -40,10 +40,10 @@ import frc.robot.subsystems.led.BlinkinLEDPattern;
 import frc.robot.subsystems.led.LEDSubsystem;
 import frc.robot.subsystems.vision.AprilTagVision;
 import frc.robot.utility.Elastic;
+import frc.robot.utility.Elastic.Notification.NotificationLevel;
 import frc.robot.utility.HubShiftUtil;
 import frc.robot.utility.HubShiftUtil.ShiftEnum;
 import frc.robot.utility.HubShiftUtil.ShiftInfo;
-import frc.robot.utility.Elastic.Notification.NotificationLevel;
 import frc.robot.utility.geometry.FieldFlipUtil;
 import java.util.LinkedHashMap;
 import java.util.function.Supplier;
@@ -460,9 +460,12 @@ public class RobotContainer {
                 .ignoringDisable(true)
                 .withName("Default Launch Mode"));
 
-    manualButton.and(xbox.b().multiPress(2, 0.3)).onTrue(
-      Commands.runOnce(() -> launcher.setMode(LauncherRunMode.DASHBOARD_TUNING)).ignoringDisable(true).withName("Dashboard Tuning Launch Mode")
-    );
+    manualButton
+        .and(xbox.b().multiPress(2, 0.3))
+        .onTrue(
+            Commands.runOnce(() -> launcher.setMode(LauncherRunMode.DASHBOARD_TUNING))
+                .ignoringDisable(true)
+                .withName("Dashboard Tuning Launch Mode"));
 
     // Manual mode preset buttons
     xbox.y().and(manualButton).onTrue(manualLaunchControl.setModeCommand(ManualLaunchMode.Y));
@@ -509,7 +512,8 @@ public class RobotContainer {
   }
 
   private void configureAlertTriggers() {
-    new Trigger(() -> HubShiftUtil.getShiftedShiftInfo().active()).onChange(rumbleControllers(1.0).withTimeout(0.25));
+    new Trigger(() -> HubShiftUtil.getShiftedShiftInfo().active())
+        .onChange(rumbleControllers(1.0).withTimeout(0.25));
 
     Trigger isMatch = new Trigger(() -> DriverStation.getMatchTime() != -1);
 
@@ -534,7 +538,8 @@ public class RobotContainer {
 
     final BlinkinLEDPattern defaultPattern = BlinkinLEDPattern.GOLD;
 
-    SmartDashboard.putData("LED Default Pattern Chooser", ledFallbackPatternChooser.getSendableChooser());
+    SmartDashboard.putData(
+        "LED Default Pattern Chooser", ledFallbackPatternChooser.getSendableChooser());
 
     ledFallbackPatternChooser.addDefaultOption(
         String.format("Default (%s)", defaultPattern), defaultPattern);

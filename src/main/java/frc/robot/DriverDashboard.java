@@ -116,11 +116,9 @@ public class DriverDashboard {
     SmartDashboard.putString("Drive Mode", currentDriveModeName.get());
 
     ShiftInfo shift = HubShiftUtil.getOfficialShiftInfo();
-    SmartDashboard.putNumber(
-        "Shifts/Remaining Shift Time", shift.remainingTime());
+    SmartDashboard.putNumber("Shifts/Remaining Shift Time", shift.remainingTime());
     SmartDashboard.putBoolean("Shifts/Shift Active", shift.active());
-    SmartDashboard.putString(
-        "Shifts/Shift Game State", shift.currentShift().name());
+    SmartDashboard.putString("Shifts/Shift Game State", shift.currentShift().name());
     SmartDashboard.putBoolean("Shifts/Active First?", HubShiftUtil.isFirstActiveAlliance());
   }
 
