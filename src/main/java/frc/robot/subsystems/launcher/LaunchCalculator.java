@@ -220,8 +220,8 @@ public class LaunchCalculator extends VirtualSubsystem {
     // Constructor parameters
     latestParameters =
         new LaunchingParameters(
-            lookaheadLauncherToTargetDistance >= LauncherConstants.MAX_DISTANCE
-                && lookaheadLauncherToTargetDistance <= LauncherConstants.MIN_DISTANCE,
+            lookaheadLauncherToTargetDistance <= LauncherConstants.MAX_DISTANCE
+                && lookaheadLauncherToTargetDistance >= LauncherConstants.MIN_DISTANCE,
             driveAngle,
             driveAngularVelocity.getRadians(),
             hoodPosition + hoodPositionOffset,
