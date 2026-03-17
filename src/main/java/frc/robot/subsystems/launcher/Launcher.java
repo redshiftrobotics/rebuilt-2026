@@ -5,11 +5,14 @@ import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RobotType;
+import frc.robot.FieldConstants;
+import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.subsystems.launcher.LauncherConstants.ChannelConstants;
 import frc.robot.utility.tunable.TunableNumber;
 import frc.robot.utility.tunable.TunableNumbers.TunableFF;
@@ -195,6 +198,15 @@ public class Launcher extends SubsystemBase {
           robotYaw = parameters.driveAngle();
 
           SmartDashboard.putNumber("LauncherTuning/CalculatorDistance", parameters.distance());
+          SmartDashboard.putNumber(
+              "LauncherTuning/CalculatorDistanceNoLookahead", parameters.distanceNoLookahead());
+          SmartDashboard.putNumber(
+              "LauncherTuning/CalculatorDistanceAdjustedInches",
+              Units.metersToInches(
+                  parameters.distance()
+                      - FieldConstants.Hub.width / 2
+                      - DriveConstants.BUMPER_TO_BUMPER.getX() / 2
+                      + LauncherConstants.ROBOT_TO_LAUNCHER.getX()));
 
           break;
         }
@@ -227,6 +239,8 @@ public class Launcher extends SubsystemBase {
           // When entering distances, use this over measuring by hand if possible (assuming good
           // tags),
           SmartDashboard.putNumber("LauncherTuning/CalculatorDistance", parameters.distance());
+          SmartDashboard.putNumber(
+              "LauncherTuning/CalculatorDistanceNoLookahead", parameters.distanceNoLookahead());
 
           robotYaw = parameters.driveAngle();
           break;
