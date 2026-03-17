@@ -1,7 +1,6 @@
 package frc.robot.subsystems.vision;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import frc.robot.FieldConstants;
 import frc.robot.subsystems.vision.VisionConstants.CameraConfig;
@@ -59,10 +58,6 @@ public class CameraIOPhotonVision implements CameraIO {
   @Override
   public void setAprilTagFieldLayout(AprilTagFieldLayout fieldTags) {
     photonPoseEstimator.setFieldTags(fieldTags);
-  }
-
-  public void setLastRobotPose(Pose2d lastRobotPose) {
-    photonPoseEstimator.setLastPose(lastRobotPose);
   }
 
   @Override
