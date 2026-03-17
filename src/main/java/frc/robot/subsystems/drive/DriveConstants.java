@@ -61,7 +61,7 @@ public class DriveConstants {
   }
 
   /** Center of wheel to center of wheel size */
-  private static final Translation2d TRACK_SIZE =
+  public static final Translation2d TRACK_SIZE =
       switch (Constants.getRobot()) {
         case REBUILT_2026 -> new Translation2d(
             CompetitionConstants.FrontLeft.LocationX - CompetitionConstants.BackRight.LocationX,
@@ -76,9 +76,9 @@ public class DriveConstants {
             Units.inchesToMeters(22.729228), Units.inchesToMeters(22.729228));
       };
 
-  private static final Translation2d BUMPER_TO_BUMPER =
+  public static final Translation2d BUMPER_TO_BUMPER =
       switch (Constants.getRobot()) {
-        default -> new Translation2d(Units.inchesToMeters(34), Units.inchesToMeters(34));
+        default -> new Translation2d(Units.inchesToMeters(34.5), Units.inchesToMeters(33.5));
       };
 
   public static final DriveConfig DRIVE_CONFIG =

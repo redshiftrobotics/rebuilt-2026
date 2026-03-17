@@ -2,21 +2,11 @@
   "robotWidth": 0.9,
   "robotLength": 0.9,
   "holonomicMode": true,
-  "pathFolders": [
-    "Demo Auto",
-    "Demo Shapes",
-    "Intermediate",
-    "North Intermediate to outpost",
-    "South Intermediate to Outpost",
-    "Start Middle",
-    "north goto mid",
-    "south goto mid"
-  ],
+  "pathFolders": [],
   "autoFolders": [
-    "Middle Start",
-    "No Preload",
-    "North Start",
-    "South Start"
+    "Field Only",
+    "Preload Then Field",
+    "Preload Only"
   ],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,

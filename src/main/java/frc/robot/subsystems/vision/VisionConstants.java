@@ -27,8 +27,13 @@ public class VisionConstants {
   public static final CameraConfig TOP_CAMERA_ANGLED =
       new CameraConfig(
           "spencercam",
-          CameraPositionName.LAUNCHER_LEFT,
-          fromOnShape(10.470732, 2.344, 16.864 + 3.710392, -20, 0));
+          CameraPositionName.TOP_ANGLE,
+          fromOnShape(
+              -10.470732,
+              2.344,
+              16.864 + 3.710392,
+              -20,
+              0)); // x inches was the one we were supposed to invert, right? - aceius
 
   public static Transform3d fromOnShape(
       double xInches, double yInches, double zInches, double pitchDegrees, double yawDegrees) {
