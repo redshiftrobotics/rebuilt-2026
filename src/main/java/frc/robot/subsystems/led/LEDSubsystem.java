@@ -30,7 +30,7 @@ public class LEDSubsystem extends SubsystemBase {
             new LEDStripIOBlinkin(LEDConstants.LED_STRIP_BACK, BlinkinLEDPattern.OFF));
 
       case SIM_BOT:
-        return new LEDSubsystem(new LEDStripIOSim(BlinkinLEDPattern.HEARTBEAT_RED));
+        return new LEDSubsystem(new LEDStripIOSim(BlinkinLEDPattern.OFF));
 
       default:
         return new LEDSubsystem();

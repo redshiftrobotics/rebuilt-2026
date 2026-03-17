@@ -7,86 +7,9 @@
       "grid_layout": {
         "layouts": [
           {
-            "title": "Shifts",
-            "x": 1024.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 320.0,
-            "type": "List Layout",
-            "properties": {
-              "label_position": "TOP"
-            },
-            "children": [
-              {
-                "title": "Active First?",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Boolean Box",
-                "properties": {
-                  "topic": "/SmartDashboard/Shifts/Active First?",
-                  "period": 0.06,
-                  "data_type": "boolean",
-                  "true_color": 4283215696,
-                  "false_color": 4294198070,
-                  "true_icon": "None",
-                  "false_icon": "None"
-                }
-              },
-              {
-                "title": "Shift Game State",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/SmartDashboard/Shifts/Shift Game State",
-                  "period": 0.06,
-                  "data_type": "string",
-                  "show_submit_button": false
-                }
-              },
-              {
-                "title": "Shift Active",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Boolean Box",
-                "properties": {
-                  "topic": "/SmartDashboard/Shifts/Shift Active",
-                  "period": 0.06,
-                  "data_type": "boolean",
-                  "true_color": 4283215696,
-                  "false_color": 4294198070,
-                  "true_icon": "None",
-                  "false_icon": "None"
-                }
-              },
-              {
-                "title": "Remaining Shift Time",
-                "x": 1088.0,
-                "y": 448.0,
-                "width": 256.0,
-                "height": 128.0,
-                "type": "Match Time",
-                "properties": {
-                  "topic": "/SmartDashboard/Shifts/Remaining Shift Time",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "time_display_mode": "Seconds Only",
-                  "red_start_time": 3,
-                  "yellow_start_time": 10
-                }
-              }
-            ]
-          },
-          {
             "title": "LauncherTuning",
             "x": 384.0,
-            "y": 256.0,
+            "y": 384.0,
             "width": 256.0,
             "height": 320.0,
             "type": "List Layout",
@@ -213,7 +136,7 @@
             "x": 256.0,
             "y": 0.0,
             "width": 128.0,
-            "height": 256.0,
+            "height": 128.0,
             "type": "Number Bar",
             "properties": {
               "topic": "/SmartDashboard/Speed MPH",
@@ -221,7 +144,7 @@
               "data_type": "double",
               "min_value": 0.0,
               "max_value": 15.0,
-              "divisions": 4,
+              "divisions": 3,
               "inverted": false,
               "orientation": "vertical"
             }
@@ -255,8 +178,8 @@
           },
           {
             "title": "Has Vision",
-            "x": 896.0,
-            "y": 0.0,
+            "x": 256.0,
+            "y": 128.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Boolean Box",
@@ -271,8 +194,8 @@
             }
           },
           {
-            "title": "runMode",
-            "x": 768.0,
+            "title": "Launch Mode",
+            "x": 384.0,
             "y": 256.0,
             "width": 128.0,
             "height": 128.0,
@@ -305,54 +228,9 @@
             }
           },
           {
-            "title": "Game Time",
-            "x": 0.0,
-            "y": 512.0,
-            "width": 384.0,
-            "height": 192.0,
-            "type": "Match Time",
-            "properties": {
-              "topic": "/SmartDashboard/Game Time",
-              "period": 0.06,
-              "data_type": "double",
-              "time_display_mode": "Minutes and Seconds",
-              "red_start_time": 15,
-              "yellow_start_time": 30
-            }
-          },
-          {
-            "title": "Scheduler",
-            "x": 1024.0,
-            "y": 320.0,
-            "width": 256.0,
-            "height": 384.0,
-            "type": "Scheduler",
-            "properties": {
-              "topic": "/SmartDashboard/Scheduler",
-              "period": 0.06
-            }
-          },
-          {
-            "title": "isRunning",
-            "x": 640.0,
+            "title": "Launch Ready?",
+            "x": 512.0,
             "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Boolean Box",
-            "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Launcher/isRunning",
-              "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
-            }
-          },
-          {
-            "title": "isReady",
-            "x": 640.0,
-            "y": 384.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Boolean Box",
@@ -365,6 +243,98 @@
               "true_icon": "None",
               "false_icon": "None"
             }
+          },
+          {
+            "title": "Remaining Shift Time",
+            "x": 896.0,
+            "y": 0.0,
+            "width": 384.0,
+            "height": 256.0,
+            "type": "Match Time",
+            "properties": {
+              "topic": "/SmartDashboard/Shifts/Remaining Shift Time",
+              "period": 0.06,
+              "data_type": "double",
+              "time_display_mode": "Seconds Only",
+              "red_start_time": 3,
+              "yellow_start_time": 10
+            }
+          },
+          {
+            "title": "Shift Active?",
+            "x": 896.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/SmartDashboard/Shifts/Shift Active",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "Active First?",
+            "x": 1024.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/SmartDashboard/Shifts/Active First?",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "Shift Game State",
+            "x": 1152.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Shifts/Shift Game State",
+              "period": 0.06,
+              "data_type": "string",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Hopper Mode",
+            "x": 640.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Hopper/mode",
+              "period": 0.06,
+              "data_type": "string",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Intake Mode",
+            "x": 640.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Intake/mode",
+              "period": 0.06,
+              "data_type": "string",
+              "show_submit_button": false
+            }
           }
         ]
       }
@@ -372,7 +342,77 @@
     {
       "name": "Autonomous",
       "grid_layout": {
-        "layouts": [],
+        "layouts": [
+          {
+            "title": "LauncherTuning",
+            "x": 384.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 320.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "DesiredWheelRadPerSec",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/LauncherTuning/DesiredWheelRadPerSec",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "DesiredHoodPosition",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/LauncherTuning/DesiredHoodPosition",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "CalculatorDistance",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/LauncherTuning/CalculatorDistance",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "MeasuredWheelRadPerSec",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/LauncherTuning/MeasuredWheelRadPerSec",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              }
+            ]
+          }
+        ],
         "containers": [
           {
             "title": "Alerts",
@@ -408,22 +448,6 @@
             }
           },
           {
-            "title": "Game Time",
-            "x": 384.0,
-            "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Match Time",
-            "properties": {
-              "topic": "/SmartDashboard/Game Time",
-              "period": 0.06,
-              "data_type": "double",
-              "time_display_mode": "Minutes and Seconds",
-              "red_start_time": 15,
-              "yellow_start_time": 30
-            }
-          },
-          {
             "title": "FMSInfo",
             "x": 0.0,
             "y": 384.0,
@@ -449,23 +473,6 @@
             }
           },
           {
-            "title": "BrakeModeEnabled",
-            "x": 896.0,
-            "y": 128.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Boolean Box",
-            "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Drive/BrakeModeEnabled",
-              "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
-            }
-          },
-          {
             "title": "CommsDisableCount",
             "x": 1280.0,
             "y": 0.0,
@@ -480,8 +487,8 @@
           },
           {
             "title": "RobotName",
-            "x": 384.0,
-            "y": 384.0,
+            "x": 0.0,
+            "y": 512.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
@@ -511,7 +518,7 @@
             "x": 256.0,
             "y": 0.0,
             "width": 128.0,
-            "height": 256.0,
+            "height": 128.0,
             "type": "Number Bar",
             "properties": {
               "topic": "/SmartDashboard/Speed MPH",
@@ -519,15 +526,15 @@
               "data_type": "double",
               "min_value": 0.0,
               "max_value": 15.0,
-              "divisions": 4,
+              "divisions": 3,
               "inverted": false,
               "orientation": "vertical"
             }
           },
           {
             "title": "Has Vision",
-            "x": 896.0,
-            "y": 0.0,
+            "x": 256.0,
+            "y": 128.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Boolean Box",
@@ -554,6 +561,98 @@
               "data_type": "boolean",
               "true_color": 4294924544,
               "false_color": 4278190080,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "Remaining Shift Time",
+            "x": 896.0,
+            "y": 0.0,
+            "width": 384.0,
+            "height": 256.0,
+            "type": "Match Time",
+            "properties": {
+              "topic": "/SmartDashboard/Shifts/Remaining Shift Time",
+              "period": 0.06,
+              "data_type": "double",
+              "time_display_mode": "Seconds Only",
+              "red_start_time": 3,
+              "yellow_start_time": 10
+            }
+          },
+          {
+            "title": "BuildDate",
+            "x": 128.0,
+            "y": 512.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/RealMetadata/BuildDate",
+              "period": 0.06,
+              "data_type": "string",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Intake Mode",
+            "x": 640.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Intake/mode",
+              "period": 0.06,
+              "data_type": "string",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Hopper Mode",
+            "x": 640.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Hopper/mode",
+              "period": 0.06,
+              "data_type": "string",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Launch Ready?",
+            "x": 512.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Launcher/isReady",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "Launch Running?",
+            "x": 384.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Launcher/isRunning",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
               "true_icon": "None",
               "false_icon": "None"
             }
