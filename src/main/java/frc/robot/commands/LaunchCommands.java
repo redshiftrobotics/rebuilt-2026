@@ -134,8 +134,7 @@ public class LaunchCommands {
               double robotLookaheadDistance =
                   robotHubDistance * Math.sin(hubAngle) / Math.sin(lookaheadAngle);
               maxLinearVelocityMagnitude =
-                  robotLookaheadDistance
-                      / LaunchCalculator.getTimeOfFlight(robotHubDistance);
+                  robotLookaheadDistance / LaunchCalculator.getTimeOfFlight(robotHubDistance);
             }
 
             // Apply limit to velocity
