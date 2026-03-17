@@ -35,7 +35,12 @@ public class VisionConstants {
       new CameraConfig(
           "spencercam",
           CameraPositionName.TOP_ANGLE,
-          fromOnShape(10.470732, 2.344, 16.864 + 3.710392, -20, 0));
+          fromOnShape(
+              -10.470732,
+              2.344,
+              16.864 + 3.710392,
+              -20,
+              0)); // x inches was the one we were supposed to invert, right? - aceius
 
   public static Transform3d fromOnShape(
       double xInches, double yInches, double zInches, double pitchDegrees, double yawDegrees) {
@@ -50,50 +55,4 @@ public class VisionConstants {
         new Rotation3d(
             0, Units.degreesToRadians(pitchDegrees), Units.degreesToRadians(yawDegrees)));
   }
-
-  // --- Old ---
-
-  public static final CameraConfig SIM_FRONT_CAMERA =
-      new CameraConfig(
-          "front_camera",
-          CameraPositionName.FRONT,
-          new Transform3d(
-              new Translation3d(Units.inchesToMeters(27.5 / 2.0 + 1.0), 0, Units.inchesToMeters(6)),
-              new Rotation3d(0, Units.degreesToRadians(0), 0)));
-
-  public static final CameraConfig TOP_CAMERA =
-      new CameraConfig(
-          "top_camera",
-          CameraPositionName.TOP,
-          new Transform3d(
-              new Translation3d(
-                  Units.inchesToMeters(-6), Units.inchesToMeters(12.5), Units.inchesToMeters(21)),
-              new Rotation3d(0, Units.degreesToRadians(-10), Units.degreesToRadians(0))));
-
-  public static final CameraConfig RIGHT_CAMERA =
-      new CameraConfig(
-          "right_camera",
-          CameraPositionName.RIGHT,
-          new Transform3d(
-              new Translation3d(
-                  Units.inchesToMeters(-8), Units.inchesToMeters(-12.5), Units.inchesToMeters(8)),
-              new Rotation3d(0, Units.degreesToRadians(-20), Units.degreesToRadians(-75))));
-  public static final CameraConfig BACK_CAMERA =
-      new CameraConfig(
-          "back_camera",
-          CameraPositionName.BACK,
-          new Transform3d(
-              new Translation3d(
-                  Units.inchesToMeters(-12.5),
-                  Units.inchesToMeters(-12.5),
-                  Units.inchesToMeters(8)),
-              new Rotation3d(0, Units.degreesToRadians(-10), Units.degreesToRadians(-150))));
-  public static final CameraConfig LEFT_CAMERA =
-      new CameraConfig(
-          "left_camera",
-          CameraPositionName.LEFT,
-          new Transform3d(
-              new Translation3d(
-                  Units.inchesToMeters(-12.5), Units.inchesToMeters(-8), Units.inchesToMeters(8)),
-              new Rotation3d(0, Units.degreesToRadians(-20), Units.degreesToRadians(-225))));
 }

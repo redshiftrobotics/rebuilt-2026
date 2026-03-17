@@ -1,21 +1,19 @@
 package frc.robot.subsystems.launcher;
 
-import static edu.wpi.first.units.Units.RadiansPerSecond;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
-import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import frc.robot.Constants;
-import frc.robot.subsystems.launcher.LauncherConstants.ChannelConstants;
+import frc.robot.subsystems.launcher.LauncherConstants.ChannelConstants.ChannelConfig;
+import frc.robot.subsystems.launcher.LauncherConstants.LauncherMathConstants;
 import frc.robot.utility.records.FeedForwardConfigRecord;
 import frc.robot.utility.records.PIDConfig;
 
-/** Physics sim implementation of motor IO. */
+/** Physics sim implementation of channel IO. */
 public class ChannelIOSim implements ChannelIO {
 
   private final String name;
@@ -32,13 +30,15 @@ public class ChannelIOSim implements ChannelIO {
   private boolean closedLoop = false;
   private double FFVolts = 0;
 
-  public ChannelIOSim(String name, ChannelConstants constants) {
+  public ChannelIOSim(String name, ChannelConfig constants) {
     this.name = name;
     final DCMotor motor = DCMotor.getKrakenX60(1);
     sim =
         new FlywheelSim(
             LinearSystemId.createFlywheelSystem(
-                motor, LauncherConstants.FLYWHEEL_MOI.baseUnitMagnitude(), constants.gearRatio()),
+                motor,
+                LauncherMathConstants.FLYWHEEL_MOI.baseUnitMagnitude(),
+                constants.gearRatio()),
             motor);
   }
 
@@ -84,10 +84,10 @@ public class ChannelIOSim implements ChannelIO {
   }
 
   @Override
-  public void setVelocity(AngularVelocity velocity, double arbFeedforward) {
+  public void setVelocity(double radPerSec, double arbFeedforward) {
     closedLoop = true;
-    FFVolts = feedfoward.calculate(velocity.in(RadiansPerSecond)) + arbFeedforward;
-    feedback.setSetpoint(velocity.in(RadiansPerSecond));
+    FFVolts = feedfoward.calculate(radPerSec) + arbFeedforward;
+    feedback.setSetpoint(radPerSec);
   }
 
   @Override

@@ -9,9 +9,9 @@
           {
             "title": "Shifts",
             "x": 1024.0,
-            "y": 128.0,
+            "y": 0.0,
             "width": 256.0,
-            "height": 384.0,
+            "height": 320.0,
             "type": "List Layout",
             "properties": {
               "label_position": "TOP"
@@ -35,14 +35,14 @@
                 }
               },
               {
-                "title": "Remaining Shift Time (Formatted)",
+                "title": "Shift Game State",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/Shifts/Remaining Shift Time (Formatted)",
+                  "topic": "/SmartDashboard/Shifts/Shift Game State",
                   "period": 0.06,
                   "data_type": "string",
                   "show_submit_button": false
@@ -66,20 +66,6 @@
                 }
               },
               {
-                "title": "Shift Game State",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/SmartDashboard/Shifts/Shift Game State",
-                  "period": 0.06,
-                  "data_type": "string",
-                  "show_submit_button": false
-                }
-              },
-              {
                 "title": "Remaining Shift Time",
                 "x": 1088.0,
                 "y": 448.0,
@@ -93,6 +79,75 @@
                   "time_display_mode": "Seconds Only",
                   "red_start_time": 3,
                   "yellow_start_time": 10
+                }
+              }
+            ]
+          },
+          {
+            "title": "LauncherTuning",
+            "x": 384.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 320.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "DesiredWheelRadPerSec",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/LauncherTuning/DesiredWheelRadPerSec",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "DesiredHoodPosition",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/LauncherTuning/DesiredHoodPosition",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "CalculatorDistance",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/LauncherTuning/CalculatorDistance",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "MeasuredWheelRadPerSec",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/LauncherTuning/MeasuredWheelRadPerSec",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
                 }
               }
             ]
@@ -116,7 +171,7 @@
             "x": 1280.0,
             "y": 128.0,
             "width": 256.0,
-            "height": 384.0,
+            "height": 576.0,
             "type": "Alerts",
             "properties": {
               "topic": "/SmartDashboard/Alerts",
@@ -216,66 +271,9 @@
             }
           },
           {
-            "title": "averageVelocity",
-            "x": 512.0,
-            "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Large Text Display",
-            "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Launcher/averageVelocity",
-              "period": 0.06,
-              "data_type": "double"
-            }
-          },
-          {
-            "title": "isReady",
-            "x": 640.0,
-            "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Boolean Box",
-            "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Launcher/isReady",
-              "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
-            }
-          },
-          {
-            "title": "desiredVelocity",
-            "x": 384.0,
-            "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Large Text Display",
-            "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Launcher/desiredVelocity",
-              "period": 0.06,
-              "data_type": "double"
-            }
-          },
-          {
-            "title": "manualLaunchMode",
-            "x": 512.0,
-            "y": 384.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Launcher/ManualLauncherControl/manualLaunchMode",
-              "period": 0.06,
-              "data_type": "string",
-              "show_submit_button": false
-            }
-          },
-          {
             "title": "runMode",
-            "x": 384.0,
-            "y": 384.0,
+            "x": 768.0,
+            "y": 256.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Large Text Display",
@@ -308,10 +306,10 @@
           },
           {
             "title": "Game Time",
-            "x": 1024.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 128.0,
+            "x": 0.0,
+            "y": 512.0,
+            "width": 384.0,
+            "height": 192.0,
             "type": "Match Time",
             "properties": {
               "topic": "/SmartDashboard/Game Time",
@@ -320,6 +318,52 @@
               "time_display_mode": "Minutes and Seconds",
               "red_start_time": 15,
               "yellow_start_time": 30
+            }
+          },
+          {
+            "title": "Scheduler",
+            "x": 1024.0,
+            "y": 320.0,
+            "width": 256.0,
+            "height": 384.0,
+            "type": "Scheduler",
+            "properties": {
+              "topic": "/SmartDashboard/Scheduler",
+              "period": 0.06
+            }
+          },
+          {
+            "title": "isRunning",
+            "x": 640.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Launcher/isRunning",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "isReady",
+            "x": 640.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Launcher/isReady",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
             }
           }
         ]
