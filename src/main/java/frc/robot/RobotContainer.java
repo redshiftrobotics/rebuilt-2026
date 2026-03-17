@@ -542,7 +542,7 @@ public class RobotContainer {
 
     // Launcher commands
     namedCommands.put("PrimeToLaunch", LaunchCommands.primeToLaunch(drive, launcher));
-    namedCommands.put("LaunchInPlace", Commands.none());
+    namedCommands.put("LaunchInPlace", LaunchCommands.launchInPlace(drive, launcher, hopper));
 
     // Hang commands
     namedCommands.put("HangUp", Commands.none());
