@@ -34,7 +34,7 @@ public class LaunchCommands {
   private static final TunableNumber driveLaunchKp = launchingGroup.number("kP", 8.0);
   private static final TunableNumber driveLaunchKd = launchingGroup.number("kD", 0.5);
   private static final TunableNumber driveControllerYawToleranceDeg =
-      launchingGroup.number("ControllerYawToleranceDeg", 1.0);
+      launchingGroup.number("ControllerYawToleranceDeg", 0.01);
 
   private static final TunableNumber driveYawLaunchToleranceDeg =
       launchingGroup.number("YawToleranceDeg", 5.0);
