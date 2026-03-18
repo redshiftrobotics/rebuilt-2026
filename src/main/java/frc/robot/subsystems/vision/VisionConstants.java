@@ -44,7 +44,7 @@ public class VisionConstants {
       new CameraConfig(
           "spencercam",
           CameraPositionName.LAUNCHER_RIGHT,
-          fromOnShape(-10.470732, 2.344, 16.864 + 3.710392, -20, 35));
+          fromOnShape(-10.470732, 2.344, 16.864 + 3.710392, -20, 0));
 
   public static final CameraConfig BACK_SWERVE_LEFT_CAMERA =
       new CameraConfig(
