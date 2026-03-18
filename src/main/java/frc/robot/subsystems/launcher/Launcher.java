@@ -200,8 +200,6 @@ public class Launcher extends SubsystemBase {
 
           SmartDashboard.putNumber("LauncherTuning/CalculatorDistance", parameters.distance());
           SmartDashboard.putNumber(
-              "LauncherTuning/CalculatorDistanceNoLookahead", parameters.distanceNoLookahead());
-          SmartDashboard.putNumber(
               "LauncherTuning/CalculatorDistanceAdjustedInches",
               Units.metersToInches(
                   parameters.distance()
@@ -243,8 +241,15 @@ public class Launcher extends SubsystemBase {
           // When entering distances, use this over measuring by hand if possible (assuming good
           // tags),
           SmartDashboard.putNumber("LauncherTuning/CalculatorDistance", parameters.distance());
+
+          // Alternate option (front of bumper to closest hub face)
           SmartDashboard.putNumber(
-              "LauncherTuning/CalculatorDistanceNoLookahead", parameters.distanceNoLookahead());
+              "LauncherTuning/CalculatorDistanceAdjustedInches",
+              Units.metersToInches(
+                  parameters.distance()
+                      - FieldConstants.Hub.width / 2
+                      - DriveConstants.BUMPER_TO_BUMPER.getX() / 2
+                      + LauncherConstants.ROBOT_TO_LAUNCHER.getX()));
 
           robotYaw = parameters.driveAngle();
           break;
