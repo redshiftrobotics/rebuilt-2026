@@ -44,19 +44,19 @@ public class VisionConstants {
       new CameraConfig(
           "spencercam",
           CameraPositionName.LAUNCHER_RIGHT,
-          fromOnShape(-10.470732, 2.344, 16.864 + 3.710392, -20, 0));
+          fromOnshape(-10.470732, 2.344, 16.864 + 3.710392, -20, 0));
 
   public static final CameraConfig BACK_SWERVE_LEFT_CAMERA =
       new CameraConfig(
           "TODO1", // geraldcam?
           CameraPositionName.BACK_SWERVE_LEFT,
-          fromOnShape(+10.047429, 10.817071, 4.096002 + 3.710392, -25, 180 - 45));
+          fromOnshape(+10.047429, 10.817071, 4.096002 + 3.710392, -25, 180 - 45));
 
   public static final CameraConfig BACK_SWERVE_RIGHT_CAMERA =
       new CameraConfig(
           "TODO2", // neilcam?
           CameraPositionName.BACK_SWERVE_RIGHT,
-          fromOnShape(-10.047429, 10.817071, 4.096002 + 3.710392, -25, 180 + 45));
+          fromOnshape(-10.047429, 10.817071, 4.096002 + 3.710392, -25, 180 + 45));
 
   /**
    * Convert from OnShape coordinates to PhotonVision coordinates.
@@ -68,9 +68,9 @@ public class VisionConstants {
    * @param yawDegrees rotation around robot's front-back axis. 0 when camera is facing forward, positive yaw looking left, negative yaw looking right
    * @return Transform3d in WPILib's coordinate system
    */
-  public static Transform3d fromOnShape(
+  public static Transform3d fromOnshape(
       double xInches, double yInches, double zInches, double pitchDegrees, double yawDegrees) {
-    // x and y are flipped because of the different coordinate system conventions between OnShape
+    // x and y are flipped because of the different coordinate system conventions between Onshape
     // and PhotonVision. Y must be negated, corresponding to a 90 degree rotation
     // https://docs.wpilib.org/en/stable/docs/software/basic-programming/coordinate-system.html
     return new Transform3d(
