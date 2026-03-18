@@ -10,13 +10,13 @@ public interface LEDStripIO {
     int measuredPulse;
     boolean runningSetup = false;
 
-    BlinkenLEDPattern requestedPattern;
+    BlinkinLEDPattern requestedPattern;
   }
 
   /** Updates the set of loggable inputs. */
   default void updateInputs(LEDStripIOInputs inputs) {}
 
-  public default void setPattern(BlinkenLEDPattern pattern) {}
+  public default void setPattern(BlinkinLEDPattern pattern) {}
 
   public default void runSetup(boolean run) {}
 }

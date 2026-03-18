@@ -1,7 +1,5 @@
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Second;
-
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -20,7 +18,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.utility.HubTracker;
+import frc.robot.utility.HubShiftUtil;
+import frc.robot.utility.HubShiftUtil.ShiftInfo;
 import frc.robot.utility.geometry.AllianceMirrorUtil;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -118,20 +117,11 @@ public class DriverDashboard {
 
     SmartDashboard.putString("Drive Mode", currentDriveModeName.get());
 
-    SmartDashboard.putString(
-        "Shifts/Remaining Shift Time (Formatted)",
-        HubTracker.timeRemainingInCurrentShift()
-            .map(t -> String.format("%.2f", t.in(Second)))
-            .orElse("--"));
-    SmartDashboard.putNumber(
-        "Shifts/Remaining Shift Time",
-        HubTracker.timeRemainingInCurrentShift().map(t -> t.in(Second)).orElse(Double.NaN));
-    SmartDashboard.putBoolean("Shifts/Shift Active", HubTracker.isActive());
-    SmartDashboard.putString(
-        "Shifts/Shift Game State",
-        HubTracker.getCurrentShift().map(HubTracker.Shift::name).orElse("Unknown"));
-    SmartDashboard.putBoolean(
-        "Shifts/Active First?", DriverStation.getAlliance().equals(HubTracker.getAutoWinner()));
+    ShiftInfo shift = HubShiftUtil.getOfficialShiftInfo();
+    SmartDashboard.putNumber("Shifts/Remaining Shift Time", shift.remainingTime());
+    SmartDashboard.putBoolean("Shifts/Shift Active", shift.active());
+    SmartDashboard.putString("Shifts/Shift Game State", shift.currentShift().name());
+    SmartDashboard.putBoolean("Shifts/Active First?", HubShiftUtil.isFirstActiveAlliance());
   }
 
   private static void putCustomWidgets() {

@@ -4,15 +4,20 @@ import edu.wpi.first.wpilibj.PWM;
 import frc.robot.subsystems.led.LEDConstants.BlinkenMode;
 import frc.robot.subsystems.led.LEDConstants.LEDConfig;
 
-public class LEDStripIOBlinken implements LEDStripIO {
+/**
+ * Implementation of LEDStripIO for REV Blinkin LED Driver. Uses PWM to set the pattern.
+ *
+ * <p>{@link https://www.revrobotics.com/rev-11-1105/}
+ */
+public class LEDStripIOBlinkin implements LEDStripIO {
 
   private final PWM pwm;
   private final BlinkenMode mode;
 
-  private BlinkenLEDPattern pattern;
+  private BlinkinLEDPattern pattern;
   private boolean runSetup;
 
-  public LEDStripIOBlinken(LEDConfig config, BlinkenLEDPattern initialPattern) {
+  public LEDStripIOBlinkin(LEDConfig config, BlinkinLEDPattern initialPattern) {
     pwm = new PWM(config.pwmChannel());
     mode = config.mode();
     pattern = initialPattern;
@@ -39,7 +44,7 @@ public class LEDStripIOBlinken implements LEDStripIO {
   }
 
   @Override
-  public void setPattern(BlinkenLEDPattern pattern) {
+  public void setPattern(BlinkinLEDPattern pattern) {
     this.pattern = pattern;
   }
 }

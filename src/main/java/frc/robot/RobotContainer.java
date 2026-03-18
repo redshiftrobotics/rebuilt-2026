@@ -30,16 +30,20 @@ import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.hopper.HopperConstants.HopperRunMode;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeRunMode;
+import frc.robot.subsystems.launcher.LaunchCalculator;
+import frc.robot.subsystems.launcher.LaunchCalculator.LaunchingParameters;
 import frc.robot.subsystems.launcher.Launcher;
 import frc.robot.subsystems.launcher.Launcher.LauncherRunMode;
 import frc.robot.subsystems.launcher.LauncherControlManual;
 import frc.robot.subsystems.launcher.LauncherControlManual.ManualLaunchMode;
-import frc.robot.subsystems.led.BlinkenLEDPattern;
+import frc.robot.subsystems.led.BlinkinLEDPattern;
 import frc.robot.subsystems.led.LEDSubsystem;
 import frc.robot.subsystems.vision.AprilTagVision;
 import frc.robot.utility.Elastic;
 import frc.robot.utility.Elastic.Notification.NotificationLevel;
-import frc.robot.utility.HubTracker;
+import frc.robot.utility.HubShiftUtil;
+import frc.robot.utility.HubShiftUtil.ShiftEnum;
+import frc.robot.utility.HubShiftUtil.ShiftInfo;
 import frc.robot.utility.geometry.FieldFlipUtil;
 import java.util.LinkedHashMap;
 import java.util.Set;
@@ -123,13 +127,6 @@ public class RobotContainer {
     autoChooser = new LoggedDashboardChooser<>("Auto Chooser", createSendableChooser());
     autoChooser.addDefaultOption("None", Commands.none());
 
-    leds.setDefaultCommand(
-        leds.runColor(
-                BlinkenLEDPattern.COLORWAVES_OCEAN,
-                BlinkenLEDPattern.COLORWAVES_LAVA,
-                BlinkenLEDPattern.WHITE)
-            .withName("LED Alliance Color Waves"));
-
     launcher.configure(drive::getRobotPose, drive::getRobotSpeeds);
 
     // Alerts for constants to avoid using them in competition
@@ -145,6 +142,7 @@ public class RobotContainer {
     configureDriverControllerBindings(driverController);
     configureOperatorControllerBindings(operatorController);
     configureAlertTriggers();
+    configureLEDs();
 
     System.out.println(robotType + " ready.");
   }
@@ -463,6 +461,13 @@ public class RobotContainer {
                 .ignoringDisable(true)
                 .withName("Default Launch Mode"));
 
+    manualButton
+        .and(xbox.b().multiPress(2, 0.3))
+        .onTrue(
+            Commands.runOnce(() -> launcher.setMode(LauncherRunMode.DASHBOARD_TUNING))
+                .ignoringDisable(true)
+                .withName("Dashboard Tuning Launch Mode"));
+
     // Manual mode preset buttons
     xbox.y().and(manualButton).onTrue(manualLaunchControl.setModeCommand(ManualLaunchMode.Y));
     xbox.x().and(manualButton).onTrue(manualLaunchControl.setModeCommand(ManualLaunchMode.X));
@@ -508,7 +513,8 @@ public class RobotContainer {
   }
 
   private void configureAlertTriggers() {
-    new Trigger(HubTracker::isActive).onChange(rumbleControllers(1.0).withTimeout(0.25));
+    new Trigger(() -> HubShiftUtil.getShiftedShiftInfo().active())
+        .onChange(rumbleControllers(1.0).withTimeout(0.25));
 
     Trigger isMatch = new Trigger(() -> DriverStation.getMatchTime() != -1);
 
@@ -519,13 +525,64 @@ public class RobotContainer {
     RobotModeTriggers.autonomous()
         .and(isMatch)
         .onTrue(Commands.runOnce(() -> Elastic.selectTab("Autonomous")));
+
+    RobotModeTriggers.teleop().onTrue(Commands.runOnce(HubShiftUtil::initialize));
+    RobotModeTriggers.autonomous().onTrue(Commands.runOnce(HubShiftUtil::initialize));
+    RobotModeTriggers.disabled()
+        .onTrue(Commands.runOnce(HubShiftUtil::initialize).ignoringDisable(true));
+  }
+
+  private void configureLEDs() {
+    LoggedDashboardChooser<BlinkinLEDPattern> ledFallbackPatternChooser =
+        new LoggedDashboardChooser<>(
+            "LED Pattern Chooser", new SendableChooser<BlinkinLEDPattern>());
+
+    final BlinkinLEDPattern defaultPattern = BlinkinLEDPattern.GOLD;
+
+    SmartDashboard.putData(
+        "LED Default Pattern Chooser", ledFallbackPatternChooser.getSendableChooser());
+
+    ledFallbackPatternChooser.addDefaultOption(
+        String.format("Default (%s)", defaultPattern), defaultPattern);
+
+    for (BlinkinLEDPattern pattern : BlinkinLEDPattern.values()) {
+      ledFallbackPatternChooser.addOption(pattern.toString(), pattern);
+    }
+
+    leds.setDefaultCommand(
+        leds.runColor(
+                () -> {
+                  if (DriverStation.isAutonomous()) {
+                    return BlinkinLEDPattern.FIRE_LARGE;
+                  }
+
+                  LaunchingParameters launchParams =
+                      LaunchCalculator.getInstance()
+                          .getParameters(drive.getRobotPose(), drive.getRobotSpeeds());
+
+                  ShiftInfo shift = HubShiftUtil.getOfficialShiftInfo();
+                  if (shift.active() && launchParams.isValid() && !launchParams.passing()) {
+                    return BlinkinLEDPattern.BLUE_GREEN;
+                  }
+
+                  if (shift.currentShift() == ShiftEnum.TRANSITION) {
+                    if (HubShiftUtil.isFirstActiveAlliance()) {
+                      return BlinkinLEDPattern.GREEN;
+                    } else {
+                      return BlinkinLEDPattern.WHITE;
+                    }
+                  }
+
+                  return ledFallbackPatternChooser.get();
+                })
+            .withName("LED"));
   }
 
   /** Make commands accessible to PathPlanner autos. */
   private void registerNamedCommands() {
     LinkedHashMap<String, Command> namedCommands = new LinkedHashMap<String, Command>();
 
-    namedCommands.put("LEDS", leds.runColor(BlinkenLEDPattern.RED));
+    namedCommands.put("LEDS", leds.runColor(BlinkinLEDPattern.RED));
 
     // Hopper commands
     namedCommands.put("StopHopper", hopper.runOnce(() -> hopper.setMode(HopperRunMode.STOPPED)));

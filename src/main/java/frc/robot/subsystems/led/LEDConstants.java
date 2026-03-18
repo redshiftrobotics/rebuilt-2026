@@ -2,7 +2,7 @@ package frc.robot.subsystems.led;
 
 public class LEDConstants {
 
-  public static final BlinkenLEDPattern DEFAULT_PATTERN = BlinkenLEDPattern.OFF;
+  public static final BlinkinLEDPattern DEFAULT_PATTERN = BlinkinLEDPattern.OFF;
 
   public enum BlinkenMode {
     STRIP_5V(2125),
@@ -17,6 +17,7 @@ public class LEDConstants {
 
   public record LEDConfig(int pwmChannel, BlinkenMode mode) {}
 
-  public static final LEDConfig LEDS_STRIP_2025_LEFT = new LEDConfig(0, BlinkenMode.STRIP_5V);
-  public static final LEDConfig LEDS_STRIP_2025_RIGHT = new LEDConfig(1, BlinkenMode.STRIP_5V);
+  public static final LEDConfig LED_STRIP_BACK = new LEDConfig(2, BlinkenMode.STRIP_5V);
+  public static final LEDConfig LED_STRIP_1X1 = new LEDConfig(3, BlinkenMode.STRIP_5V);
+  public static final LEDConfig LED_STRIP_FUTURE = new LEDConfig(4, BlinkenMode.STRIP_5V);
 }
