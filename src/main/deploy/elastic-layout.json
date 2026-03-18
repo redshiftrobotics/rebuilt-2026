@@ -335,6 +335,24 @@
               "data_type": "string",
               "show_submit_button": false
             }
+          },
+          {
+            "title": "BatteryVoltage",
+            "x": 1024.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "Graph",
+            "properties": {
+              "topic": "/AdvantageKit/SystemStats/BatteryVoltage",
+              "period": 0.033,
+              "data_type": "double",
+              "time_displayed": 10.0,
+              "min_value": 0.0,
+              "max_value": 13.0,
+              "color": 4278238420,
+              "line_width": 2.0
+            }
           }
         ]
       }
@@ -664,6 +682,24 @@
               "topic": "/CameraPublisher/spencercam-processed",
               "period": 0.06,
               "rotation_turns": 0
+            }
+          },
+          {
+            "title": "BatteryVoltage",
+            "x": 1024.0,
+            "y": 512.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "Graph",
+            "properties": {
+              "topic": "/AdvantageKit/SystemStats/BatteryVoltage",
+              "period": 0.033,
+              "data_type": "double",
+              "time_displayed": 10.0,
+              "min_value": 0.0,
+              "max_value": 13.0,
+              "color": 4278238420,
+              "line_width": 2.0
             }
           }
         ]
