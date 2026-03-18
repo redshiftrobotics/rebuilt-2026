@@ -1,7 +1,6 @@
 package frc.robot.subsystems.vision;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import frc.robot.FieldConstants;
 import frc.robot.subsystems.vision.VisionConstants.CameraConfig;
@@ -12,7 +11,6 @@ import java.util.Optional;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.common.hardware.VisionLEDMode;
 import org.photonvision.targeting.PhotonPipelineResult;
 
@@ -44,16 +42,11 @@ public class CameraIOPhotonVision implements CameraIO {
     // https://docs.photonvision.org/en/latest/docs/programming/photonlib/robot-pose-estimator.html#using-a-photonposeestimator
 
     photonPoseEstimator =
-        new PhotonPoseEstimator(
-            FieldConstants.emptyFieldLayout,
-            PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-            config.robotToCamera());
-
-    photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+        new PhotonPoseEstimator(FieldConstants.emptyFieldLayout, config.robotToCamera());
   }
 
   @Override
-  public CameraPositionName getCameraPosition() {
+  public CameraPositionName getPositionName() {
     return cameraPosition;
   }
 
@@ -65,10 +58,6 @@ public class CameraIOPhotonVision implements CameraIO {
   @Override
   public void setAprilTagFieldLayout(AprilTagFieldLayout fieldTags) {
     photonPoseEstimator.setFieldTags(fieldTags);
-  }
-
-  public void setLastRobotPose(Pose2d lastRobotPose) {
-    photonPoseEstimator.setLastPose(lastRobotPose);
   }
 
   @Override
@@ -86,7 +75,11 @@ public class CameraIOPhotonVision implements CameraIO {
     estimates.clear();
 
     for (PhotonPipelineResult result : pipelineResults) {
-      Optional<EstimatedRobotPose> estimatedRobotPose = photonPoseEstimator.update(result);
+      Optional<EstimatedRobotPose> estimatedRobotPose =
+          photonPoseEstimator.estimateCoprocMultiTagPose(result);
+      if (estimatedRobotPose.isEmpty()) {
+        estimatedRobotPose = photonPoseEstimator.estimateLowestAmbiguityPose(result);
+      }
       estimatedRobotPose.ifPresent(estimates::add);
     }
 

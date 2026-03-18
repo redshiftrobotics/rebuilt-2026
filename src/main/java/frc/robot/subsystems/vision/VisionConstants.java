@@ -17,30 +17,18 @@ public class VisionConstants {
 
   enum CameraPositionName {
     FRONT,
+    LAUNCHER_LEFT,
     UNKNOWN,
-    TOP,
-    TOP_FLAT,
-    TOP_ANGLE,
-    BACK,
-    LEFT,
-    RIGHT
   }
 
   public record CameraConfig(
       String cameraName, CameraPositionName cameraPosition, Transform3d robotToCamera) {}
 
-  // --- 2026 REBUILT ---
-
   public static final CameraConfig TOP_CAMERA_ANGLED =
       new CameraConfig(
           "spencercam",
-          CameraPositionName.TOP_ANGLE,
-          fromOnShape(
-              -10.470732,
-              2.344,
-              16.864 + 3.710392,
-              -20,
-              0)); // x inches was the one we were supposed to invert, right? - aceius
+          CameraPositionName.LAUNCHER_LEFT,
+          fromOnShape(-10.470732, 2.344, 16.864 + 3.710392, -20, 0));
 
   public static Transform3d fromOnShape(
       double xInches, double yInches, double zInches, double pitchDegrees, double yawDegrees) {

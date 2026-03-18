@@ -14,7 +14,6 @@ import frc.robot.subsystems.vision.VisionConstants.CameraPositionName;
 import frc.robot.utility.tunable.TunableNumber;
 import frc.robot.utility.tunable.TunableNumberGroup;
 import java.util.ArrayList;
-import java.util.DoubleSummaryStatistics;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -28,13 +27,15 @@ public class Camera {
 
   private static final TunableNumberGroup group = new TunableNumberGroup("VisionResultsStatus");
 
-  private static final TunableNumber xyStdDevCoefficient =
-      group.number("xyStdDevCoefficient", 0.075);
-  private static final TunableNumber thetaStdDevCoefficient =
-      group.number("thetaStdDevCoefficient", 0.085);
+  private static final TunableNumber xyStdDevBaseline = group.number("xyStdDevBaseline", 0.02);
+  private static final TunableNumber thetaStdDevBaseline = group.number("thetaStdDevBaseline", 0.1);
+  private static final TunableNumber xyStdDevBaselineSingleTag =
+      group.number("xyStdDevBaselineSingleTag", 0.15);
+  private static final TunableNumber thetaStdDevBaselineSingleTag =
+      group.number("thetaStdDevBaselineSingleTag", 0.6);
 
   private static final TunableNumber zHeightToleranceMeters =
-      group.number("zHeightToleranceMeters", 0.6);
+      group.number("zHeightToleranceMeters", 0.3);
   private static final TunableNumber pitchAndRollToleranceDegrees =
       group.number("pitchToleranceDegrees", 10.0);
 
@@ -74,7 +75,9 @@ public class Camera {
     this.robotPoseSupplier = robotPoseSupplier;
 
     this.missingCameraAlert =
-        new Alert(String.format("Missing cameras %s", getCameraName()), Alert.AlertType.kWarning);
+        new Alert(
+            String.format("Missing %s camera %s", getPositionName().name(), getCameraName()),
+            Alert.AlertType.kError);
   }
 
   /** Set april tag field layout to use */
@@ -87,8 +90,8 @@ public class Camera {
     return io.getCameraName();
   }
 
-  public CameraPositionName getCameraPosition() {
-    return io.getCameraPosition();
+  public CameraPositionName getPositionName() {
+    return io.getPositionName();
   }
 
   /** Run periodic of module. Updates the set of loggable inputs, updating vision result. */
@@ -96,10 +99,10 @@ public class Camera {
     io.setLastRobotPose(robotPoseSupplier.get());
     io.updateInputs(inputs);
 
-    Logger.processInputs("Vision/" + getCameraPosition(), inputs);
+    Logger.processInputs("Vision/" + getPositionName(), inputs);
 
     Logger.recordOutput(
-        "Vision/" + getCameraPosition() + "/cameraPose",
+        "Vision/" + getPositionName() + "/cameraPose",
         new Pose3d(robotPoseSupplier.get()).plus(io.getRobotToCamera()));
 
     missingCameraAlert.set(!inputs.connected);
@@ -143,7 +146,11 @@ public class Camera {
     }
 
     if (status.isSuccess()) {
-      standardDeviations = getStandardDeviations(tagPositionsOnField, robotPoseSupplier.get());
+      standardDeviations =
+          getStandardDeviations(
+              tagPositionsOnField,
+              robotPoseSupplier.get(),
+              estimate.strategy == PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR);
     }
 
     return new ProcessedEstimatedRobotPose(
@@ -159,30 +166,31 @@ public class Camera {
    * global measurements from this camera less. The matrix is in the form [x, y, theta], with units
    * in meters and radians.
    */
-  private Matrix<N3, N1> getStandardDeviations(List<Pose3d> tagPoses, Pose2d lastRobotPose) {
+  private Matrix<N3, N1> getStandardDeviations(
+      List<Pose3d> tagPoses, Pose2d lastRobotPose, boolean multiTag) {
 
     Pose3d lastRobotPose3d = new Pose3d(lastRobotPose);
 
-    // Get data about distance to each tag that is present on field
-    DoubleSummaryStatistics distancesToTags =
-        tagPoses.stream()
-            .mapToDouble(
-                (estimatedPose) ->
-                    estimatedPose.getTranslation().getDistance(lastRobotPose3d.getTranslation()))
-            .summaryStatistics();
+    double sumDistancesToTag = 0;
+    for (Pose3d tagPose : tagPoses) {
+      sumDistancesToTag += tagPose.getTranslation().getDistance(lastRobotPose3d.getTranslation());
+    }
+    double avgDistanceToTags =
+        tagPoses.size() > 0 ? sumDistancesToTag / tagPoses.size() : Double.MAX_VALUE;
 
     // This equation is heuristic, good enough but can probably be improved
     // Larger distances to tags and fewer observed tags result in higher uncertainty (larger
     // standard deviations). Average distance increases uncertainty exponentially while more
     // tags decreases uncertainty linearly
-    double standardDeviation =
-        distancesToTags.getCount() > 0
-            ? Math.pow(distancesToTags.getAverage(), 2) * Math.pow(distancesToTags.getCount(), -1)
-            : Double.POSITIVE_INFINITY;
+    double standardDeviationFactor =
+        tagPoses.size() > 0 ? Math.pow(avgDistanceToTags, 2) / tagPoses.size() : Double.MAX_VALUE;
 
-    double xyStandardDeviation = xyStdDevCoefficient.get() * standardDeviation;
-
-    double thetaStandardDeviation = thetaStdDevCoefficient.get() * standardDeviation;
+    double xyStandardDeviation =
+        (multiTag ? xyStdDevBaseline.get() : xyStdDevBaselineSingleTag.get())
+            * standardDeviationFactor;
+    double thetaStandardDeviation =
+        (multiTag ? thetaStdDevBaseline.get() : thetaStdDevBaselineSingleTag.get())
+            * standardDeviationFactor;
 
     // x, y, theta
     return VecBuilder.fill(xyStandardDeviation, xyStandardDeviation, thetaStandardDeviation);

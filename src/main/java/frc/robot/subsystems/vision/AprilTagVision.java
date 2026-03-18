@@ -69,7 +69,7 @@ public class AprilTagVision extends SubsystemBase {
     // Loop through all cameras
     for (Camera camera : cameras) {
 
-      Logger.recordOutput("Vision/" + camera.getCameraPosition() + "/name", camera.getCameraName());
+      Logger.recordOutput("Vision/" + camera.getPositionName() + "/name", camera.getCameraName());
 
       // Loop through all results that the camera has
       for (ProcessedEstimatedRobotPose result : camera.getResults()) {
@@ -79,17 +79,16 @@ public class AprilTagVision extends SubsystemBase {
 
         seenTagPoses.addAll(result.tagPositionsOnField());
 
-        Logger.recordOutput("Vision/" + camera.getCameraPosition() + "/status", result.status());
+        Logger.recordOutput("Vision/" + camera.getPositionName() + "/status", result.status());
         Logger.recordOutput(
-            "Vision/" + camera.getCameraPosition() + "/estimatedPose", result.estimatedPose());
+            "Vision/" + camera.getPositionName() + "/estimatedPose", result.estimatedPose());
         Logger.recordOutput(
-            "Vision/" + camera.getCameraPosition() + "/standardDeviations",
+            "Vision/" + camera.getPositionName() + "/standardDeviations",
             result.standardDeviations().getData());
         Logger.recordOutput(
-            "Vision/" + camera.getCameraPosition() + "/timestampSeconds",
-            result.timestampSeconds());
+            "Vision/" + camera.getPositionName() + "/timestampSeconds", result.timestampSeconds());
         Logger.recordOutput(
-            "Vision/" + camera.getCameraPosition() + "/tagPositionsOnField",
+            "Vision/" + camera.getPositionName() + "/tagPositionsOnField",
             result.tagPositionsOnField().toArray(Pose3d[]::new));
 
         if (visionPoseConsumer != null) {
