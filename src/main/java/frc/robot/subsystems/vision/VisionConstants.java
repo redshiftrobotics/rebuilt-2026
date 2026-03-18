@@ -16,14 +16,8 @@ public class VisionConstants {
   // https://docs.photonvision.org/en/latest/docs/apriltag-pipelines/coordinate-systems.html
 
   enum CameraPositionName {
-    FRONT,
     UNKNOWN,
-    TOP,
-    TOP_FLAT,
-    TOP_ANGLE,
-    BACK,
-    LEFT,
-    RIGHT
+    LAUNCHER_LEFT,
   }
 
   public record CameraConfig(
@@ -41,16 +35,11 @@ public class VisionConstants {
   // Example screenshot:
   // https://drive.google.com/file/d/1uEEOQu9T5Yfil7LBZX7JSF_0oiMpAjLz/view?usp=sharing
 
-  public static final CameraConfig TOP_CAMERA_ANGLED =
+  public static final CameraConfig LAUNCHER_LEFT_CAMERA =
       new CameraConfig(
           "spencercam",
-          CameraPositionName.TOP_ANGLE,
-          fromOnShape(
-              -10.470732,
-              2.344,
-              16.864 + 3.710392,
-              -20,
-              0)); // x inches was the one we were supposed to invert, right? - aceius
+          CameraPositionName.LAUNCHER_LEFT,
+          fromOnShape(-10.470732, 2.344, 16.864 + 3.710392, -20, 0));
 
   public static Transform3d fromOnShape(
       double xInches, double yInches, double zInches, double pitchDegrees, double yawDegrees) {
