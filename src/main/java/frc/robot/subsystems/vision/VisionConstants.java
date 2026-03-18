@@ -37,8 +37,11 @@ public class VisionConstants {
   // CAD Link:
   // https://cad.onshape.com/documents/21a71e9819567f3a143f688d/w/9023f69f68be4b352eda45dd/e/00d63fdcbb0aeb3dcf2a86a6
 
-  // Example screenshot:
+  // Measuring in CAD Screenshot:
   // https://drive.google.com/file/d/1uEEOQu9T5Yfil7LBZX7JSF_0oiMpAjLz/view?usp=sharing
+
+  // Checking in Advantage Scope Screenshot:
+  // https://drive.google.com/file/d/17MvlNgLyPRM-VlGa2aJv98TVtX5DwhYD/view?usp=sharing
 
   public static final CameraConfig LAUNCHER_RIGHT_CAMERA =
       new CameraConfig(
@@ -60,12 +63,14 @@ public class VisionConstants {
 
   /**
    * Convert from OnShape coordinates to PhotonVision coordinates.
-   * 
+   *
    * @param xInches inches from center of robot in Onshape's x direction (left- / right+)
    * @param yInches inches from center of robot in Onshape's y direction (forward- / backward+)
    * @param zInches inches from floor in Onshape's z direction (up+ /down-)
-   * @param pitchDegrees rotation around robot's left-right axis. 0 when level looking level to horizon, negative pitch looking up, positive pitch looking down
-   * @param yawDegrees rotation around robot's front-back axis. 0 when camera is facing forward, positive yaw looking left, negative yaw looking right
+   * @param pitchDegrees rotation around robot's left-right axis. 0 when level looking level to
+   *     horizon, negative pitch looking up, positive pitch looking down
+   * @param yawDegrees rotation around robot's front-back axis. 0 when camera is facing forward,
+   *     positive yaw looking left, negative yaw looking right
    * @return Transform3d in WPILib's coordinate system
    */
   public static Transform3d fromOnshape(
