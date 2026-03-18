@@ -3,6 +3,7 @@ package frc.robot.subsystems.intake;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import frc.robot.Constants;
+import frc.robot.utility.records.FeedForwardConfigRecord;
 import frc.robot.utility.records.PIDConfig;
 
 /**
@@ -40,6 +41,11 @@ public class IntakeConstants {
           case REBUILT_2026 -> new PIDConfig(3, 0, 0);
           case SIM_BOT -> new PIDConfig(3, 0, 1);
           default -> new PIDConfig(0, 0, 0);
+        };
+
+    public static final FeedForwardConfigRecord FF =
+        switch (Constants.getRobot()) {
+          default -> new FeedForwardConfigRecord(0, 0, 0);
         };
   }
 }

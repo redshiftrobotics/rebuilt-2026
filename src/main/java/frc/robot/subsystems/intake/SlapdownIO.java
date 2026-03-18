@@ -1,5 +1,6 @@
 package frc.robot.subsystems.intake;
 
+import com.revrobotics.spark.config.FeedForwardConfig;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.utility.records.PIDConfig;
 import org.littletonrobotics.junction.AutoLog;
@@ -24,6 +25,8 @@ public interface SlapdownIO {
   public default void updateInputs(SlapdownIOInputsAutoLogged inputs) {}
 
   public default void setPID(PIDConfig config) {}
+
+  public default void setFF(FeedForwardConfig config) {}
 
   public default void setSetpoint(Rotation2d setPoint) {}
 

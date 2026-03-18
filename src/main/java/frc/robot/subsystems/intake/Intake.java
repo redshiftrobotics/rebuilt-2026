@@ -1,5 +1,6 @@
 package frc.robot.subsystems.intake;
 
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
@@ -8,6 +9,8 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RobotType;
 import frc.robot.subsystems.intake.IntakeConstants.SlapdownConstants;
+import frc.robot.utility.records.FeedForwardConfigRecord;
+import frc.robot.utility.tunable.TunableNumbers.TunableFF;
 import frc.robot.utility.tunable.TunableNumbers.TunablePID;
 import org.littletonrobotics.junction.Logger;
 
@@ -21,8 +24,11 @@ import org.littletonrobotics.junction.Logger;
  * simulation (SIM_BOT), and a default fallback for unknown robots.
  */
 public class Intake extends SubsystemBase {
+  private final TunableFF feedForwardConfig;
+
   private final IntakeWheelIO wheelIO;
   private final SlapdownIO slapdownIO;
+  private final ArmFeedforward feedForwardCalculator;
 
   private IntakeWheelIOInputsAutoLogged wheelInputs = new IntakeWheelIOInputsAutoLogged();
   private SlapdownIOInputsAutoLogged slapdownInputs = new SlapdownIOInputsAutoLogged();
@@ -49,6 +55,13 @@ public class Intake extends SubsystemBase {
 
     slapdownIO.setPID(SlapdownConstants.PID);
 
+    feedForwardConfig = new TunableFF(getName(), IntakeConstants.SlapdownConstants.FF);
+    FeedForwardConfigRecord ffConfig = feedForwardConfig.get();
+
+    feedForwardCalculator =
+        new ArmFeedforward(
+            feedForwardConfig.get().kS(), feedForwardConfig.get().kA(), ffConfig.kV());
+
     visualizer = new IntakeVisualizer(getName() + "/Visuization/Measured", Color.kRed);
     absoluteVisualizer =
         new IntakeVisualizer(getName() + "/Visuization/AbsoluteMeasured", Color.kOrange);
@@ -66,6 +79,7 @@ public class Intake extends SubsystemBase {
     Logger.processInputs(getName() + "/Slapdown", slapdownInputs);
 
     slapdownPidConfig.ifChanged(hashCode(), slapdownIO::setPID);
+    feedForwardConfig.ifChanged(hashCode(), this::setFF);
 
     Logger.recordOutput(getName() + "/mode", currentMode.toString());
 
@@ -123,5 +137,13 @@ public class Intake extends SubsystemBase {
       default:
         return new Intake(new IntakeWheelIO() {}, new SlapdownIO() {});
     }
+  }
+
+  private void setFF() {
+    var config = feedForwardConfig.get();
+
+    feedForwardCalculator.setKa(config.kA());
+    feedForwardCalculator.setKs(config.kS());
+    feedForwardCalculator.setKv(config.kV());
   }
 }
