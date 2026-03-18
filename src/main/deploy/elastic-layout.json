@@ -450,7 +450,7 @@
           {
             "title": "FMSInfo",
             "x": 0.0,
-            "y": 384.0,
+            "y": 256.0,
             "width": 384.0,
             "height": 128.0,
             "type": "FMSInfo",
@@ -462,7 +462,7 @@
           {
             "title": "Auto Chooser",
             "x": 0.0,
-            "y": 256.0,
+            "y": 0.0,
             "width": 384.0,
             "height": 128.0,
             "type": "ComboBox Chooser",
@@ -488,7 +488,7 @@
           {
             "title": "RobotName",
             "x": 0.0,
-            "y": 512.0,
+            "y": 384.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
@@ -501,8 +501,8 @@
           },
           {
             "title": "Swerve Drive",
-            "x": 0.0,
-            "y": 0.0,
+            "x": 1024.0,
+            "y": 256.0,
             "width": 256.0,
             "height": 256.0,
             "type": "SwerveDrive",
@@ -514,28 +514,10 @@
             }
           },
           {
-            "title": "Speed MPH",
-            "x": 256.0,
-            "y": 0.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Number Bar",
-            "properties": {
-              "topic": "/SmartDashboard/Speed MPH",
-              "period": 0.06,
-              "data_type": "double",
-              "min_value": 0.0,
-              "max_value": 15.0,
-              "divisions": 3,
-              "inverted": false,
-              "orientation": "vertical"
-            }
-          },
-          {
             "title": "Has Vision",
-            "x": 256.0,
+            "x": 192.0,
             "y": 128.0,
-            "width": 128.0,
+            "width": 192.0,
             "height": 128.0,
             "type": "Boolean Box",
             "properties": {
@@ -584,7 +566,7 @@
           {
             "title": "BuildDate",
             "x": 128.0,
-            "y": 512.0,
+            "y": 384.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
@@ -625,7 +607,7 @@
           },
           {
             "title": "Launch Ready?",
-            "x": 512.0,
+            "x": 384.0,
             "y": 256.0,
             "width": 128.0,
             "height": 128.0,
@@ -642,7 +624,7 @@
           },
           {
             "title": "Launch Running?",
-            "x": 384.0,
+            "x": 512.0,
             "y": 256.0,
             "width": 128.0,
             "height": 128.0,
@@ -655,6 +637,20 @@
               "false_color": 4294198070,
               "true_icon": "None",
               "false_icon": "None"
+            }
+          },
+          {
+            "title": "Auto Delay (Second)",
+            "x": 0.0,
+            "y": 128.0,
+            "width": 192.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Auto Delay (Second)",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
             }
           }
         ]
