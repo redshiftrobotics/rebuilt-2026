@@ -31,6 +31,16 @@ public class VisionConstants {
 
   // --- 2026 REBUILT ---
 
+  // To find camera position, measure from Arducam model's "Lens Location" mate connector to the
+  // center x/y (forward/left) of robot and z (height) being from floor.
+  // If origin is not center of robot on the floor, then add some offset so it is.
+
+  // CAD Link:
+  // https://cad.onshape.com/documents/21a71e9819567f3a143f688d/w/9023f69f68be4b352eda45dd/e/00d63fdcbb0aeb3dcf2a86a6
+
+  // Example screenshot:
+  // https://drive.google.com/file/d/1uEEOQu9T5Yfil7LBZX7JSF_0oiMpAjLz/view?usp=sharing
+
   public static final CameraConfig TOP_CAMERA_ANGLED =
       new CameraConfig(
           "spencercam",
