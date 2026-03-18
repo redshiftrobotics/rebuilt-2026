@@ -222,10 +222,9 @@ public class Launcher extends SubsystemBase {
         }
       case MANUAL:
         {
-          setRunningDesiredState(manualModeState.get());
           // fallback to simple aiming option
-          robotYaw =
-              LaunchCalculator.getStationaryAimedPose(robotPose.getTranslation()).getRotation();
+          robotYaw = LaunchCalculator.getStationaryAimedPose(robotPose.getTranslation()).getRotation();
+          setRunningDesiredState(manualModeState.get());
           break;
         }
       case DASHBOARD_TUNING:
