@@ -89,6 +89,8 @@ public class DriverDashboard {
     SmartDashboard.putString("RobotName", Constants.getRobot().toString());
     SmartDashboard.putString("RobotRoboRioSerialNumber", RobotController.getSerialNumber());
 
+    SmartDashboard.putNumber("Auto Delay (Second)", 0);
+
     putCustomWidgets();
 
     // https://frc-elastic.gitbook.io/docs/additional-features-and-references/remote-layout-downloading
@@ -160,5 +162,9 @@ public class DriverDashboard {
                 null);
           }
         });
+  }
+
+  public static double getDelaySeconds() {
+    return SmartDashboard.getNumber("Auto Delay (Second)", 0);
   }
 }

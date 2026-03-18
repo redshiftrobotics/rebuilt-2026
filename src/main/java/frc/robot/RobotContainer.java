@@ -42,6 +42,7 @@ import frc.robot.utility.Elastic.Notification.NotificationLevel;
 import frc.robot.utility.HubTracker;
 import frc.robot.utility.geometry.FieldFlipUtil;
 import java.util.LinkedHashMap;
+import java.util.Set;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -547,6 +548,10 @@ public class RobotContainer {
     // Hang commands
     namedCommands.put("HangUp", Commands.none());
     namedCommands.put("HangDown", Commands.none());
+
+    namedCommands.put(
+        "WaitVariable",
+        Commands.defer(() -> Commands.waitSeconds(DriverDashboard.getDelaySeconds()), Set.of()));
 
     System.out.println("Named commands:");
     for (var commandName : namedCommands.keySet()) {

@@ -73,7 +73,6 @@ public class LaunchCommands {
 
     return Commands.parallel(launchFuel, autoAlign)
         .finallyDo(
-            (BooleanConsumer)
                 (interrupted) -> {
                   hopper.setMode(HopperRunMode.STOPPED);
                   launcher.stop();
