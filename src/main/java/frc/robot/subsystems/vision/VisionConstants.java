@@ -51,13 +51,13 @@ public class VisionConstants {
 
   public static final CameraConfig BACK_SWERVE_LEFT_CAMERA =
       new CameraConfig(
-          "TODO1", // geraldcam?
+          "geraldcam",
           CameraPositionName.BACK_SWERVE_LEFT,
           fromOnshape(+10.047429, 10.817071, 4.096002 + 3.710392, -25, 180 - 45));
 
   public static final CameraConfig BACK_SWERVE_RIGHT_CAMERA =
       new CameraConfig(
-          "TODO2", // neilcam?
+          "kathycam",
           CameraPositionName.BACK_SWERVE_RIGHT,
           fromOnshape(-10.047429, 10.817071, 4.096002 + 3.710392, -25, 180 + 45));
 
