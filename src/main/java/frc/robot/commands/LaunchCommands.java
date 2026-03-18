@@ -7,7 +7,6 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.util.function.BooleanConsumer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -73,10 +72,10 @@ public class LaunchCommands {
 
     return Commands.parallel(launchFuel, autoAlign)
         .finallyDo(
-                (interrupted) -> {
-                  hopper.setMode(HopperRunMode.STOPPED);
-                  launcher.stop();
-                })
+            (interrupted) -> {
+              hopper.setMode(HopperRunMode.STOPPED);
+              launcher.stop();
+            })
         .withName("Launching in place");
   }
 
