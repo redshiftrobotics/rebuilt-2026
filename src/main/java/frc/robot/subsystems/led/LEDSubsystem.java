@@ -25,8 +25,14 @@ public class LEDSubsystem extends SubsystemBase {
 
   public static LEDSubsystem create(RobotType robotType) {
     switch (robotType) {
+      case REBUILT_2026:
+        return new LEDSubsystem(
+            new LEDStripIOBlinkin(LEDConstants.LED_STRIP_BACK, BlinkinLEDPattern.OFF),
+            new LEDStripIOBlinkin(LEDConstants.LED_STRIP_1X1, BlinkinLEDPattern.OFF),
+            new LEDStripIOBlinkin(LEDConstants.LED_STRIP_FUTURE, BlinkinLEDPattern.OFF));
+
       case SIM_BOT:
-        return new LEDSubsystem(new LEDStripIOSim(BlinkenLEDPattern.HEARTBEAT_RED));
+        return new LEDSubsystem(new LEDStripIOSim(BlinkinLEDPattern.OFF));
 
       default:
         return new LEDSubsystem();
@@ -54,18 +60,18 @@ public class LEDSubsystem extends SubsystemBase {
     }
   }
 
-  public Command runColor(BlinkenLEDPattern color) {
+  public Command runColor(BlinkinLEDPattern color) {
     return run(() -> set(color));
   }
 
-  public Command runColor(Supplier<BlinkenLEDPattern> color) {
+  public Command runColor(Supplier<BlinkinLEDPattern> color) {
     return run(() -> set(color.get()));
   }
 
   public Command runColor(
-      BlinkenLEDPattern colorIfBlue,
-      BlinkenLEDPattern colorIfRed,
-      BlinkenLEDPattern colorIfUnknown) {
+      BlinkinLEDPattern colorIfBlue,
+      BlinkinLEDPattern colorIfRed,
+      BlinkinLEDPattern colorIfUnknown) {
     return runColor(
         () ->
             DriverStation.getAlliance()
@@ -74,16 +80,16 @@ public class LEDSubsystem extends SubsystemBase {
   }
 
   public Command runNoColor() {
-    return runColor(BlinkenLEDPattern.OFF);
+    return runColor(BlinkinLEDPattern.OFF);
   }
 
-  public void set(BlinkenLEDPattern pattern) {
+  public void set(BlinkinLEDPattern pattern) {
     for (int i = 0; i < strips.length; i++) {
       set(i, pattern);
     }
   }
 
-  public void set(int stripIndex, BlinkenLEDPattern pattern) {
+  public void set(int stripIndex, BlinkinLEDPattern pattern) {
     strips[stripIndex].setPattern(pattern);
   }
 }
