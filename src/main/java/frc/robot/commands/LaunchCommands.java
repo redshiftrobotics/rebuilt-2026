@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.util.function.BooleanConsumer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -59,14 +60,24 @@ public class LaunchCommands {
   }
 
   public static Command launchInPlace(Drive drive, Launcher launcher, Hopper hopper) {
-    return Commands.parallel(
-        DriveCommands.rotateWithRotationController(drive, launcher::getRobotYaw),
-        launcher.startEnd(launcher::start, launcher::stop),
-        hopper
-            .run(() -> hopper.setMode(HopperRunMode.PREP_SHOT))
-            .onlyWhile(() -> !launcher.isReady())
-            .andThen(hopper.runOnce(() -> hopper.setMode(HopperRunMode.FIRING)))
-            .finallyDo(() -> hopper.setMode(HopperRunMode.STOPPED)));
+    Command autoAlign =
+        DriveCommands.rotateWithRotationController(drive, launcher::getRobotYaw).withTimeout(5);
+
+    Command launchFuel =
+        Commands.parallel(
+            launcher.runOnce(launcher::start),
+            Commands.sequence(
+                hopper.runOnce(() -> hopper.setMode(HopperRunMode.PREP_SHOT)),
+                Commands.waitUntil(launcher::isReady),
+                hopper.runOnce(() -> hopper.setMode(HopperRunMode.FIRING))));
+
+    return Commands.parallel(launchFuel, autoAlign)
+        .finallyDo(
+                (interrupted) -> {
+                  hopper.setMode(HopperRunMode.STOPPED);
+                  launcher.stop();
+                })
+        .withName("Launching in place");
   }
 
   public static Command driveWhileLaunching(
@@ -110,7 +121,8 @@ public class LaunchCommands {
           if (!parameters.passing()) {
             // Calculate max linear velocity magnitude based on the max polar velocity
             // Basically, if the robot is moving (linearly) faster than it can rotate
-            // to correct its angle to the hub, we cap the velocity so that it can always face the
+            // to correct its angle to the hub, we cap the velocity so that it can always
+            // face the
             // hub
             double maxLinearVelocityMagnitude = Double.POSITIVE_INFINITY;
             double robotDriveAngle =
@@ -127,7 +139,8 @@ public class LaunchCommands {
             double lookaheadAngle = Math.PI - robotDriveAngle - hubAngle;
 
             // Calculate limit if triangle is valid (otherwise no limit)
-            // Basically, if robot can't rotate fast enough to keep up with the error caused by
+            // Basically, if robot can't rotate fast enough to keep up with the error caused
+            // by
             // the initial velocity, we limit it.
             if (lookaheadAngle > 0) {
               // Law of sines
@@ -164,9 +177,12 @@ public class LaunchCommands {
               ChassisSpeeds.fromFieldRelativeSpeeds(
                   fieldRelativeSpeedsWithOffset, measuredRobotAngle));
 
-          // Override robot setpoint speeds published by drive. We run our calculations using the
-          // speeds that will ultimately be applied once we are using the full robot-to-launcher
-          // transform. This prevents the setpoint from changing due to the shifting COR of the
+          // Override robot setpoint speeds published by drive. We run our calculations
+          // using the
+          // speeds that will ultimately be applied once we are using the full
+          // robot-to-launcher
+          // transform. This prevents the setpoint from changing due to the shifting COR
+          // of the
           // robot.
           ChassisSpeeds fieldRelativeSpeedsWithFullOffset =
               GeomUtil.transformVelocity(

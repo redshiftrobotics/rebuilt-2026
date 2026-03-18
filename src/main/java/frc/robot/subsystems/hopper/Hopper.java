@@ -106,6 +106,7 @@ public class Hopper extends SubsystemBase {
             new HopperMotorIOSparkMax(HopperConstants.FEEDER_CONSTANTS),
             new HopperMotorIOSparkMax(HopperConstants.LIFTER_CONSTANTS));
 
+      case METALBOT_2:
       case SIM_BOT:
         return new Hopper(
             new HopperMotorIOSim(

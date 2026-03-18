@@ -82,6 +82,7 @@ public class Launcher extends SubsystemBase {
             new ChannelIOTalonFX("Left", ChannelConstants.LEFT_CONFIG),
             new ChannelIOTalonFX("Center", ChannelConstants.CENTER_CONFIG),
             new ChannelIOTalonFX("Right", ChannelConstants.RIGHT_CONFIG));
+      case METALBOT_2:
       case SIM_BOT:
         return new Launcher(
             new HoodIOSim(false),

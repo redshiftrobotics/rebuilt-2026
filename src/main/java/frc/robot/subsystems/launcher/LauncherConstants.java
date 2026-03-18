@@ -53,14 +53,14 @@ public class LauncherConstants {
     public static final PIDConfig FLYWHEEL_PID =
         switch (Constants.getRobot()) {
           case REBUILT_2026 -> new PIDConfig(0.5, 2.0, 0.0);
-          case SIM_BOT -> new PIDConfig(0, 0.0, 0.0);
+          case SIM_BOT, METALBOT_2 -> new PIDConfig(0, 0.0, 0.0);
           default -> new PIDConfig(0.0, 0.0, 0.0);
         };
     public static final FeedForwardConfigRecord FF =
         switch (Constants.getRobot()) {
           case REBUILT_2026 -> new FeedForwardConfigRecord(
               0.0, 12.0 / Units.radiansToRotations(motor.freeSpeedRadPerSec), 0.0);
-          case SIM_BOT -> new FeedForwardConfigRecord(0.0, 0.019, 0.0);
+          case SIM_BOT, METALBOT_2 -> new FeedForwardConfigRecord(0.0, 0.019, 0.0);
           default -> new FeedForwardConfigRecord(0.0, 0.0, 0.0);
         };
   }

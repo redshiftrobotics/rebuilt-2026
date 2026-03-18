@@ -21,7 +21,7 @@ public class HopperConstants {
 
   public static final PIDConfig LIFTER_FEEDBACK =
       switch (Constants.getRobot()) {
-        case SIM_BOT -> new PIDConfig(1, 0, 0);
+        case SIM_BOT, METALBOT_2 -> new PIDConfig(1, 0, 0);
         case REBUILT_2026 -> new PIDConfig(1, 0, 0);
         default -> new PIDConfig(0, 0, 0);
       };

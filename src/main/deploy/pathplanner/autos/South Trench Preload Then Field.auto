@@ -15,6 +15,12 @@
           "data": {
             "name": "LaunchInPlace"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "South Trench To Field"
+          }
         }
       ]
     }
