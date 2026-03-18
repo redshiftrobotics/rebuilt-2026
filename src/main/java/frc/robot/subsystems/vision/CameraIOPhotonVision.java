@@ -37,6 +37,10 @@ public class CameraIOPhotonVision implements CameraIO {
 
     // --- Setup Pose Estimator ---
 
+    // Turn on 3d mode for camera for this to work
+    // This is only possible if camera is calibrated for the current specified resolution
+    // https://drive.google.com/file/d/1I_Jj1JweqhHpK0TEI80Y15qQ3NN_TmBx/view?usp=sharing
+
     // MULTI_TAG_PNP_ON_COPROCESSOR:
     // https://docs.photonvision.org/en/latest/docs/apriltag-pipelines/multitag.html#enabling-multitag
 
