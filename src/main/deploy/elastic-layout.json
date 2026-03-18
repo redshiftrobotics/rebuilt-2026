@@ -337,7 +337,7 @@
             }
           },
           {
-            "title": "BatteryVoltage",
+            "title": "BatteryVoltage (10 sec)",
             "x": 1024.0,
             "y": 384.0,
             "width": 256.0,
@@ -1419,7 +1419,7 @@
         ],
         "containers": [
           {
-            "title": "BatteryVoltage",
+            "title": "BatteryVoltage (10 sec)",
             "x": 512.0,
             "y": 128.0,
             "width": 768.0,
@@ -1481,7 +1481,7 @@
             }
           },
           {
-            "title": "BatteryCurrent",
+            "title": "BatteryCurrent (10 sec)",
             "x": 512.0,
             "y": 384.0,
             "width": 768.0,
