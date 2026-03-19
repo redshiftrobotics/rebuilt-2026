@@ -247,7 +247,7 @@ public class RobotContainer {
                 "Heading", input -> input.headingStick(-xbox.getRightY(), -xbox.getRightX())));
 
     xbox.rightBumper()
-        .multiPress(2, 0.05)
+        .multiPress(2, 0.1)
         .toggleOnTrue(pipeline.runLayer("Hold", DriveInput::passiveHoldHeading));
 
     // Cause the robot to resist movement by forming an X shape with the swerve
@@ -377,7 +377,7 @@ public class RobotContainer {
         .whileTrue(
             launcher
                 .runOnce(launcher::start)
-                .andThen(launcher.idle().until(launcher::atGoalDebounced))
+                .andThen(launcher.idle().until(launcher::isReadyDebounced))
                 .andThen(hopper.runOnce(() -> hopper.setMode(HopperRunMode.FIRING)))
                 .andThen(launcher.idle())
                 .finallyDo(

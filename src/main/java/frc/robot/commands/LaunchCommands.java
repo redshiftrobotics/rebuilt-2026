@@ -67,7 +67,7 @@ public class LaunchCommands {
             launcher.runOnce(launcher::start),
             Commands.sequence(
                 hopper.runOnce(() -> hopper.setMode(HopperRunMode.PREP_SHOT)),
-                Commands.waitUntil(launcher::isReady),
+                Commands.waitUntil(launcher::isReadyDebounced),
                 hopper.runOnce(() -> hopper.setMode(HopperRunMode.FIRING))));
 
     return Commands.parallel(launchFuel, autoAlign)

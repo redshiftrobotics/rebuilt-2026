@@ -50,7 +50,7 @@ public class Launcher extends SubsystemBase {
       new TunableNumber("Launcher/HoodPositionToleranceDeg", 2.0);
 
   public static TunableNumber DEBOUNCE_TIME_AT_GOAL =
-      new TunableNumber("Launcher/DebounceTimeAtGoal", 0.5);
+      new TunableNumber("Launcher/DebounceTimeAtGoal", 0.75);
 
   private final HoodIO hoodIO;
   private final HoodIOInputsAutoLogged hoodInputs = new HoodIOInputsAutoLogged();
@@ -330,7 +330,8 @@ public class Launcher extends SubsystemBase {
     return true;
   }
 
-  public boolean atGoalDebounced() {
+  @AutoLogOutput(key = "Launcher/isReadyDebounced")
+  public boolean isReadyDebounced() {
     return atGoalDebounced;
   }
 
