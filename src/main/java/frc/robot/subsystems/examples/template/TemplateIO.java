@@ -4,15 +4,15 @@ import org.littletonrobotics.junction.AutoLog;
 
 /** Interface for the IO layers of the Template subsystem. */
 public interface TemplateIO {
-    @AutoLog
-    public static class TemplateIOInputs {
-        public double velocityRadPerSec = 0.0;
-        // motor connected?
-    }
+  @AutoLog
+  public static class TemplateIOInputs {
+    public double velocityRadPerSec = 0.0;
+    // motor connected?
+  }
 
-    /** Updates the set of loggable inputs. */
-    public default void updateInputs(TemplateIOInputs inputs) {}
+  /** Updates the set of loggable inputs. */
+  public default void updateInputs(TemplateIOInputs inputs) {}
 
-    /** Run open loop at the specified percentage power. */
-    public default void setSpeed(double speed) {}
+  /** Run open loop at the specified percentage power. */
+  public default void setSpeed(double speed) {}
 }

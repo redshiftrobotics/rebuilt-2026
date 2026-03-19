@@ -8,9 +8,9 @@ import org.junit.jupiter.api.Test;
 /** Tests for RobotContainer */
 public class RobotContainerTest {
 
-    @Test
-    @DisplayName("Instantiate RobotContainer")
-    public void testRobotContainer() {
-        assertDoesNotThrow(RobotContainer::new);
-    }
+  @Test
+  @DisplayName("Instantiate RobotContainer")
+  public void testRobotContainer() {
+    assertDoesNotThrow(RobotContainer::new);
+  }
 }

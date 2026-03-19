@@ -10,37 +10,37 @@ import org.photonvision.EstimatedRobotPose;
 
 /** IO layer interface for april tag detection systems */
 public interface CameraIO {
-    @AutoLog
-    public static class CameraIOInputs {
-        int numPipelineResults;
-        int numEstimates;
-        boolean connected = false;
-    }
+  @AutoLog
+  public static class CameraIOInputs {
+    int numPipelineResults;
+    int numEstimates;
+    boolean connected = false;
+  }
 
-    /** Updates the set of loggable inputs. */
-    default void updateInputs(CameraIOInputs inputs) {}
+  /** Updates the set of loggable inputs. */
+  default void updateInputs(CameraIOInputs inputs) {}
 
-    default List<EstimatedRobotPose> getEstimates() {
-        return null;
-    }
+  default List<EstimatedRobotPose> getEstimates() {
+    return null;
+  }
 
-    /** Get name of io camera */
-    default String getCameraName() {
-        return "";
-    }
+  /** Get name of io camera */
+  default String getCameraName() {
+    return "";
+  }
 
-    /** Get name of io camera */
-    default Transform3d getRobotToCamera() {
-        return Transform3d.kZero;
-    }
+  /** Get name of io camera */
+  default Transform3d getRobotToCamera() {
+    return Transform3d.kZero;
+  }
 
-    /** Get position of camera on robot */
-    default CameraPositionName getCameraPosition() {
-        return CameraPositionName.UNKNOWN;
-    }
+  /** Get position of camera on robot */
+  default CameraPositionName getCameraPosition() {
+    return CameraPositionName.UNKNOWN;
+  }
 
-    default void setLastRobotPose(Pose2d pose) {}
+  default void setLastRobotPose(Pose2d pose) {}
 
-    /** Set april tag field layout to use */
-    default void setAprilTagFieldLayout(AprilTagFieldLayout layout) {}
+  /** Set april tag field layout to use */
+  default void setAprilTagFieldLayout(AprilTagFieldLayout layout) {}
 }

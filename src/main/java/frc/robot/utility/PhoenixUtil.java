@@ -17,13 +17,13 @@ import com.ctre.phoenix6.StatusCode;
 import java.util.function.Supplier;
 
 public class PhoenixUtil {
-    /** Attempts to run the command until no error is produced. */
-    public static boolean tryUntilOk(int maxAttempts, Supplier<StatusCode> command) {
-        for (int i = 0; i < maxAttempts; i++) {
-            var error = command.get();
-            if (error.isOK()) return true;
-        }
-        System.out.println("PhoenixUtil: Command failed after " + maxAttempts + " attempts.");
-        return false;
+  /** Attempts to run the command until no error is produced. */
+  public static boolean tryUntilOk(int maxAttempts, Supplier<StatusCode> command) {
+    for (int i = 0; i < maxAttempts; i++) {
+      var error = command.get();
+      if (error.isOK()) return true;
     }
+    System.out.println("PhoenixUtil: Command failed after " + maxAttempts + " attempts.");
+    return false;
+  }
 }

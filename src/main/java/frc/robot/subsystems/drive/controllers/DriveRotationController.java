@@ -16,61 +16,65 @@ import frc.robot.utility.tunable.TunableNumbers.TunablePID;
 
 /** Controller for rotating robot to goal heading using ProfiledPIDController */
 public class DriveRotationController {
-    private static final TunableNumberGroup factory = new TunableNumberGroup("HeadingController/");
+  private static final TunableNumberGroup factory = new TunableNumberGroup("HeadingController/");
 
-    private static final TunablePID PID = factory.pid("PID", HEADING_CONTROLLER_CONFIG.pid());
-    private static final TunableNumber positionToleranceDegrees = factory.number(
-            "toleranceDegrees", HEADING_CONTROLLER_CONFIG.positionTolerance().getDegrees());
+  private static final TunablePID PID = factory.pid("PID", HEADING_CONTROLLER_CONFIG.pid());
+  private static final TunableNumber positionToleranceDegrees =
+      factory.number(
+          "toleranceDegrees", HEADING_CONTROLLER_CONFIG.positionTolerance().getDegrees());
 
-    private static final TunableNumber angularVelocity =
-            factory.number("kAngularVelocity", DRIVE_CONFIG.maxAngularVelocity());
-    private static final TunableNumber angularAcceleration =
-            factory.number("kAngularAcceleration", DRIVE_CONFIG.maxAngularAcceleration());
+  private static final TunableNumber angularVelocity =
+      factory.number("kAngularVelocity", DRIVE_CONFIG.maxAngularVelocity());
+  private static final TunableNumber angularAcceleration =
+      factory.number("kAngularAcceleration", DRIVE_CONFIG.maxAngularAcceleration());
 
-    private final Drive drive;
+  private final Drive drive;
 
-    private final ProfiledPIDController controller = new ProfiledPIDController(
-            PID.get().kP(),
-            PID.get().kI(),
-            PID.get().kD(),
-            new TrapezoidProfile.Constraints(angularVelocity.get(), angularAcceleration.get()),
-            Constants.LOOP_PERIOD_SECONDS);
+  private final ProfiledPIDController controller =
+      new ProfiledPIDController(
+          PID.get().kP(),
+          PID.get().kI(),
+          PID.get().kD(),
+          new TrapezoidProfile.Constraints(angularVelocity.get(), angularAcceleration.get()),
+          Constants.LOOP_PERIOD_SECONDS);
 
-    public DriveRotationController(Drive drive) {
-        this.drive = drive;
+  public DriveRotationController(Drive drive) {
+    this.drive = drive;
 
-        controller.enableContinuousInput(-Math.PI, Math.PI);
-        controller.setTolerance(
-                Units.degreesToRadians(positionToleranceDegrees.get()),
-                HEADING_CONTROLLER_CONFIG.velocityTolerance().getRadians());
+    controller.enableContinuousInput(-Math.PI, Math.PI);
+    controller.setTolerance(
+        Units.degreesToRadians(positionToleranceDegrees.get()),
+        HEADING_CONTROLLER_CONFIG.velocityTolerance().getRadians());
 
-        reset();
-    }
+    reset();
+  }
 
-    public void reset() {
-        controller.reset(drive.getRobotPose().getRotation().getRadians(), drive.getRobotSpeeds().omegaRadiansPerSecond);
-    }
+  public void reset() {
+    controller.reset(
+        drive.getRobotPose().getRotation().getRadians(),
+        drive.getRobotSpeeds().omegaRadiansPerSecond);
+  }
 
-    public void setGoal(Rotation2d goal) {
-        controller.setGoal(goal.getRadians());
-    }
+  public void setGoal(Rotation2d goal) {
+    controller.setGoal(goal.getRadians());
+  }
 
-    public double calculate() {
+  public double calculate() {
 
-        PID.ifChanged(hashCode(), pid -> controller.setPID(pid.kP(), pid.kI(), pid.kD()));
-        positionToleranceDegrees.ifChanged(
-                hashCode(), (degrees) -> controller.setTolerance(Units.degreesToRadians(degrees)));
-        TunableNumber.ifChanged(
-                hashCode(),
-                values -> controller.setConstraints(new Constraints(values[0], values[1])),
-                angularVelocity,
-                angularAcceleration);
+    PID.ifChanged(hashCode(), pid -> controller.setPID(pid.kP(), pid.kI(), pid.kD()));
+    positionToleranceDegrees.ifChanged(
+        hashCode(), (degrees) -> controller.setTolerance(Units.degreesToRadians(degrees)));
+    TunableNumber.ifChanged(
+        hashCode(),
+        values -> controller.setConstraints(new Constraints(values[0], values[1])),
+        angularVelocity,
+        angularAcceleration);
 
-        return controller.calculate(drive.getRobotPose().getRotation().getRadians());
-    }
+    return controller.calculate(drive.getRobotPose().getRotation().getRadians());
+  }
 
-    /** Returns if the controller reached the goal during the last calculate() call. */
-    public boolean atGoal() {
-        return controller.atGoal();
-    }
+  /** Returns if the controller reached the goal during the last calculate() call. */
+  public boolean atGoal() {
+    return controller.atGoal();
+  }
 }

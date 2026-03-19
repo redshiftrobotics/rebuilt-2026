@@ -20,163 +20,169 @@ import frc.robot.utility.records.PIDConfig;
  */
 public class DriveConstants {
 
-    // --- Drive Config ---
+  // --- Drive Config ---
 
-    public record DriveConfig(
-            Translation2d trackCornerToCorner,
-            Translation2d bumperCornerToCorner,
-            double maxLinearVelocity,
-            double maxLinearAcceleration) {
-        public double driveBaseRadius() {
-            return trackCornerToCorner.getNorm() / 2;
-        }
-
-        public double maxAngularVelocity() {
-            return maxLinearVelocity() / driveBaseRadius();
-        }
-
-        public double maxAngularAcceleration() {
-            return maxLinearAcceleration() / driveBaseRadius();
-        }
-
-        public Constraints getLinearConstraints() {
-            return new Constraints(maxLinearVelocity(), maxLinearAcceleration());
-        }
-
-        public Constraints getAngularConstraints() {
-            return new Constraints(maxAngularVelocity(), maxAngularAcceleration());
-        }
-
-        public PathConstraints getPathConstraints() {
-            return getPathConstraints(1);
-        }
-
-        public PathConstraints getPathConstraints(double speedMultiplier) {
-            return new PathConstraints(
-                    maxLinearVelocity() * speedMultiplier,
-                    maxLinearAcceleration(),
-                    maxAngularVelocity() * speedMultiplier,
-                    maxAngularAcceleration());
-        }
+  public record DriveConfig(
+      Translation2d trackCornerToCorner,
+      Translation2d bumperCornerToCorner,
+      double maxLinearVelocity,
+      double maxLinearAcceleration) {
+    public double driveBaseRadius() {
+      return trackCornerToCorner.getNorm() / 2;
     }
 
-    /** Center of wheel to center of wheel size */
-    public static final Translation2d TRACK_SIZE =
-            switch (Constants.getRobot()) {
-                case REBUILT_2026 -> new Translation2d(
-                        CompetitionConstants.FrontLeft.LocationX - CompetitionConstants.BackRight.LocationX,
-                        CompetitionConstants.FrontLeft.LocationY - CompetitionConstants.BackRight.LocationY);
-                case METALBOT_2, SIM_BOT -> new Translation2d(
-                        MetalbotTwoConstants.FrontLeft.LocationX - MetalbotTwoConstants.BackRight.LocationX,
-                        MetalbotTwoConstants.FrontLeft.LocationY - MetalbotTwoConstants.BackRight.LocationY);
-                case PRESEASON_2026 -> new Translation2d(
-                        PreseasonConstants.FrontLeft.LocationX - PreseasonConstants.BackRight.LocationX,
-                        PreseasonConstants.FrontLeft.LocationY - PreseasonConstants.BackRight.LocationY);
-                case REEFSCAPE_2025, WOOD_BOT_2026, CHASSIS_CANNON -> new Translation2d(
-                        Units.inchesToMeters(22.729228), Units.inchesToMeters(22.729228));
-            };
+    public double maxAngularVelocity() {
+      return maxLinearVelocity() / driveBaseRadius();
+    }
 
-    public static final Translation2d BUMPER_TO_BUMPER =
-            switch (Constants.getRobot()) {
-                default -> new Translation2d(Units.inchesToMeters(34.5), Units.inchesToMeters(33.5));
-            };
+    public double maxAngularAcceleration() {
+      return maxLinearAcceleration() / driveBaseRadius();
+    }
 
-    public static final DriveConfig DRIVE_CONFIG =
-            switch (Constants.getRobot()) {
-                case REBUILT_2026 -> new DriveConfig(
-                        TRACK_SIZE,
-                        BUMPER_TO_BUMPER,
-                        PreseasonConstants.kSpeedAt12Volts.in(MetersPerSecond),
-                        22.0); // TODO: Update for new generated constants
-                case METALBOT_2, PRESEASON_2026, SIM_BOT -> new DriveConfig(
-                        TRACK_SIZE, BUMPER_TO_BUMPER, PreseasonConstants.kSpeedAt12Volts.in(MetersPerSecond), 22.0);
-                case REEFSCAPE_2025, WOOD_BOT_2026, CHASSIS_CANNON -> new DriveConfig(
-                        TRACK_SIZE, BUMPER_TO_BUMPER, 5.0, 14.5);
-            };
+    public Constraints getLinearConstraints() {
+      return new Constraints(maxLinearVelocity(), maxLinearAcceleration());
+    }
 
-    // --- Module Offsets ---
-    private static final double TRACK_CENTER_X =
-            DRIVE_CONFIG.trackCornerToCorner().getX() / 2;
-    private static final double TRACK_CENTER_Y =
-            DRIVE_CONFIG.trackCornerToCorner().getY() / 2;
+    public Constraints getAngularConstraints() {
+      return new Constraints(maxAngularVelocity(), maxAngularAcceleration());
+    }
 
-    public static final Translation2d FRONT_LEFT_MODULE_DISTANCE_FROM_CENTER =
-            new Translation2d(+TRACK_CENTER_X, +TRACK_CENTER_Y);
-    public static final Translation2d FRONT_RIGHT_MODULE_DISTANCE_FROM_CENTER =
-            new Translation2d(+TRACK_CENTER_X, -TRACK_CENTER_Y);
-    public static final Translation2d BACK_LEFT_MODULE_DISTANCE_FROM_CENTER =
-            new Translation2d(-TRACK_CENTER_X, +TRACK_CENTER_Y);
-    public static final Translation2d BACK_RIGHT_MODULE_DISTANCE_FROM_CENTER =
-            new Translation2d(-TRACK_CENTER_X, -TRACK_CENTER_Y);
+    public PathConstraints getPathConstraints() {
+      return getPathConstraints(1);
+    }
 
-    // --- Gyro Config ---
+    public PathConstraints getPathConstraints(double speedMultiplier) {
+      return new PathConstraints(
+          maxLinearVelocity() * speedMultiplier,
+          maxLinearAcceleration(),
+          maxAngularVelocity() * speedMultiplier,
+          maxAngularAcceleration());
+    }
+  }
 
-    public static final int GYRO_CAN_ID =
-            switch (Constants.getRobot()) {
-                case REBUILT_2026 -> CompetitionConstants.DrivetrainConstants.Pigeon2Id;
-                case REEFSCAPE_2025, CHASSIS_CANNON, WOOD_BOT_2026 -> 40;
-                case METALBOT_2 -> MetalbotTwoConstants.DrivetrainConstants.Pigeon2Id;
-                case PRESEASON_2026 -> PreseasonConstants.DrivetrainConstants.Pigeon2Id;
-                case SIM_BOT -> -1;
-            };
+  /** Center of wheel to center of wheel size */
+  public static final Translation2d TRACK_SIZE =
+      switch (Constants.getRobot()) {
+        case REBUILT_2026 -> new Translation2d(
+            CompetitionConstants.FrontLeft.LocationX - CompetitionConstants.BackRight.LocationX,
+            CompetitionConstants.FrontLeft.LocationY - CompetitionConstants.BackRight.LocationY);
+        case METALBOT_2, SIM_BOT -> new Translation2d(
+            MetalbotTwoConstants.FrontLeft.LocationX - MetalbotTwoConstants.BackRight.LocationX,
+            MetalbotTwoConstants.FrontLeft.LocationY - MetalbotTwoConstants.BackRight.LocationY);
+        case PRESEASON_2026 -> new Translation2d(
+            PreseasonConstants.FrontLeft.LocationX - PreseasonConstants.BackRight.LocationX,
+            PreseasonConstants.FrontLeft.LocationY - PreseasonConstants.BackRight.LocationY);
+        case REEFSCAPE_2025, WOOD_BOT_2026, CHASSIS_CANNON -> new Translation2d(
+            Units.inchesToMeters(22.729228), Units.inchesToMeters(22.729228));
+      };
 
-    // --- CANBus ---
+  public static final Translation2d BUMPER_TO_BUMPER =
+      switch (Constants.getRobot()) {
+        default -> new Translation2d(Units.inchesToMeters(34.5), Units.inchesToMeters(33.5));
+      };
 
-    public static final CANBus CAN_BUS =
-            switch (Constants.getRobot()) {
-                case REBUILT_2026 -> CompetitionConstants.kCANBus;
-                case PRESEASON_2026 -> PreseasonConstants.kCANBus;
-                case METALBOT_2 -> MetalbotTwoConstants.kCANBus;
-                case REEFSCAPE_2025, CHASSIS_CANNON, WOOD_BOT_2026 -> CANBus.roboRIO();
-                case SIM_BOT -> new CANBus();
-            };
+  public static final DriveConfig DRIVE_CONFIG =
+      switch (Constants.getRobot()) {
+        case REBUILT_2026 -> new DriveConfig(
+            TRACK_SIZE,
+            BUMPER_TO_BUMPER,
+            PreseasonConstants.kSpeedAt12Volts.in(MetersPerSecond),
+            22.0); // TODO: Update for new generated constants
+        case METALBOT_2, PRESEASON_2026, SIM_BOT -> new DriveConfig(
+            TRACK_SIZE,
+            BUMPER_TO_BUMPER,
+            PreseasonConstants.kSpeedAt12Volts.in(MetersPerSecond),
+            22.0);
+        case REEFSCAPE_2025, WOOD_BOT_2026, CHASSIS_CANNON -> new DriveConfig(
+            TRACK_SIZE, BUMPER_TO_BUMPER, 5.0, 14.5);
+      };
 
-    // --- Pathplanner Config ---
+  // --- Module Offsets ---
+  private static final double TRACK_CENTER_X = DRIVE_CONFIG.trackCornerToCorner().getX() / 2;
+  private static final double TRACK_CENTER_Y = DRIVE_CONFIG.trackCornerToCorner().getY() / 2;
 
-    // Currently just an estimate
-    public static final double robotMassKg = Units.lbsToKilograms(115 + 10.0);
+  public static final Translation2d FRONT_LEFT_MODULE_DISTANCE_FROM_CENTER =
+      new Translation2d(+TRACK_CENTER_X, +TRACK_CENTER_Y);
+  public static final Translation2d FRONT_RIGHT_MODULE_DISTANCE_FROM_CENTER =
+      new Translation2d(+TRACK_CENTER_X, -TRACK_CENTER_Y);
+  public static final Translation2d BACK_LEFT_MODULE_DISTANCE_FROM_CENTER =
+      new Translation2d(-TRACK_CENTER_X, +TRACK_CENTER_Y);
+  public static final Translation2d BACK_RIGHT_MODULE_DISTANCE_FROM_CENTER =
+      new Translation2d(-TRACK_CENTER_X, -TRACK_CENTER_Y);
 
-    // https://choreo.autos/usage/estimating-moi/
-    // Value from CAD model when intake was mostly extended (Izz in mass properties from OnShape)
-    public static final double robotMOI = 5.70281;
+  // --- Gyro Config ---
 
-    // Coefficient of friction from
-    // https://www.chiefdelphi.com/t/spectrum-3847-build-blog-2025/478254/420
-    public static final double wheelCOF = 2.255;
+  public static final int GYRO_CAN_ID =
+      switch (Constants.getRobot()) {
+        case REBUILT_2026 -> CompetitionConstants.DrivetrainConstants.Pigeon2Id;
+        case REEFSCAPE_2025, CHASSIS_CANNON, WOOD_BOT_2026 -> 40;
+        case METALBOT_2 -> MetalbotTwoConstants.DrivetrainConstants.Pigeon2Id;
+        case PRESEASON_2026 -> PreseasonConstants.DrivetrainConstants.Pigeon2Id;
+        case SIM_BOT -> -1;
+      };
 
-    public static final Translation2d[] MODULE_TRANSLATION = {
-        DriveConstants.FRONT_LEFT_MODULE_DISTANCE_FROM_CENTER,
-        DriveConstants.FRONT_RIGHT_MODULE_DISTANCE_FROM_CENTER,
-        DriveConstants.BACK_LEFT_MODULE_DISTANCE_FROM_CENTER,
-        DriveConstants.BACK_RIGHT_MODULE_DISTANCE_FROM_CENTER
-    };
+  // --- CANBus ---
 
-    // --- Odometry Frequency ---
+  public static final CANBus CAN_BUS =
+      switch (Constants.getRobot()) {
+        case REBUILT_2026 -> CompetitionConstants.kCANBus;
+        case PRESEASON_2026 -> PreseasonConstants.kCANBus;
+        case METALBOT_2 -> MetalbotTwoConstants.kCANBus;
+        case REEFSCAPE_2025, CHASSIS_CANNON, WOOD_BOT_2026 -> CANBus.roboRIO();
+        case SIM_BOT -> new CANBus();
+      };
 
-    public static final double ODOMETRY_FREQUENCY_HERTZ =
-            switch (Constants.getRobot()) {
-                case SIM_BOT -> 50.0;
-                case PRESEASON_2026, METALBOT_2 -> new CANBus(PreseasonConstants.DrivetrainConstants.CANBusName)
-                                .isNetworkFD()
-                        ? 250.0
-                        : 100.0;
-                default -> 100.0;
-            };
+  // --- Pathplanner Config ---
 
-    // --- Movement Controller Config ---
+  // Currently just an estimate
+  public static final double robotMassKg = Units.lbsToKilograms(115 + 10.0);
 
-    public static final PIDConfig TRANSLATION_CONTROLLER_CONSTANTS_TRAJECTORY = new PIDConfig(5.0, 0.0, 0.0);
-    public static final PIDConfig ROTATION_CONTROLLER_CONSTANTS_TRAJECTORY = new PIDConfig(5.0, 0, 0.4);
+  // https://choreo.autos/usage/estimating-moi/
+  // Value from CAD model when intake was mostly extended (Izz in mass properties from OnShape)
+  public static final double robotMOI = 5.70281;
 
-    public static final PIDConfig TRANSLATION_CONTROLLER_CONSTANTS = new PIDConfig(5.0, 0.0, 0.0);
-    public static final PIDConfig ROTATION_CONTROLLER_CONSTANTS = new PIDConfig(5, 0.0, 0.0);
-    public static final double TRANSLATION_TOLERANCE = Units.inchesToMeters(0.5);
-    public static final Rotation2d ROTATION_TOLERANCE = Rotation2d.fromDegrees(1);
+  // Coefficient of friction from
+  // https://www.chiefdelphi.com/t/spectrum-3847-build-blog-2025/478254/420
+  public static final double wheelCOF = 2.255;
 
-    // --- Heading Controller Config ---
+  public static final Translation2d[] MODULE_TRANSLATION = {
+    DriveConstants.FRONT_LEFT_MODULE_DISTANCE_FROM_CENTER,
+    DriveConstants.FRONT_RIGHT_MODULE_DISTANCE_FROM_CENTER,
+    DriveConstants.BACK_LEFT_MODULE_DISTANCE_FROM_CENTER,
+    DriveConstants.BACK_RIGHT_MODULE_DISTANCE_FROM_CENTER
+  };
 
-    public record HeadingControllerConfig(PIDConfig pid, Rotation2d positionTolerance, Rotation2d velocityTolerance) {}
+  // --- Odometry Frequency ---
 
-    public static final HeadingControllerConfig HEADING_CONTROLLER_CONFIG = new HeadingControllerConfig(
-            ROTATION_CONTROLLER_CONSTANTS, Rotation2d.fromDegrees(1), Rotation2d.fromDegrees(5));
+  public static final double ODOMETRY_FREQUENCY_HERTZ =
+      switch (Constants.getRobot()) {
+        case SIM_BOT -> 50.0;
+        case PRESEASON_2026, METALBOT_2 -> new CANBus(
+                    PreseasonConstants.DrivetrainConstants.CANBusName)
+                .isNetworkFD()
+            ? 250.0
+            : 100.0;
+        default -> 100.0;
+      };
+
+  // --- Movement Controller Config ---
+
+  public static final PIDConfig TRANSLATION_CONTROLLER_CONSTANTS_TRAJECTORY =
+      new PIDConfig(5.0, 0.0, 0.0);
+  public static final PIDConfig ROTATION_CONTROLLER_CONSTANTS_TRAJECTORY =
+      new PIDConfig(5.0, 0, 0.4);
+
+  public static final PIDConfig TRANSLATION_CONTROLLER_CONSTANTS = new PIDConfig(5.0, 0.0, 0.0);
+  public static final PIDConfig ROTATION_CONTROLLER_CONSTANTS = new PIDConfig(5, 0.0, 0.0);
+  public static final double TRANSLATION_TOLERANCE = Units.inchesToMeters(0.5);
+  public static final Rotation2d ROTATION_TOLERANCE = Rotation2d.fromDegrees(1);
+
+  // --- Heading Controller Config ---
+
+  public record HeadingControllerConfig(
+      PIDConfig pid, Rotation2d positionTolerance, Rotation2d velocityTolerance) {}
+
+  public static final HeadingControllerConfig HEADING_CONTROLLER_CONFIG =
+      new HeadingControllerConfig(
+          ROTATION_CONTROLLER_CONSTANTS, Rotation2d.fromDegrees(1), Rotation2d.fromDegrees(5));
 }

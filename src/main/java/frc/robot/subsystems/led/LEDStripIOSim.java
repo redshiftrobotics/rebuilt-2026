@@ -2,33 +2,33 @@ package frc.robot.subsystems.led;
 
 public class LEDStripIOSim implements LEDStripIO {
 
-    private BlinkinLEDPattern pattern;
-    private boolean runSetup;
+  private BlinkinLEDPattern pattern;
+  private boolean runSetup;
 
-    public LEDStripIOSim(BlinkinLEDPattern initialPattern) {
-        pattern = initialPattern;
+  public LEDStripIOSim(BlinkinLEDPattern initialPattern) {
+    pattern = initialPattern;
+  }
+
+  @Override
+  public void updateInputs(LEDStripIOInputs inputs) {
+    inputs.runningSetup = runSetup;
+    inputs.requestedPattern = pattern;
+
+    inputs.targetPulse = inputs.requestedPattern.getPulse();
+    if (runSetup) {
+      inputs.targetPulse = -1;
     }
 
-    @Override
-    public void updateInputs(LEDStripIOInputs inputs) {
-        inputs.runningSetup = runSetup;
-        inputs.requestedPattern = pattern;
+    inputs.measuredPulse = inputs.targetPulse;
+  }
 
-        inputs.targetPulse = inputs.requestedPattern.getPulse();
-        if (runSetup) {
-            inputs.targetPulse = -1;
-        }
+  @Override
+  public void runSetup(boolean run) {
+    runSetup = run;
+  }
 
-        inputs.measuredPulse = inputs.targetPulse;
-    }
-
-    @Override
-    public void runSetup(boolean run) {
-        runSetup = run;
-    }
-
-    @Override
-    public void setPattern(BlinkinLEDPattern pattern) {
-        this.pattern = pattern;
-    }
+  @Override
+  public void setPattern(BlinkinLEDPattern pattern) {
+    this.pattern = pattern;
+  }
 }
