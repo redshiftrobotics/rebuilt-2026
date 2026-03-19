@@ -313,29 +313,29 @@ public class RobotContainer {
     // Intake button (hold)
     xbox.leftTrigger()
         .whileTrue(
-            Commands.parallel(
-                    intake.run(() -> intake.setMode(IntakeRunMode.INTAKING)),
-                    hopper.run(() -> hopper.setMode(HopperRunMode.IDLE)))
-                .finallyDo(
-                    () -> {
-                      intake.setMode(IntakeRunMode.UP);
-                      hopper.setMode(HopperRunMode.STOPPED);
-                    })
-                .withName("Intake"));
+            intake
+                .run(() -> intake.setMode(IntakeRunMode.INTAKING))
+                .finallyDo(() -> intake.setMode(IntakeRunMode.UP))
+                .withName("Dump Intake"))
+        .whileTrue(
+            hopper
+                .run(() -> hopper.setMode(HopperRunMode.IDLE))
+                .finallyDo(() -> hopper.setMode(HopperRunMode.STOPPED))
+                .withName("Dump Hopper"));
 
     // Dump through intake button (hold)
     xbox.leftBumper()
         .debounce(0.1)
         .whileTrue(
-            Commands.parallel(
-                    intake.run(() -> intake.setMode(IntakeRunMode.OUTTAKING)),
-                    hopper.run(() -> hopper.setMode(HopperRunMode.REVERSE)))
-                .finallyDo(
-                    () -> {
-                      intake.setMode(IntakeRunMode.UP);
-                      hopper.setMode(HopperRunMode.STOPPED);
-                    })
-                .withName("Intake"));
+            intake
+                .run(() -> intake.setMode(IntakeRunMode.OUTTAKING))
+                .finallyDo(() -> intake.setMode(IntakeRunMode.UP))
+                .withName("Dump Intake"))
+        .whileTrue(
+            hopper
+                .run(() -> hopper.setMode(HopperRunMode.REVERSE))
+                .finallyDo(() -> hopper.setMode(HopperRunMode.STOPPED))
+                .withName("Dump Hopper"));
 
     // Deploy intake tap button
     xbox.leftStick()
