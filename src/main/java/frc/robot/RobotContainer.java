@@ -23,6 +23,7 @@ import frc.robot.Constants.Mode;
 import frc.robot.Constants.RobotType;
 import frc.robot.commands.DriveCharacterizationCommands;
 import frc.robot.commands.LaunchCommands;
+import frc.robot.commands.SelfDrivingCommands;
 import frc.robot.commands.pipeline.DriveInput;
 import frc.robot.commands.pipeline.DriveInputPipeline;
 import frc.robot.subsystems.drive.Drive;
@@ -256,6 +257,8 @@ public class RobotContainer {
                         .andThen(rumbleController(xbox, 0.3).withTimeout(0.25))
                         .ignoringDisable(true)
                         .withName("Reset Gyro Heading"));
+
+        xbox.y().whileTrue(SelfDrivingCommands.selfDriveToOtherZone(drive));
 
         // Configure the driving dpad
         for (int pov = 0; pov < 360; pov += 45) {
