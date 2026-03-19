@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -49,8 +50,11 @@ public class Launcher extends SubsystemBase {
   public static TunableNumber HOOD_POSITION_TOLERANCE =
       new TunableNumber("Launcher/HoodPositionToleranceDeg", 2.0);
 
-  public static TunableNumber DEBOUNCE_TIME_AT_GOAL =
-      new TunableNumber("Launcher/DebounceTimeAtGoal", 0.75);
+  public static TunableNumber DEBOUNCE_TIME_AT_GOAL_AUTO =
+      new TunableNumber("Launcher/DebounceTimeAtGoalAuto", 0.75);
+      
+  public static TunableNumber DEBOUNCE_TIME_AT_GOAL_TELE =
+      new TunableNumber("Launcher/DebounceTimeAtGoalTele", 0.25);
 
   private final HoodIO hoodIO;
   private final HoodIOInputsAutoLogged hoodInputs = new HoodIOInputsAutoLogged();
@@ -70,8 +74,10 @@ public class Launcher extends SubsystemBase {
 
   private Rotation2d robotYaw = Rotation2d.kZero;
 
-  private final Debouncer atGoalDebouncer =
-      new Debouncer(DEBOUNCE_TIME_AT_GOAL.get(), Debouncer.DebounceType.kRising);
+  private final Debouncer autoAtGoalDebouncer =
+      new Debouncer(DEBOUNCE_TIME_AT_GOAL_AUTO.get(), Debouncer.DebounceType.kRising);
+  private final Debouncer teleAtGoalDebouncer =
+      new Debouncer(DEBOUNCE_TIME_AT_GOAL_TELE.get(), Debouncer.DebounceType.kRising);
   private boolean atGoalDebounced;
 
   public static Launcher create(RobotType robotType) {
@@ -257,8 +263,11 @@ public class Launcher extends SubsystemBase {
     }
 
     boolean atGoal = isReady();
-    DEBOUNCE_TIME_AT_GOAL.ifChanged(hashCode(), atGoalDebouncer::setDebounceTime);
-    atGoalDebounced = atGoalDebouncer.calculate(atGoal);
+    
+    DEBOUNCE_TIME_AT_GOAL_AUTO.ifChanged(hashCode(), autoAtGoalDebouncer::setDebounceTime);
+    DEBOUNCE_TIME_AT_GOAL_TELE.ifChanged(hashCode(), teleAtGoalDebouncer::setDebounceTime);
+
+    atGoalDebounced = DriverStation.isAutonomous() ? autoAtGoalDebouncer.calculate(atGoal) : teleAtGoalDebouncer.calculate(atGoal);
 
     Logger.recordOutput(
         getName() + "/desiredRobotPose", new Pose2d(robotPose.getTranslation(), robotYaw));
