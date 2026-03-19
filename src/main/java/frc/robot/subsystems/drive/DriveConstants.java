@@ -133,15 +133,23 @@ public class DriveConstants {
 
     // --- Pathplanner Config ---
 
-    public static final double robotMassKg = 74.088;
-    public static final double robotMOI = 6.883;
-    public static final double wheelCOF = 1.2;
-    public static final Translation2d[] MODULE_TRANSLATION = {
-        DriveConstants.FRONT_LEFT_MODULE_DISTANCE_FROM_CENTER,
-        DriveConstants.FRONT_RIGHT_MODULE_DISTANCE_FROM_CENTER,
-        DriveConstants.BACK_LEFT_MODULE_DISTANCE_FROM_CENTER,
-        DriveConstants.BACK_RIGHT_MODULE_DISTANCE_FROM_CENTER
-    };
+    // Currently just an estimate
+  public static final double robotMassKg = Units.lbsToKilograms(115 + 10.0);
+
+  // https://choreo.autos/usage/estimating-moi/
+  // Value from CAD model when intake was mostly extended (Izz in mass properties from OnShape)
+  public static final double robotMOI = 5.70281;
+
+  // Coefficient of friction from
+  // https://www.chiefdelphi.com/t/spectrum-3847-build-blog-2025/478254/420
+  public static final double wheelCOF = 2.255;
+
+  public static final Translation2d[] MODULE_TRANSLATION = {
+    DriveConstants.FRONT_LEFT_MODULE_DISTANCE_FROM_CENTER,
+    DriveConstants.FRONT_RIGHT_MODULE_DISTANCE_FROM_CENTER,
+    DriveConstants.BACK_LEFT_MODULE_DISTANCE_FROM_CENTER,
+    DriveConstants.BACK_RIGHT_MODULE_DISTANCE_FROM_CENTER
+  };
 
     // --- Odometry Frequency ---
 
