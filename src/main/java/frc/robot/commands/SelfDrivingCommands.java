@@ -1,5 +1,7 @@
 package frc.robot.commands;
 
+import static frc.robot.subsystems.drive.DriveConstants.DRIVE_CONFIG;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.MathUtil;
@@ -11,14 +13,15 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.FieldConstants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.utility.geometry.AllianceMirrorUtil;
-
-import static frc.robot.subsystems.drive.DriveConstants.DRIVE_CONFIG;
-
 import java.util.Set;
 
 public class SelfDrivingCommands {
   static PathConstraints constraints =
-      new PathConstraints(DRIVE_CONFIG.maxLinearVelocity(), 4.0, Units.degreesToRadians(540), Units.degreesToRadians(720));
+      new PathConstraints(
+          DRIVE_CONFIG.maxLinearVelocity(),
+          4.0,
+          Units.degreesToRadians(540),
+          Units.degreesToRadians(720));
 
   public static Command selfDriveToOtherZone(Drive drive) {
     return Commands.either(
