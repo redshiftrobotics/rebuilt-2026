@@ -10,47 +10,47 @@ import org.photonvision.simulation.VisionSystemSim;
 
 public class CameraIOSim extends CameraIOPhotonVision {
 
-  private final PhotonCameraSim cameraSim;
-  private final VisionSystemSim visionSim;
+    private final PhotonCameraSim cameraSim;
+    private final VisionSystemSim visionSim;
 
-  public CameraIOSim(CameraConfig config) {
-    super(config);
+    public CameraIOSim(CameraConfig config) {
+        super(config);
 
-    // --- Camera Props ---
+        // --- Camera Props ---
 
-    SimCameraProperties cameraProperties = new SimCameraProperties();
+        SimCameraProperties cameraProperties = new SimCameraProperties();
 
-    // These values depend on photonvision config, update them as well as in assets config
-    cameraProperties.setCalibration(800, 600, Rotation2d.fromDegrees(100));
-    cameraProperties.setCalibError(0.01, 0.10);
-    cameraProperties.setFPS(15);
+        // These values depend on photonvision config, update them as well as in assets config
+        cameraProperties.setCalibration(800, 600, Rotation2d.fromDegrees(100));
+        cameraProperties.setCalibError(0.01, 0.10);
+        cameraProperties.setFPS(15);
 
-    cameraProperties.setAvgLatencyMs(25);
-    cameraProperties.setLatencyStdDevMs(10);
+        cameraProperties.setAvgLatencyMs(25);
+        cameraProperties.setLatencyStdDevMs(10);
 
-    // --- Sim Camera ---
+        // --- Sim Camera ---
 
-    cameraSim = new PhotonCameraSim(camera, cameraProperties);
+        cameraSim = new PhotonCameraSim(camera, cameraProperties);
 
-    cameraSim.enableDrawWireframe(true);
-    cameraSim.enableProcessedStream(true);
+        cameraSim.enableDrawWireframe(true);
+        cameraSim.enableProcessedStream(true);
 
-    // --- Vision Sim ---
-    visionSim = new VisionSystemSim(config.cameraName());
-    visionSim.addCamera(cameraSim, config.robotToCamera());
-  }
+        // --- Vision Sim ---
+        visionSim = new VisionSystemSim(config.cameraName());
+        visionSim.addCamera(cameraSim, config.robotToCamera());
+    }
 
-  @Override
-  public void setLastRobotPose(Pose2d lastRobotPose) {
-    super.setLastRobotPose(lastRobotPose);
-    visionSim.update(lastRobotPose);
-  }
+    @Override
+    public void setLastRobotPose(Pose2d lastRobotPose) {
+        super.setLastRobotPose(lastRobotPose);
+        visionSim.update(lastRobotPose);
+    }
 
-  @Override
-  public void setAprilTagFieldLayout(AprilTagFieldLayout layout) {
-    super.setAprilTagFieldLayout(layout);
+    @Override
+    public void setAprilTagFieldLayout(AprilTagFieldLayout layout) {
+        super.setAprilTagFieldLayout(layout);
 
-    visionSim.clearAprilTags();
-    visionSim.addAprilTags(layout);
-  }
+        visionSim.clearAprilTags();
+        visionSim.addAprilTags(layout);
+    }
 }

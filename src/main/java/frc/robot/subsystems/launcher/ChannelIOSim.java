@@ -16,94 +16,90 @@ import frc.robot.utility.records.PIDConfig;
 /** Physics sim implementation of channel IO. */
 public class ChannelIOSim implements ChannelIO {
 
-  private final String name;
+    private final String name;
 
-  private final FlywheelSim sim;
+    private final FlywheelSim sim;
 
-  private double appliedVolts = 0.0;
+    private double appliedVolts = 0.0;
 
-  private final PIDController feedback =
-      new PIDController(0.0, 0.0, 0.0, Constants.LOOP_PERIOD_SECONDS);
-  private final SimpleMotorFeedforward feedfoward =
-      new SimpleMotorFeedforward(0.0, 0.0, 0.0, Constants.LOOP_PERIOD_SECONDS);
+    private final PIDController feedback = new PIDController(0.0, 0.0, 0.0, Constants.LOOP_PERIOD_SECONDS);
+    private final SimpleMotorFeedforward feedfoward =
+            new SimpleMotorFeedforward(0.0, 0.0, 0.0, Constants.LOOP_PERIOD_SECONDS);
 
-  private boolean closedLoop = false;
-  private double FFVolts = 0;
+    private boolean closedLoop = false;
+    private double FFVolts = 0;
 
-  public ChannelIOSim(String name, ChannelConfig constants) {
-    this.name = name;
-    final DCMotor motor = DCMotor.getKrakenX60(1);
-    sim =
-        new FlywheelSim(
-            LinearSystemId.createFlywheelSystem(
-                motor,
-                LauncherMathConstants.FLYWHEEL_MOI.baseUnitMagnitude(),
-                constants.gearRatio()),
-            motor);
-  }
-
-  @Override
-  public String getName() {
-    return name;
-  }
-
-  @Override
-  public void updateInputs(ChannelIOInputs inputs) {
-
-    if (closedLoop) {
-      appliedVolts = feedback.calculate(sim.getAngularVelocityRadPerSec()) + FFVolts;
-    } else {
-      feedback.reset();
+    public ChannelIOSim(String name, ChannelConfig constants) {
+        this.name = name;
+        final DCMotor motor = DCMotor.getKrakenX60(1);
+        sim = new FlywheelSim(
+                LinearSystemId.createFlywheelSystem(
+                        motor, LauncherMathConstants.FLYWHEEL_MOI.baseUnitMagnitude(), constants.gearRatio()),
+                motor);
     }
 
-    if (DriverStation.isDisabled()) {
-      appliedVolts = 0.0;
+    @Override
+    public String getName() {
+        return name;
     }
 
-    // Update simulation state
-    sim.setInputVoltage(MathUtil.clamp(appliedVolts, -12.0, 12.0));
-    sim.update(Constants.LOOP_PERIOD_SECONDS);
+    @Override
+    public void updateInputs(ChannelIOInputs inputs) {
 
-    // --- Drive ---
-    inputs.motorConnected = true;
-    inputs.velocityRadPerSec = sim.getAngularVelocityRadPerSec();
-    inputs.appliedVolts = appliedVolts;
-    inputs.supplyCurrentAmps = Math.abs(sim.getCurrentDrawAmps());
-    inputs.appliedDutyCycle = appliedVolts / 12.0;
-  }
+        if (closedLoop) {
+            appliedVolts = feedback.calculate(sim.getAngularVelocityRadPerSec()) + FFVolts;
+        } else {
+            feedback.reset();
+        }
 
-  @Override
-  public void setDutyCycle(double output) {
-    setOpenLoop(output * 12);
-  }
+        if (DriverStation.isDisabled()) {
+            appliedVolts = 0.0;
+        }
 
-  @Override
-  public void setOpenLoop(double volts) {
-    closedLoop = false;
-    appliedVolts = volts;
-  }
+        // Update simulation state
+        sim.setInputVoltage(MathUtil.clamp(appliedVolts, -12.0, 12.0));
+        sim.update(Constants.LOOP_PERIOD_SECONDS);
 
-  @Override
-  public void setVelocity(double radPerSec, double arbFeedforward) {
-    closedLoop = true;
-    FFVolts = feedfoward.calculate(radPerSec) + arbFeedforward;
-    feedback.setSetpoint(radPerSec);
-  }
+        // --- Drive ---
+        inputs.motorConnected = true;
+        inputs.velocityRadPerSec = sim.getAngularVelocityRadPerSec();
+        inputs.appliedVolts = appliedVolts;
+        inputs.supplyCurrentAmps = Math.abs(sim.getCurrentDrawAmps());
+        inputs.appliedDutyCycle = appliedVolts / 12.0;
+    }
 
-  @Override
-  public void setPID(PIDConfig pid) {
-    feedback.setPID(pid.kP(), pid.kI(), pid.kD());
-  }
+    @Override
+    public void setDutyCycle(double output) {
+        setOpenLoop(output * 12);
+    }
 
-  @Override
-  public void setFF(FeedForwardConfigRecord ffConfig) {
-    feedfoward.setKs(ffConfig.kS());
-    feedfoward.setKv(ffConfig.kV());
-    feedfoward.setKa(ffConfig.kA());
-  }
+    @Override
+    public void setOpenLoop(double volts) {
+        closedLoop = false;
+        appliedVolts = volts;
+    }
 
-  @Override
-  public void stop() {
-    setOpenLoop(0);
-  }
+    @Override
+    public void setVelocity(double radPerSec, double arbFeedforward) {
+        closedLoop = true;
+        FFVolts = feedfoward.calculate(radPerSec) + arbFeedforward;
+        feedback.setSetpoint(radPerSec);
+    }
+
+    @Override
+    public void setPID(PIDConfig pid) {
+        feedback.setPID(pid.kP(), pid.kI(), pid.kD());
+    }
+
+    @Override
+    public void setFF(FeedForwardConfigRecord ffConfig) {
+        feedfoward.setKs(ffConfig.kS());
+        feedfoward.setKv(ffConfig.kV());
+        feedfoward.setKa(ffConfig.kA());
+    }
+
+    @Override
+    public void stop() {
+        setOpenLoop(0);
+    }
 }

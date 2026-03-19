@@ -11,93 +11,93 @@ import java.util.function.Consumer;
  */
 public abstract class TunableNumbers<T> {
 
-  public static class TunablePID extends TunableNumbers<PIDConfig> {
-    public TunablePID(String keyPrefix, PIDConfig defaultValues) {
-      super(
-          new String[] {
-            keyPrefix + "/kP", keyPrefix + "/kI", keyPrefix + "/kD",
-          },
-          new double[] {
-            defaultValues.kP(), defaultValues.kI(), defaultValues.kD(),
-          });
+    public static class TunablePID extends TunableNumbers<PIDConfig> {
+        public TunablePID(String keyPrefix, PIDConfig defaultValues) {
+            super(
+                    new String[] {
+                        keyPrefix + "/kP", keyPrefix + "/kI", keyPrefix + "/kD",
+                    },
+                    new double[] {
+                        defaultValues.kP(), defaultValues.kI(), defaultValues.kD(),
+                    });
+        }
+
+        @Override
+        public PIDConfig get() {
+            double[] values = getValues();
+            return new PIDConfig(values[0], values[1], values[2]);
+        }
     }
 
-    @Override
-    public PIDConfig get() {
-      double[] values = getValues();
-      return new PIDConfig(values[0], values[1], values[2]);
-    }
-  }
+    public static class TunableFF extends TunableNumbers<FeedForwardConfigRecord> {
+        public TunableFF(String keyPrefix, FeedForwardConfigRecord defaultValues) {
+            super(
+                    new String[] {
+                        keyPrefix + "/kS", keyPrefix + "/kV", keyPrefix + "/kA",
+                    },
+                    new double[] {
+                        defaultValues.kS(), defaultValues.kV(), defaultValues.kA(),
+                    });
+        }
 
-  public static class TunableFF extends TunableNumbers<FeedForwardConfigRecord> {
-    public TunableFF(String keyPrefix, FeedForwardConfigRecord defaultValues) {
-      super(
-          new String[] {
-            keyPrefix + "/kS", keyPrefix + "/kV", keyPrefix + "/kA",
-          },
-          new double[] {
-            defaultValues.kS(), defaultValues.kV(), defaultValues.kA(),
-          });
-    }
-
-    @Override
-    public FeedForwardConfigRecord get() {
-      double[] values = getValues();
-      return new FeedForwardConfigRecord(values[0], values[1], values[2]);
-    }
-  }
-
-  public static class TunableDoubleArray extends TunableNumbers<double[]> {
-    public TunableDoubleArray(String[] keys, double[] defaultValues) {
-      super(keys, defaultValues);
+        @Override
+        public FeedForwardConfigRecord get() {
+            double[] values = getValues();
+            return new FeedForwardConfigRecord(values[0], values[1], values[2]);
+        }
     }
 
-    @Override
-    public double[] get() {
-      return getValues();
-    }
-  }
+    public static class TunableDoubleArray extends TunableNumbers<double[]> {
+        public TunableDoubleArray(String[] keys, double[] defaultValues) {
+            super(keys, defaultValues);
+        }
 
-  private final TunableNumber[] numbers;
-
-  private TunableNumbers(String[] keys, double[] defaultValues) {
-    if (keys.length != defaultValues.length) {
-      throw new IllegalArgumentException("Keys and default values must have the same length");
+        @Override
+        public double[] get() {
+            return getValues();
+        }
     }
-    this.numbers = new TunableNumber[keys.length];
-    for (int i = 0; i < keys.length; i++) {
-      this.numbers[i] = new TunableNumber(keys[i], defaultValues[i]);
-    }
-  }
 
-  public double[] getValues() {
-    double[] values = new double[numbers.length];
-    for (int i = 0; i < numbers.length; i++) {
-      values[i] = numbers[i].get();
-    }
-    return values;
-  }
+    private final TunableNumber[] numbers;
 
-  public abstract T get();
-
-  public boolean hasChanged(int id) {
-    for (TunableNumber number : numbers) {
-      if (number.hasChanged(id)) {
-        return true;
-      }
+    private TunableNumbers(String[] keys, double[] defaultValues) {
+        if (keys.length != defaultValues.length) {
+            throw new IllegalArgumentException("Keys and default values must have the same length");
+        }
+        this.numbers = new TunableNumber[keys.length];
+        for (int i = 0; i < keys.length; i++) {
+            this.numbers[i] = new TunableNumber(keys[i], defaultValues[i]);
+        }
     }
-    return false;
-  }
 
-  public void ifChanged(int id, Runnable onChanged) {
-    if (hasChanged(id)) {
-      onChanged.run();
+    public double[] getValues() {
+        double[] values = new double[numbers.length];
+        for (int i = 0; i < numbers.length; i++) {
+            values[i] = numbers[i].get();
+        }
+        return values;
     }
-  }
 
-  public void ifChanged(int id, Consumer<T> onChanged) {
-    if (hasChanged(id)) {
-      onChanged.accept(get());
+    public abstract T get();
+
+    public boolean hasChanged(int id) {
+        for (TunableNumber number : numbers) {
+            if (number.hasChanged(id)) {
+                return true;
+            }
+        }
+        return false;
     }
-  }
+
+    public void ifChanged(int id, Runnable onChanged) {
+        if (hasChanged(id)) {
+            onChanged.run();
+        }
+    }
+
+    public void ifChanged(int id, Consumer<T> onChanged) {
+        if (hasChanged(id)) {
+            onChanged.accept(get());
+        }
+    }
 }

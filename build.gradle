@@ -159,7 +159,7 @@ spotless {
             exclude "**/build/**", "**/build-*/**"
         }
         toggleOffOn()
-        googleJavaFormat()
+        palantirJavaFormat('2.50.0')
         removeUnusedImports()
         trimTrailingWhitespace()
         endWithNewline()

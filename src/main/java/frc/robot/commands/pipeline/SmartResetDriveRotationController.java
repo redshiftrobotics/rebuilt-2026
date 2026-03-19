@@ -9,41 +9,40 @@ import java.util.function.Supplier;
 /** Controller for rotating robot to goal heading using ProfiledPIDController */
 public class SmartResetDriveRotationController extends DriveRotationController {
 
-  private Supplier<Rotation2d> defaultGoalSupplier = null;
+    private Supplier<Rotation2d> defaultGoalSupplier = null;
 
-  // private final Timer resetTimer = new Timer();
+    // private final Timer resetTimer = new Timer();
 
-  private int cyclesSinceUpdate = 0;
+    private int cyclesSinceUpdate = 0;
 
-  @SuppressWarnings("unused")
-  private final VirtualSubsystem resetter =
-      new VirtualSubsystem() {
+    @SuppressWarnings("unused")
+    private final VirtualSubsystem resetter = new VirtualSubsystem() {
         @Override
         public void periodic() {
-          cyclesSinceUpdate++;
+            cyclesSinceUpdate++;
         }
-      };
+    };
 
-  public SmartResetDriveRotationController(Drive drive, Supplier<Rotation2d> defaultGoalSupplier) {
-    super(drive);
-    this.defaultGoalSupplier = defaultGoalSupplier;
-  }
-
-  @Override
-  public void reset() {
-    cyclesSinceUpdate = 0;
-    super.reset();
-    if (defaultGoalSupplier != null) {
-      setGoal(defaultGoalSupplier.get());
+    public SmartResetDriveRotationController(Drive drive, Supplier<Rotation2d> defaultGoalSupplier) {
+        super(drive);
+        this.defaultGoalSupplier = defaultGoalSupplier;
     }
-  }
 
-  @Override
-  public double calculate() {
-    if (cyclesSinceUpdate > 1) {
-      reset();
+    @Override
+    public void reset() {
+        cyclesSinceUpdate = 0;
+        super.reset();
+        if (defaultGoalSupplier != null) {
+            setGoal(defaultGoalSupplier.get());
+        }
     }
-    cyclesSinceUpdate = 0;
-    return super.calculate();
-  }
+
+    @Override
+    public double calculate() {
+        if (cyclesSinceUpdate > 1) {
+            reset();
+        }
+        cyclesSinceUpdate = 0;
+        return super.calculate();
+    }
 }

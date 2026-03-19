@@ -15,50 +15,50 @@ import java.util.function.UnaryOperator;
  */
 public class DriveInputPipeline {
 
-  private final Drive drive;
+    private final Drive drive;
 
-  private final LayeredPipeline<DriveInput> pipeline;
-  private final DriveRotationController headingController;
+    private final LayeredPipeline<DriveInput> pipeline;
+    private final DriveRotationController headingController;
 
-  public DriveInputPipeline(Drive drive) {
-    this(drive, DriveInput::new);
-  }
+    public DriveInputPipeline(Drive drive) {
+        this(drive, DriveInput::new);
+    }
 
-  public DriveInputPipeline(Drive drive, Supplier<DriveInput> baseSupplier) {
-    this.drive = drive;
-    this.headingController =
-        new SmartResetDriveRotationController(drive, () -> drive.getRobotPose().getRotation());
-    this.pipeline = new LayeredPipeline<>(baseSupplier);
-  }
+    public DriveInputPipeline(Drive drive, Supplier<DriveInput> baseSupplier) {
+        this.drive = drive;
+        this.headingController = new SmartResetDriveRotationController(
+                drive, () -> drive.getRobotPose().getRotation());
+        this.pipeline = new LayeredPipeline<>(baseSupplier);
+    }
 
-  /**
-   * Activates a layer for the duration of the returned command.
-   *
-   * @param name A label for the layer.
-   * @param operator A function that modifies the drive input.
-   * @return A command that activates the layer while it is running.
-   */
-  public Command runLayer(String name, UnaryOperator<DriveInput> operator) {
-    return pipeline.runLayer(name, operator);
-  }
+    /**
+     * Activates a layer for the duration of the returned command.
+     *
+     * @param name A label for the layer.
+     * @param operator A function that modifies the drive input.
+     * @return A command that activates the layer while it is running.
+     */
+    public Command runLayer(String name, UnaryOperator<DriveInput> operator) {
+        return pipeline.runLayer(name, operator);
+    }
 
-  /**
-   * Gets the current {@link ChassisSpeeds} output of the pipeline.
-   *
-   * @return The current {@link ChassisSpeeds}.
-   */
-  public ChassisSpeeds getChassisSpeeds() {
-    return pipeline.get().getChassisSpeeds(drive.getRobotPose().getRotation(), headingController);
-  }
-  /**
-   * Gets all active layers' labels.
-   *
-   * @return A list of labels of all active layers.
-   */
-  public String getLayerInfo() {
-    StringJoiner joiner = new StringJoiner(" > ");
-    joiner.add("Drive");
-    pipeline.getActiveLayers().forEach(joiner::add);
-    return joiner.toString();
-  }
+    /**
+     * Gets the current {@link ChassisSpeeds} output of the pipeline.
+     *
+     * @return The current {@link ChassisSpeeds}.
+     */
+    public ChassisSpeeds getChassisSpeeds() {
+        return pipeline.get().getChassisSpeeds(drive.getRobotPose().getRotation(), headingController);
+    }
+    /**
+     * Gets all active layers' labels.
+     *
+     * @return A list of labels of all active layers.
+     */
+    public String getLayerInfo() {
+        StringJoiner joiner = new StringJoiner(" > ");
+        joiner.add("Drive");
+        pipeline.getActiveLayers().forEach(joiner::add);
+        return joiner.toString();
+    }
 }

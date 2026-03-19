@@ -11,40 +11,40 @@ import frc.robot.subsystems.led.LEDConstants.LEDConfig;
  */
 public class LEDStripIOBlinkin implements LEDStripIO {
 
-  private final PWM pwm;
-  private final BlinkenMode mode;
+    private final PWM pwm;
+    private final BlinkenMode mode;
 
-  private BlinkinLEDPattern pattern;
-  private boolean runSetup;
+    private BlinkinLEDPattern pattern;
+    private boolean runSetup;
 
-  public LEDStripIOBlinkin(LEDConfig config, BlinkinLEDPattern initialPattern) {
-    pwm = new PWM(config.pwmChannel());
-    mode = config.mode();
-    pattern = initialPattern;
-  }
-
-  @Override
-  public void updateInputs(LEDStripIOInputs inputs) {
-    inputs.runningSetup = runSetup;
-    inputs.requestedPattern = pattern;
-
-    inputs.targetPulse = inputs.requestedPattern.getPulse();
-    if (runSetup) {
-      inputs.targetPulse = mode.setupPulse;
+    public LEDStripIOBlinkin(LEDConfig config, BlinkinLEDPattern initialPattern) {
+        pwm = new PWM(config.pwmChannel());
+        mode = config.mode();
+        pattern = initialPattern;
     }
 
-    pwm.setPulseTimeMicroseconds(inputs.targetPulse);
+    @Override
+    public void updateInputs(LEDStripIOInputs inputs) {
+        inputs.runningSetup = runSetup;
+        inputs.requestedPattern = pattern;
 
-    inputs.measuredPulse = pwm.getPulseTimeMicroseconds();
-  }
+        inputs.targetPulse = inputs.requestedPattern.getPulse();
+        if (runSetup) {
+            inputs.targetPulse = mode.setupPulse;
+        }
 
-  @Override
-  public void runSetup(boolean run) {
-    runSetup = run;
-  }
+        pwm.setPulseTimeMicroseconds(inputs.targetPulse);
 
-  @Override
-  public void setPattern(BlinkinLEDPattern pattern) {
-    this.pattern = pattern;
-  }
+        inputs.measuredPulse = pwm.getPulseTimeMicroseconds();
+    }
+
+    @Override
+    public void runSetup(boolean run) {
+        runSetup = run;
+    }
+
+    @Override
+    public void setPattern(BlinkinLEDPattern pattern) {
+        this.pattern = pattern;
+    }
 }

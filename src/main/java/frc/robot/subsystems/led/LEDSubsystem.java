@@ -18,78 +18,72 @@ import org.littletonrobotics.junction.Logger;
  */
 public class LEDSubsystem extends SubsystemBase {
 
-  private LEDStripIO[] strips;
-  private LEDStripIOInputsAutoLogged[] inputs;
+    private LEDStripIO[] strips;
+    private LEDStripIOInputsAutoLogged[] inputs;
 
-  private final Debouncer setupDebouncer = new Debouncer(0.8);
+    private final Debouncer setupDebouncer = new Debouncer(0.8);
 
-  public static LEDSubsystem create(RobotType robotType) {
-    switch (robotType) {
-      case REBUILT_2026:
-        return new LEDSubsystem(
-            new LEDStripIOBlinkin(LEDConstants.LED_STRIP_BACK, BlinkinLEDPattern.OFF),
-            new LEDStripIOBlinkin(LEDConstants.LED_STRIP_1X1, BlinkinLEDPattern.OFF),
-            new LEDStripIOBlinkin(LEDConstants.LED_STRIP_FUTURE, BlinkinLEDPattern.OFF));
+    public static LEDSubsystem create(RobotType robotType) {
+        switch (robotType) {
+            case REBUILT_2026:
+                return new LEDSubsystem(
+                        new LEDStripIOBlinkin(LEDConstants.LED_STRIP_BACK, BlinkinLEDPattern.OFF),
+                        new LEDStripIOBlinkin(LEDConstants.LED_STRIP_1X1, BlinkinLEDPattern.OFF),
+                        new LEDStripIOBlinkin(LEDConstants.LED_STRIP_FUTURE, BlinkinLEDPattern.OFF));
 
-      case SIM_BOT:
-        return new LEDSubsystem(new LEDStripIOSim(BlinkinLEDPattern.OFF));
+            case SIM_BOT:
+                return new LEDSubsystem(new LEDStripIOSim(BlinkinLEDPattern.OFF));
 
-      default:
-        return new LEDSubsystem();
+            default:
+                return new LEDSubsystem();
+        }
     }
-  }
 
-  private LEDSubsystem(LEDStripIO... strips) {
-    this.strips = strips;
+    private LEDSubsystem(LEDStripIO... strips) {
+        this.strips = strips;
 
-    inputs =
-        Arrays.stream(strips)
-            .map(s -> new LEDStripIOInputsAutoLogged())
-            .toArray(LEDStripIOInputsAutoLogged[]::new);
-  }
-
-  @Override
-  public void periodic() {
-    boolean runSetup =
-        !setupDebouncer.calculate(DriverStation.isEnabled()) && DriverStation.isEnabled();
-
-    for (int i = 0; i < strips.length; i++) {
-      strips[i].runSetup(runSetup);
-      strips[i].updateInputs(inputs[i]);
-      Logger.processInputs("LED/strip" + i, inputs[i]);
+        inputs = Arrays.stream(strips)
+                .map(s -> new LEDStripIOInputsAutoLogged())
+                .toArray(LEDStripIOInputsAutoLogged[]::new);
     }
-  }
 
-  public Command runColor(BlinkinLEDPattern color) {
-    return run(() -> set(color));
-  }
+    @Override
+    public void periodic() {
+        boolean runSetup = !setupDebouncer.calculate(DriverStation.isEnabled()) && DriverStation.isEnabled();
 
-  public Command runColor(Supplier<BlinkinLEDPattern> color) {
-    return run(() -> set(color.get()));
-  }
+        for (int i = 0; i < strips.length; i++) {
+            strips[i].runSetup(runSetup);
+            strips[i].updateInputs(inputs[i]);
+            Logger.processInputs("LED/strip" + i, inputs[i]);
+        }
+    }
 
-  public Command runColor(
-      BlinkinLEDPattern colorIfBlue,
-      BlinkinLEDPattern colorIfRed,
-      BlinkinLEDPattern colorIfUnknown) {
-    return runColor(
-        () ->
-            DriverStation.getAlliance()
+    public Command runColor(BlinkinLEDPattern color) {
+        return run(() -> set(color));
+    }
+
+    public Command runColor(Supplier<BlinkinLEDPattern> color) {
+        return run(() -> set(color.get()));
+    }
+
+    public Command runColor(
+            BlinkinLEDPattern colorIfBlue, BlinkinLEDPattern colorIfRed, BlinkinLEDPattern colorIfUnknown) {
+        return runColor(() -> DriverStation.getAlliance()
                 .map(a -> a == Alliance.Blue ? colorIfBlue : colorIfRed)
                 .orElse(colorIfUnknown));
-  }
-
-  public Command runNoColor() {
-    return runColor(BlinkinLEDPattern.OFF);
-  }
-
-  public void set(BlinkinLEDPattern pattern) {
-    for (int i = 0; i < strips.length; i++) {
-      set(i, pattern);
     }
-  }
 
-  public void set(int stripIndex, BlinkinLEDPattern pattern) {
-    strips[stripIndex].setPattern(pattern);
-  }
+    public Command runNoColor() {
+        return runColor(BlinkinLEDPattern.OFF);
+    }
+
+    public void set(BlinkinLEDPattern pattern) {
+        for (int i = 0; i < strips.length; i++) {
+            set(i, pattern);
+        }
+    }
+
+    public void set(int stripIndex, BlinkinLEDPattern pattern) {
+        strips[stripIndex].setPattern(pattern);
+    }
 }
