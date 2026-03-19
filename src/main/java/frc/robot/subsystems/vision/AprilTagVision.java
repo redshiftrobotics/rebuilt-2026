@@ -68,7 +68,7 @@ public class AprilTagVision extends SubsystemBase {
         // Loop through all cameras
         for (Camera camera : cameras) {
 
-            Logger.recordOutput("Vision/" + camera.getCameraPosition() + "/name", camera.getCameraName());
+            Logger.recordOutput("Vision/" + camera.getCameraPositionName() + "/name", camera.getCameraName());
 
             // Loop through all results that the camera has
             for (ProcessedEstimatedRobotPose result : camera.getResults()) {
@@ -77,15 +77,16 @@ public class AprilTagVision extends SubsystemBase {
 
                 seenTagPoses.addAll(result.tagPositionsOnField());
 
-                Logger.recordOutput("Vision/" + camera.getCameraPosition() + "/status", result.status());
-                Logger.recordOutput("Vision/" + camera.getCameraPosition() + "/estimatedPose", result.estimatedPose());
+                Logger.recordOutput("Vision/" + camera.getCameraPositionName() + "/status", result.status());
                 Logger.recordOutput(
-                        "Vision/" + camera.getCameraPosition() + "/standardDeviations",
+                        "Vision/" + camera.getCameraPositionName() + "/estimatedPose", result.estimatedPose());
+                Logger.recordOutput(
+                        "Vision/" + camera.getCameraPositionName() + "/standardDeviations",
                         result.standardDeviations().getData());
                 Logger.recordOutput(
-                        "Vision/" + camera.getCameraPosition() + "/timestampSeconds", result.timestampSeconds());
+                        "Vision/" + camera.getCameraPositionName() + "/timestampSeconds", result.timestampSeconds());
                 Logger.recordOutput(
-                        "Vision/" + camera.getCameraPosition() + "/tagPositionsOnField",
+                        "Vision/" + camera.getCameraPositionName() + "/tagPositionsOnField",
                         result.tagPositionsOnField().toArray(Pose3d[]::new));
 
                 if (visionPoseConsumer != null) {
