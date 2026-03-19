@@ -313,34 +313,68 @@ public class RobotContainer {
 
     final Trigger manualButton = xbox.back();
     final Trigger resetButton = xbox.start().debounce(0.01);
+    final Trigger intakeFull = xbox.leftTrigger(0.5);
+    final Trigger intakePartial = xbox.leftTrigger(0.2);
+    final Trigger shotModeButton = xbox.rightTrigger().or(xbox.rightBumper()).or(xbox.y());
 
     // --- INTAKE CONTROL ---
 
     // Intake button (hold)
-    xbox.leftTrigger()
+    intakeFull
         .whileTrue(
             intake
-                .run(() -> intake.setMode(IntakeRunMode.INTAKING))
-                .finallyDo(() -> intake.setMode(IntakeRunMode.UP))
-                .withName("Dump Intake"))
+                .runEnd(
+                    () -> intake.setMode(IntakeRunMode.INTAKING),
+                    () -> intake.setMode(IntakeRunMode.AGITATE_1_UP))
+                .withName("Intake"))
         .whileTrue(
             hopper
-                .run(() -> hopper.setMode(HopperRunMode.IDLE))
-                .finallyDo(() -> hopper.setMode(HopperRunMode.STOPPED))
-                .withName("Dump Hopper"));
+                .runEnd(
+                    () -> hopper.setMode(HopperRunMode.IDLE),
+                    () -> hopper.setMode(HopperRunMode.STOPPED))
+                .withName("Hopper Intake"));
+
+    // Start to automatically push ball
+    intakePartial.onFalse(
+        Commands.waitSeconds(0.2)
+            .andThen(intake.runOnce(() -> intake.setMode(IntakeRunMode.UP)))
+            .withName("Agitate Post Intake"));
+
+    shotModeButton
+        .and(xbox.povUp())
+        .whileTrue(
+            intake
+                .runEnd(
+                    () -> intake.setMode(IntakeRunMode.AGITATE_1_UP),
+                    () -> intake.setMode(IntakeRunMode.UP))
+                .withName("Agitate Stationary"));
+
+    shotModeButton
+        .and(xbox.povDown())
+        .whileTrue(
+            Commands.sequence(
+                    intake.runOnce(() -> intake.setMode(IntakeRunMode.AGITATE_1_UP)),
+                    Commands.waitSeconds(0.5),
+                    intake.runOnce(() -> intake.setMode(IntakeRunMode.AGITATE_2)),
+                    Commands.waitSeconds(0.3))
+                .repeatedly()
+                .withName("Agitate")
+                .finallyDo(() -> intake.setMode(IntakeRunMode.UP)));
 
     // Dump through intake button (hold)
     xbox.leftBumper()
         .debounce(0.1)
         .whileTrue(
             intake
-                .run(() -> intake.setMode(IntakeRunMode.OUTTAKING))
-                .finallyDo(() -> intake.setMode(IntakeRunMode.UP))
+                .runEnd(
+                    () -> intake.setMode(IntakeRunMode.OUTTAKING),
+                    () -> intake.setMode(IntakeRunMode.UP))
                 .withName("Dump Intake"))
         .whileTrue(
             hopper
-                .run(() -> hopper.setMode(HopperRunMode.REVERSE))
-                .finallyDo(() -> hopper.setMode(HopperRunMode.STOPPED))
+                .runEnd(
+                    () -> hopper.setMode(HopperRunMode.REVERSE),
+                    () -> hopper.setMode(HopperRunMode.STOPPED))
                 .withName("Dump Hopper"));
 
     // Deploy intake tap button
@@ -360,6 +394,7 @@ public class RobotContainer {
     // Intake shift up button
     xbox.povUp()
         .and(manualButton.negate())
+        .and(shotModeButton.negate())
         .onTrue(
             Commands.runOnce(() -> intake.shiftSetpoint(Rotation2d.fromDegrees(+1)))
                 .withName("Shift intake up"));
@@ -367,6 +402,7 @@ public class RobotContainer {
     // Intake shift down button
     xbox.povDown()
         .and(manualButton.negate())
+        .and(shotModeButton.negate())
         .onTrue(
             Commands.runOnce(() -> intake.shiftSetpoint(Rotation2d.fromDegrees(-1)))
                 .withName("Shift intake down"));
@@ -490,8 +526,14 @@ public class RobotContainer {
         .onTrue(manualLaunchControl.incrementHoodCommand(-0.025));
 
     // Manual mode preset adjustment buttons
-    xbox.povUp().and(manualButton).onTrue(manualLaunchControl.incrementVelocityCommand(+20));
-    xbox.povDown().and(manualButton).onTrue(manualLaunchControl.incrementVelocityCommand(-20));
+    xbox.povUp()
+        .and(manualButton)
+        .and(shotModeButton.negate())
+        .onTrue(manualLaunchControl.incrementVelocityCommand(+20));
+    xbox.povDown()
+        .and(manualButton)
+        .and(shotModeButton.negate())
+        .onTrue(manualLaunchControl.incrementVelocityCommand(-20));
     resetButton.and(manualButton).onTrue(manualLaunchControl.resetCommand());
 
     // --- HANG/MANUAL CONTROL ---
