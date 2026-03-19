@@ -10,30 +10,37 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.FieldConstants;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.utility.geometry.AllianceMirrorUtil;
+
+import static frc.robot.subsystems.drive.DriveConstants.DRIVE_CONFIG;
+
+import java.util.Set;
 
 public class SelfDrivingCommands {
-  // TODO Copied from docs
   static PathConstraints constraints =
-      new PathConstraints(3.0, 4.0, Units.degreesToRadians(540), Units.degreesToRadians(720));
+      new PathConstraints(DRIVE_CONFIG.maxLinearVelocity(), 4.0, Units.degreesToRadians(540), Units.degreesToRadians(720));
 
-  public static Command selfDriveToOtherZone(Drive drivetrain) {
+  public static Command selfDriveToOtherZone(Drive drive) {
     return Commands.either(
-            selfDriveToAllianceZone(),
-            selfDriveToNeutralZone(),
-            () -> isInNeutralZone(drivetrain.getRobotPose()))
+            Commands.defer(SelfDrivingCommands::selfDriveToAllianceZone, Set.of(drive)),
+            Commands.defer(SelfDrivingCommands::selfDriveToNeutralZone, Set.of(drive)),
+            () -> isInNeutralZone(drive.getRobotPose()))
         .withName("Drive to other zone");
   }
 
   public static Command selfDriveToAllianceZone() {
     return AutoBuilder.pathfindToPose(
-        new Pose2d( // TODO WRONG POSE
-            FieldConstants.fieldLength / 2, FieldConstants.fieldWidth / 2, Rotation2d.kZero),
+        AllianceMirrorUtil.apply(
+            new Pose2d(
+                FieldConstants.fieldLength / 6, FieldConstants.fieldWidth / 2, Rotation2d.kZero)),
         constraints);
   }
 
   public static Command selfDriveToNeutralZone() {
     return AutoBuilder.pathfindToPose(
-        new Pose2d(FieldConstants.fieldLength / 2, FieldConstants.fieldWidth / 2, Rotation2d.kZero),
+        AllianceMirrorUtil.apply(
+            new Pose2d(
+                FieldConstants.fieldLength / 2.5, FieldConstants.fieldWidth / 2, Rotation2d.kZero)),
         constraints);
   }
 
