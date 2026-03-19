@@ -74,17 +74,17 @@ public class LaunchCalculator extends VirtualSubsystem {
       new InterpolatingDoubleTreeMap();
 
   static {
-    putTableDataTapeMeasure(8, 300+35, 0.1);
-    putTableDataTapeMeasure(21, 325+35, 0.1);
-    putTableDataTapeMeasure(35, 325+35, 0.15);
-    putTableDataTapeMeasure(48, 370+35, 0.15);
-    putTableDataTapeMeasure(62, 370+35, 0.2);
-    putTableDataTapeMeasure(78, 400+35, 0.2);
-    putTableDataTapeMeasure(90, 400+35, 0.25);
-    putTableDataTapeMeasure(101, 400+35, 0.3);
-    putTableDataTapeMeasure(112, 410+35, 0.3);
-    putTableDataTapeMeasure(124, 425+35, 0.35);
-    putTableDataTapeMeasure(139, 425+35, 0.4);
+    putTableDataTapeMeasure(8, 300 + 35, 0.1);
+    putTableDataTapeMeasure(21, 325 + 35, 0.1);
+    putTableDataTapeMeasure(35, 325 + 35, 0.15);
+    putTableDataTapeMeasure(48, 370 + 35, 0.15);
+    putTableDataTapeMeasure(62, 370 + 35, 0.2);
+    putTableDataTapeMeasure(78, 400 + 35, 0.2);
+    putTableDataTapeMeasure(90, 400 + 35, 0.25);
+    putTableDataTapeMeasure(101, 400 + 35, 0.3);
+    putTableDataTapeMeasure(112, 410 + 35, 0.3);
+    putTableDataTapeMeasure(124, 425 + 35, 0.35);
+    putTableDataTapeMeasure(139, 425 + 35, 0.4);
 
     timeOfFlightMap.put(3.60, 1.88);
     timeOfFlightMap.put(3.40, 1.57);

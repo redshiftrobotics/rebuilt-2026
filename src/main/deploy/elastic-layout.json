@@ -11,7 +11,7 @@
             "x": 384.0,
             "y": 256.0,
             "width": 256.0,
-            "height": 320.0,
+            "height": 384.0,
             "type": "List Layout",
             "properties": {
               "label_position": "TOP"
@@ -68,6 +68,20 @@
                 "type": "Text Display",
                 "properties": {
                   "topic": "/SmartDashboard/LauncherTuning/MeasuredWheelRadPerSec",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "CalculatorDistanceAdjustedInches",
+                "x": 384.0,
+                "y": 512.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/LauncherTuning/CalculatorDistanceAdjustedInches",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": false
@@ -132,24 +146,6 @@
             }
           },
           {
-            "title": "Speed MPH",
-            "x": 256.0,
-            "y": 0.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Number Bar",
-            "properties": {
-              "topic": "/SmartDashboard/Speed MPH",
-              "period": 0.06,
-              "data_type": "double",
-              "min_value": 0.0,
-              "max_value": 15.0,
-              "divisions": 3,
-              "inverted": false,
-              "orientation": "vertical"
-            }
-          },
-          {
             "title": "Drive Mode",
             "x": 0.0,
             "y": 256.0,
@@ -179,9 +175,9 @@
           {
             "title": "Has Vision",
             "x": 256.0,
-            "y": 128.0,
+            "y": 0.0,
             "width": 128.0,
-            "height": 128.0,
+            "height": 256.0,
             "type": "Boolean Box",
             "properties": {
               "topic": "/SmartDashboard/Has Vision",
@@ -195,8 +191,8 @@
           },
           {
             "title": "Launch Mode",
-            "x": 640.0,
-            "y": 384.0,
+            "x": 768.0,
+            "y": 256.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Large Text Display",
@@ -279,9 +275,9 @@
           },
           {
             "title": "Active First?",
-            "x": 1024.0,
+            "x": 896.0,
             "y": 256.0,
-            "width": 128.0,
+            "width": 256.0,
             "height": 128.0,
             "type": "Boolean Box",
             "properties": {
@@ -311,7 +307,7 @@
           {
             "title": "Hopper Mode",
             "x": 768.0,
-            "y": 384.0,
+            "y": 512.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
@@ -325,7 +321,7 @@
           {
             "title": "Intake Mode",
             "x": 768.0,
-            "y": 256.0,
+            "y": 384.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
@@ -353,6 +349,23 @@
               "color": 4278238420,
               "line_width": 2.0
             }
+          },
+          {
+            "title": "Launch Running?",
+            "x": 640.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Launcher/isRunning",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
           }
         ]
       }
@@ -366,7 +379,7 @@
             "x": 384.0,
             "y": 256.0,
             "width": 256.0,
-            "height": 320.0,
+            "height": 384.0,
             "type": "List Layout",
             "properties": {
               "label_position": "TOP"
@@ -423,6 +436,20 @@
                 "type": "Text Display",
                 "properties": {
                   "topic": "/SmartDashboard/LauncherTuning/MeasuredWheelRadPerSec",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "CalculatorDistanceAdjustedInches",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/LauncherTuning/CalculatorDistanceAdjustedInches",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": false
