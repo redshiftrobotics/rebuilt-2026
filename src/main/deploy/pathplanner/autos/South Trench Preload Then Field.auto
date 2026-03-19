@@ -1,0 +1,31 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "South Trench Backup"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "LaunchInPlace"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "South Trench To Field"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "Preload Then Field",
+  "choreoAuto": false
+}

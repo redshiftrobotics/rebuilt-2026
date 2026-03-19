@@ -1,80 +1,42 @@
 package frc.robot.subsystems.launcher;
 
-import static edu.wpi.first.units.Units.Meters;
-
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Servo;
+import frc.robot.subsystems.launcher.LauncherConstants.HoodConstants;
 
-/** Hardware implementation of the TemplateIO. */
+/** Hardware implementation of the Hood IO. */
 public class HoodIOActuator implements HoodIO {
 
-  private final Servo actuatorLeft = new Servo(LauncherConstants.ACTUATOR_LEFT_ID);
-  private final Servo actuatorRight = new Servo(LauncherConstants.ACTUATOR_RIGHT_ID);
+  private final Servo actuatorLeft = new Servo(HoodConstants.ACTUATOR_LEFT_ID);
+  private final Servo actuatorRight = new Servo(HoodConstants.ACTUATOR_RIGHT_ID);
 
   public HoodIOActuator() {
+    // See Page 9, Sample code
+    // https://wcproducts.info/files/frc/manuals/WCP%20Miniature%20Linear%20Servo%20Actuators%20-%20User%20Guide.pdf
     actuatorLeft.setBoundsMicroseconds(2000, 1800, 1500, 1200, 1000);
     actuatorRight.setBoundsMicroseconds(2000, 1800, 1500, 1200, 1000);
   }
 
+  public double getPosition() {
+    return (actuatorLeft.getPosition() + actuatorRight.getPosition()) / 2.0;
+  }
+
   @Override
   public void setPosition(double position) {
+    position = MathUtil.clamp(position, 0.05, 0.55);
     actuatorLeft.set(position);
     actuatorRight.set(position);
   }
 
   @Override
-  public double getPosition() {
-    return (actuatorLeft.getPosition() + actuatorRight.getPosition()) / 2;
-  }
-
-  @Override
-  public void setAngle(Rotation2d angle) {
-    Distance r = LauncherConstants.HOOD_RADIUS;
-    // Convert launch angle to hood angle
-    angle = angle.plus(Rotation2d.kCCW_90deg);
-    Translation2d hoodPosition =
-        new Translation2d(r.times(angle.getCos()), r.times(angle.getSin()));
-
-    double lengthMeters = hoodPosition.getDistance(LauncherConstants.ACTUATOR_LOCATION);
-
-    double position =
-        (lengthMeters - LauncherConstants.ACTUATOR_LENGTH_MIN.in(Meters))
-            / (LauncherConstants.ACTUATOR_EXTENSION.in(Meters));
-    setPosition(position);
-  }
-
-  public Rotation2d getAngle() {
-    double actuatorLength =
-        getPosition() * LauncherConstants.ACTUATOR_EXTENSION.in(Meters)
-            + LauncherConstants.ACTUATOR_LENGTH_MIN.in(Meters);
-    double radius = LauncherConstants.HOOD_RADIUS.in(Meters);
-    double actuatorDistance = LauncherConstants.ACTUATOR_LOCATION.getNorm();
-
-    // https://www.desmos.com/calculator/pkbsecs465
-    // https://www.youtube.com/watch?v=Qji5x8gBVX4
-    Rotation2d relativeAngle =
-        new Rotation2d(
-            2 * Math.PI
-                - Math.acos(
-                    (radius * radius
-                            + actuatorDistance * actuatorDistance
-                            - (actuatorLength * actuatorDistance))
-                        / (2 * radius * actuatorDistance)));
-    // Convert from relative angle to absolute angle, then to launch angle
-    return relativeAngle
-        .plus(LauncherConstants.ACTUATOR_LOCATION.getAngle())
-        .minus(Rotation2d.kCCW_90deg);
-  }
-
-  @Override
-  public HoodType hoodType() {
-    return HoodType.FIXED;
-  }
-
-  @Override
   public void updateInputs(HoodIOInputs inputs) {
-    inputs.angleRadians = getAngle().getRadians();
+    inputs.isAdjustable = true;
+
+    // Note, this returns the commanded position, not the position that the servo is actually at, as
+    // the servo does not report its own position.
+    inputs.positionLeft = actuatorLeft.get();
+    inputs.positionRight = actuatorRight.get();
+
+    // TODO: Use slew rate limiter to estimate real position
   }
 }

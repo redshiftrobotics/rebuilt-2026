@@ -116,6 +116,7 @@ public class Intake extends SubsystemBase {
       case REBUILT_2026:
         return new Intake(new IntakeWheelIOSparkMax(), new SlapdownIOSparkMax());
 
+      case METALBOT_2:
       case SIM_BOT:
         return new Intake(new IntakeWheelIOSim(), new SlapdownIOSim());
 

@@ -1,16 +1,14 @@
 package frc.robot.subsystems.launcher;
 
-import edu.wpi.first.units.measure.AngularVelocity;
 import frc.robot.utility.records.FeedForwardConfigRecord;
 import frc.robot.utility.records.PIDConfig;
 import org.littletonrobotics.junction.AutoLog;
 
-/** Interface for the IO layers of the Template subsystem. */
+/** Interface for the IO layers of the Launcher subsystem's channel. */
 public interface ChannelIO {
   @AutoLog
   public static class ChannelIOInputs {
     public boolean motorConnected = true;
-    public boolean pushedConfigFault = false;
 
     public double velocityRadPerSec = 0.0;
     public double appliedVolts = 0.0;
@@ -32,12 +30,12 @@ public interface ChannelIO {
   public default void setOpenLoop(double output) {}
 
   /** Run to velocity setpoint */
-  public default void setVelocity(AngularVelocity velocity) {
-    setVelocity(velocity, 0);
+  public default void setVelocity(double radPerSec) {
+    setVelocity(radPerSec, 0);
   }
 
   /** Run to velocity setpoint with feedforward */
-  public default void setVelocity(AngularVelocity velocity, double arbFeedforward) {}
+  public default void setVelocity(double radPerSec, double arbFeedforward) {}
 
   /** Configure PID */
   public default void setPID(PIDConfig pid) {}

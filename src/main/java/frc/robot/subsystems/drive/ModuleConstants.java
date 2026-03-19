@@ -138,7 +138,7 @@ public class ModuleConstants {
       case REBUILT_2026:
         DRIVE_MOTOR = DCMotor.getKrakenX60Foc(1);
         DRIVE_FEEDBACK = new PIDConfig(20, 0, 0);
-        DRIVE_FEEDFORWARD = new FeedForwardConfigRecord(2.00544, 1.05719, 0);
+        DRIVE_FEEDFORWARD = new FeedForwardConfigRecord(3.38743, 1.60203, 0);
         DRIVE_MOTOR_CURRENT_LIMIT = CompetitionConstants.FrontLeft.SlipCurrent;
         DRIVE_REDUCTION = CompetitionConstants.FrontLeft.DriveMotorGearRatio;
 

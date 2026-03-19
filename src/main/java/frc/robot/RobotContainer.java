@@ -1,14 +1,11 @@
 package frc.robot;
 
-import static edu.wpi.first.units.Units.RadiansPerSecond;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -25,28 +22,32 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.Mode;
 import frc.robot.Constants.RobotType;
 import frc.robot.commands.DriveCharacterizationCommands;
+import frc.robot.commands.LaunchCommands;
 import frc.robot.commands.SelfDrivingCommands;
 import frc.robot.commands.pipeline.DriveInput;
 import frc.robot.commands.pipeline.DriveInputPipeline;
-import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.hopper.HopperConstants.HopperRunMode;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeRunMode;
+import frc.robot.subsystems.launcher.LaunchCalculator;
+import frc.robot.subsystems.launcher.LaunchCalculator.LaunchingParameters;
 import frc.robot.subsystems.launcher.Launcher;
 import frc.robot.subsystems.launcher.Launcher.LauncherRunMode;
-import frc.robot.subsystems.launcher.LauncherConstants;
 import frc.robot.subsystems.launcher.LauncherControlManual;
 import frc.robot.subsystems.launcher.LauncherControlManual.ManualLaunchMode;
-import frc.robot.subsystems.led.BlinkenLEDPattern;
+import frc.robot.subsystems.led.BlinkinLEDPattern;
 import frc.robot.subsystems.led.LEDSubsystem;
 import frc.robot.subsystems.vision.AprilTagVision;
 import frc.robot.utility.Elastic;
 import frc.robot.utility.Elastic.Notification.NotificationLevel;
-import frc.robot.utility.FieldFlipUtil;
-import frc.robot.utility.HubTracker;
-import java.util.HashMap;
+import frc.robot.utility.HubShiftUtil;
+import frc.robot.utility.HubShiftUtil.ShiftEnum;
+import frc.robot.utility.HubShiftUtil.ShiftInfo;
+import frc.robot.utility.geometry.FieldFlipUtil;
+import java.util.LinkedHashMap;
+import java.util.Set;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -65,7 +66,6 @@ public class RobotContainer {
   private final Hopper hopper;
   private final Launcher launcher;
   private final Intake intake;
-  private final Climb climb;
 
   // Controller
   private final CommandXboxController driverController = new CommandXboxController(0);
@@ -106,7 +106,6 @@ public class RobotContainer {
     leds = LEDSubsystem.create(robotType);
     hopper = Hopper.create(robotType);
     intake = Intake.create(robotType);
-    climb = Climb.create(robotType);
     launcher = Launcher.create(robotType);
 
     // Vision setup
@@ -129,21 +128,7 @@ public class RobotContainer {
     autoChooser = new LoggedDashboardChooser<>("Auto Chooser", createSendableChooser());
     autoChooser.addDefaultOption("None", Commands.none());
 
-    leds.setDefaultCommand(
-        leds.runColor(
-                BlinkenLEDPattern.COLORWAVES_OCEAN,
-                BlinkenLEDPattern.COLORWAVES_LAVA,
-                BlinkenLEDPattern.WHITE)
-            .withName("LED Alliance Color Waves"));
-
-    launcher.configure(
-        drive::getRobotPose,
-        () -> {
-          Rotation2d robotAngle = drive.getRobotPose().getRotation();
-          ChassisSpeeds speeds =
-              ChassisSpeeds.fromRobotRelativeSpeeds(drive.getRobotSpeeds(), robotAngle);
-          return new Translation2d(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond);
-        });
+    launcher.configure(drive::getRobotPose, drive::getRobotSpeeds);
 
     // Alerts for constants to avoid using them in competition
     developmentModeActiveAlert.set(Constants.DEVELOPMENT_MODE);
@@ -158,6 +143,7 @@ public class RobotContainer {
     configureDriverControllerBindings(driverController);
     configureOperatorControllerBindings(operatorController);
     configureAlertTriggers();
+    configureLEDs();
 
     System.out.println(robotType + " ready.");
   }
@@ -214,6 +200,9 @@ public class RobotContainer {
     final DriveInputPipeline pipeline = new DriveInputPipeline(drive, baseDrive);
 
     // Default command, normal joystick drive
+
+    final Command aimDrive = LaunchCommands.driveWhileLaunching(drive, pipeline::getChassisSpeeds);
+
     drive.setDefaultCommand(
         drive
             .run(() -> drive.setRobotSpeeds(pipeline.getChassisSpeeds()))
@@ -225,6 +214,8 @@ public class RobotContainer {
           Command current = drive.getCurrentCommand();
           if (current == drive.getDefaultCommand()) {
             return "[" + pipeline.getLayerInfo() + "]";
+          } else if (current == aimDrive) {
+            return "Aim[" + pipeline.getLayerInfo() + "]";
           } else if (current != null) {
             return current.getName();
           } else if (DriverStation.isDisabled()) {
@@ -239,7 +230,7 @@ public class RobotContainer {
         .toggleOnTrue(pipeline.runLayer("Robot Relative", DriveInput::fieldRelativeDisabled));
 
     // Secondary drive command, use driving stick to control angle as well
-    xbox.leftTrigger().whileTrue(pipeline.runLayer("Locust", DriveInput::locustMode));
+    xbox.leftTrigger().whileTrue(pipeline.runLayer("Intake", DriveInput::locustMode));
 
     // Slow mode, reduce translation and rotation speeds for fine control
     xbox.leftBumper()
@@ -247,8 +238,7 @@ public class RobotContainer {
             pipeline.runLayer(
                 "Slow", input -> input.linearCoefficient(0.3).angularCoefficient(0.3)));
 
-    xbox.rightTrigger()
-        .whileTrue(pipeline.runLayer("Aim", input -> input.headingTarget(launcher.getRobotYaw())));
+    xbox.rightTrigger().whileTrue(aimDrive);
 
     // Secondary drive command, right stick will be used to control target angular
     // position instead of angular velocity
@@ -258,7 +248,7 @@ public class RobotContainer {
                 "Heading", input -> input.headingStick(-xbox.getRightY(), -xbox.getRightX())));
 
     xbox.rightBumper()
-        .multiPress(2, 0.05)
+        .multiPress(2, 0.1)
         .toggleOnTrue(pipeline.runLayer("Hold", DriveInput::passiveHoldHeading));
 
     // Cause the robot to resist movement by forming an X shape with the swerve
@@ -312,12 +302,14 @@ public class RobotContainer {
 
     final LauncherControlManual manualLaunchControl = new LauncherControlManual(ManualLaunchMode.Y);
 
-    launcher.setManualModeVelocitySupplier(manualLaunchControl::get);
-    launcher.setManualModeAngleSupplier(() -> LauncherConstants.FIXED_LAUNCH_ANGLE);
-    launcher.setMode(LauncherRunMode.MANUAL);
+    launcher.setManualModeState(manualLaunchControl);
 
-    final Trigger manualLaunch = xbox.back();
-    final Trigger resetShift = xbox.start().debounce(0.01);
+    final LauncherRunMode DEFAULT_LAUNCH = LauncherRunMode.INTERPOLATION;
+
+    launcher.setMode(DEFAULT_LAUNCH);
+
+    final Trigger manualButton = xbox.back();
+    final Trigger resetButton = xbox.start().debounce(0.01);
 
     // --- INTAKE CONTROL ---
 
@@ -364,20 +356,21 @@ public class RobotContainer {
 
     // Intake shift up button
     xbox.povUp()
+        .and(manualButton.negate())
         .onTrue(
             Commands.runOnce(() -> intake.shiftSetpoint(Rotation2d.fromDegrees(+1)))
                 .withName("Shift intake up"));
 
     // Intake shift down button
     xbox.povDown()
-        .and(manualLaunch.negate())
+        .and(manualButton.negate())
         .onTrue(
             Commands.runOnce(() -> intake.shiftSetpoint(Rotation2d.fromDegrees(-1)))
                 .withName("Shift intake down"));
 
     // Reset intake shift button
-    resetShift
-        .and(manualLaunch.negate())
+    resetButton
+        .and(manualButton.negate())
         .onTrue(Commands.runOnce(intake::unshiftSetpoint).withName("Reset intake shift"));
 
     // --- OUTTAKE CONTROL ---
@@ -410,14 +403,16 @@ public class RobotContainer {
                     })
                 .withName("Force Launch"));
 
+    // --- LAUNCH PREP CONTROLS ---
+
     // Start spin up button
     xbox.y()
-        .and(manualLaunch.negate())
+        .and(manualButton.negate())
         .onTrue(launcher.runOnce(launcher::start).withName("Spin Up"));
 
     // Cancel spin up button
     xbox.b()
-        .and(manualLaunch.negate())
+        .and(manualButton.negate())
         .onTrue(
             launcher
                 .runOnce(launcher::stop)
@@ -426,7 +421,7 @@ public class RobotContainer {
 
     // Reverse lifter & outtake button
     xbox.x()
-        .and(manualLaunch.negate())
+        .and(manualButton.negate())
         .whileTrue(
             Commands.parallel(
                     launcher.run(() -> launcher.setDutyCycle(-0.1)),
@@ -440,7 +435,7 @@ public class RobotContainer {
 
     // Reverse lifter button
     xbox.a()
-        .and(manualLaunch.negate())
+        .and(manualButton.negate())
         .whileTrue(
             hopper
                 .run(() -> hopper.setMode(HopperRunMode.PREP_SHOT))
@@ -449,70 +444,57 @@ public class RobotContainer {
 
     // --- MANUAL LAUNCH MODE CONTROLS ---
 
-    manualLaunch
-        .and(resetShift)
-        .multiPress(2, 0.2)
-        .toggleOnTrue(
-            Commands.startEnd(
-                    () -> launcher.setMode(LauncherRunMode.AUTOMATIC),
-                    () -> launcher.setMode(LauncherRunMode.MANUAL))
-                .ignoringDisable(true)
-                .withName("Automatic Launch Preferred Mode"));
+    final Trigger anyManualModeLetterButton = xbox.a().or(xbox.b()).or(xbox.x()).or(xbox.y());
+    final Trigger isManualMode = new Trigger(() -> launcher.getMode() == LauncherRunMode.MANUAL);
 
-    // Outtake shift up button
+    // Manual mode is turned on when preset is chosen
+    manualButton
+        .and(anyManualModeLetterButton)
+        .onTrue(
+            Commands.runOnce(() -> launcher.setMode(LauncherRunMode.MANUAL))
+                .ignoringDisable(true)
+                .withName("Manual Launch Mode"));
+
+    // Manual mode is turned off on double tap
+    manualButton
+        .multiPress(2, 0.3)
+        .and(anyManualModeLetterButton.negate())
+        .onFalse(
+            Commands.runOnce(() -> launcher.setMode(DEFAULT_LAUNCH))
+                .ignoringDisable(true)
+                .withName("Default Launch Mode"));
+
+    manualButton
+        .and(xbox.b().multiPress(2, 0.3))
+        .onTrue(
+            Commands.runOnce(() -> launcher.setMode(LauncherRunMode.DASHBOARD_TUNING))
+                .ignoringDisable(true)
+                .withName("Dashboard Tuning Launch Mode"));
+
+    // Manual mode preset buttons
+    xbox.y().and(manualButton).onTrue(manualLaunchControl.setModeCommand(ManualLaunchMode.Y));
+    xbox.x().and(manualButton).onTrue(manualLaunchControl.setModeCommand(ManualLaunchMode.X));
+    xbox.a().and(manualButton).onTrue(manualLaunchControl.setModeCommand(ManualLaunchMode.A));
+    xbox.b().and(manualButton).onTrue(manualLaunchControl.setModeCommand(ManualLaunchMode.B));
+
+    // Manual mode preset adjustment buttons
+    // These have no overlap so can be turned on whenever manual mode is active
     xbox.povRight()
-        .onTrue(
-            Commands.runOnce(() -> manualLaunchControl.shiftVelocity(RadiansPerSecond.of(+10)))
-                .ignoringDisable(true)
-                .withName("Shift Velocity Up"));
-
-    // Outtake shift down button
+        .and(manualButton.or(isManualMode))
+        .onTrue(manualLaunchControl.incrementHoodCommand(+0.025));
     xbox.povLeft()
-        .onTrue(
-            Commands.runOnce(() -> manualLaunchControl.shiftVelocity(RadiansPerSecond.of(-10)))
-                .ignoringDisable(true)
-                .withName("Shift Velocity Down"));
+        .and(manualButton.or(isManualMode))
+        .onTrue(manualLaunchControl.incrementHoodCommand(-0.025));
 
-    // Outtake shift reset button
-    resetShift
-        .and(manualLaunch)
-        .onTrue(
-            Commands.runOnce(manualLaunchControl::resetShift)
-                .ignoringDisable(true)
-                .withName("Reset Shift"));
-
-    xbox.a()
-        .and(manualLaunch)
-        .onTrue(
-            Commands.runOnce(() -> manualLaunchControl.setMode(ManualLaunchMode.A))
-                .ignoringDisable(true)
-                .withName("Set Manual Launch Mode A"));
-    xbox.b()
-        .and(manualLaunch)
-        .onTrue(
-            Commands.runOnce(() -> manualLaunchControl.setMode(ManualLaunchMode.B))
-                .ignoringDisable(true)
-                .withName("Set Manual Launch Mode B"));
-    xbox.x()
-        .and(manualLaunch)
-        .onTrue(
-            Commands.runOnce(() -> manualLaunchControl.setMode(ManualLaunchMode.X))
-                .ignoringDisable(true)
-                .withName("Set Manual Launch Mode X"));
-    xbox.y()
-        .and(manualLaunch)
-        .onTrue(
-            Commands.runOnce(() -> manualLaunchControl.setMode(ManualLaunchMode.Y))
-                .ignoringDisable(true)
-                .withName("Set Manual Launch Mode Y"));
+    // Manual mode preset adjustment buttons
+    xbox.povUp().and(manualButton).onTrue(manualLaunchControl.incrementVelocityCommand(+20));
+    xbox.povDown().and(manualButton).onTrue(manualLaunchControl.incrementVelocityCommand(-20));
+    resetButton.and(manualButton).onTrue(manualLaunchControl.resetCommand());
 
     // --- HANG/MANUAL CONTROL ---
 
     // Hang up/down axis
     xbox.getRightY();
-
-    // Manual mechanism axis
-    xbox.getLeftY();
   }
 
   private Command rumbleController(
@@ -534,7 +516,8 @@ public class RobotContainer {
   }
 
   private void configureAlertTriggers() {
-    new Trigger(HubTracker::isActive).onChange(rumbleControllers(1.0).withTimeout(0.25));
+    new Trigger(() -> HubShiftUtil.getShiftedShiftInfo().active())
+        .onChange(rumbleControllers(1.0).withTimeout(0.25));
 
     Trigger isMatch = new Trigger(() -> DriverStation.getMatchTime() != -1);
 
@@ -545,13 +528,64 @@ public class RobotContainer {
     RobotModeTriggers.autonomous()
         .and(isMatch)
         .onTrue(Commands.runOnce(() -> Elastic.selectTab("Autonomous")));
+
+    RobotModeTriggers.teleop().onTrue(Commands.runOnce(HubShiftUtil::initialize));
+    RobotModeTriggers.autonomous().onTrue(Commands.runOnce(HubShiftUtil::initialize));
+    RobotModeTriggers.disabled()
+        .onTrue(Commands.runOnce(HubShiftUtil::initialize).ignoringDisable(true));
+  }
+
+  private void configureLEDs() {
+    LoggedDashboardChooser<BlinkinLEDPattern> ledFallbackPatternChooser =
+        new LoggedDashboardChooser<>(
+            "LED Pattern Chooser", new SendableChooser<BlinkinLEDPattern>());
+
+    final BlinkinLEDPattern defaultPattern = BlinkinLEDPattern.GOLD;
+
+    SmartDashboard.putData(
+        "LED Default Pattern Chooser", ledFallbackPatternChooser.getSendableChooser());
+
+    ledFallbackPatternChooser.addDefaultOption(
+        String.format("Default (%s)", defaultPattern), defaultPattern);
+
+    for (BlinkinLEDPattern pattern : BlinkinLEDPattern.values()) {
+      ledFallbackPatternChooser.addOption(pattern.toString(), pattern);
+    }
+
+    leds.setDefaultCommand(
+        leds.runColor(
+                () -> {
+                  if (DriverStation.isAutonomous()) {
+                    return BlinkinLEDPattern.FIRE_LARGE;
+                  }
+
+                  LaunchingParameters launchParams =
+                      LaunchCalculator.getInstance()
+                          .getParameters(drive.getRobotPose(), drive.getRobotSpeeds());
+
+                  ShiftInfo shift = HubShiftUtil.getOfficialShiftInfo();
+                  if (shift.active() && launchParams.isValid() && !launchParams.passing()) {
+                    return BlinkinLEDPattern.BLUE_GREEN;
+                  }
+
+                  if (shift.currentShift() == ShiftEnum.TRANSITION) {
+                    if (HubShiftUtil.isFirstActiveAlliance()) {
+                      return BlinkinLEDPattern.GREEN;
+                    } else {
+                      return BlinkinLEDPattern.WHITE;
+                    }
+                  }
+
+                  return ledFallbackPatternChooser.get();
+                })
+            .withName("LED"));
   }
 
   /** Make commands accessible to PathPlanner autos. */
   private void registerNamedCommands() {
-    HashMap<String, Command> namedCommands = new HashMap<String, Command>();
+    LinkedHashMap<String, Command> namedCommands = new LinkedHashMap<String, Command>();
 
-    namedCommands.put("LEDS", leds.runColor(BlinkenLEDPattern.RED));
+    namedCommands.put("LEDS", leds.runColor(BlinkinLEDPattern.RED));
 
     // Hopper commands
     namedCommands.put("StopHopper", hopper.runOnce(() -> hopper.setMode(HopperRunMode.STOPPED)));
@@ -568,10 +602,16 @@ public class RobotContainer {
     namedCommands.put("StopIntake", intake.runOnce(() -> intake.setMode(IntakeRunMode.UP)));
 
     // Launcher commands
+    namedCommands.put("PrimeToLaunch", LaunchCommands.primeToLaunch(drive, launcher));
+    namedCommands.put("LaunchInPlace", LaunchCommands.launchInPlace(drive, launcher, hopper));
 
     // Hang commands
-    namedCommands.put("HangUp", null);
-    namedCommands.put("HangDown", null);
+    namedCommands.put("HangUp", Commands.none());
+    namedCommands.put("HangDown", Commands.none());
+
+    namedCommands.put(
+        "WaitVariable",
+        Commands.defer(() -> Commands.waitSeconds(DriverDashboard.getDelaySeconds()), Set.of()));
 
     System.out.println("Named commands:");
     for (var commandName : namedCommands.keySet()) {
@@ -582,6 +622,7 @@ public class RobotContainer {
         System.err.println("[FAIL] " + commandName);
       }
     }
+    System.out.println("Named commands registered.");
   }
 
   /**

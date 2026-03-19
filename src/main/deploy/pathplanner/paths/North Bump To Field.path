@@ -1,0 +1,86 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.0,
+        "y": 5.0
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.506820907269508,
+        "y": 5.61050067258319
+      },
+      "isLocked": false,
+      "linkedName": "North Bump Backup Endpoint"
+    },
+    {
+      "anchor": {
+        "x": 3.2498002853067045,
+        "y": 7.444336661911555
+      },
+      "prevControl": {
+        "x": 2.56798246266522,
+        "y": 7.0784039180510705
+      },
+      "nextControl": {
+        "x": 3.6285678454740067,
+        "y": 7.6476218327807866
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.225691868758916,
+        "y": 7.314950071326677
+      },
+      "prevControl": {
+        "x": 5.997768233872748,
+        "y": 7.417667239610644
+      },
+      "nextControl": {
+        "x": 6.625628709060667,
+        "y": 7.134712599470149
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.674821683309556,
+        "y": 5.956390870185448
+      },
+      "prevControl": {
+        "x": 7.53690494351398,
+        "y": 6.16490699158655
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "reversed": false,
+  "folder": null,
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "useDefaultConstraints": true
+}
