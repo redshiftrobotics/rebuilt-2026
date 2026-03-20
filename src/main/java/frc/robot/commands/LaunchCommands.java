@@ -73,7 +73,7 @@ public class LaunchCommands {
                         .getDegrees(),
                     drive.getRobotPose().getRotation().getDegrees(),
                     2.0)));
-                    
+
     Command autoAlign =
         driveWhileLaunching(drive, () -> ZERO_CHASSIS_SPEEDS).until(isAligned).withTimeout(8);
 
