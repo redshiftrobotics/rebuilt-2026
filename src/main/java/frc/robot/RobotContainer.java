@@ -324,6 +324,8 @@ public class RobotContainer {
 
     final Trigger launcherRunning = new Trigger(launcher::isRunning);
 
+    final Trigger cancelButton = xbox.b();
+
     final Trigger manualButton = xbox.back();
     final Trigger resetButton = xbox.start().debounce(0.01);
     final Trigger interpolationOffsetButton = xbox.x();
@@ -432,6 +434,7 @@ public class RobotContainer {
 
     // Spin up then launch button
     xbox.rightTrigger()
+        .and(cancelButton.negate())
         .whileTrue(
             launcher.startEnd(launcher::start, launcher::stop).withName("Spin up for Launch"))
         .whileTrue(
@@ -439,10 +442,12 @@ public class RobotContainer {
                 .andThen(hopper.run(() -> hopper.setMode(HopperRunMode.FIRING)))
                 .finallyDo(() -> hopper.setMode(HopperRunMode.STOPPED))
                 .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
+                .onlyWhile(launcher::isRunning)
                 .withName("Hopper firing when ready"));
 
     // Force launch button
     xbox.rightBumper()
+        .and(cancelButton.negate())
         .whileTrue(
             launcher
                 .run(launcher::start)
@@ -482,7 +487,7 @@ public class RobotContainer {
         .onTrue(launcher.runOnce(launcher::start).withName("Spin Up"));
 
     // Cancel spin up button
-    xbox.b()
+    cancelButton
         .and(manualButton.negate())
         .onTrue(
             launcher
