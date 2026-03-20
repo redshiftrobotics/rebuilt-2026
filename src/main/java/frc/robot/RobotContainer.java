@@ -189,6 +189,11 @@ public class RobotContainer {
             || !DriverStation.getJoystickIsXbox(operatorController.getHID().getPort()));
   }
 
+  /**
+   * Configures the bindings for the driver controller.
+   * 
+   * @param xbox The driver controller
+   */
   private void configureDriverControllerBindings(CommandXboxController xbox) {
     Supplier<DriveInput> baseDrive =
         () ->
@@ -302,6 +307,11 @@ public class RobotContainer {
     }
   }
 
+  /**
+   * Configures the bindings for the operator controller.
+   * 
+   * @param xbox The operator controller
+   */
   private void configureOperatorControllerBindings(CommandXboxController xbox) {
 
     final LauncherControlManual manualLaunchControl = new LauncherControlManual(ManualLaunchMode.Y);
@@ -554,6 +564,7 @@ public class RobotContainer {
         .withName("Rumble Both Controllers");
   }
 
+  /** Configures triggers for alerts and robot mode changes. */
   private void configureAlertTriggers() {
     new Trigger(() -> HubShiftUtil.getShiftedShiftInfo().active())
         .onChange(rumbleControllers(1.0, RumbleType.kRightRumble).withTimeout(0.25));
@@ -574,6 +585,7 @@ public class RobotContainer {
         .onTrue(Commands.runOnce(HubShiftUtil::initialize).ignoringDisable(true));
   }
 
+  /** Configures the LED commands. */
   private void configureLEDs() {
     LoggedDashboardChooser<BlinkinLEDPattern> ledFallbackPatternChooser =
         new LoggedDashboardChooser<>(
