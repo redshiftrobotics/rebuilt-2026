@@ -16,9 +16,9 @@ import frc.robot.utility.geometry.AllianceMirrorUtil;
 import java.util.Set;
 
 public class SelfDrivingCommands {
-  static PathConstraints constraints =
+  static final PathConstraints constraints =
       new PathConstraints(
-          DRIVE_CONFIG.maxLinearVelocity(),
+          DRIVE_CONFIG.maxLinearVelocity() * 0.8,
           4.0,
           Units.degreesToRadians(540),
           Units.degreesToRadians(720));

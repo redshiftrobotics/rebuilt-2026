@@ -246,7 +246,7 @@ public class RobotContainer {
                 .andThen(
                     rumbleController(operatorController, 0.1, RumbleType.kRightRumble)
                         .withTimeout(0.1))
-                .finallyDo(() -> operatorController.setRumble(RumbleType.kRightRumble, 0)));
+                .finallyDo(() -> operatorController.setRumble(RumbleType.kBothRumble, 0)));
 
     // Secondary drive command, right stick will be used to control target angular
     // position instead of angular velocity
@@ -655,7 +655,9 @@ public class RobotContainer {
 
     namedCommands.put(
         "WaitVariable",
-        Commands.defer(() -> Commands.waitSeconds(DriverDashboard.getDelaySeconds()), Set.of()));
+        Commands.defer(
+            () -> Commands.waitSeconds(MathUtil.clamp(DriverDashboard.getDelaySeconds(), 0, 10)),
+            Set.of()));
 
     System.out.println("Named commands:");
     for (var commandName : namedCommands.keySet()) {

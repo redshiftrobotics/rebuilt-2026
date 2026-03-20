@@ -62,13 +62,14 @@ public class LaunchCommands {
     Command autoAlign =
         driveWhileLaunching(drive, () -> new ChassisSpeeds()).withTimeout(4); // TODO ACEIUS FIX
 
-    Command launchFuel =
-        Commands.parallel(
-            launcher.runOnce(launcher::start),
-            Commands.sequence(
-                hopper.runOnce(() -> hopper.setMode(HopperRunMode.PREP_SHOT)),
-                Commands.waitUntil(launcher::isReadyDebounced),
-                hopper.runOnce(() -> hopper.setMode(HopperRunMode.FIRING))));
+    Command launchFuel = Commands.none(); // TODO ACEIUS RE_ENABLE_WHEN_HOOD_FIXED
+
+    // Commands.parallel(
+    //     launcher.runOnce(launcher::start),
+    //     Commands.sequence(
+    //         hopper.runOnce(() -> hopper.setMode(HopperRunMode.PREP_SHOT)),
+    //         Commands.waitUntil(launcher::isReadyDebounced),
+    //         hopper.runOnce(() -> hopper.setMode(HopperRunMode.FIRING))));
 
     return Commands.parallel(launchFuel, autoAlign)
         .finallyDo(
