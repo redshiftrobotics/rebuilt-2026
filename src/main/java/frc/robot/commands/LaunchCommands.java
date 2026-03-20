@@ -60,7 +60,7 @@ public class LaunchCommands {
 
   public static Command launchInPlace(Drive drive, Launcher launcher, Hopper hopper) {
     Command autoAlign =
-        driveWhileLaunching(drive, () -> new ChassisSpeeds()).withTimeout(1); // TODO ACEIUS FIX
+        driveWhileLaunching(drive, () -> new ChassisSpeeds()).withTimeout(4); // TODO ACEIUS FIX
 
     Command launchFuel =
         Commands.parallel(
