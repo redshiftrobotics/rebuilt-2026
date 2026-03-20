@@ -56,7 +56,7 @@ deploy {
                     directory = '/home/lvuser/deploy'
                     // Change to true to delete files on roboRIO that no
                     // longer exist in deploy directory on roboRIO (suggested during development)
-                    deleteOldFiles = false
+                    deleteOldFiles = true
                 }
             }
         }
@@ -159,9 +159,7 @@ spotless {
             exclude "**/build/**", "**/build-*/**"
         }
         toggleOffOn()
-        googleJavaFormat()
-        // TODO: Use below once diff no longer relevant
-        // palantirJavaFormat('2.50.0').formatJavadoc(true)
+        palantirJavaFormat('2.50.0').formatJavadoc(true)
         removeUnusedImports()
         trimTrailingWhitespace()
         endWithNewline()
