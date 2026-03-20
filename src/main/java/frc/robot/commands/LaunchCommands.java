@@ -58,10 +58,9 @@ public class LaunchCommands {
             }));
   }
 
-  // TODO ACEIUS: Possibly use shoot-while-moving or at least PID controller
   public static Command launchInPlace(Drive drive, Launcher launcher, Hopper hopper) {
     Command autoAlign =
-        DriveCommands.rotateWithRotationController(drive, launcher::getRobotYaw).withTimeout(5);
+        driveWhileLaunching(drive, () -> new ChassisSpeeds()).withTimeout(1); // TODO ACEIUS FIX
 
     Command launchFuel =
         Commands.parallel(
