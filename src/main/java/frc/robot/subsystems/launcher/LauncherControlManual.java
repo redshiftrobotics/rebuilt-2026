@@ -1,6 +1,5 @@
 package frc.robot.subsystems.launcher;
 
-import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.launcher.Launcher.LauncherState;
@@ -11,10 +10,9 @@ import org.littletonrobotics.junction.AutoLogOutput;
 public class LauncherControlManual implements Supplier<LauncherState> {
 
   public enum ManualLaunchMode {
-    Y(DCMotor.getKrakenX60(1).freeSpeedRadPerSec, 1),
-    X(450.0, 0.3),
-    A(425.0, 0.2),
-    B(400.0, 0.0);
+    Y(450.0, 0.4), // Pass?
+    B(425.0, 0.2),
+    A(400.0, 0.1);
 
     final LauncherState base;
 

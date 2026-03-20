@@ -30,6 +30,7 @@ public class LaunchCalculator extends VirtualSubsystem {
   private static LaunchCalculator instance;
 
   private double hoodPositionOffset = 0.0;
+  private double wheelRadPerSecOffset = 0.0;
 
   private final LinearFilter hoodAngleFilter =
       LinearFilter.movingAverage((int) (0.1 / Constants.LOOP_PERIOD_SECONDS));
@@ -74,17 +75,32 @@ public class LaunchCalculator extends VirtualSubsystem {
       new InterpolatingDoubleTreeMap();
 
   static {
-    putTableDataTapeMeasure(8, 300 + 35, 0.1);
-    putTableDataTapeMeasure(21, 325 + 35, 0.1);
-    putTableDataTapeMeasure(35, 325 + 35, 0.15);
-    putTableDataTapeMeasure(48, 370 + 35, 0.15);
-    putTableDataTapeMeasure(62, 370 + 35, 0.2);
-    putTableDataTapeMeasure(78, 400 + 35, 0.2);
-    putTableDataTapeMeasure(90, 400 + 35, 0.25);
-    putTableDataTapeMeasure(101, 400 + 35, 0.3);
-    putTableDataTapeMeasure(112, 410 + 35, 0.3);
-    putTableDataTapeMeasure(124, 425 + 35, 0.35);
-    putTableDataTapeMeasure(139, 425 + 35, 0.4);
+
+    // Store offsets uses during match here
+    final double wheelRadPerSecOffsetSetup = 0.0;
+    final double hoodPositionOffsetSetup = 0.0;
+
+    putTableDataTapeMeasure(8, 300 + wheelRadPerSecOffsetSetup + 35, 0.1 + hoodPositionOffsetSetup);
+    putTableDataTapeMeasure(
+        21, 325 + wheelRadPerSecOffsetSetup + 35, 0.1 + hoodPositionOffsetSetup);
+    putTableDataTapeMeasure(
+        35, 325 + wheelRadPerSecOffsetSetup + 35, 0.15 + hoodPositionOffsetSetup);
+    putTableDataTapeMeasure(
+        48, 370 + wheelRadPerSecOffsetSetup + 35, 0.15 + hoodPositionOffsetSetup);
+    putTableDataTapeMeasure(
+        62, 370 + wheelRadPerSecOffsetSetup + 35, 0.2 + hoodPositionOffsetSetup);
+    putTableDataTapeMeasure(
+        78, 400 + wheelRadPerSecOffsetSetup + 35, 0.2 + hoodPositionOffsetSetup);
+    putTableDataTapeMeasure(
+        90, 400 + wheelRadPerSecOffsetSetup + 35, 0.25 + hoodPositionOffsetSetup);
+    putTableDataTapeMeasure(
+        101, 400 + wheelRadPerSecOffsetSetup + 35, 0.3 + hoodPositionOffsetSetup);
+    putTableDataTapeMeasure(
+        112, 410 + wheelRadPerSecOffsetSetup + 35, 0.3 + hoodPositionOffsetSetup);
+    putTableDataTapeMeasure(
+        124, 425 + wheelRadPerSecOffsetSetup + 35, 0.35 + hoodPositionOffsetSetup);
+    putTableDataTapeMeasure(
+        139, 425 + wheelRadPerSecOffsetSetup + 35, 0.4 + hoodPositionOffsetSetup);
 
     timeOfFlightMap.put(3.60, 1.88);
     timeOfFlightMap.put(3.40, 1.57);
@@ -208,8 +224,10 @@ public class LaunchCalculator extends VirtualSubsystem {
     Rotation2d driveAngle = getDriveAngleWithLauncherOffset(lookaheadRobotPose, target);
 
     // Calculate interpolated values from maps
-    double wheelRadPerSec = wheelRadPerSecMap.get(lookaheadLauncherToTargetDistance);
-    double hoodPosition = hoodPositionMap.get(lookaheadLauncherToTargetDistance);
+    double wheelRadPerSec =
+        wheelRadPerSecMap.get(lookaheadLauncherToTargetDistance) + wheelRadPerSecOffset;
+    double hoodPosition =
+        hoodPositionMap.get(lookaheadLauncherToTargetDistance) + hoodPositionOffset;
 
     // Calculate average hood velocity
     if (Double.isNaN(lastHoodAngle)) lastHoodAngle = hoodPosition;
@@ -231,7 +249,7 @@ public class LaunchCalculator extends VirtualSubsystem {
                 && lookaheadLauncherToTargetDistance >= LauncherConstants.MIN_DISTANCE,
             driveAngle,
             driveAngularVelocity.getRadians(),
-            hoodPosition + hoodPositionOffset,
+            hoodPosition,
             hoodVelocity,
             wheelRadPerSec,
             lookaheadLauncherToTargetDistance,
@@ -246,6 +264,9 @@ public class LaunchCalculator extends VirtualSubsystem {
         "LaunchCalculator/LauncherToTargetDistance", lookaheadLauncherToTargetDistance);
 
     Logger.recordOutput("LaunchCalculator/latestParameters", latestParameters);
+
+    Logger.recordOutput("LaunchCalculator/HoodPositionOffset", hoodPositionOffset);
+    Logger.recordOutput("LaunchCalculator/WheelRadPerSecOffset", wheelRadPerSecOffset);
 
     return latestParameters;
   }
@@ -301,6 +322,20 @@ public class LaunchCalculator extends VirtualSubsystem {
 
   public double getHoodPositionOffset() {
     return hoodPositionOffset;
+  }
+
+  /** Adjusts the wheel speed offset up or down the specified amount. */
+  public void incrementWheelRadPerSec(double delta) {
+    wheelRadPerSecOffset += delta;
+  }
+
+  public double getWheelRadPerSecOffset() {
+    return wheelRadPerSecOffset;
+  }
+
+  public void resetOffsets() {
+    hoodPositionOffset = 0.0;
+    wheelRadPerSecOffset = 0.0;
   }
 
   public void setDesiredFieldRelativeSpeedsOverride(

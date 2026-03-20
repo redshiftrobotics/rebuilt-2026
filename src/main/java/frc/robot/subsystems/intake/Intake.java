@@ -90,6 +90,10 @@ public class Intake extends SubsystemBase {
     setMode(currentMode);
   }
 
+  public IntakeRunMode getMode() {
+    return currentMode;
+  }
+
   public void setMode(IntakeRunMode mode) {
     currentMode = mode;
     wheelIO.setSpeed(mode.intakeDutyCycle);
