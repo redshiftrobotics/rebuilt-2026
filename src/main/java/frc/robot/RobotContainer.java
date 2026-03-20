@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -238,15 +239,7 @@ public class RobotContainer {
             pipeline.runLayer(
                 "Slow", input -> input.linearCoefficient(0.3).angularCoefficient(0.3)));
 
-    xbox.rightTrigger()
-        .whileTrue(aimDrive)
-        .onTrue(
-            rumbleController(operatorController, 0.05, RumbleType.kLeftRumble)
-                .until(() -> LaunchCommands.isDriveAtLaunchGoal(drive))
-                .andThen(
-                    rumbleController(operatorController, 0.1, RumbleType.kRightRumble)
-                        .withTimeout(0.1))
-                .finallyDo(() -> operatorController.setRumble(RumbleType.kBothRumble, 0)));
+    xbox.rightTrigger().whileTrue(aimDrive);
 
     // Secondary drive command, right stick will be used to control target angular
     // position instead of angular velocity
@@ -320,7 +313,6 @@ public class RobotContainer {
     final Trigger resetButton = xbox.start().debounce(0.01);
     final Trigger intakeFull = xbox.leftTrigger(0.5);
     final Trigger intakePartial = xbox.leftTrigger(0.2);
-    final Trigger shotModeButton = xbox.rightTrigger().or(xbox.rightBumper()).or(xbox.y());
 
     // --- INTAKE CONTROL ---
 
@@ -341,21 +333,11 @@ public class RobotContainer {
 
     // Start to automatically push ball
     intakePartial.onFalse(
-        Commands.waitSeconds(0.2)
+        Commands.waitSeconds(0.3)
             .andThen(intake.runOnce(() -> intake.setMode(IntakeRunMode.UP)))
             .withName("Agitate Post Intake"));
 
-    shotModeButton
-        .and(xbox.povUp())
-        .whileTrue(
-            intake
-                .runEnd(
-                    () -> intake.setMode(IntakeRunMode.AGITATE_1_UP),
-                    () -> intake.setMode(IntakeRunMode.UP))
-                .withName("Agitate Stationary"));
-
-    shotModeButton
-        .and(xbox.povDown())
+    xbox.leftStick()
         .whileTrue(
             Commands.sequence(
                     intake.runOnce(() -> intake.setMode(IntakeRunMode.AGITATE_1_UP)),
@@ -372,7 +354,7 @@ public class RobotContainer {
         .whileTrue(
             intake
                 .runEnd(
-                    () -> intake.setMode(IntakeRunMode.OUTTAKING),
+                    () -> intake.setMode(IntakeRunMode.OUTTAKING_DUMP),
                     () -> intake.setMode(IntakeRunMode.UP))
                 .withName("Dump Intake"))
         .whileTrue(
@@ -383,23 +365,15 @@ public class RobotContainer {
                 .withName("Dump Hopper"));
 
     // Deploy intake tap button
-    xbox.leftStick()
-        .onTrue(
-            intake
-                .runOnce(() -> intake.setModeNoWheels(IntakeRunMode.INTAKING))
-                .withName("Deploy intake"));
-
-    // Retract intake tap button
     xbox.rightStick()
-        .onTrue(
+        .whileTrue(
             intake
-                .runOnce(() -> intake.setModeNoWheels(IntakeRunMode.UP))
-                .withName("Retract intake"));
+                .run(() -> intake.setModeNoWheels(IntakeRunMode.INTAKING))
+                .withName("Deploy intake no wheels"));
 
     // Intake shift up button
     xbox.povUp()
         .and(manualButton.negate())
-        .and(shotModeButton.negate())
         .onTrue(
             Commands.runOnce(() -> intake.shiftSetpoint(Rotation2d.fromDegrees(+1)))
                 .withName("Shift intake up"));
@@ -407,7 +381,6 @@ public class RobotContainer {
     // Intake shift down button
     xbox.povDown()
         .and(manualButton.negate())
-        .and(shotModeButton.negate())
         .onTrue(
             Commands.runOnce(() -> intake.shiftSetpoint(Rotation2d.fromDegrees(-1)))
                 .withName("Shift intake down"));
@@ -525,14 +498,8 @@ public class RobotContainer {
         .onTrue(manualLaunchControl.incrementHoodCommand(-0.025));
 
     // Manual mode preset adjustment buttons
-    xbox.povUp()
-        .and(manualButton)
-        .and(shotModeButton.negate())
-        .onTrue(manualLaunchControl.incrementVelocityCommand(+20));
-    xbox.povDown()
-        .and(manualButton)
-        .and(shotModeButton.negate())
-        .onTrue(manualLaunchControl.incrementVelocityCommand(-20));
+    xbox.povUp().and(manualButton).onTrue(manualLaunchControl.incrementVelocityCommand(+20));
+    xbox.povDown().and(manualButton).onTrue(manualLaunchControl.incrementVelocityCommand(-20));
     resetButton.and(manualButton).onTrue(manualLaunchControl.resetCommand());
 
     // --- HANG/MANUAL CONTROL ---

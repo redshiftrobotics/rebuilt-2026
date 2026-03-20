@@ -32,7 +32,7 @@ public class IntakeWheelIOSim implements IntakeWheelIO {
 
   @Override
   public void setSpeed(double speed) {
-    sim.setInputVoltage(speed);
+    sim.setInputVoltage(speed * 12);
   }
 
   @Override

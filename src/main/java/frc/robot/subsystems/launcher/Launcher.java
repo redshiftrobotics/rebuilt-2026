@@ -54,7 +54,7 @@ public class Launcher extends SubsystemBase {
       new TunableNumber("Launcher/DebounceTimeAtGoalAuto", 0.75);
 
   public static TunableNumber DEBOUNCE_TIME_AT_GOAL_TELE =
-      new TunableNumber("Launcher/DebounceTimeAtGoalTele", 0.25);
+      new TunableNumber("Launcher/DebounceTimeAtGoalTele", 0.5);
 
   private final HoodIO hoodIO;
   private final HoodIOInputsAutoLogged hoodInputs = new HoodIOInputsAutoLogged();
