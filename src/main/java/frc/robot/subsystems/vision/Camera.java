@@ -74,7 +74,9 @@ public class Camera {
     this.robotPoseSupplier = robotPoseSupplier;
 
     this.missingCameraAlert =
-        new Alert(String.format("Missing cameras %s", getCameraName()), Alert.AlertType.kWarning);
+        new Alert(
+            String.format("Missing %s camera %s", getCameraPositionName(), getCameraName()),
+            Alert.AlertType.kError);
   }
 
   /** Set april tag field layout to use */
@@ -87,7 +89,7 @@ public class Camera {
     return io.getCameraName();
   }
 
-  public CameraPositionName getCameraPosition() {
+  public CameraPositionName getCameraPositionName() {
     return io.getCameraPosition();
   }
 
@@ -96,10 +98,10 @@ public class Camera {
     io.setLastRobotPose(robotPoseSupplier.get());
     io.updateInputs(inputs);
 
-    Logger.processInputs("Vision/" + getCameraPosition(), inputs);
+    Logger.processInputs("Vision/" + getCameraPositionName(), inputs);
 
     Logger.recordOutput(
-        "Vision/" + getCameraPosition() + "/cameraPose",
+        "Vision/" + getCameraPositionName() + "/cameraPose",
         new Pose3d(robotPoseSupplier.get()).plus(io.getRobotToCamera()));
 
     missingCameraAlert.set(!inputs.connected);

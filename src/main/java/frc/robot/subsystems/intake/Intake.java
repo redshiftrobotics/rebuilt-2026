@@ -39,6 +39,9 @@ public class Intake extends SubsystemBase {
   private final TunablePID slapdownPidConfig =
       new TunablePID(getName() + "/SlapdownPID", SlapdownConstants.PID);
 
+  private final TunablePID slapdownSecondaryPidConfig =
+      new TunablePID(getName() + "/SlapdownSeconardyPID", SlapdownConstants.PID_SECONDARY);
+
   private final IntakeVisualizer visualizer;
   private final IntakeVisualizer absoluteVisualizer;
   private final IntakeVisualizer setpointVisualizer;
@@ -66,6 +69,7 @@ public class Intake extends SubsystemBase {
     Logger.processInputs(getName() + "/Slapdown", slapdownInputs);
 
     slapdownPidConfig.ifChanged(hashCode(), slapdownIO::setPID);
+    slapdownSecondaryPidConfig.ifChanged(hashCode(), slapdownIO::setPIDSlotSecondary);
 
     Logger.recordOutput(getName() + "/mode", currentMode.toString());
 
@@ -89,7 +93,11 @@ public class Intake extends SubsystemBase {
   public void setMode(IntakeRunMode mode) {
     currentMode = mode;
     wheelIO.setSpeed(mode.intakeDutyCycle);
-    slapdownIO.setSetpoint(currentMode.getSetpoint());
+    if (mode == IntakeRunMode.INTAKING) {
+      slapdownIO.setSetpointSecondary(currentMode.getSetpoint());
+    } else {
+      slapdownIO.setSetpoint(currentMode.getSetpoint());
+    }
     setpointVisualizer.update(
         currentMode.getSetpoint().getRadians(),
         currentMode.intakeDutyCycle
@@ -100,7 +108,11 @@ public class Intake extends SubsystemBase {
   public void setModeNoWheels(IntakeRunMode mode) {
     currentMode = mode;
     wheelIO.stop();
-    slapdownIO.setSetpoint(currentMode.getSetpoint());
+    if (mode == IntakeRunMode.INTAKING) {
+      slapdownIO.setSetpointSecondary(currentMode.getSetpoint());
+    } else {
+      slapdownIO.setSetpoint(currentMode.getSetpoint());
+    }
     setpointVisualizer.update(currentMode.getSetpoint().getRadians(), 0);
   }
 

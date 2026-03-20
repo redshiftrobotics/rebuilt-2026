@@ -23,6 +23,7 @@ import frc.robot.Constants.Mode;
 import frc.robot.Constants.RobotType;
 import frc.robot.commands.DriveCharacterizationCommands;
 import frc.robot.commands.LaunchCommands;
+import frc.robot.commands.SelfDrivingCommands;
 import frc.robot.commands.pipeline.DriveInput;
 import frc.robot.commands.pipeline.DriveInputPipeline;
 import frc.robot.subsystems.drive.Drive;
@@ -237,14 +238,7 @@ public class RobotContainer {
             pipeline.runLayer(
                 "Slow", input -> input.linearCoefficient(0.3).angularCoefficient(0.3)));
 
-    xbox.rightTrigger()
-        .whileTrue(aimDrive)
-        .onTrue(
-            rumbleController(operatorController, 0.05, RumbleType.kLeftRumble)
-                .until(() -> LaunchCommands.isDriveAtLaunchGoal(drive))
-                .andThen(
-                    rumbleController(operatorController, 0.1, RumbleType.kRightRumble)
-                        .withTimeout(0.1)));
+    xbox.rightTrigger().whileTrue(aimDrive);
 
     // Secondary drive command, right stick will be used to control target angular
     // position instead of angular velocity
@@ -252,6 +246,10 @@ public class RobotContainer {
         .whileTrue(
             pipeline.runLayer(
                 "Heading", input -> input.headingStick(-xbox.getRightY(), -xbox.getRightX())));
+
+    // new Trigger(() -> drive.getDesiredRobotSpeeds().omegaRadiansPerSecond == 0)
+    //     .debounce(0.3)
+    //     .whileTrue(pipeline.runLayer("Hold", DriveInput::passiveHoldHeading));
 
     // Cause the robot to resist movement by forming an X shape with the swerve
     // modules. Helps prevent getting pushed around
@@ -280,6 +278,8 @@ public class RobotContainer {
                 .andThen(rumbleController(xbox, 0.3).withTimeout(0.25))
                 .ignoringDisable(true)
                 .withName("Reset Gyro Heading"));
+
+    xbox.y().whileTrue(SelfDrivingCommands.selfDriveToOtherZone(drive));
 
     // Configure the driving dpad
     for (int pov = 0; pov < 360; pov += 45) {
@@ -310,49 +310,65 @@ public class RobotContainer {
 
     final Trigger manualButton = xbox.back();
     final Trigger resetButton = xbox.start().debounce(0.01);
+    final Trigger intakeFull = xbox.leftTrigger(0.5);
+    final Trigger intakePartial = xbox.leftTrigger(0.2);
 
     // --- INTAKE CONTROL ---
 
     // Intake button (hold)
-    xbox.leftTrigger()
+    intakeFull
         .whileTrue(
             intake
-                .run(() -> intake.setMode(IntakeRunMode.INTAKING))
-                .finallyDo(() -> intake.setMode(IntakeRunMode.UP))
-                .withName("Dump Intake"))
+                .runEnd(
+                    () -> intake.setMode(IntakeRunMode.INTAKING),
+                    () -> intake.setMode(IntakeRunMode.AGITATE_1_UP))
+                .withName("Intake"))
         .whileTrue(
             hopper
-                .run(() -> hopper.setMode(HopperRunMode.IDLE))
-                .finallyDo(() -> hopper.setMode(HopperRunMode.STOPPED))
-                .withName("Dump Hopper"));
+                .runEnd(
+                    () -> hopper.setMode(HopperRunMode.IDLE),
+                    () -> hopper.setMode(HopperRunMode.STOPPED))
+                .withName("Hopper Intake"));
+
+    // Start to automatically push ball
+    intakePartial.onFalse(
+        Commands.waitSeconds(0.3)
+            .andThen(intake.runOnce(() -> intake.setMode(IntakeRunMode.UP)))
+            .withName("Agitate Post Intake"));
+
+    xbox.leftStick()
+        .whileTrue(
+            Commands.sequence(
+                    intake.runOnce(() -> intake.setMode(IntakeRunMode.AGITATE_1_UP)),
+                    Commands.waitSeconds(0.5),
+                    intake.runOnce(() -> intake.setMode(IntakeRunMode.AGITATE_2)),
+                    Commands.waitSeconds(0.3))
+                .repeatedly()
+                .withName("Agitate")
+                .finallyDo(() -> intake.setMode(IntakeRunMode.UP)));
 
     // Dump through intake button (hold)
     xbox.leftBumper()
         .debounce(0.1)
         .whileTrue(
             intake
-                .run(() -> intake.setMode(IntakeRunMode.OUTTAKING))
-                .finallyDo(() -> intake.setMode(IntakeRunMode.UP))
+                .runEnd(
+                    () -> intake.setMode(IntakeRunMode.OUTTAKING_DUMP),
+                    () -> intake.setMode(IntakeRunMode.UP))
                 .withName("Dump Intake"))
         .whileTrue(
             hopper
-                .run(() -> hopper.setMode(HopperRunMode.REVERSE))
-                .finallyDo(() -> hopper.setMode(HopperRunMode.STOPPED))
+                .runEnd(
+                    () -> hopper.setMode(HopperRunMode.REVERSE),
+                    () -> hopper.setMode(HopperRunMode.STOPPED))
                 .withName("Dump Hopper"));
 
     // Deploy intake tap button
-    xbox.leftStick()
-        .onTrue(
-            intake
-                .runOnce(() -> intake.setModeNoWheels(IntakeRunMode.INTAKING))
-                .withName("Deploy intake"));
-
-    // Retract intake tap button
     xbox.rightStick()
-        .onTrue(
+        .whileTrue(
             intake
-                .runOnce(() -> intake.setModeNoWheels(IntakeRunMode.UP))
-                .withName("Retract intake"));
+                .run(() -> intake.setModeNoWheels(IntakeRunMode.INTAKING))
+                .withName("Deploy intake no wheels"));
 
     // Intake shift up button
     xbox.povUp()
@@ -377,18 +393,12 @@ public class RobotContainer {
 
     // Spin up then launch button
     xbox.rightTrigger()
-        .whileTrue(
-            launcher
-                .runOnce(launcher::start)
-                .andThen(launcher.idle().until(launcher::isReadyDebounced))
-                .andThen(hopper.runOnce(() -> hopper.setMode(HopperRunMode.FIRING)))
-                .andThen(launcher.idle())
-                .finallyDo(
-                    () -> {
-                      launcher.stop();
-                      hopper.setMode(HopperRunMode.STOPPED);
-                    })
-                .withName("Spin up and Launch"));
+        .whileTrue(launcher.startEnd(launcher::start, launcher::stop))
+        .onFalse(hopper.runOnce(() -> hopper.setMode(HopperRunMode.STOPPED)));
+
+    xbox.rightTrigger()
+        .and(new Trigger(launcher::isReadyDebounced))
+        .onTrue(hopper.runOnce(() -> hopper.setMode(HopperRunMode.FIRING)));
 
     // Force launch button
     xbox.rightBumper()
@@ -611,7 +621,9 @@ public class RobotContainer {
 
     namedCommands.put(
         "WaitVariable",
-        Commands.defer(() -> Commands.waitSeconds(DriverDashboard.getDelaySeconds()), Set.of()));
+        Commands.defer(
+            () -> Commands.waitSeconds(MathUtil.clamp(DriverDashboard.getDelaySeconds(), 0, 10)),
+            Set.of()));
 
     System.out.println("Named commands:");
     for (var commandName : namedCommands.keySet()) {

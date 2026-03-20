@@ -4,8 +4,10 @@ import edu.wpi.first.math.geometry.Rotation2d;
 
 public enum IntakeRunMode {
   START_POSITION(Rotation2d.fromDegrees(105), 0),
-  INTAKING(Rotation2d.fromDegrees(10), 1.0),
-  OUTTAKING(Rotation2d.fromDegrees(20), -1.0),
+  INTAKING(Rotation2d.fromDegrees(0), 1.0),
+  OUTTAKING_DUMP(Rotation2d.fromDegrees(3), -1.0),
+  AGITATE_1_UP(Rotation2d.fromDegrees(88), 1.0),
+  AGITATE_2(Rotation2d.fromDegrees(60), 0.3),
   UP(Rotation2d.fromDegrees(90), 0.0);
 
   private final Rotation2d setpoint;

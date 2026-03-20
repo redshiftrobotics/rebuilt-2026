@@ -7,8 +7,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RobotType;
@@ -52,9 +52,9 @@ public class Launcher extends SubsystemBase {
 
   public static TunableNumber DEBOUNCE_TIME_AT_GOAL_AUTO =
       new TunableNumber("Launcher/DebounceTimeAtGoalAuto", 0.75);
-      
+
   public static TunableNumber DEBOUNCE_TIME_AT_GOAL_TELE =
-      new TunableNumber("Launcher/DebounceTimeAtGoalTele", 0.25);
+      new TunableNumber("Launcher/DebounceTimeAtGoalTele", 0.5);
 
   private final HoodIO hoodIO;
   private final HoodIOInputsAutoLogged hoodInputs = new HoodIOInputsAutoLogged();
@@ -245,11 +245,14 @@ public class Launcher extends SubsystemBase {
     }
 
     boolean atGoal = isReady();
-    
+
     DEBOUNCE_TIME_AT_GOAL_AUTO.ifChanged(hashCode(), autoAtGoalDebouncer::setDebounceTime);
     DEBOUNCE_TIME_AT_GOAL_TELE.ifChanged(hashCode(), teleAtGoalDebouncer::setDebounceTime);
 
-    atGoalDebounced = DriverStation.isAutonomous() ? autoAtGoalDebouncer.calculate(atGoal) : teleAtGoalDebouncer.calculate(atGoal);
+    atGoalDebounced =
+        DriverStation.isAutonomous()
+            ? autoAtGoalDebouncer.calculate(atGoal)
+            : teleAtGoalDebouncer.calculate(atGoal);
 
     Logger.recordOutput(
         getName() + "/desiredRobotPose", new Pose2d(robotPose.getTranslation(), robotYaw));

@@ -32,13 +32,19 @@ public class IntakeConstants {
     public static final DCMotor MOTOR_TYPE = DCMotor.getNEO(1).withReduction(1.0 / GEAR_RATIO);
 
     public static final Rotation2d ABSOLUTE_ENCODER_ZERO =
-        Rotation2d.fromRadians(3.414031536391377);
+        Rotation2d.fromRadians(3.414031536391377 - 1.0171798141935537);
     public static final boolean ABSOLUTE_ENCODER_INVERTED = true;
 
     public static final PIDConfig PID =
         switch (Constants.getRobot()) {
           case REBUILT_2026 -> new PIDConfig(3, 0, 0);
           case SIM_BOT -> new PIDConfig(3, 0, 1);
+          default -> new PIDConfig(0, 0, 0);
+        };
+    public static final PIDConfig PID_SECONDARY =
+        switch (Constants.getRobot()) {
+          case REBUILT_2026 -> new PIDConfig(5, 0, 0);
+          case SIM_BOT -> new PIDConfig(5, 0, 1);
           default -> new PIDConfig(0, 0, 0);
         };
   }
