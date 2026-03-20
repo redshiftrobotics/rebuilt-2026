@@ -245,7 +245,8 @@ public class RobotContainer {
                 .until(() -> LaunchCommands.isDriveAtLaunchGoal(drive))
                 .andThen(
                     rumbleController(operatorController, 0.1, RumbleType.kRightRumble)
-                        .withTimeout(0.1)));
+                        .withTimeout(0.1))
+                .finallyDo(() -> operatorController.setRumble(RumbleType.kRightRumble, 0)));
 
     // Secondary drive command, right stick will be used to control target angular
     // position instead of angular velocity
@@ -253,6 +254,10 @@ public class RobotContainer {
         .whileTrue(
             pipeline.runLayer(
                 "Heading", input -> input.headingStick(-xbox.getRightY(), -xbox.getRightX())));
+
+    // new Trigger(() -> drive.getDesiredRobotSpeeds().omegaRadiansPerSecond == 0)
+    //     .debounce(0.3)
+    //     .whileTrue(pipeline.runLayer("Hold", DriveInput::passiveHoldHeading));
 
     // Cause the robot to resist movement by forming an X shape with the swerve
     // modules. Helps prevent getting pushed around

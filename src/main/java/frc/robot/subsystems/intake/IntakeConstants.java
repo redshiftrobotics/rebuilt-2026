@@ -32,7 +32,7 @@ public class IntakeConstants {
     public static final DCMotor MOTOR_TYPE = DCMotor.getNEO(1).withReduction(1.0 / GEAR_RATIO);
 
     public static final Rotation2d ABSOLUTE_ENCODER_ZERO =
-        Rotation2d.fromRadians(3.414031536391377);
+        Rotation2d.fromRadians(3.414031536391377 - 1.0171798141935537);
     public static final boolean ABSOLUTE_ENCODER_INVERTED = true;
 
     public static final PIDConfig PID =
