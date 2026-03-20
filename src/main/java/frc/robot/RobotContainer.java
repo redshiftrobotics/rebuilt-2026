@@ -191,7 +191,7 @@ public class RobotContainer {
 
   /**
    * Configures the bindings for the driver controller.
-   * 
+   *
    * @param xbox The driver controller
    */
   private void configureDriverControllerBindings(CommandXboxController xbox) {
@@ -309,7 +309,7 @@ public class RobotContainer {
 
   /**
    * Configures the bindings for the operator controller.
-   * 
+   *
    * @param xbox The operator controller
    */
   private void configureOperatorControllerBindings(CommandXboxController xbox) {
