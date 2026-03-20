@@ -21,47 +21,44 @@ import frc.robot.FieldConstants;
  */
 public class AllianceMirrorUtil {
 
-  public static final Alliance DEFAULT_ALLIANCE = Alliance.Blue;
+    public static final Alliance DEFAULT_ALLIANCE = Alliance.Blue;
 
-  private AllianceMirrorUtil() {}
+    private AllianceMirrorUtil() {}
 
-  public static double applyX(double x) {
-    return shouldFlip() ? FieldConstants.fieldLength - x : x;
-  }
+    public static double applyX(double x) {
+        return shouldFlip() ? FieldConstants.fieldLength - x : x;
+    }
 
-  public static double applyY(double y) {
-    return shouldFlip() ? FieldConstants.fieldWidth - y : y;
-  }
+    public static double applyY(double y) {
+        return shouldFlip() ? FieldConstants.fieldWidth - y : y;
+    }
 
-  public static Translation2d apply(Translation2d translation) {
-    return new Translation2d(applyX(translation.getX()), applyY(translation.getY()));
-  }
+    public static Translation2d apply(Translation2d translation) {
+        return new Translation2d(applyX(translation.getX()), applyY(translation.getY()));
+    }
 
-  public static Rotation2d apply(Rotation2d rotation) {
-    return shouldFlip() ? rotation.rotateBy(Rotation2d.kPi) : rotation;
-  }
+    public static Rotation2d apply(Rotation2d rotation) {
+        return shouldFlip() ? rotation.rotateBy(Rotation2d.kPi) : rotation;
+    }
 
-  public static Pose2d apply(Pose2d pose) {
-    return shouldFlip()
-        ? new Pose2d(apply(pose.getTranslation()), apply(pose.getRotation()))
-        : pose;
-  }
+    public static Pose2d apply(Pose2d pose) {
+        return shouldFlip() ? new Pose2d(apply(pose.getTranslation()), apply(pose.getRotation())) : pose;
+    }
 
-  public static Translation3d apply(Translation3d translation) {
-    return new Translation3d(
-        applyX(translation.getX()), applyY(translation.getY()), translation.getZ());
-  }
+    public static Translation3d apply(Translation3d translation) {
+        return new Translation3d(applyX(translation.getX()), applyY(translation.getY()), translation.getZ());
+    }
 
-  public static Rotation3d apply(Rotation3d rotation) {
-    return shouldFlip() ? rotation.rotateBy(new Rotation3d(0.0, 0.0, Math.PI)) : rotation;
-  }
+    public static Rotation3d apply(Rotation3d rotation) {
+        return shouldFlip() ? rotation.rotateBy(new Rotation3d(0.0, 0.0, Math.PI)) : rotation;
+    }
 
-  public static Pose3d apply(Pose3d pose) {
-    return new Pose3d(apply(pose.getTranslation()), apply(pose.getRotation()));
-  }
+    public static Pose3d apply(Pose3d pose) {
+        return new Pose3d(apply(pose.getTranslation()), apply(pose.getRotation()));
+    }
 
-  /** Get whether to flip. If alliance is blue or unknown don't flip, if it is red then flip. */
-  public static boolean shouldFlip() {
-    return !DriverStation.getAlliance().orElse(DEFAULT_ALLIANCE).equals(DEFAULT_ALLIANCE);
-  }
+    /** Get whether to flip. If alliance is blue or unknown don't flip, if it is red then flip. */
+    public static boolean shouldFlip() {
+        return !DriverStation.getAlliance().orElse(DEFAULT_ALLIANCE).equals(DEFAULT_ALLIANCE);
+    }
 }

@@ -6,45 +6,45 @@ import frc.robot.utility.tunable.TunableNumbers.TunableFF;
 import frc.robot.utility.tunable.TunableNumbers.TunablePID;
 
 public class TunableNumberGroup {
-  private final String key;
+    private final String key;
 
-  /**
-   * Create a new LoggedTunableNumberGroup
-   *
-   * @param key Key on dashboard
-   */
-  public TunableNumberGroup(String key) {
-    this.key = key;
-  }
+    /**
+     * Create a new LoggedTunableNumberGroup
+     *
+     * @param key Key on dashboard
+     */
+    public TunableNumberGroup(String key) {
+        this.key = key;
+    }
 
-  // --- Create Number ---
+    // --- Create Number ---
 
-  /**
-   * Add a number to the group
-   *
-   * @param dashboardKey Key on dashboard
-   * @param defaultValue Default value
-   */
-  public TunableNumber number(String dashboardKey, double defaultValue) {
-    return new TunableNumber(key + "/" + dashboardKey, defaultValue);
-  }
+    /**
+     * Add a number to the group
+     *
+     * @param dashboardKey Key on dashboard
+     * @param defaultValue Default value
+     */
+    public TunableNumber number(String dashboardKey, double defaultValue) {
+        return new TunableNumber(key + "/" + dashboardKey, defaultValue);
+    }
 
-  public TunablePID pid(String dashboardKey, PIDConfig defaultValues) {
-    return new TunableNumbers.TunablePID(key + "/" + dashboardKey, defaultValues);
-  }
+    public TunablePID pid(String dashboardKey, PIDConfig defaultValues) {
+        return new TunableNumbers.TunablePID(key + "/" + dashboardKey, defaultValues);
+    }
 
-  public TunableFF ff(String dashboardKey, FeedForwardConfigRecord defaultValues) {
-    return new TunableNumbers.TunableFF(key + "/" + dashboardKey, defaultValues);
-  }
+    public TunableFF ff(String dashboardKey, FeedForwardConfigRecord defaultValues) {
+        return new TunableNumbers.TunableFF(key + "/" + dashboardKey, defaultValues);
+    }
 
-  // --- Create Subgroup ---
+    // --- Create Subgroup ---
 
-  /**
-   * Add a subgroup to the group
-   *
-   * @param dashboardKey Key on dashboard
-   */
-  public TunableNumberGroup subgroup(String dashboardKey) {
-    return new TunableNumberGroup(key + "/" + dashboardKey);
-  }
+    /**
+     * Add a subgroup to the group
+     *
+     * @param dashboardKey Key on dashboard
+     */
+    public TunableNumberGroup subgroup(String dashboardKey) {
+        return new TunableNumberGroup(key + "/" + dashboardKey);
+    }
 }

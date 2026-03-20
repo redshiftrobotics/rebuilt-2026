@@ -24,96 +24,87 @@ import frc.robot.utility.records.PIDConfig;
 /** Channel IO implementation for SparkMax motor controller */
 public class ChannelIOSparkMax implements ChannelIO {
 
-  private final SparkMax motor;
-  private final RelativeEncoder relativeEncoder;
-  private final SparkClosedLoopController feedback;
+    private final SparkMax motor;
+    private final RelativeEncoder relativeEncoder;
+    private final SparkClosedLoopController feedback;
 
-  private final SparkMaxConfig config = new SparkMaxConfig();
+    private final SparkMaxConfig config = new SparkMaxConfig();
 
-  private final Debouncer connectedDebouncer = new Debouncer(0.5);
+    private final Debouncer connectedDebouncer = new Debouncer(0.5);
 
-  public ChannelIOSparkMax(String name, ChannelConfig constants) {
+    public ChannelIOSparkMax(String name, ChannelConfig constants) {
 
-    motor = new SparkMax(constants.deviceId(), MotorType.kBrushless);
-    relativeEncoder = motor.getEncoder();
-    feedback = motor.getClosedLoopController();
+        motor = new SparkMax(constants.deviceId(), MotorType.kBrushless);
+        relativeEncoder = motor.getEncoder();
+        feedback = motor.getClosedLoopController();
 
-    config
-        .idleMode(IdleMode.kCoast)
-        .smartCurrentLimit(50)
-        .voltageCompensation(12.0)
-        .inverted(constants.inverted());
-    config
-        .encoder
-        .positionConversionFactor(constants.gearRatio())
-        .velocityConversionFactor(constants.gearRatio());
-    config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(0.0, 0.0, 0.0);
+        config.idleMode(IdleMode.kCoast)
+                .smartCurrentLimit(50)
+                .voltageCompensation(12.0)
+                .inverted(constants.inverted());
+        config.encoder.positionConversionFactor(constants.gearRatio()).velocityConversionFactor(constants.gearRatio());
+        config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(0.0, 0.0, 0.0);
 
-    tryUntilOk(motor, 5, () -> relativeEncoder.setPosition(0.0));
+        tryUntilOk(motor, 5, () -> relativeEncoder.setPosition(0.0));
 
-    pushConfig();
-  }
+        pushConfig();
+    }
 
-  @Override
-  public void updateInputs(ChannelIOInputs inputs) {
+    @Override
+    public void updateInputs(ChannelIOInputs inputs) {
 
-    SparkUtil.clearError();
-    ifOk(
-        motor,
-        relativeEncoder::getVelocity,
-        value -> inputs.velocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(value));
-    ifOk(
-        motor,
-        () -> motor.getAppliedOutput() * motor.getBusVoltage(),
-        value -> inputs.appliedVolts = value);
-    ifOk(motor, motor::getOutputCurrent, value -> inputs.supplyCurrentAmps = value);
-    ifOk(motor, motor::getAppliedOutput, value -> inputs.appliedDutyCycle = value);
-    inputs.motorConnected = connectedDebouncer.calculate(!SparkUtil.hasError());
-  }
+        SparkUtil.clearError();
+        ifOk(
+                motor,
+                relativeEncoder::getVelocity,
+                value -> inputs.velocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(value));
+        ifOk(motor, () -> motor.getAppliedOutput() * motor.getBusVoltage(), value -> inputs.appliedVolts = value);
+        ifOk(motor, motor::getOutputCurrent, value -> inputs.supplyCurrentAmps = value);
+        ifOk(motor, motor::getAppliedOutput, value -> inputs.appliedDutyCycle = value);
+        inputs.motorConnected = connectedDebouncer.calculate(!SparkUtil.hasError());
+    }
 
-  @Override
-  public void setDutyCycle(double dutyCycle) {
-    motor.set(dutyCycle);
-  }
+    @Override
+    public void setDutyCycle(double dutyCycle) {
+        motor.set(dutyCycle);
+    }
 
-  @Override
-  public void setOpenLoop(double volts) {
-    motor.setVoltage(volts);
-  }
+    @Override
+    public void setOpenLoop(double volts) {
+        motor.setVoltage(volts);
+    }
 
-  @Override
-  public void setVelocity(double velocityRadsPerSec, double arbFeedforward) {
-    feedback.setSetpoint(
-        Units.radiansPerSecondToRotationsPerMinute(velocityRadsPerSec),
-        ControlType.kVelocity,
-        ClosedLoopSlot.kSlot0,
-        arbFeedforward,
-        ArbFFUnits.kVoltage);
-  }
+    @Override
+    public void setVelocity(double velocityRadsPerSec, double arbFeedforward) {
+        feedback.setSetpoint(
+                Units.radiansPerSecondToRotationsPerMinute(velocityRadsPerSec),
+                ControlType.kVelocity,
+                ClosedLoopSlot.kSlot0,
+                arbFeedforward,
+                ArbFFUnits.kVoltage);
+    }
 
-  @Override
-  public void setPID(PIDConfig pidConfig) {
-    config.closedLoop.pid(pidConfig.kP(), pidConfig.kI(), pidConfig.kD());
-    pushConfig();
-  }
+    @Override
+    public void setPID(PIDConfig pidConfig) {
+        config.closedLoop.pid(pidConfig.kP(), pidConfig.kI(), pidConfig.kD());
+        pushConfig();
+    }
 
-  @Override
-  public void setFF(FeedForwardConfigRecord ffConfig) {
-    config.closedLoop.feedForward.sva(ffConfig.kS(), ffConfig.kV(), ffConfig.kA());
-    pushConfig();
-  }
+    @Override
+    public void setFF(FeedForwardConfigRecord ffConfig) {
+        config.closedLoop.feedForward.sva(ffConfig.kS(), ffConfig.kV(), ffConfig.kA());
+        pushConfig();
+    }
 
-  @Override
-  public void stop() {
-    motor.stopMotor();
-  }
+    @Override
+    public void stop() {
+        motor.stopMotor();
+    }
 
-  private void pushConfig() {
-    tryUntilOk(
-        motor,
-        5,
-        () ->
-            motor.configure(
-                config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
-  }
+    private void pushConfig() {
+        tryUntilOk(
+                motor,
+                5,
+                () -> motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
+    }
 }
