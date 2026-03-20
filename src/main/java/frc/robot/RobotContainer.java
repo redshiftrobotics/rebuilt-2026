@@ -421,18 +421,12 @@ public class RobotContainer {
 
     // Spin up then launch button
     xbox.rightTrigger()
-        .whileTrue(
-            launcher
-                .runOnce(launcher::start)
-                .andThen(launcher.idle().until(launcher::isReadyDebounced))
-                .andThen(hopper.runOnce(() -> hopper.setMode(HopperRunMode.FIRING)))
-                .andThen(launcher.idle())
-                .finallyDo(
-                    () -> {
-                      launcher.stop();
-                      hopper.setMode(HopperRunMode.STOPPED);
-                    })
-                .withName("Spin up and Launch"));
+        .whileTrue(launcher.startEnd(launcher::start, launcher::stop))
+        .onFalse(hopper.runOnce(() -> hopper.setMode(HopperRunMode.STOPPED)));
+
+    xbox.rightTrigger()
+        .and(new Trigger(launcher::isReadyDebounced))
+        .onTrue(hopper.runOnce(() -> hopper.setMode(HopperRunMode.FIRING)));
 
     // Force launch button
     xbox.rightBumper()
