@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -23,10 +24,12 @@ import frc.robot.utility.geometry.AllianceMirrorUtil;
 import frc.robot.utility.geometry.GeomUtil;
 import frc.robot.utility.tunable.TunableNumber;
 import frc.robot.utility.tunable.TunableNumberGroup;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 public class LaunchCommands {
+  private static final ChassisSpeeds ZERO_CHASSIS_SPEEDS = new ChassisSpeeds();
 
   private static final TunableNumberGroup launchingGroup =
       new TunableNumberGroup("LaunchCalculator/Driving");
@@ -58,10 +61,21 @@ public class LaunchCommands {
             }));
   }
 
-  // TODO ACEIUS: Possibly use shoot-while-moving or at least PID controller
   public static Command launchInPlace(Drive drive, Launcher launcher, Hopper hopper) {
+    Debouncer alignedWithHubDebouncer = new Debouncer(1);
+    BooleanSupplier isAligned =
+        () ->
+            alignedWithHubDebouncer.calculate(
+                (MathUtil.isNear(
+                    LaunchCalculator.getInstance()
+                        .getParameters(drive.getRobotPose(), ZERO_CHASSIS_SPEEDS)
+                        .driveAngle()
+                        .getDegrees(),
+                    drive.getRobotPose().getRotation().getDegrees(),
+                    2.0)));
+                    
     Command autoAlign =
-        DriveCommands.rotateWithRotationController(drive, launcher::getRobotYaw).withTimeout(5);
+        driveWhileLaunching(drive, () -> ZERO_CHASSIS_SPEEDS).until(isAligned).withTimeout(8);
 
     Command launchFuel =
         Commands.parallel(

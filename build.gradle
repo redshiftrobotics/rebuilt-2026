@@ -160,6 +160,8 @@ spotless {
         }
         toggleOffOn()
         googleJavaFormat()
+        // TODO: Use below once diff no longer relevant
+        // palantirJavaFormat('2.50.0').formatJavadoc(true)
         removeUnusedImports()
         trimTrailingWhitespace()
         endWithNewline()

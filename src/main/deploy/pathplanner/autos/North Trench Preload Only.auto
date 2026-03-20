@@ -5,6 +5,12 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "WaitVariable"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "North Trench Backup"
