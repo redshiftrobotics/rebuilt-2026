@@ -11,7 +11,7 @@
             "x": 384.0,
             "y": 256.0,
             "width": 256.0,
-            "height": 384.0,
+            "height": 320.0,
             "type": "List Layout",
             "properties": {
               "label_position": "TOP"
@@ -351,20 +351,6 @@
             }
           },
           {
-            "title": "AbsolutePositionRad",
-            "x": 128.0,
-            "y": 512.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/AdvantageKit/Intake/Slapdown/AbsolutePositionRad",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
             "title": "isReady",
             "x": 640.0,
             "y": 384.0,
@@ -396,6 +382,34 @@
               "false_color": 4294198070,
               "true_icon": "None",
               "false_icon": "None"
+            }
+          },
+          {
+            "title": "HoodPositionOffset",
+            "x": 512.0,
+            "y": 576.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/LaunchCalculator/HoodPositionOffset",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "WheelRadPerSecOffset",
+            "x": 384.0,
+            "y": 576.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/LaunchCalculator/WheelRadPerSecOffset",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
             }
           }
         ]
@@ -2070,53 +2084,84 @@
             ]
           },
           {
-            "title": "Hopper",
-            "x": 1152.0,
-            "y": 0.0,
-            "width": 384.0,
-            "height": 128.0,
+            "title": "LauncherTuning",
+            "x": 256.0,
+            "y": 128.0,
+            "width": 256.0,
+            "height": 384.0,
             "type": "List Layout",
             "properties": {
               "label_position": "TOP"
             },
             "children": [
               {
-                "title": "mode",
+                "title": "DesiredWheelRadPerSec",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
-                "type": "Large Text Display",
+                "type": "Text Display",
                 "properties": {
-                  "topic": "/AdvantageKit/RealOutputs/Hopper/mode",
+                  "topic": "/SmartDashboard/LauncherTuning/DesiredWheelRadPerSec",
                   "period": 0.06,
-                  "data_type": "string"
+                  "data_type": "double",
+                  "show_submit_button": true
                 }
-              }
-            ]
-          },
-          {
-            "title": "Intake",
-            "x": 768.0,
-            "y": 0.0,
-            "width": 384.0,
-            "height": 128.0,
-            "type": "List Layout",
-            "properties": {
-              "label_position": "TOP"
-            },
-            "children": [
+              },
               {
-                "title": "mode",
+                "title": "DesiredHoodPosition",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
-                "type": "Large Text Display",
+                "type": "Text Display",
                 "properties": {
-                  "topic": "/AdvantageKit/RealOutputs/Intake/mode",
+                  "topic": "/SmartDashboard/LauncherTuning/DesiredHoodPosition",
                   "period": 0.06,
-                  "data_type": "string"
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "CalculatorDistance",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/LauncherTuning/CalculatorDistance",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "MeasuredWheelRadPerSec",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/LauncherTuning/MeasuredWheelRadPerSec",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "CalculatorDistanceAdjustedInches",
+                "x": 384.0,
+                "y": 512.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/LauncherTuning/CalculatorDistanceAdjustedInches",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
                 }
               }
             ]
@@ -2208,62 +2253,6 @@
             }
           },
           {
-            "title": "mode",
-            "x": 0.0,
-            "y": 0.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Launcher/mode",
-              "period": 0.06,
-              "data_type": "string",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "preferredMode",
-            "x": 128.0,
-            "y": 0.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Launcher/preferredMode",
-              "period": 0.06,
-              "data_type": "string",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "DesiredVelocity",
-            "x": 256.0,
-            "y": 128.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Launcher/DesiredVelocity",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "manualMode",
-            "x": 256.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Launcher/manualMode",
-              "period": 0.06,
-              "data_type": "string",
-              "show_submit_button": false
-            }
-          },
-          {
             "title": "Scheduler",
             "x": 512.0,
             "y": 0.0,
@@ -2276,9 +2265,35 @@
             }
           },
           {
+            "title": "intake mode",
+            "x": 768.0,
+            "y": 0.0,
+            "width": 384.0,
+            "height": 128.0,
+            "type": "Large Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Intake/mode",
+              "period": 0.06,
+              "data_type": "string"
+            }
+          },
+          {
+            "title": "hopper mode",
+            "x": 1152.0,
+            "y": 0.0,
+            "width": 384.0,
+            "height": 128.0,
+            "type": "Large Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Hopper/mode",
+              "period": 0.06,
+              "data_type": "string"
+            }
+          },
+          {
             "title": "isReady",
-            "x": 384.0,
-            "y": 128.0,
+            "x": 128.0,
+            "y": 0.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Boolean Box",
@@ -2290,6 +2305,53 @@
               "false_color": 4294198070,
               "true_icon": "None",
               "false_icon": "None"
+            }
+          },
+          {
+            "title": "isReadyDebounced",
+            "x": 256.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Launcher/isReadyDebounced",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "isRunning",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Launcher/isRunning",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "runMode",
+            "x": 384.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Large Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Launcher/runMode",
+              "period": 0.06,
+              "data_type": "string"
             }
           }
         ]

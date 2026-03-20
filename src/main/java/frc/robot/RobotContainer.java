@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -201,7 +202,8 @@ public class RobotContainer {
 
     // Default command, normal joystick drive
 
-    final Command aimDrive = LaunchCommands.driveWhileLaunching(drive, pipeline::getChassisSpeeds);
+    final Command aimDrive =
+        LaunchCommands.driveWhileLaunching(drive, pipeline::getChassisSpeeds).withName("Aim Drive");
 
     drive.setDefaultCommand(
         drive
@@ -238,7 +240,9 @@ public class RobotContainer {
             pipeline.runLayer(
                 "Slow", input -> input.linearCoefficient(0.3).angularCoefficient(0.3)));
 
-    xbox.rightTrigger().whileTrue(aimDrive);
+    xbox.rightTrigger()
+        .whileTrue(aimDrive)
+        .whileTrue(launcher.runEnd(launcher::start, launcher::stop).withName("Spin up for Aim"));
 
     // Secondary drive command, right stick will be used to control target angular
     // position instead of angular velocity
@@ -259,11 +263,11 @@ public class RobotContainer {
     xbox.b()
         .or(RobotModeTriggers.disabled())
         .onTrue(drive.runOnce(drive::stop).withName("Cancel"))
-        .onTrue(rumbleControllers(0).withTimeout(0.02));
+        .onTrue(rumbleControllers(0.0, RumbleType.kLeftRumble).withTimeout(0.02));
 
     xbox.b()
         .debounce(1)
-        .onTrue(rumbleController(xbox, 0.3).withTimeout(0.25))
+        .onTrue(rumbleController(xbox, 0.3, RumbleType.kLeftRumble).withTimeout(0.25))
         .whileTrue(drive.run(drive::stopUsingForwardArrangement).withName("Stop and Orient"));
 
     // Reset the gyro heading
@@ -275,7 +279,7 @@ public class RobotContainer {
                     () ->
                         drive.resetPose(
                             new Pose2d(drive.getRobotPose().getTranslation(), Rotation2d.kZero)))
-                .andThen(rumbleController(xbox, 0.3).withTimeout(0.25))
+                .andThen(rumbleController(xbox, 0.3, RumbleType.kLeftRumble).withTimeout(0.25))
                 .ignoringDisable(true)
                 .withName("Reset Gyro Heading"));
 
@@ -308,20 +312,40 @@ public class RobotContainer {
 
     launcher.setMode(DEFAULT_LAUNCH);
 
+    final Trigger launcherRunning = new Trigger(launcher::isRunning);
+
     final Trigger manualButton = xbox.back();
     final Trigger resetButton = xbox.start().debounce(0.01);
-    final Trigger intakeFull = xbox.leftTrigger(0.5);
-    final Trigger intakePartial = xbox.leftTrigger(0.2);
+    final Trigger interpolationOffsetButton = xbox.x();
+
+    final Trigger intakeFullTrigger = xbox.leftTrigger(0.5);
+    final Trigger intakePartialTrigger = xbox.leftTrigger(0.2);
+
+    RobotModeTriggers.disabled()
+        .debounce(1)
+        .onTrue(launcher.runOnce(launcher::stop).ignoringDisable(true))
+        .onTrue(hopper.runOnce(() -> hopper.setMode(HopperRunMode.STOPPED)).ignoringDisable(true))
+        .onTrue(intake.runOnce(() -> intake.setMode(IntakeRunMode.UP)).ignoringDisable(true));
+
+    launcherRunning.whileTrue(
+        rumbleController(xbox, 0.1, RumbleType.kLeftRumble).withName("Launcher Running Rumble"));
+
+    launcherRunning
+        .and(launcher::isReadyDebounced)
+        .onTrue(
+            rumbleController(xbox, 0.5, RumbleType.kRightRumble)
+                .withTimeout(0.25)
+                .withName("Launcher Ready Rumble"));
 
     // --- INTAKE CONTROL ---
 
     // Intake button (hold)
-    intakeFull
+    intakeFullTrigger
         .whileTrue(
             intake
                 .runEnd(
                     () -> intake.setMode(IntakeRunMode.INTAKING),
-                    () -> intake.setMode(IntakeRunMode.AGITATE_1_UP))
+                    () -> intake.setMode(IntakeRunMode.POST_INTAKE_TRANSITION))
                 .withName("Intake"))
         .whileTrue(
             hopper
@@ -331,11 +355,13 @@ public class RobotContainer {
                 .withName("Hopper Intake"));
 
     // Start to automatically push ball
-    intakePartial.onFalse(
+    intakePartialTrigger.onFalse(
         Commands.waitSeconds(0.3)
             .andThen(intake.runOnce(() -> intake.setMode(IntakeRunMode.UP)))
+            .onlyWhile(() -> intake.getMode() == IntakeRunMode.POST_INTAKE_TRANSITION)
             .withName("Agitate Post Intake"));
 
+    // Agitate button (hold)
     xbox.leftStick()
         .whileTrue(
             Commands.sequence(
@@ -373,6 +399,7 @@ public class RobotContainer {
     // Intake shift up button
     xbox.povUp()
         .and(manualButton.negate())
+        .and(interpolationOffsetButton.negate())
         .onTrue(
             Commands.runOnce(() -> intake.shiftSetpoint(Rotation2d.fromDegrees(+1)))
                 .withName("Shift intake up"));
@@ -380,6 +407,7 @@ public class RobotContainer {
     // Intake shift down button
     xbox.povDown()
         .and(manualButton.negate())
+        .and(interpolationOffsetButton.negate())
         .onTrue(
             Commands.runOnce(() -> intake.shiftSetpoint(Rotation2d.fromDegrees(-1)))
                 .withName("Shift intake down"));
@@ -387,18 +415,21 @@ public class RobotContainer {
     // Reset intake shift button
     resetButton
         .and(manualButton.negate())
+        .and(interpolationOffsetButton.negate())
         .onTrue(Commands.runOnce(intake::unshiftSetpoint).withName("Reset intake shift"));
 
     // --- OUTTAKE CONTROL ---
 
     // Spin up then launch button
     xbox.rightTrigger()
-        .whileTrue(launcher.startEnd(launcher::start, launcher::stop))
-        .onFalse(hopper.runOnce(() -> hopper.setMode(HopperRunMode.STOPPED)));
-
-    xbox.rightTrigger()
-        .and(new Trigger(launcher::isReadyDebounced))
-        .onTrue(hopper.runOnce(() -> hopper.setMode(HopperRunMode.FIRING)));
+        .whileTrue(
+            launcher.startEnd(launcher::start, launcher::stop).withName("Spin up for Launch"))
+        .whileTrue(
+            Commands.waitUntil(launcher::isReadyDebounced)
+                .andThen(hopper.run(() -> hopper.setMode(HopperRunMode.FIRING)))
+                .finallyDo(() -> hopper.setMode(HopperRunMode.STOPPED))
+                .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
+                .withName("Hopper firing when ready"));
 
     // Force launch button
     xbox.rightBumper()
@@ -411,7 +442,27 @@ public class RobotContainer {
                       launcher.stop();
                       hopper.setMode(HopperRunMode.STOPPED);
                     })
+                .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
                 .withName("Force Launch"));
+
+    // Interpolation offsets
+    xbox.povRight()
+        .and(interpolationOffsetButton)
+        .onTrue(Commands.runOnce(() -> LaunchCalculator.getInstance().incrementHoodPosition(0.05)));
+    xbox.povLeft()
+        .and(interpolationOffsetButton)
+        .onTrue(
+            Commands.runOnce(() -> LaunchCalculator.getInstance().incrementHoodPosition(-0.05)));
+    xbox.povUp()
+        .and(interpolationOffsetButton)
+        .onTrue(Commands.runOnce(() -> LaunchCalculator.getInstance().incrementWheelRadPerSec(10)));
+    xbox.povDown()
+        .and(interpolationOffsetButton)
+        .onTrue(
+            Commands.runOnce(() -> LaunchCalculator.getInstance().incrementWheelRadPerSec(-10)));
+    resetButton
+        .and(interpolationOffsetButton)
+        .onTrue(Commands.runOnce(() -> LaunchCalculator.getInstance().resetOffsets()));
 
     // --- LAUNCH PREP CONTROLS ---
 
@@ -430,7 +481,7 @@ public class RobotContainer {
                 .withName("Cancel Spin Up"));
 
     // Reverse lifter & outtake button
-    xbox.x()
+    xbox.a()
         .and(manualButton.negate())
         .whileTrue(
             Commands.parallel(
@@ -443,19 +494,9 @@ public class RobotContainer {
                     })
                 .withName("Reverse Launcher and Hopper"));
 
-    // Reverse lifter button
-    xbox.a()
-        .and(manualButton.negate())
-        .whileTrue(
-            hopper
-                .run(() -> hopper.setMode(HopperRunMode.PREP_SHOT))
-                .finallyDo(() -> hopper.setMode(HopperRunMode.STOPPED))
-                .withName("Reverse Hopper"));
-
     // --- MANUAL LAUNCH MODE CONTROLS ---
 
-    final Trigger anyManualModeLetterButton = xbox.a().or(xbox.b()).or(xbox.x()).or(xbox.y());
-    final Trigger isManualMode = new Trigger(() -> launcher.getMode() == LauncherRunMode.MANUAL);
+    final Trigger anyManualModeLetterButton = xbox.a().or(xbox.b()).or(xbox.y());
 
     // Manual mode is turned on when preset is chosen
     manualButton
@@ -475,7 +516,7 @@ public class RobotContainer {
                 .withName("Default Launch Mode"));
 
     manualButton
-        .and(xbox.b().multiPress(2, 0.3))
+        .and(xbox.x().multiPress(2, 0.3))
         .onTrue(
             Commands.runOnce(() -> launcher.setMode(LauncherRunMode.DASHBOARD_TUNING))
                 .ignoringDisable(true)
@@ -483,22 +524,14 @@ public class RobotContainer {
 
     // Manual mode preset buttons
     xbox.y().and(manualButton).onTrue(manualLaunchControl.setModeCommand(ManualLaunchMode.Y));
-    xbox.x().and(manualButton).onTrue(manualLaunchControl.setModeCommand(ManualLaunchMode.X));
     xbox.a().and(manualButton).onTrue(manualLaunchControl.setModeCommand(ManualLaunchMode.A));
     xbox.b().and(manualButton).onTrue(manualLaunchControl.setModeCommand(ManualLaunchMode.B));
 
     // Manual mode preset adjustment buttons
-    // These have no overlap so can be turned on whenever manual mode is active
-    xbox.povRight()
-        .and(manualButton.or(isManualMode))
-        .onTrue(manualLaunchControl.incrementHoodCommand(+0.025));
-    xbox.povLeft()
-        .and(manualButton.or(isManualMode))
-        .onTrue(manualLaunchControl.incrementHoodCommand(-0.025));
-
-    // Manual mode preset adjustment buttons
-    xbox.povUp().and(manualButton).onTrue(manualLaunchControl.incrementVelocityCommand(+20));
-    xbox.povDown().and(manualButton).onTrue(manualLaunchControl.incrementVelocityCommand(-20));
+    xbox.povRight().and(manualButton).onTrue(manualLaunchControl.incrementHoodCommand(+0.05));
+    xbox.povLeft().and(manualButton).onTrue(manualLaunchControl.incrementHoodCommand(-0.05));
+    xbox.povUp().and(manualButton).onTrue(manualLaunchControl.incrementVelocityCommand(+10));
+    xbox.povDown().and(manualButton).onTrue(manualLaunchControl.incrementVelocityCommand(-10));
     resetButton.and(manualButton).onTrue(manualLaunchControl.resetCommand());
 
     // --- HANG/MANUAL CONTROL ---
@@ -514,20 +547,16 @@ public class RobotContainer {
         .withName("Rumble Controller " + controller.getHID().getPort());
   }
 
-  private Command rumbleController(CommandXboxController controller, double rumbleIntensity) {
-    return rumbleController(controller, rumbleIntensity, RumbleType.kBothRumble);
-  }
-
-  private Command rumbleControllers(double rumbleIntensity) {
+  private Command rumbleControllers(double rumbleIntensity, RumbleType type) {
     return Commands.parallel(
-            rumbleController(driverController, rumbleIntensity),
-            rumbleController(operatorController, rumbleIntensity))
+            rumbleController(driverController, rumbleIntensity, type),
+            rumbleController(operatorController, rumbleIntensity, type))
         .withName("Rumble Both Controllers");
   }
 
   private void configureAlertTriggers() {
     new Trigger(() -> HubShiftUtil.getShiftedShiftInfo().active())
-        .onChange(rumbleControllers(1.0).withTimeout(0.25));
+        .onChange(rumbleControllers(1.0, RumbleType.kRightRumble).withTimeout(0.25));
 
     Trigger isMatch = new Trigger(() -> DriverStation.getMatchTime() != -1);
 
