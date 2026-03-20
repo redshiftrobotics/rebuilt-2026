@@ -26,7 +26,7 @@ public interface SlapdownIO {
   public default void setPID(PIDConfig config) {}
 
   public default void setPIDSlotSecondary(PIDConfig config) {
-    setPIDSlotSecondary(config);
+    setPID(config);
   }
 
   public default void setSetpoint(Rotation2d setPoint) {}
