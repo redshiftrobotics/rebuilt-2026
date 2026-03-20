@@ -135,7 +135,7 @@ public class DriveConstants {
   // --- Pathplanner Config ---
 
   // Currently just an estimate
-  public static final double robotMassKg = Units.lbsToKilograms(115 + 10.0);
+  public static final double robotMassKg = Units.lbsToKilograms(131);
 
   // https://choreo.autos/usage/estimating-moi/
   // Value from CAD model when intake was mostly extended (Izz in mass properties from OnShape)
