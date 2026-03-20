@@ -41,5 +41,11 @@ public class IntakeConstants {
           case SIM_BOT -> new PIDConfig(3, 0, 1);
           default -> new PIDConfig(0, 0, 0);
         };
+    public static final PIDConfig PID_SECONDARY =
+        switch (Constants.getRobot()) {
+          case REBUILT_2026 -> new PIDConfig(5, 0, 0);
+          case SIM_BOT -> new PIDConfig(5, 0, 1);
+          default -> new PIDConfig(0, 0, 0);
+        };
   }
 }

@@ -4,6 +4,7 @@ import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
+import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -17,7 +18,6 @@ import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.intake.IntakeConstants.SlapdownConstants;
 import frc.robot.utility.SparkUtil;
 import frc.robot.utility.records.PIDConfig;
@@ -105,16 +105,25 @@ public class SlapdownIOSparkMax implements SlapdownIO {
   @Override
   public void setPID(PIDConfig pid) {
     SparkMaxConfig config = new SparkMaxConfig();
-    config.closedLoop.pid(pid.kP(), pid.kI(), pid.kD());
-    SmartDashboard.putString("PIDString", "p=" + pid.kP() + " i" + pid.kI() + " d" + pid.kD());
+    config.closedLoop.pid(pid.kP(), pid.kI(), pid.kD(), ClosedLoopSlot.kSlot0);
     motor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
   }
 
   @Override
   public void setSetpoint(Rotation2d setpoint) {
-    SmartDashboard.putString("PIDString", "sp Rot=" + setpoint.getRotations());
+    pid.setSetpoint(setpoint.getRotations(), ControlType.kPosition, ClosedLoopSlot.kSlot0);
+  }
 
-    pid.setSetpoint(setpoint.getRotations(), ControlType.kPosition);
+  @Override
+  public void setPIDSlotSecondary(PIDConfig pid) {
+    SparkMaxConfig config = new SparkMaxConfig();
+    config.closedLoop.pid(pid.kP(), pid.kI(), pid.kD(), ClosedLoopSlot.kSlot1);
+    motor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+  }
+
+  @Override
+  public void setSetpointSecondary(Rotation2d setpoint) {
+    pid.setSetpoint(setpoint.getRotations(), ControlType.kPosition, ClosedLoopSlot.kSlot1);
   }
 
   @Override
