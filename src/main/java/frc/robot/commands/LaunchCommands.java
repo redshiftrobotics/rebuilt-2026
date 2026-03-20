@@ -4,11 +4,9 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants;
@@ -39,8 +37,6 @@ public class LaunchCommands {
             launchingGroup.number("ControllerYawToleranceDeg", 0.01);
 
     private static final TunableNumber driveYawLaunchToleranceDeg = launchingGroup.number("YawToleranceDeg", 5.0);
-    private static final TunableNumber drivePitchLaunchToleranceDeg = launchingGroup.number("PitchToleranceDeg", 5.0);
-    private static final TunableNumber driveRollLaunchToleranceDeg = launchingGroup.number("RollToleranceDeg", 5.0);
     private static final TunableNumber driveLaunchMaxPolarVelocityRadPerSec =
             launchingGroup.number("MaxPolarVelocityRadPerSec", 0.6);
     private static final TunableNumber driveLauncherCORMinErrorDeg =
@@ -206,19 +202,12 @@ public class LaunchCommands {
     }
 
     public static boolean isDriveAtLaunchGoal(Drive drive) {
-        Rotation3d rotation3d = drive.getRawGyroRotation3d();
-        boolean inPitchAndRollTolerance =
-                (Math.abs(rotation3d.getX()) <= Units.degreesToRadians(driveRollLaunchToleranceDeg.get())
-                        && Math.abs(rotation3d.getY()) <= Units.degreesToRadians(drivePitchLaunchToleranceDeg.get()));
-
-        return DriverStation.isEnabled()
-                && Math.abs(drive.getRobotPose()
-                                .getRotation()
-                                .minus(LaunchCalculator.getInstance()
-                                        .getParameters(drive.getRobotPose(), drive.getRobotSpeeds())
-                                        .driveAngle())
-                                .getRadians())
-                        <= Units.degreesToRadians(driveYawLaunchToleranceDeg.get())
-                && inPitchAndRollTolerance;
+        return MathUtil.isNear(
+                LaunchCalculator.getInstance()
+                        .getParameters(drive.getRobotPose(), drive.getRobotSpeeds())
+                        .driveAngle()
+                        .getRadians(),
+                drive.getRobotPose().getRotation().getRadians(),
+                Units.degreesToRadians(driveYawLaunchToleranceDeg.get()));
     }
 }
