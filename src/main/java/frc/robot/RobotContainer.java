@@ -484,15 +484,15 @@ public class RobotContainer {
     xbox.a()
         .and(manualButton.negate())
         .whileTrue(
-            Commands.parallel(
-                    launcher.run(() -> launcher.setDutyCycle(-0.1)),
-                    hopper.run(() -> hopper.setMode(HopperRunMode.PREP_SHOT)))
-                .finallyDo(
-                    () -> {
-                      launcher.stop();
-                      hopper.setMode(HopperRunMode.STOPPED);
-                    })
-                .withName("Reverse Launcher and Hopper"));
+            launcher
+                .startEnd(() -> launcher.setDutyCycle(-0.1), launcher::stop)
+                .withName("Reverse Launcher"))
+        .whileTrue(
+            hopper
+                .startEnd(
+                    () -> hopper.setMode(HopperRunMode.REVERSE),
+                    () -> hopper.setMode(HopperRunMode.STOPPED))
+                .withName("Reverse Hopper"));
 
     // --- MANUAL LAUNCH MODE CONTROLS ---
 
