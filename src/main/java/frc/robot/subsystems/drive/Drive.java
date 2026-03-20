@@ -26,7 +26,6 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -34,7 +33,6 @@ import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.Constants.RobotType;
 import frc.robot.DriverDashboard;
-import frc.robot.FieldConstants.Hub;
 import frc.robot.generated.CompetitionConstants;
 import frc.robot.generated.MetalbotTwoConstants;
 import frc.robot.generated.PreseasonConstants;
@@ -221,11 +219,6 @@ public class Drive extends SubsystemBase {
     Logger.recordOutput("ChassisStates/ModuleDesiredSpeeds", getDesiredRobotSpeeds());
 
     Logger.recordOutput("Drive/RobotPose", robotPose);
-
-    SmartDashboard.putBoolean(
-        "In Range",
-        Hub.center.getDistance(getRobotPose().getTranslation())
-            < edu.wpi.first.math.util.Units.inchesToMeters(139));
 
     // Update odometry
     double[] sampleTimestamps =

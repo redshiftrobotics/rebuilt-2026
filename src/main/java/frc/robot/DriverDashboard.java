@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.FieldConstants.Hub;
 import frc.robot.utility.HubShiftUtil;
 import frc.robot.utility.HubShiftUtil.ShiftInfo;
 import frc.robot.utility.geometry.AllianceMirrorUtil;
@@ -122,6 +123,11 @@ public class DriverDashboard {
     SmartDashboard.putBoolean("Shifts/Shift Active", shift.active());
     SmartDashboard.putString("Shifts/Shift Game State", shift.currentShift().name());
     SmartDashboard.putBoolean("Shifts/Active First?", HubShiftUtil.isFirstActiveAlliance());
+
+    SmartDashboard.putBoolean(
+        "In Range",
+        Hub.center.getDistance(poseSupplier.get().getTranslation())
+            < edu.wpi.first.math.util.Units.inchesToMeters(139));
   }
 
   private static void putCustomWidgets() {

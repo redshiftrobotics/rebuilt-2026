@@ -648,10 +648,7 @@ public class RobotContainer {
     // Choreo Autos
     // https://pathplanner.dev/pplib-choreo-interop.html#load-choreo-trajectory-as-a-pathplannerpath
 
-    var chooser =
-        Constants.DEVELOPMENT_MODE
-            ? AutoBuilder.buildAutoChooser()
-            : new SendableChooser<Command>();
+    var chooser = AutoBuilder.buildAutoChooser();
 
     if (Constants.DEVELOPMENT_MODE) {
       chooser.addOption(
@@ -672,7 +669,7 @@ public class RobotContainer {
       chooser.addOption(
           "[SysId] Drive Dynamic Reverse", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
     } else {
-      chooser.addOption("Nothing", Commands.none()); // TODO Add useful autos
+      chooser.addOption("Nothing", Commands.none());
     }
 
     return chooser;

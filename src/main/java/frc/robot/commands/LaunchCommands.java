@@ -60,6 +60,18 @@ public class LaunchCommands {
 
   // TODO ACEIUS: Possibly use shoot-while-moving or at least PID controller
   public static Command launchInPlace(Drive drive, Launcher launcher, Hopper hopper) {
+    Debouncer alignedWithHubDebouncer = new Debouncer(1);
+    BooleanSupplier isAligned =
+        () ->
+            alignedWithHubDebouncer.calculate(
+                (MathUtil.isNear(
+                    LaunchCalculator.getInstance()
+                        .getParameters(drive.getRobotPose(), ZERO_CHASSIS_SPEEDS)
+                        .driveAngle()
+                        .getDegrees(),
+                    drive.getRobotPose().getRotation().getDegrees(),
+                    2.0)));
+
     Command autoAlign =
         DriveCommands.rotateWithRotationController(drive, launcher::getRobotYaw).withTimeout(5);
 

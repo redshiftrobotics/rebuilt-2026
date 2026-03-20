@@ -18,9 +18,9 @@ import org.littletonrobotics.junction.Logger;
 
 public class MathematicalShotCalculator {
   public record MathematicalShotParameters(
-      LinearVelocity velocity, Rotation2d pitch, Rotation2d yaw) {
-    public MathematicalShotParameters(LinearVelocity velocity, Rotation2d pitch) {
-      this(velocity, pitch, Rotation2d.kZero);
+      LinearVelocity velocity, Rotation2d pitch, Rotation2d yaw, double distance) {
+    public MathematicalShotParameters(LinearVelocity velocity, Rotation2d pitch, double distance) {
+      this(velocity, pitch, Rotation2d.kZero, distance);
     }
 
     @Override
@@ -79,7 +79,7 @@ public class MathematicalShotCalculator {
         ballLinearVelocity.times(LauncherMathConstants.LAUNCHER_VELOCITY_MULTIPLIER.get());
 
     return new MathematicalShotParameters(
-        ballLinearVelocity, runningHoodPitch, hubTranslation.getAngle());
+        ballLinearVelocity, runningHoodPitch, hubTranslation.getAngle(), distance);
   }
 
   /**

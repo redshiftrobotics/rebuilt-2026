@@ -193,6 +193,7 @@ public class Launcher extends SubsystemBase {
 
     Pose2d robotPose = robotPoseSupplier.get();
     ChassisSpeeds robotRelativeVelocity = robotVelocitySupplier.get();
+    double distanceMeters = -1;
 
     switch (mode) {
       case INTERPOLATION:
@@ -202,17 +203,9 @@ public class Launcher extends SubsystemBase {
 
           setRunningDesiredState(
               new LauncherState(parameters.wheelRadPerSec(), parameters.hoodPosition()));
+
           robotYaw = parameters.driveAngle();
-
-          SmartDashboard.putNumber("LauncherTuning/CalculatorDistance", parameters.distance());
-          SmartDashboard.putNumber(
-              "LauncherTuning/CalculatorDistanceAdjustedInches",
-              Units.metersToInches(
-                  parameters.distance()
-                      - FieldConstants.Hub.width / 2
-                      - DriveConstants.BUMPER_TO_BUMPER.getX() / 2
-                      + LauncherConstants.ROBOT_TO_LAUNCHER.getX()));
-
+          distanceMeters = parameters.distance();
           break;
         }
       case MATHEMATICAL:
@@ -223,7 +216,9 @@ public class Launcher extends SubsystemBase {
 
           setRunningDesiredState(
               new LauncherState(parameters.getWheelRadPerSec(), parameters.getHoodPosition()));
+
           robotYaw = parameters.yaw();
+          distanceMeters = parameters.distance();
           break;
         }
       case MANUAL:
@@ -243,20 +238,7 @@ public class Launcher extends SubsystemBase {
           double hood = SmartDashboard.getNumber("LauncherTuning/DesiredHoodPosition", 0);
           setRunningDesiredState(new LauncherState(velocity, hood));
 
-          // NOTE: This distance is launcher to center of target (and is what the calculator uses)
-          // When entering distances, use this over measuring by hand if possible (assuming good
-          // tags),
-          SmartDashboard.putNumber("LauncherTuning/CalculatorDistance", parameters.distance());
-
-          // Alternate option (front of bumper to closest hub face)
-          SmartDashboard.putNumber(
-              "LauncherTuning/CalculatorDistanceAdjustedInches",
-              Units.metersToInches(
-                  parameters.distance()
-                      - FieldConstants.Hub.width / 2
-                      - DriveConstants.BUMPER_TO_BUMPER.getX() / 2
-                      + LauncherConstants.ROBOT_TO_LAUNCHER.getX()));
-
+          distanceMeters = parameters.distance();
           robotYaw = parameters.driveAngle();
           break;
         }
@@ -278,6 +260,20 @@ public class Launcher extends SubsystemBase {
         "LauncherTuning/DesiredWheelRadPerSec", runningDesiredState.wheelRadPerSec());
     SmartDashboard.putNumber(
         "LauncherTuning/DesiredHoodPosition", runningDesiredState.hoodPosition());
+
+    // NOTE: This distance is launcher to center of target (and is what the calculator uses)
+    // When entering distances, use this over measuring by hand if possible (assuming good
+    // tags),
+    SmartDashboard.putNumber("LauncherTuning/CalculatorDistance", distanceMeters);
+
+    // Alternate option (front of bumper to closest hub face)
+    SmartDashboard.putNumber(
+        "LauncherTuning/CalculatorDistanceAdjustedInches",
+        Units.metersToInches(
+            distanceMeters
+                - FieldConstants.Hub.width / 2
+                - DriveConstants.BUMPER_TO_BUMPER.getX() / 2
+                + LauncherConstants.ROBOT_TO_LAUNCHER.getX()));
 
     if (running) {
       hoodIO.setPosition(runningDesiredState.hoodPosition());
