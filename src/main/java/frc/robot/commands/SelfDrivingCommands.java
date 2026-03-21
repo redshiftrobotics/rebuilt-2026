@@ -1,7 +1,5 @@
 package frc.robot.commands;
 
-import static frc.robot.subsystems.drive.DriveConstants.DRIVE_CONFIG;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.MathUtil;
@@ -12,32 +10,30 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.FieldConstants;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.utility.geometry.AllianceMirrorUtil;
-import java.util.Set;
 
 public class SelfDrivingCommands {
+    // https://pathplanner.dev/pplib-pathfinding.html#pathfind-to-pose
+
     static final PathConstraints constraints =
             new PathConstraints(3.0, 4.0, Units.degreesToRadians(540), Units.degreesToRadians(720));
 
     public static Command selfDriveToOtherZone(Drive drive) {
         return Commands.either(
-                        Commands.defer(SelfDrivingCommands::selfDriveToAllianceZone, Set.of(drive)),
-                        Commands.defer(SelfDrivingCommands::selfDriveToNeutralZone, Set.of(drive)),
+                        selfDriveToAllianceZone(),
+                        selfDriveToNeutralZone(),
                         () -> isInNeutralZone(drive.getRobotPose()))
                 .withName("Drive to other zone");
     }
 
     public static Command selfDriveToAllianceZone() {
-        return AutoBuilder.pathfindToPose(
-                AllianceMirrorUtil.apply(
-                        new Pose2d(FieldConstants.fieldLength / 6, FieldConstants.fieldWidth / 2, Rotation2d.kZero)),
+        return AutoBuilder.pathfindToPoseFlipped(
+                new Pose2d(FieldConstants.fieldLength / 6, FieldConstants.fieldWidth / 2, Rotation2d.kZero),
                 constraints);
     }
 
     public static Command selfDriveToNeutralZone() {
-        return AutoBuilder.pathfindToPose(
-                AllianceMirrorUtil.apply(
-                        new Pose2d(FieldConstants.fieldLength / 2.5, FieldConstants.fieldWidth / 2, Rotation2d.kZero)),
+        return AutoBuilder.pathfindToPoseFlipped(
+                new Pose2d(FieldConstants.fieldLength / 2.5, FieldConstants.fieldWidth / 2, Rotation2d.kZero),
                 constraints);
     }
 
