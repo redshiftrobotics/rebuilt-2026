@@ -197,7 +197,7 @@ public class RobotContainer {
 
         // Default command, normal joystick drive
 
-        final Command aimDrive = LaunchCommands.driveWhileLaunching(drive, pipeline::getChassisSpeeds)
+        final Command aimDrive = LaunchCommands.driveWhileLaunching(drive, vision, pipeline::getChassisSpeeds)
                 .withName("Aim Drive");
 
         drive.setDefaultCommand(drive.run(() -> drive.setRobotSpeeds(pipeline.getChassisSpeeds()))
@@ -614,7 +614,7 @@ public class RobotContainer {
 
         // Launcher commands
         namedCommands.put("PrimeToLaunch", LaunchCommands.primeToLaunch(drive, launcher));
-        namedCommands.put("LaunchInPlace", LaunchCommands.launchInPlace(drive, launcher, hopper));
+        namedCommands.put("LaunchInPlace", LaunchCommands.launchInPlace(drive, vision, launcher, hopper));
 
         // Hang commands
         namedCommands.put("HangUp", Commands.none());
