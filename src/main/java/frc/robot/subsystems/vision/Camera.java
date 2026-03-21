@@ -4,6 +4,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.numbers.N1;
@@ -52,6 +53,9 @@ public class Camera {
 
     private boolean filterBasedOnLastPose = false;
     private boolean filterBasedOnGyro = false;
+
+    private final Debouncer hasTargetDebouncer = new Debouncer(0.1, Debouncer.DebounceType.kFalling);
+    private boolean hasTargets = false;
 
     public static record ProcessedEstimatedRobotPose(
             Pose3d estimatedPose,
@@ -102,6 +106,16 @@ public class Camera {
         missingCameraAlert.set(!inputs.connected);
 
         results = io.getEstimates().stream().map(this::processVision).toList();
+
+        hasTargets = hasTargetDebouncer.calculate(inputs.numEstimates > 0);
+    }
+
+    public boolean isConnected() {
+        return inputs.connected;
+    }
+
+    public boolean hasTargets() {
+        return hasTargets;
     }
 
     public List<ProcessedEstimatedRobotPose> getResults() {

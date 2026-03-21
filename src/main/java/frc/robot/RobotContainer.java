@@ -197,7 +197,7 @@ public class RobotContainer {
 
         // Default command, normal joystick drive
 
-        final Command aimDrive = LaunchCommands.driveWhileLaunching(drive, pipeline::getChassisSpeeds)
+        final Command aimDrive = LaunchCommands.driveWhileLaunching(drive, vision, pipeline::getChassisSpeeds)
                 .withName("Aim Drive");
 
         drive.setDefaultCommand(drive.run(() -> drive.setRobotSpeeds(pipeline.getChassisSpeeds()))
@@ -229,6 +229,7 @@ public class RobotContainer {
                 .angularCoefficient(0.3)));
 
         xbox.rightTrigger()
+                .and(xbox.y().negate())
                 .whileTrue(aimDrive)
                 .onTrue(launcher.runOnce(launcher::start).withName("Spin up for Aim"))
                 .onFalse(launcher.runOnce(launcher::stop).withName("Stop spin up for Aim"));
@@ -278,6 +279,17 @@ public class RobotContainer {
                         .withName("Reset Gyro Heading"));
 
         xbox.y().whileTrue(SelfDrivingCommands.selfDriveToOtherZone(drive));
+
+        // face nearest angle, forward or backward depending on whats closer
+        xbox.a().whileTrue(pipeline.runLayer("Forward", input -> input.headingTarget(
+                        Math.abs(drive.getRobotPose()
+                                                .getRotation()
+                                                .minus(Rotation2d.kZero)
+                                                .getRadians())
+                                        < Math.PI / 2
+                                ? Rotation2d.kZero
+                                : Rotation2d.k180deg)
+                .linearCoefficient(0.9)));
 
         // Configure the driving dpad
         for (int pov = 0; pov < 360; pov += 45) {
@@ -602,7 +614,7 @@ public class RobotContainer {
 
         // Launcher commands
         namedCommands.put("PrimeToLaunch", LaunchCommands.primeToLaunch(drive, launcher));
-        namedCommands.put("LaunchInPlace", LaunchCommands.launchInPlace(drive, launcher, hopper));
+        namedCommands.put("LaunchInPlace", LaunchCommands.launchInPlace(drive, vision, launcher, hopper));
 
         // Hang commands
         namedCommands.put("HangUp", Commands.none());
