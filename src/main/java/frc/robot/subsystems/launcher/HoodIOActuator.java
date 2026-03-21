@@ -23,7 +23,7 @@ public class HoodIOActuator implements HoodIO {
 
     @Override
     public void setPosition(double position) {
-        position = MathUtil.clamp(position, 0.05, 0.55);
+        position = MathUtil.clamp(position, 0, 0.55);
         actuatorLeft.set(position);
         actuatorRight.set(position);
     }
