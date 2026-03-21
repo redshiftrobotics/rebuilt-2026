@@ -25,6 +25,7 @@ import frc.robot.Constants.RobotType;
 import frc.robot.commands.DriveCharacterizationCommands;
 import frc.robot.commands.LaunchCommands;
 import frc.robot.commands.SelfDrivingCommands;
+import frc.robot.commands.StagedAgitateFeed;
 import frc.robot.commands.pipeline.DriveInput;
 import frc.robot.commands.pipeline.DriveInputPipeline;
 import frc.robot.subsystems.drive.Drive;
@@ -242,6 +243,7 @@ public class RobotContainer {
                         .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
                         .onlyWhile(launcher::isRunning)
                         .withName("Hopper firing when Aim Ready"));
+        // .whileTrue(new StagedAgitateFeed(intake).withName("Staged Agitate"));
 
         // Secondary drive command, right stick will be used to control target angular
         // position instead of angular velocity
@@ -355,6 +357,7 @@ public class RobotContainer {
 
         // Agitate button (hold)
         xbox.leftStick()
+                .and(xbox.x())
                 .whileTrue(Commands.sequence(
                                 intake.runOnce(() -> intake.setMode(IntakeRunMode.AGITATE_1_UP)),
                                 Commands.waitSeconds(0.5),
@@ -363,6 +366,8 @@ public class RobotContainer {
                         .repeatedly()
                         .withName("Agitate")
                         .finallyDo(() -> intake.setMode(IntakeRunMode.UP)));
+
+        xbox.leftStick().and(xbox.x().negate()).whileTrue(new StagedAgitateFeed(intake).withName("Staged Agitate"));
 
         // Dump through intake button (hold)
         xbox.leftBumper()

@@ -107,6 +107,16 @@ public class Intake extends SubsystemBase {
                         * Units.millisecondsToSeconds(System.currentTimeMillis()));
     }
 
+    public void setCustomMode(Rotation2d setpoint, double speed) {
+        slapdownIO.setSetpoint(setpoint);
+        wheelIO.setSpeed(speed);
+        setpointVisualizer.update(
+                setpoint.getRadians(),
+                speed
+                        * IntakeConstants.IntakeWheelConstants.MOTOR.freeSpeedRadPerSec
+                        * Units.millisecondsToSeconds(System.currentTimeMillis()));
+    }
+
     public void setModeNoWheels(IntakeRunMode mode) {
         currentMode = mode;
         wheelIO.stop();
