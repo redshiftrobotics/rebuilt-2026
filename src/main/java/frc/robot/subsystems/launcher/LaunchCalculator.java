@@ -88,12 +88,12 @@ public class LaunchCalculator extends VirtualSubsystem {
         putTableDataTapeMeasure(124, 425 + wheelRadPerSecOffsetSetup + 35, 0.35 + hoodPositionOffsetSetup);
         putTableDataTapeMeasure(139, 425 + wheelRadPerSecOffsetSetup + 35, 0.4 + hoodPositionOffsetSetup);
 
-        timeOfFlightMap.put(3.60, 1.88);
-        timeOfFlightMap.put(3.40, 1.57);
-        timeOfFlightMap.put(3.15, 1.53);
-        timeOfFlightMap.put(2.89, 1.44);
-        timeOfFlightMap.put(1.49, 1.23);
-        timeOfFlightMap.put(2.57, 1.48);
+        timeOfFlightMap.put(3.60, 1.88 - 0.5);
+        timeOfFlightMap.put(3.40, 1.57 - 0.5);
+        timeOfFlightMap.put(3.15, 1.53 - 0.5);
+        timeOfFlightMap.put(2.89, 1.44 - 0.5);
+        timeOfFlightMap.put(1.49, 1.23 - 0.5);
+        timeOfFlightMap.put(2.57, 1.48 - 0.5);
     }
 
     /**
@@ -148,17 +148,24 @@ public class LaunchCalculator extends VirtualSubsystem {
         return getTimeOfFlight(LauncherConstants.MAX_DISTANCE);
     }
 
-    public static Translation2d getTarget() {
-        return AllianceMirrorUtil.apply(FieldConstants.Hub.topCenterPoint.toTranslation2d());
+    public static Translation2d getTarget(Translation2d robotTranslation) {
+        if (!isPassing(robotTranslation))
+            return AllianceMirrorUtil.apply(FieldConstants.Hub.topCenterPoint.toTranslation2d());
+        else {
+            double offset = (FieldConstants.fieldWidth / 4)
+                    * (robotTranslation.getY() > FieldConstants.LinesHorizontal.center ? 1 : -1);
+            return new Translation2d(
+                    AllianceMirrorUtil.applyX(FieldConstants.LinesVertical.allianceZone / 2 + 1),
+                    FieldConstants.LinesHorizontal.center + offset);
+        }
     }
 
     public LaunchingParameters getParameters(Pose2d estimatedPose, ChassisSpeeds robotRelativeVelocity) {
 
         if (latestParameters != null) return latestParameters;
 
-        boolean passing = AllianceMirrorUtil.applyX(estimatedPose.getX()) > FieldConstants.LinesVertical.hubCenter;
-
-        Translation2d target = getTarget();
+        boolean passing = isPassing(estimatedPose.getTranslation());
+        Translation2d target = getTarget(estimatedPose.getTranslation());
 
         // Calculate estimated pose while accounting for phase delay
         estimatedPose = estimatedPose.exp(new Twist2d(
@@ -255,6 +262,10 @@ public class LaunchCalculator extends VirtualSubsystem {
         return driveAngle;
     }
 
+    private static boolean isPassing(Translation2d robotTranslation) {
+        return AllianceMirrorUtil.applyX(robotTranslation.getX()) > FieldConstants.LinesVertical.hubCenter;
+    }
+
     public static double getTimeOfFlight(double distance) {
         Double value = timeOfFlightMap.get(distance);
         if (value == null) {
@@ -277,7 +288,8 @@ public class LaunchCalculator extends VirtualSubsystem {
      */
     public static Pose2d getStationaryAimedPose(Translation2d robotTranslation) {
         return new Pose2d(
-                robotTranslation, getDriveAngleWithLauncherOffset(GeomUtil.toPose2d(robotTranslation), getTarget()));
+                robotTranslation,
+                getDriveAngleWithLauncherOffset(GeomUtil.toPose2d(robotTranslation), getTarget(robotTranslation)));
     }
 
     /** Adjusts the hood angle offset up or down the specified amount. */
