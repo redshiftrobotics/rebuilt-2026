@@ -279,6 +279,17 @@ public class RobotContainer {
 
         xbox.y().whileTrue(SelfDrivingCommands.selfDriveToOtherZone(drive));
 
+        // face nearest angle, forward or backward depending on whats closer
+        xbox.a().whileTrue(pipeline.runLayer("Forward", input -> input.headingTarget(
+                        Math.abs(drive.getRobotPose()
+                                                .getRotation()
+                                                .minus(Rotation2d.kZero)
+                                                .getRadians())
+                                        < Math.PI / 2
+                                ? Rotation2d.kZero
+                                : Rotation2d.k180deg)
+                .linearCoefficient(0.9)));
+
         // Configure the driving dpad
         for (int pov = 0; pov < 360; pov += 45) {
             Rotation2d rotation = Rotation2d.fromDegrees(-pov);
