@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RobotType;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.vision.Camera.ProcessedEstimatedRobotPose;
+import frc.robot.subsystems.vision.VisionConstants.CameraPositionName;
 import frc.robot.utility.Elastic;
 import frc.robot.utility.Elastic.Notification;
 import java.net.URI;
@@ -28,10 +29,21 @@ public class AprilTagVision extends SubsystemBase {
 
     private boolean hasSuccessfulEstimation = false;
 
+    private boolean forwardCameraMode = false;
+
     public AprilTagVision(Supplier<Pose2d> robotPoseSupplier, CameraIO... camerasIO) {
         this.cameras = Arrays.stream(camerasIO)
                 .map(io -> new Camera(io, robotPoseSupplier))
                 .toArray(Camera[]::new);
+        disableForwardCameraMode();
+    }
+
+    public void disableForwardCameraMode() {
+        forwardCameraMode = false;
+    }
+
+    public void enableForwardCameraMode() {
+        forwardCameraMode = true;
     }
 
     /** Set a consumer to receive all vision poses as they are processed */
@@ -65,10 +77,26 @@ public class AprilTagVision extends SubsystemBase {
         List<Pose3d> robotPosesRejected = new ArrayList<>();
         List<Pose3d> seenTagPoses = new ArrayList<>();
 
+        boolean safeToRunForwardCameraMode = false;
+
+        if (forwardCameraMode) {
+            for (Camera camera : cameras) {
+                if (camera.getCameraPositionName() == CameraPositionName.LAUNCHER_RIGHT
+                        && camera.isConnected()
+                        && camera.hasTargets()) {
+                    safeToRunForwardCameraMode = true;
+                }
+            }
+        }
+
         // Loop through all cameras
         for (Camera camera : cameras) {
 
             Logger.recordOutput("Vision/" + camera.getCameraPositionName() + "/name", camera.getCameraName());
+
+            if (safeToRunForwardCameraMode && camera.getCameraPositionName() != CameraPositionName.LAUNCHER_RIGHT) {
+                continue;
+            }
 
             // Loop through all results that the camera has
             for (ProcessedEstimatedRobotPose result : camera.getResults()) {
@@ -96,6 +124,9 @@ public class AprilTagVision extends SubsystemBase {
         }
 
         hasSuccessfulEstimation = !robotPosesAccepted.isEmpty();
+
+        Logger.recordOutput("Vision/forwardCameraModeRequested", forwardCameraMode);
+        Logger.recordOutput("Vision/forwardCameraModeEnabled", safeToRunForwardCameraMode);
 
         Logger.recordOutput("Vision/robotPosesAccepted", robotPosesAccepted.toArray(Pose3d[]::new));
         Logger.recordOutput("Vision/robotPosesRejected", robotPosesRejected.toArray(Pose3d[]::new));
