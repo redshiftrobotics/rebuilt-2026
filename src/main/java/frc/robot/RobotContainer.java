@@ -229,6 +229,7 @@ public class RobotContainer {
                 .angularCoefficient(0.3)));
 
         xbox.rightTrigger()
+                .and(xbox.y().negate())
                 .whileTrue(aimDrive)
                 .onTrue(launcher.runOnce(launcher::start).withName("Spin up for Aim"))
                 .onFalse(launcher.runOnce(launcher::stop).withName("Stop spin up for Aim"));
