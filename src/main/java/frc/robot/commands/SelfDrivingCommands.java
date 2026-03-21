@@ -16,8 +16,8 @@ import frc.robot.utility.geometry.AllianceMirrorUtil;
 import java.util.Set;
 
 public class SelfDrivingCommands {
-    static final PathConstraints constraints = new PathConstraints(
-            DRIVE_CONFIG.maxLinearVelocity() * 0.8, 4.0, Units.degreesToRadians(540), Units.degreesToRadians(720));
+    static final PathConstraints constraints =
+            new PathConstraints(3.0, 4.0, Units.degreesToRadians(540), Units.degreesToRadians(720));
 
     public static Command selfDriveToOtherZone(Drive drive) {
         return Commands.either(
