@@ -592,7 +592,7 @@
           {
             "title": "Swerve Drive",
             "x": 1024.0,
-            "y": 256.0,
+            "y": 0.0,
             "width": 256.0,
             "height": 256.0,
             "type": "SwerveDrive",
@@ -696,40 +696,6 @@
             }
           },
           {
-            "title": "Launch Ready?",
-            "x": 640.0,
-            "y": 384.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Boolean Box",
-            "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Launcher/isReady",
-              "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
-            }
-          },
-          {
-            "title": "Launch Running?",
-            "x": 640.0,
-            "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Boolean Box",
-            "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Launcher/isRunning",
-              "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
-            }
-          },
-          {
             "title": "Auto Delay (Second)",
             "x": 0.0,
             "y": 128.0,
@@ -744,22 +710,9 @@
             }
           },
           {
-            "title": "spencercam-processed",
-            "x": 1024.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 256.0,
-            "type": "Camera Stream",
-            "properties": {
-              "topic": "/CameraPublisher/spencercam-processed",
-              "period": 0.06,
-              "rotation_turns": 0
-            }
-          },
-          {
             "title": "BatteryVoltage",
             "x": 1024.0,
-            "y": 512.0,
+            "y": 256.0,
             "width": 256.0,
             "height": 256.0,
             "type": "Graph",
@@ -772,6 +725,57 @@
               "max_value": 13.0,
               "color": 4278238420,
               "line_width": 2.0
+            }
+          },
+          {
+            "title": "isReadyDebounced",
+            "x": 640.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Launcher/isReadyDebounced",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "isReady",
+            "x": 640.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 64.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Launcher/isReady",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "Launch Running?",
+            "x": 640.0,
+            "y": 448.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Launcher/isRunning",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
             }
           }
         ]

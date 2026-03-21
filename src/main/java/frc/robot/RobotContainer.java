@@ -230,7 +230,17 @@ public class RobotContainer {
 
         xbox.rightTrigger()
                 .whileTrue(aimDrive)
-                .whileTrue(launcher.runEnd(launcher::start, launcher::stop).withName("Spin up for Aim"));
+                .onTrue(launcher.runOnce(launcher::start).withName("Spin up for Aim"))
+                .onFalse(launcher.runOnce(launcher::stop).withName("Stop spin up for Aim"));
+
+        xbox.rightTrigger()
+                .and(launcher::isReadyDebounced)
+                .and(() -> LaunchCommands.isDriveAtLaunchGoal(drive))
+                .whileTrue(hopper.runEnd(
+                                () -> hopper.setMode(HopperRunMode.FIRING), () -> hopper.setMode(HopperRunMode.STOPPED))
+                        .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
+                        .onlyWhile(launcher::isRunning)
+                        .withName("Hopper firing when Aim Ready"));
 
         // Secondary drive command, right stick will be used to control target angular
         // position instead of angular velocity
@@ -297,8 +307,6 @@ public class RobotContainer {
 
         launcher.setMode(DEFAULT_LAUNCH);
 
-        final Trigger launcherRunning = new Trigger(launcher::isRunning);
-
         final Trigger cancelButton = xbox.b();
 
         final Trigger manualButton = xbox.back();
@@ -314,15 +322,6 @@ public class RobotContainer {
                 .onTrue(hopper.runOnce(() -> hopper.setMode(HopperRunMode.STOPPED))
                         .ignoringDisable(true))
                 .onTrue(intake.runOnce(() -> intake.setMode(IntakeRunMode.UP)).ignoringDisable(true));
-
-        launcherRunning.whileTrue(
-                rumbleController(xbox, 0.1, RumbleType.kLeftRumble).withName("Launcher Running Rumble"));
-
-        launcherRunning
-                .and(launcher::isReadyDebounced)
-                .onTrue(rumbleController(xbox, 0.5, RumbleType.kRightRumble)
-                        .withTimeout(0.25)
-                        .withName("Launcher Ready Rumble"));
 
         // --- INTAKE CONTROL ---
 
@@ -395,13 +394,15 @@ public class RobotContainer {
         // Spin up then launch button
         xbox.rightTrigger()
                 .and(cancelButton.negate())
-                .whileTrue(launcher.startEnd(launcher::start, launcher::stop).withName("Spin up for Launch"))
-                .whileTrue(Commands.waitUntil(launcher::isReadyDebounced)
-                        .andThen(hopper.run(() -> hopper.setMode(HopperRunMode.FIRING)))
-                        .finallyDo(() -> hopper.setMode(HopperRunMode.STOPPED))
+                .whileTrue(launcher.startEnd(launcher::start, launcher::stop).withName("Spin up for Launch"));
+
+        xbox.rightTrigger()
+                .and(launcher::isReadyDebounced)
+                .whileTrue(hopper.runEnd(
+                                () -> hopper.setMode(HopperRunMode.FIRING), () -> hopper.setMode(HopperRunMode.STOPPED))
                         .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
                         .onlyWhile(launcher::isRunning)
-                        .withName("Hopper firing when ready"));
+                        .withName("Hopper firing when Ready"));
 
         // Force launch button
         xbox.rightBumper()
@@ -432,7 +433,7 @@ public class RobotContainer {
         // Start spin up button
         xbox.y()
                 .and(manualButton.negate())
-                .onTrue(launcher.runOnce(launcher::start).withName("Spin Up"));
+                .whileTrue(launcher.startEnd(launcher::start, launcher::stop).withName("Spin Up"));
 
         // Cancel spin up button
         cancelButton
@@ -511,6 +512,15 @@ public class RobotContainer {
         new Trigger(() -> HubShiftUtil.getShiftedShiftInfo().active())
                 .onChange(rumbleControllers(1.0, RumbleType.kRightRumble).withTimeout(0.25));
 
+        new Trigger(launcher::isRunning)
+                .whileTrue(rumbleControllers(0.1, RumbleType.kLeftRumble).withName("Launcher Running Rumble"));
+
+        new Trigger(launcher::isRunning)
+                .and(() -> hopper.getCurrentRunMode() == HopperRunMode.FIRING)
+                .onTrue(rumbleControllers(0.5, RumbleType.kRightRumble)
+                        .withTimeout(0.25)
+                        .withName("Launcher Ready Rumble"));
+
         Trigger isMatch = new Trigger(() -> DriverStation.getMatchTime() != -1);
 
         RobotModeTriggers.teleop().and(isMatch).onTrue(Commands.runOnce(() -> Elastic.selectTab("Teleoperated")));
@@ -537,6 +547,14 @@ public class RobotContainer {
         for (BlinkinLEDPattern pattern : BlinkinLEDPattern.values()) {
             ledFallbackPatternChooser.addOption(pattern.toString(), pattern);
         }
+
+        new Trigger(() -> HubShiftUtil.getShiftedShiftInfo().active())
+                .onTrue(leds.runColor(BlinkinLEDPattern.GREEN)
+                        .withName("Hub Shift Active LED")
+                        .withTimeout(0.25))
+                .onFalse(leds.runColor(BlinkinLEDPattern.WHITE)
+                        .withName("Hub Shift Inactive LED")
+                        .withTimeout(0.25));
 
         leds.setDefaultCommand(leds.runColor(() -> {
                     if (DriverStation.isAutonomous()) {
