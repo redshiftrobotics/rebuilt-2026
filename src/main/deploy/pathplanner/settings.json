@@ -2,11 +2,14 @@
   "robotWidth": 0.9,
   "robotLength": 0.9,
   "holonomicMode": true,
-  "pathFolders": [],
+  "pathFolders": [
+    "New Folder"
+  ],
   "autoFolders": [
     "Field Only",
-    "Preload Then Field",
-    "Preload Only"
+    "NeturalZoneNewAutos",
+    "Preload Only",
+    "Preload Then Field"
   ],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,

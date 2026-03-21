@@ -48,19 +48,28 @@
     },
     {
       "anchor": {
-        "x": 7.674821683309556,
-        "y": 5.956390870185448
+        "x": 7.862228124281939,
+        "y": 5.01841516681746
       },
       "prevControl": {
-        "x": 7.416346271066174,
-        "y": 6.159054879786891
+        "x": 8.003845974791284,
+        "y": 5.636018112033021
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "North Neutral Zone"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.0104865402471823,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 1.7615021252241307,
+      "rotationDegrees": 0.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -74,7 +83,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -90.0
   },
   "reversed": false,
   "folder": null,
