@@ -38,7 +38,7 @@ public class LaunchCommands {
     private static final TunableNumber driveControllerYawToleranceDeg =
             launchingGroup.number("ControllerYawToleranceDeg", 0.01);
 
-    private static final TunableNumber driveYawLaunchToleranceDeg = launchingGroup.number("YawToleranceDeg", 5.0);
+    private static final TunableNumber driveYawLaunchToleranceDeg = launchingGroup.number("YawToleranceDeg", 15.0);
     private static final TunableNumber driveLaunchMaxPolarVelocityRadPerSec =
             launchingGroup.number("MaxPolarVelocityRadPerSec", 0.6);
     private static final TunableNumber driveLauncherCORMinErrorDeg =
@@ -62,20 +62,19 @@ public class LaunchCommands {
                         .driveAngle()
                         .getDegrees(),
                 drive.getRobotPose().getRotation().getDegrees(),
-                2.0)));
+                7.0)));
 
         Command autoAlign = driveWhileLaunching(drive, vision, () -> ZERO_CHASSIS_SPEEDS)
-                .until(isAligned)
-                .withTimeout(8);
+                .until(isAligned) // aceius
+                .withTimeout(4);
 
         Command launchFuel = Commands.parallel(
                 launcher.runOnce(launcher::start),
                 Commands.sequence(
-                        hopper.runOnce(() -> hopper.setMode(HopperRunMode.PREP_SHOT)),
-                        Commands.waitUntil(launcher::isReadyDebounced),
+                        Commands.waitUntil(launcher::isReadyDebounced).withTimeout(1),
                         hopper.runOnce(() -> hopper.setMode(HopperRunMode.FIRING))));
 
-        return Commands.parallel(launchFuel, autoAlign)
+        return Commands.parallel(launchFuel, autoAlign, Commands.waitSeconds(10))
                 .finallyDo((interrupted) -> {
                     hopper.setMode(HopperRunMode.STOPPED);
                     launcher.stop();

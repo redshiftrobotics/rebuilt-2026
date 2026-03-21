@@ -48,9 +48,9 @@ public class Launcher extends SubsystemBase {
 
     public static TunableNumber HOOD_POSITION_TOLERANCE = new TunableNumber("Launcher/HoodPositionToleranceDeg", 2.0);
 
-    public static TunableNumber DEBOUNCE_TIME_AT_GOAL_AUTO = new TunableNumber("Launcher/DebounceTimeAtGoalAuto", 0.75);
+    public static TunableNumber DEBOUNCE_TIME_AT_GOAL_AUTO = new TunableNumber("Launcher/DebounceTimeAtGoalAuto", 0.5);
 
-    public static TunableNumber DEBOUNCE_TIME_AT_GOAL_TELE = new TunableNumber("Launcher/DebounceTimeAtGoalTele", 0.5);
+    public static TunableNumber DEBOUNCE_TIME_AT_GOAL_TELE = new TunableNumber("Launcher/DebounceTimeAtGoalTele", 0.01);
 
     private final HoodIO hoodIO;
     private final HoodIOInputsAutoLogged hoodInputs = new HoodIOInputsAutoLogged();

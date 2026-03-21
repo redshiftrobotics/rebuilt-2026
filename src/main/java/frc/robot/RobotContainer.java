@@ -238,7 +238,7 @@ public class RobotContainer {
         xbox.rightTrigger()
                 .and(launcher::isReadyDebounced)
                 .and(() -> LaunchCommands.isDriveAtLaunchGoal(drive))
-                .whileTrue(hopper.runEnd(
+                .onTrue(hopper.runEnd(
                                 () -> hopper.setMode(HopperRunMode.FIRING), () -> hopper.setMode(HopperRunMode.STOPPED))
                         .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
                         .onlyWhile(launcher::isRunning)
@@ -526,16 +526,16 @@ public class RobotContainer {
 
     /** Configures triggers for alerts and robot mode changes. */
     private void configureAlertTriggers() {
-        new Trigger(() -> HubShiftUtil.getShiftedShiftInfo().active())
-                .onChange(rumbleControllers(1.0, RumbleType.kRightRumble).withTimeout(0.25));
+        // new Trigger(() -> HubShiftUtil.getOfficialShiftInfo().active())
+        //         .onChange(rumbleControllers(1.0, RumbleType.kRightRumble).withTimeout(0.75));
 
         new Trigger(launcher::isRunning)
-                .whileTrue(rumbleControllers(0.1, RumbleType.kLeftRumble).withName("Launcher Running Rumble"));
+                .whileTrue(rumbleControllers(0.3, RumbleType.kLeftRumble).withName("Launcher Running Rumble"));
 
         new Trigger(launcher::isRunning)
                 .and(() -> hopper.getCurrentRunMode() == HopperRunMode.FIRING)
                 .onTrue(rumbleControllers(0.5, RumbleType.kRightRumble)
-                        .withTimeout(0.25)
+                        .withTimeout(0.5)
                         .withName("Launcher Ready Rumble"));
 
         Trigger isMatch = new Trigger(() -> DriverStation.getMatchTime() != -1);
@@ -565,7 +565,7 @@ public class RobotContainer {
             ledFallbackPatternChooser.addOption(pattern.toString(), pattern);
         }
 
-        new Trigger(() -> HubShiftUtil.getShiftedShiftInfo().active())
+        new Trigger(() -> HubShiftUtil.getOfficialShiftInfo().active())
                 .onTrue(leds.runColor(BlinkinLEDPattern.GREEN)
                         .withName("Hub Shift Active LED")
                         .withTimeout(0.25))

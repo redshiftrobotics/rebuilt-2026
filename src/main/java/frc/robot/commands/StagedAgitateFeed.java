@@ -38,7 +38,7 @@ public class StagedAgitateFeed extends Command {
 
         if (!done) {
             if (count % 2 == 0 && timer.advanceIfElapsed(0.4)) {
-                position = position.plus(Rotation2d.fromDegrees(20));
+                position = position.plus(Rotation2d.fromDegrees(30));
                 count++;
             } else if (count % 2 == 1 && timer.advanceIfElapsed(0.4)) {
                 position = position.minus(Rotation2d.fromDegrees(10));
