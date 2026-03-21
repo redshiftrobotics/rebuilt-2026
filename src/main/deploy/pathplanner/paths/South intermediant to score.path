@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.0,
+        "y": 2.0
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.545071694742201,
+        "y": 2.1059475841260347
+      },
+      "isLocked": false,
+      "linkedName": "South Trench Backup Endpoint"
+    },
+    {
+      "anchor": {
+        "x": 2.43154946196313,
+        "y": 2.300079654618805
+      },
+      "prevControl": {
+        "x": 2.182740866485907,
+        "y": 2.2757017380414695
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "South shooting point"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 38.54468097451762
+  },
+  "reversed": false,
+  "folder": "New Folder",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "useDefaultConstraints": true
+}

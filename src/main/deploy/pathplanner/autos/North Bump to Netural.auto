@@ -7,7 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "North Trench Backup"
+            "pathName": "North Bump Backup"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "North Bump Backup End to North Trench"
           }
         },
         {

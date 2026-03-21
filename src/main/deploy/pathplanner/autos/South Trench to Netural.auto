@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "North Trench Backup"
+            "pathName": "South Trench Backup"
           }
         },
         {
@@ -17,7 +17,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "North Trench To Field"
+                  "pathName": "South Trench To Field"
                 }
               },
               {
@@ -61,7 +61,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "North Neutral to Score"
+                  "pathName": "South Neutral to Score"
                 }
               },
               {
@@ -99,7 +99,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "North intermediant to score"
+                  "pathName": "South intermediant to score"
                 }
               }
             ]
@@ -127,7 +127,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Score To North Intermediant"
+            "pathName": "Score To South Intermediant"
           }
         },
         {
@@ -137,7 +137,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "North Trench To Field"
+                  "pathName": "South Trench To Field"
                 }
               },
               {
@@ -181,7 +181,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "North Neutral to Score"
+                  "pathName": "South Neutral to Score"
                 }
               },
               {

@@ -3,32 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.0,
-        "y": 2.0
+        "x": 7.774798675985897,
+        "y": 2.903336353675992
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.1768826273415547,
-        "y": 2.1766706997347005
+        "x": 8.068223153039222,
+        "y": 3.117030557721148
       },
       "isLocked": false,
-      "linkedName": "South Trench Backup Endpoint"
-    },
-    {
-      "anchor": {
-        "x": 3.2239229671897287,
-        "y": 0.6386019971469341
-      },
-      "prevControl": {
-        "x": 2.772856792856188,
-        "y": 0.780352559571222
-      },
-      "nextControl": {
-        "x": 3.6278647212361292,
-        "y": 0.5116605990087741
-      },
-      "isLocked": false,
-      "linkedName": null
+      "linkedName": "South Neutral Zone End point"
     },
     {
       "anchor": {
@@ -36,38 +20,54 @@
         "y": 0.7550499286733237
       },
       "prevControl": {
-        "x": 5.730283595795684,
-        "y": 0.46325040037454296
+        "x": 7.014209756907096,
+        "y": 0.9719119666471412
       },
       "nextControl": {
-        "x": 6.777939243280171,
-        "y": 1.194994661923321
+        "x": 5.143497057148055,
+        "y": 0.5035327686982998
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 7.774798675985897,
-        "y": 2.903336353675992
+        "x": 3.224,
+        "y": 0.639
       },
       "prevControl": {
-        "x": 7.801334311541389,
-        "y": 1.9552062614291326
+        "x": 3.688850342619653,
+        "y": 0.5948174016615928
+      },
+      "nextControl": {
+        "x": 2.442864922685084,
+        "y": 0.7132444916240155
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.0,
+        "y": 2.0
+      },
+      "prevControl": {
+        "x": 1.750918834747911,
+        "y": 2.0214143203642227
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "South Neutral Zone End point"
+      "linkedName": "South Trench Backup Endpoint"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.9317757028048157,
-      "rotationDegrees": 0.0
+      "waypointRelativePos": 1.0239953213050714,
+      "rotationDegrees": 180.0
     },
     {
-      "waypointRelativePos": 1.8813501576908305,
-      "rotationDegrees": 0.0
+      "waypointRelativePos": 1.8970471991867344,
+      "rotationDegrees": 180.0
     }
   ],
   "constraintZones": [],
@@ -83,13 +83,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 90.0
+    "rotation": 0.0
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 90.0
   },
   "useDefaultConstraints": true
 }
