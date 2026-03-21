@@ -155,7 +155,8 @@ public class LaunchCalculator extends VirtualSubsystem {
             double offset = (FieldConstants.fieldWidth / 4)
                     * (robotTranslation.getY() > FieldConstants.LinesHorizontal.center ? 1 : -1);
             return new Translation2d(
-                    AllianceMirrorUtil.applyX(FieldConstants.LinesVertical.allianceZone / 2 + 1), FieldConstants.LinesHorizontal.center + offset);
+                    AllianceMirrorUtil.applyX(FieldConstants.LinesVertical.allianceZone / 2 + 1),
+                    FieldConstants.LinesHorizontal.center + offset);
         }
     }
 

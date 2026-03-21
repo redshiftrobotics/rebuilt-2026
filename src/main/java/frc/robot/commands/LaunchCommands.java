@@ -24,6 +24,7 @@ import frc.robot.utility.tunable.TunableNumber;
 import frc.robot.utility.tunable.TunableNumberGroup;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class LaunchCommands {
@@ -184,7 +185,6 @@ public class LaunchCommands {
             Logger.recordOutput(
                     "LaunchCalculator/Driving/SetpointPose",
                     new Pose2d(robotPose.getTranslation(), parameters.driveAngle()));
-            Logger.recordOutput("LaunchCalculator/Driving/AtGoalTolerance", isDriveAtLaunchGoal(drive));
             Logger.recordOutput(
                     "LaunchCalculator/Driving/ErrorPosition",
                     parameters.driveAngle().minus(measuredRobotAngle));
@@ -201,6 +201,7 @@ public class LaunchCommands {
         });
     }
 
+    @AutoLogOutput(key = "LaunchCalculator/Driving/AtYawGoal")
     public static boolean isDriveAtLaunchGoal(Drive drive) {
         return MathUtil.isNear(
                 LaunchCalculator.getInstance()
