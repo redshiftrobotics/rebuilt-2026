@@ -74,11 +74,12 @@ public class LaunchCommands {
                         Commands.waitUntil(launcher::isReadyDebounced).withTimeout(1),
                         hopper.runOnce(() -> hopper.setMode(HopperRunMode.FIRING))));
 
-        return Commands.parallel(launchFuel, autoAlign, Commands.waitSeconds(10))
+        return Commands.parallel(launchFuel, autoAlign, Commands.waitSeconds(3))
                 .finallyDo((interrupted) -> {
                     hopper.setMode(HopperRunMode.STOPPED);
                     launcher.stop();
                 })
+                .andThen(Commands.waitSeconds(2.05)) // Measured hood retract time
                 .withName("Launching in place");
     }
 
