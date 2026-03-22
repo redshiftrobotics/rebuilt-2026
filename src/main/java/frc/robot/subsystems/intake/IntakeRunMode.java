@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 public enum IntakeRunMode {
     START_POSITION(Rotation2d.fromDegrees(105), 0),
     INTAKING(Rotation2d.fromDegrees(0), 1.0),
+    INTAKING_NO_WHEELS(Rotation2d.fromRadians(0), 0),
     OUTTAKING_DUMP(Rotation2d.fromDegrees(3), -1.0),
     POST_INTAKE_TRANSITION(Rotation2d.fromDegrees(88), 1.0),
     AGITATE_1_UP(Rotation2d.fromDegrees(88), 1.0),

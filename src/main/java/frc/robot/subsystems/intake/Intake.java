@@ -28,6 +28,7 @@ public class Intake extends SubsystemBase {
     private SlapdownIOInputsAutoLogged slapdownInputs = new SlapdownIOInputsAutoLogged();
 
     private IntakeRunMode currentMode = IntakeRunMode.UP;
+    private IntakeRunMode defaultMode = IntakeRunMode.UP;
 
     private final Alert wheelMotorDisconnectedAlert =
             new Alert("Hardware error detected on intake wheel.", AlertType.kError);
@@ -90,6 +91,14 @@ public class Intake extends SubsystemBase {
 
     public IntakeRunMode getMode() {
         return currentMode;
+    }
+
+    public void setDefaultMode(IntakeRunMode defaultMode) {
+        this.defaultMode = defaultMode;
+    }
+
+    public IntakeRunMode getDefaultMode() {
+        return defaultMode;
     }
 
     public void setMode(IntakeRunMode mode) {
