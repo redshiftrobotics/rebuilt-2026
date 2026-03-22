@@ -23,6 +23,7 @@ public class StagedAgitateFeed extends Command {
 
     public StagedAgitateFeed(Intake intake) {
         this.intake = intake;
+        addRequirements(intake);
     }
 
     @Override
@@ -36,21 +37,26 @@ public class StagedAgitateFeed extends Command {
     @Override
     public void execute() {
 
+        double wheels = 1;
         if (!done) {
             if (count % 2 == 0 && timer.advanceIfElapsed(0.4)) {
                 position = position.plus(Rotation2d.fromDegrees(30));
+                wheels = IntakeRunMode.AGITATE_1_UP.intakeDutyCycle;
                 count++;
             } else if (count % 2 == 1 && timer.advanceIfElapsed(0.4)) {
                 position = position.minus(Rotation2d.fromDegrees(10));
+                wheels = IntakeRunMode.AGITATE_2.intakeDutyCycle;
                 count++;
             }
         } else {
             // duplicate for future changes
-            if (count % 2 == 0 && timer.advanceIfElapsed(0.4)) {
-                position = position.plus(Rotation2d.fromDegrees(20));
+            if (count % 2 == 0 && timer.advanceIfElapsed(0.3)) {
+                position = IntakeRunMode.AGITATE_1_UP.getSetpoint();
+                wheels = IntakeRunMode.AGITATE_1_UP.intakeDutyCycle;
                 count++;
-            } else if (count % 2 == 1 && timer.advanceIfElapsed(0.4)) {
-                position = position.minus(Rotation2d.fromDegrees(20));
+            } else if (count % 2 == 1 && timer.advanceIfElapsed(0.5)) {
+                position = IntakeRunMode.AGITATE_2.getSetpoint();
+                wheels = IntakeRunMode.AGITATE_2.intakeDutyCycle;
                 count++;
             }
         }
@@ -60,7 +66,7 @@ public class StagedAgitateFeed extends Command {
             done = true;
         }
 
-        intake.setCustomMode(position, IntakeRunMode.AGITATE_2.intakeDutyCycle);
+        intake.setCustomMode(position, wheels);
     }
 
     @Override

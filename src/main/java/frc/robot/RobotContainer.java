@@ -242,6 +242,9 @@ public class RobotContainer {
                                 () -> hopper.setMode(HopperRunMode.FIRING), () -> hopper.setMode(HopperRunMode.STOPPED))
                         .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
                         .onlyWhile(launcher::isRunning)
+                        .withName("Hopper firing when Aim Ready"))
+                .whileTrue(new StagedAgitateFeed(intake)
+                        .onlyWhile(launcher::isRunning)
                         .withName("Hopper firing when Aim Ready"));
         // .whileTrue(new StagedAgitateFeed(intake).withName("Staged Agitate"));
 
