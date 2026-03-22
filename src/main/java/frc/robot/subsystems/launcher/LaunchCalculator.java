@@ -73,7 +73,7 @@ public class LaunchCalculator extends VirtualSubsystem {
     static {
 
         // Store offsets uses during match here
-        final double wheelRadPerSecOffsetSetup = 0.0;
+        final double wheelRadPerSecOffsetSetup = 30.0;
         final double hoodPositionOffsetSetup = 0.0;
 
         putTableDataTapeMeasure(8, 300 + wheelRadPerSecOffsetSetup + 35, 0.1 + hoodPositionOffsetSetup);

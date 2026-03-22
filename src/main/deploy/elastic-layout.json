@@ -289,8 +289,8 @@
           },
           {
             "title": "Hopper Mode",
-            "x": 768.0,
-            "y": 512.0,
+            "x": 1024.0,
+            "y": 384.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
@@ -317,9 +317,9 @@
           },
           {
             "title": "BatteryVoltage (10 sec)",
-            "x": 1024.0,
-            "y": 384.0,
-            "width": 256.0,
+            "x": 0.0,
+            "y": 512.0,
+            "width": 384.0,
             "height": 256.0,
             "type": "Graph",
             "properties": {
