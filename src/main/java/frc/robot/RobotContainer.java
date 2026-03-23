@@ -223,7 +223,9 @@ public class RobotContainer {
         xbox.back().debounce(0.1).toggleOnTrue(pipeline.runLayer("Robot Relative", DriveInput::fieldRelativeDisabled));
 
         // Secondary drive command, use driving stick to control angle as well
-        xbox.leftTrigger().whileTrue(pipeline.runLayer("Intake", DriveInput::locustMode));
+        // xbox.leftTrigger().whileTrue(pipeline.runLayer("Intake", DriveInput::locustMode));
+
+        xbox.leftTrigger().whileTrue(launcher.startEnd(launcher::start, launcher::stop));
 
         xbox.rightTrigger()
                 .and(xbox.y().negate())
@@ -243,22 +245,14 @@ public class RobotContainer {
                         .withName("Hopper firing when Aim Ready"));
 
         // Slow mode, reduce translation and rotation speeds for fine control
-        // xbox.leftBumper().whileTrue(pipeline.runLayer("Slow", input -> input.linearCoefficient(0.3)
-        //         .angularCoefficient(0.3)));
+        xbox.leftBumper().whileTrue(pipeline.runLayer("Slow", input -> input.linearCoefficient(0.3)
+                .angularCoefficient(0.3)));
 
         // Secondary drive command, right stick will be used to control target angular
         // position instead of angular velocity
-        // xbox.rightBumper()
-        //         .whileTrue(pipeline.runLayer(
-        //                 "Heading", input -> input.headingStick(-xbox.getRightY(), -xbox.getRightX())));
-
-        // new Trigger(() -> drive.getDesiredRobotSpeeds().omegaRadiansPerSecond == 0)
-        //     .debounce(0.3)
-        //     .whileTrue(pipeline.runLayer("Hold", DriveInput::passiveHoldHeading));
-
-        xbox.leftBumper().onTrue(launcher.runOnce(launcher::stop).withName("Driver stop launcher"));
-
-        xbox.rightBumper().onTrue(launcher.runOnce(launcher::start).withName("Driver spin up launcher"));
+        xbox.rightBumper()
+                .whileTrue(pipeline.runLayer(
+                        "Heading", input -> input.headingStick(-xbox.getRightY(), -xbox.getRightX())));
 
         // Cause the robot to resist movement by forming an X shape with the swerve
         // modules. Helps prevent getting pushed around

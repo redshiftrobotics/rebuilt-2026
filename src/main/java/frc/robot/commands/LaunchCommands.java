@@ -166,9 +166,7 @@ public class LaunchCommands {
                             LauncherConstants.LAUNCHER_TO_ROBOT.times(1.0 - corScalar),
                             measuredRobotAngle);
 
-                    if (MathUtil.isNear(0, fieldRelativeSpeedsWithOffset.vxMetersPerSecond, 0.05)
-                            && MathUtil.isNear(0, fieldRelativeSpeedsWithOffset.vyMetersPerSecond, 0.05)
-                            && MathUtil.isNear(0, fieldRelativeSpeedsWithOffset.omegaRadiansPerSecond, 0.05)) {
+                    if (fieldRelativeSpeedsWithOffset.equals(ZERO_CHASSIS_SPEEDS)) {
                         drive.stopUsingBrakeArrangement();
                     } else {
                         drive.setRobotSpeeds(ChassisSpeeds.fromFieldRelativeSpeeds(
