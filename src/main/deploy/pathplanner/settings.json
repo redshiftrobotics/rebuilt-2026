@@ -2,10 +2,14 @@
   "robotWidth": 0.9,
   "robotLength": 0.9,
   "holonomicMode": true,
-  "pathFolders": [],
+  "pathFolders": [
+    "Secondary",
+    "Primary"
+  ],
   "autoFolders": [
-    "Preload Only",
-    "Field"
+    "Sweep Only",
+    "Preload & Sweep",
+    "Preload Only"
   ],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,

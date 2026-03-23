@@ -225,15 +225,12 @@ public class RobotContainer {
         // Secondary drive command, use driving stick to control angle as well
         xbox.leftTrigger().whileTrue(pipeline.runLayer("Intake", DriveInput::locustMode));
 
-        // Slow mode, reduce translation and rotation speeds for fine control
-        xbox.leftBumper().whileTrue(pipeline.runLayer("Slow", input -> input.linearCoefficient(0.3)
-                .angularCoefficient(0.3)));
-
         xbox.rightTrigger()
                 .and(xbox.y().negate())
                 .whileTrue(aimDrive)
-                .onTrue(launcher.runOnce(launcher::start).withName("Spin up for Aim"))
-                .onFalse(launcher.runOnce(launcher::stop).withName("Stop spin up for Aim"));
+                .whileTrue(launcher.startEnd(launcher::start, launcher::stop)
+                        .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
+                        .withName("Aim and shoot"));
 
         xbox.rightTrigger()
                 .and(launcher::isReadyDebounced)
@@ -245,15 +242,23 @@ public class RobotContainer {
                         .onlyWhile(launcher::isRunning)
                         .withName("Hopper firing when Aim Ready"));
 
+        // Slow mode, reduce translation and rotation speeds for fine control
+        // xbox.leftBumper().whileTrue(pipeline.runLayer("Slow", input -> input.linearCoefficient(0.3)
+        //         .angularCoefficient(0.3)));
+
         // Secondary drive command, right stick will be used to control target angular
         // position instead of angular velocity
-        xbox.rightBumper()
-                .whileTrue(pipeline.runLayer(
-                        "Heading", input -> input.headingStick(-xbox.getRightY(), -xbox.getRightX())));
+        // xbox.rightBumper()
+        //         .whileTrue(pipeline.runLayer(
+        //                 "Heading", input -> input.headingStick(-xbox.getRightY(), -xbox.getRightX())));
 
         // new Trigger(() -> drive.getDesiredRobotSpeeds().omegaRadiansPerSecond == 0)
         //     .debounce(0.3)
         //     .whileTrue(pipeline.runLayer("Hold", DriveInput::passiveHoldHeading));
+
+        xbox.leftBumper().onTrue(launcher.runOnce(launcher::stop).withName("Driver stop launcher"));
+
+        xbox.rightBumper().onTrue(launcher.runOnce(launcher::start).withName("Driver spin up launcher"));
 
         // Cause the robot to resist movement by forming an X shape with the swerve
         // modules. Helps prevent getting pushed around
@@ -358,6 +363,20 @@ public class RobotContainer {
                 .onlyWhile(() -> intake.getMode() == IntakeRunMode.POST_INTAKE_TRANSITION)
                 .withName("Agitate Post Intake"));
 
+        // Dump through intake button (hold)
+        xbox.leftBumper()
+                .debounce(0.1)
+                .whileTrue(intake.runEnd(
+                                () -> intake.setMode(IntakeRunMode.OUTTAKING_DUMP),
+                                () -> intake.setMode(intake.getDefaultMode()))
+                        .withName("Dump Intake"))
+                .whileTrue(hopper.runEnd(
+                                () -> hopper.setMode(HopperRunMode.REVERSE),
+                                () -> hopper.setMode(HopperRunMode.STOPPED))
+                        .withName("Dump Hopper"));
+
+        xbox.leftStick().onTrue(Commands.runOnce(() -> intake.setDefaultMode(IntakeRunMode.UP)));
+
         // Agitate button (hold)
         xbox.leftStick()
                 .and(xbox.x())
@@ -372,25 +391,11 @@ public class RobotContainer {
 
         xbox.leftStick().and(xbox.x().negate()).whileTrue(new StagedAgitateFeed(intake).withName("Staged Agitate"));
 
-        // Dump through intake button (hold)
-        xbox.leftBumper()
-                .debounce(0.1)
-                .whileTrue(intake.runEnd(
-                                () -> intake.setMode(IntakeRunMode.OUTTAKING_DUMP),
-                                () -> intake.setMode(intake.getDefaultMode()))
-                        .withName("Dump Intake"))
-                .whileTrue(hopper.runEnd(
-                                () -> hopper.setMode(HopperRunMode.REVERSE),
-                                () -> hopper.setMode(HopperRunMode.STOPPED))
-                        .withName("Dump Hopper"));
-
         // Deploy intake tap button
         xbox.rightStick()
                 .whileTrue(intake.run(() -> intake.setModeNoWheels(IntakeRunMode.INTAKING_NO_WHEELS))
                         .withName("Deploy intake no wheels"))
-                .whileTrue(Commands.startEnd(
-                        () -> intake.setDefaultMode(IntakeRunMode.INTAKING_NO_WHEELS),
-                        () -> intake.setDefaultMode(IntakeRunMode.UP)));
+                .onTrue(Commands.runOnce(() -> intake.setDefaultMode(IntakeRunMode.INTAKING_NO_WHEELS)));
 
         // Intake shift up button
         xbox.povUp()
@@ -456,7 +461,7 @@ public class RobotContainer {
         // Start spin up button
         xbox.y()
                 .and(manualButton.negate())
-                .whileTrue(launcher.startEnd(launcher::start, launcher::stop).withName("Spin Up"));
+                .onTrue(launcher.runOnce(launcher::start).withName("Spin Up"));
 
         // Cancel spin up button
         cancelButton

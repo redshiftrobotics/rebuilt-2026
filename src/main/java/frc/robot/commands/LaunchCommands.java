@@ -166,8 +166,14 @@ public class LaunchCommands {
                             LauncherConstants.LAUNCHER_TO_ROBOT.times(1.0 - corScalar),
                             measuredRobotAngle);
 
-                    drive.setRobotSpeeds(
-                            ChassisSpeeds.fromFieldRelativeSpeeds(fieldRelativeSpeedsWithOffset, measuredRobotAngle));
+                    if (MathUtil.isNear(0, fieldRelativeSpeedsWithOffset.vxMetersPerSecond, 0.05)
+                            && MathUtil.isNear(0, fieldRelativeSpeedsWithOffset.vyMetersPerSecond, 0.05)
+                            && MathUtil.isNear(0, fieldRelativeSpeedsWithOffset.omegaRadiansPerSecond, 0.05)) {
+                        drive.stopUsingBrakeArrangement();
+                    } else {
+                        drive.setRobotSpeeds(ChassisSpeeds.fromFieldRelativeSpeeds(
+                                fieldRelativeSpeedsWithOffset, measuredRobotAngle));
+                    }
 
                     // Override robot setpoint speeds published by drive. We run our calculations
                     // using the
