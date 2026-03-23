@@ -50,7 +50,7 @@ public class Launcher extends SubsystemBase {
 
     public static TunableNumber DEBOUNCE_TIME_AT_GOAL_AUTO = new TunableNumber("Launcher/DebounceTimeAtGoalAuto", 0.5);
 
-    public static TunableNumber DEBOUNCE_TIME_AT_GOAL_TELE = new TunableNumber("Launcher/DebounceTimeAtGoalTele", 0.01);
+    public static TunableNumber DEBOUNCE_TIME_AT_GOAL_TELE = new TunableNumber("Launcher/DebounceTimeAtGoalTele", 0.1);
 
     private final HoodIO hoodIO;
     private final HoodIOInputsAutoLogged hoodInputs = new HoodIOInputsAutoLogged();
@@ -297,6 +297,11 @@ public class Launcher extends SubsystemBase {
 
     @AutoLogOutput(key = "Launcher/isReady")
     public boolean isReady() {
+
+        if (!isRunning()) {
+            return false; // THIS FIXES PREEMPTIVE SHOOTING
+        }
+
         LauncherState desired = getDesiredState();
 
         double desiredVelocity = desired.wheelRadPerSec();
@@ -326,6 +331,9 @@ public class Launcher extends SubsystemBase {
 
     @AutoLogOutput(key = "Launcher/isReadyDebounced")
     public boolean isReadyDebounced() {
+        if (!isRunning()) {
+            return false;
+        }
         return atGoalDebounced;
     }
 
