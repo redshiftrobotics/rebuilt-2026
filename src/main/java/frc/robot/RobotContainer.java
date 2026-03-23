@@ -455,7 +455,7 @@ public class RobotContainer {
         // Start spin up button
         xbox.y()
                 .and(manualButton.negate())
-                .onTrue(launcher.runOnce(launcher::start).withName("Spin Up"));
+                .whileTrue(launcher.startEnd(launcher::start, launcher::stop).withName("Spin Up"));
 
         // Cancel spin up button
         cancelButton
