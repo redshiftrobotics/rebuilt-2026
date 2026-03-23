@@ -35,7 +35,7 @@ public class LauncherConstants {
 
     // TODO find out real min_distance value
     public static final double MIN_DISTANCE = 0.0;
-    public static final double MAX_DISTANCE = 4.9;
+    public static final double MAX_DISTANCE = 4.0;
     public static final double PHASE_DELAY = 0.03; // estimate
 
     public static class ChannelConstants {

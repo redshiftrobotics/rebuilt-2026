@@ -3,61 +3,61 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.0,
-        "y": 3.0
+        "x": 7.75,
+        "y": 3.174579172610556
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.1768826273415547,
-        "y": 3.1766706997347005
+        "x": 7.992834657711239,
+        "y": 3.2340041590578874
       },
       "isLocked": false,
-      "linkedName": "South Bump Backup Endpoint"
+      "linkedName": "Right Field"
     },
     {
       "anchor": {
-        "x": 3.2239229671897287,
-        "y": 0.6386019971469341
+        "x": 5.915164051355206,
+        "y": 0.7032952924393738
       },
       "prevControl": {
-        "x": 2.772856792856188,
-        "y": 0.780352559571222
+        "x": 7.009938743538098,
+        "y": 0.7423245788416772
       },
       "nextControl": {
-        "x": 3.6278647212361292,
-        "y": 0.5116605990087741
+        "x": 3.842865569238032,
+        "y": 0.6294167752000495
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.1480599144079875,
-        "y": 0.7550499286733237
+        "x": 2.9004564907275316,
+        "y": 0.7032952924393738
       },
       "prevControl": {
-        "x": 5.730283595795684,
-        "y": 0.46325040037454296
+        "x": 3.2089337483591414,
+        "y": 0.6186776292457972
       },
       "nextControl": {
-        "x": 6.777939243280171,
-        "y": 1.194994661923321
+        "x": 2.4103040866339454,
+        "y": 0.8377478331600388
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 7.002011412268189,
+        "x": 2.0,
         "y": 2.0
       },
       "prevControl": {
-        "x": 6.760798899458075,
-        "y": 2.0657002561930398
+        "x": 1.8910360937289077,
+        "y": 2.2277602861453847
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "South Trench Backup Endpoint"
     }
   ],
   "rotationTargets": [
@@ -85,7 +85,7 @@
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 90.0
   },
   "useDefaultConstraints": true
 }

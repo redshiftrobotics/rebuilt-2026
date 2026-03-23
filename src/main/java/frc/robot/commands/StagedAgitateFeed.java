@@ -9,17 +9,15 @@ import frc.robot.subsystems.intake.IntakeRunMode;
 
 public class StagedAgitateFeed extends Command {
 
-    Intake intake;
+    private static final double maxPositionDeg = 110;
 
-    public Rotation2d position;
-    public double wheelSpeed;
+    private final Intake intake;
+    public final Timer timer = new Timer();
 
-    public boolean done;
+    private Rotation2d position;
 
-    private static double maxPositionDeg = 100;
-
-    public static Timer timer = new Timer();
-    int count = 0;
+    private boolean done;
+    private int count = 0;
 
     public StagedAgitateFeed(Intake intake) {
         this.intake = intake;
@@ -40,7 +38,7 @@ public class StagedAgitateFeed extends Command {
         double wheels = 1;
         if (!done) {
             if (count % 2 == 0 && timer.advanceIfElapsed(0.4)) {
-                position = position.plus(Rotation2d.fromDegrees(30));
+                position = position.plus(Rotation2d.fromDegrees(25));
                 wheels = IntakeRunMode.AGITATE_1_UP.intakeDutyCycle;
                 count++;
             } else if (count % 2 == 1 && timer.advanceIfElapsed(0.4)) {

@@ -3,67 +3,79 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.0,
-        "y": 5.0
+        "x": 7.610128388017117,
+        "y": 4.947175463623396
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.506820907269508,
-        "y": 5.61050067258319
+        "x": 7.847230926255681,
+        "y": 4.867913957450284
       },
       "isLocked": false,
-      "linkedName": "North Bump Backup Endpoint"
+      "linkedName": "Left Field"
     },
     {
       "anchor": {
-        "x": 3.2498002853067045,
-        "y": 7.444336661911555
+        "x": 5.539942938659058,
+        "y": 7.4702139800285305
       },
       "prevControl": {
-        "x": 2.56798246266522,
-        "y": 7.0784039180510705
+        "x": 6.366989905523848,
+        "y": 7.1673637839009325
       },
       "nextControl": {
-        "x": 3.6285678454740067,
-        "y": 7.6476218327807866
+        "x": 4.768213203039027,
+        "y": 7.752807969431595
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.225691868758916,
-        "y": 7.314950071326677
+        "x": 2.6815219329529243,
+        "y": 6.8338092902995715
       },
       "prevControl": {
-        "x": 5.997768233872748,
-        "y": 7.417667239610644
+        "x": 2.9379644602807975,
+        "y": 7.022608929483971
       },
       "nextControl": {
-        "x": 6.625628709060667,
-        "y": 7.134712599470149
+        "x": 2.480198748763948,
+        "y": 6.685589940995874
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 7.674821683309556,
-        "y": 5.956390870185448
+        "x": 2.0,
+        "y": 6.0
       },
       "prevControl": {
-        "x": 7.53690494351398,
-        "y": 6.16490699158655
+        "x": 1.8865876880298305,
+        "y": 6.222795079599126
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "North Trench Backup Endpoint"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.0,
+      "rotationDegrees": 0.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
@@ -80,7 +92,7 @@
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -87.61405596961086
   },
   "useDefaultConstraints": true
 }

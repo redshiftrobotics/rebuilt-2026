@@ -4,9 +4,8 @@
   "holonomicMode": true,
   "pathFolders": [],
   "autoFolders": [
-    "Field Only",
-    "Preload Then Field",
-    "Preload Only"
+    "Preload Only",
+    "Field"
   ],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,

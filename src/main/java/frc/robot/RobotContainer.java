@@ -240,13 +240,10 @@ public class RobotContainer {
                 .and(() -> LaunchCommands.isDriveAtLaunchGoal(drive))
                 .onTrue(hopper.runEnd(
                                 () -> hopper.setMode(HopperRunMode.FIRING), () -> hopper.setMode(HopperRunMode.STOPPED))
+                        .alongWith(new StagedAgitateFeed(intake))
                         .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
                         .onlyWhile(launcher::isRunning)
-                        .withName("Hopper firing when Aim Ready"))
-                .whileTrue(new StagedAgitateFeed(intake)
-                        .onlyWhile(launcher::isRunning)
                         .withName("Hopper firing when Aim Ready"));
-        // .whileTrue(new StagedAgitateFeed(intake).withName("Staged Agitate"));
 
         // Secondary drive command, right stick will be used to control target angular
         // position instead of angular velocity
@@ -346,7 +343,10 @@ public class RobotContainer {
         intakeFullTrigger
                 .whileTrue(intake.runEnd(
                                 () -> intake.setMode(IntakeRunMode.INTAKING),
-                                () -> intake.setMode(IntakeRunMode.POST_INTAKE_TRANSITION))
+                                () -> intake.setMode(
+                                        intake.getDefaultMode() == IntakeRunMode.UP
+                                                ? IntakeRunMode.POST_INTAKE_TRANSITION
+                                                : intake.getDefaultMode()))
                         .withName("Intake"))
                 .whileTrue(hopper.runEnd(
                                 () -> hopper.setMode(HopperRunMode.IDLE), () -> hopper.setMode(HopperRunMode.STOPPED))
@@ -368,7 +368,7 @@ public class RobotContainer {
                                 Commands.waitSeconds(0.3))
                         .repeatedly()
                         .withName("Agitate")
-                        .finallyDo(() -> intake.setMode(IntakeRunMode.UP)));
+                        .finallyDo(() -> intake.setMode(intake.getDefaultMode())));
 
         xbox.leftStick().and(xbox.x().negate()).whileTrue(new StagedAgitateFeed(intake).withName("Staged Agitate"));
 
@@ -377,7 +377,7 @@ public class RobotContainer {
                 .debounce(0.1)
                 .whileTrue(intake.runEnd(
                                 () -> intake.setMode(IntakeRunMode.OUTTAKING_DUMP),
-                                () -> intake.setMode(IntakeRunMode.UP))
+                                () -> intake.setMode(intake.getDefaultMode()))
                         .withName("Dump Intake"))
                 .whileTrue(hopper.runEnd(
                                 () -> hopper.setMode(HopperRunMode.REVERSE),
@@ -386,8 +386,11 @@ public class RobotContainer {
 
         // Deploy intake tap button
         xbox.rightStick()
-                .whileTrue(intake.run(() -> intake.setModeNoWheels(IntakeRunMode.INTAKING))
-                        .withName("Deploy intake no wheels"));
+                .whileTrue(intake.run(() -> intake.setModeNoWheels(IntakeRunMode.INTAKING_NO_WHEELS))
+                        .withName("Deploy intake no wheels"))
+                .whileTrue(Commands.startEnd(
+                        () -> intake.setDefaultMode(IntakeRunMode.INTAKING_NO_WHEELS),
+                        () -> intake.setDefaultMode(IntakeRunMode.UP)));
 
         // Intake shift up button
         xbox.povUp()
