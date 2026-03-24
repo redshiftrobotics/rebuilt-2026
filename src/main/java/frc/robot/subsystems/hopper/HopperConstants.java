@@ -10,7 +10,7 @@ public class HopperConstants {
             int deviceId, double gearRatio, boolean inverted, boolean brakeMode, double stallCurrent) {}
 
     public static final MotorConstants FEEDER_CONSTANTS =
-            new MotorConstants(14, (1.0 / 3.0) * (1.0 / 3.0), true, false, 30);
+            new MotorConstants(14, (1.0 / 3.0) * (1.0 / 3.0), true, false, 120);
     public static final MotorConstants LIFTER_CONSTANTS =
             new MotorConstants(5, (1.0 / 3.0) * (1.0 / 3.0) * (1.0 / 3.0), true, false, 40);
 

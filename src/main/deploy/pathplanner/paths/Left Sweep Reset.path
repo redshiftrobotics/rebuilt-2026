@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.6,
-        "y": 5.0
+        "x": 2.7983662280701753,
+        "y": 7.4
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.2846643294910245,
-        "y": 5.0
+        "x": 4.558587991201369,
+        "y": 7.389640142897013
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Left Sweep End"
     },
     {
       "anchor": {
-        "x": 2.0,
-        "y": 5.0
+        "x": 4.0,
+        "y": 7.4
       },
       "prevControl": {
-        "x": 3.0,
-        "y": 5.0
+        "x": 3.2222697358960812,
+        "y": 7.45268380055401
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "North Bump Backup Endpoint"
+      "linkedName": "Left Sweep Start"
     }
   ],
   "rotationTargets": [],
@@ -45,7 +45,7 @@
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": "Primary",
+  "folder": "Secondary",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0

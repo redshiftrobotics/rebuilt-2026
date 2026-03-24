@@ -1,0 +1,37 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Left Sweep Standard"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "LaunchInPlaceAgitate"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Left Sweep Reset"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Left Sweep Standard"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "Sweep Only",
+  "choreoAuto": false
+}
