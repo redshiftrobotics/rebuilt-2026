@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Left Sweep Standard"
+            "pathName": "Left Sweep & Scatter"
           }
         },
         {
@@ -25,7 +25,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Left Sweep Standard"
+            "pathName": "Left Sweep & Scatter"
           }
         }
       ]
