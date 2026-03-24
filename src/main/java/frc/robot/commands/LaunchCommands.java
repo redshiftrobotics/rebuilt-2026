@@ -54,7 +54,7 @@ public class LaunchCommands {
                 }));
     }
 
-    public static Command launchInPlace(Drive drive, AprilTagVision vision, Launcher launcher, Hopper hopper) {
+    public static Command launchInPlace(Drive drive, AprilTagVision vision, Launcher launcher, Hopper hopper, double withExtraTime) {
         Debouncer alignedWithHubDebouncer = new Debouncer(1);
         BooleanSupplier isAligned = () -> alignedWithHubDebouncer.calculate((MathUtil.isNear(
                 LaunchCalculator.getInstance()
@@ -74,7 +74,7 @@ public class LaunchCommands {
                         Commands.waitUntil(launcher::isReadyDebounced).withTimeout(1),
                         hopper.runOnce(() -> hopper.setMode(HopperRunMode.FIRING))));
 
-        return Commands.parallel(launchFuel, autoAlign, Commands.waitSeconds(3))
+        return Commands.parallel(launchFuel, autoAlign, Commands.waitSeconds(3 + withExtraTime))
                 .finallyDo((interrupted) -> {
                     hopper.setMode(HopperRunMode.STOPPED);
                     launcher.stop();
