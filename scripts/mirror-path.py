@@ -24,6 +24,9 @@ def mirror(inPath):
     if not waypoint["nextControl"] is None:
       waypoint["nextControl"]["y"] = 8 - waypoint["nextControl"]["y"]
   
+  for rotationTarget in doc["rotationTargets"]:
+    rotationTarget["rotationDegrees"] = -rotationTarget["rotationDegrees"]
+
   doc["goalEndState"]["rotation"] *= -1
 
   doc["idealStartingState"]["rotation"] *= -1

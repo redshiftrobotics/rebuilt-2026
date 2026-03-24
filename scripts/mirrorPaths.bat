@@ -1,0 +1,3 @@
+Python mirror-path.py "../src/main/deploy/pathplanner/paths/Left Sweep & Scatter.path" "../src/main/deploy/pathplanner/paths/Right Sweep & Scatter.path"
+Python mirror-path.py "../src/main/deploy/pathplanner/paths/Left Sweep Reset.path" "../src/main/deploy/pathplanner/paths/Right Sweep Reset.path"
+Python mirror-path.py "../src/main/deploy/pathplanner/paths/Left Sweep Standard.path" "../src/main/deploy/pathplanner/paths/Right Sweep Standard.path"
