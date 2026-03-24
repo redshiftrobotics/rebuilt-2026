@@ -627,7 +627,7 @@ public class RobotContainer {
         namedCommands.put("LaunchInPlace", LaunchCommands.launchInPlace(drive, vision, launcher, hopper, 0));
         namedCommands.put(
                 "LaunchInPlaceAgitate",
-                new StagedAgitateFeed(intake).withDeadline(LaunchCommands.launchInPlace(drive, vision, launcher, hopper, 2)));
+                LaunchCommands.launchInPlaceAgitate(drive, vision, launcher, hopper, intake, 2.5));
 
         // Hang commands
         namedCommands.put("HangUp", Commands.none());
