@@ -54,7 +54,10 @@ public class SlapdownIOSparkMax implements SlapdownIO {
 
         config.absoluteEncoder
                 .inverted(SlapdownConstants.ABSOLUTE_ENCODER_INVERTED)
-                .zeroOffset(SlapdownConstants.ABSOLUTE_ENCODER_ZERO.getRotations());
+                .zeroOffset(SlapdownConstants.ABSOLUTE_ENCODER_ZERO.getRotations())
+                .zeroCentered(true);
+
+        config.closedLoop.positionWrappingEnabled(false);
 
         motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
