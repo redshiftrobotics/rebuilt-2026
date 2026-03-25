@@ -2,6 +2,8 @@ import sys
 import json
 import pathlib
 
+FIELD_SIZE_Y = 8.07
+
 if len(sys.argv) < 3:
 	raise SystemExit("Usage: python[3] " + sys.argv[0] + " <path of input file> <path of new output file>")
 
@@ -18,11 +20,11 @@ def mirror(inPath):
 
   for waypoint in doc["waypoints"]:
     waypoint["linkedName"] = None
-    waypoint["anchor"]["y"] = 8 - waypoint["anchor"]["y"]
+    waypoint["anchor"]["y"] = FIELD_SIZE_Y - waypoint["anchor"]["y"]
     if not waypoint["prevControl"] is None:
-      waypoint["prevControl"]["y"] = 8 - waypoint["prevControl"]["y"]
+      waypoint["prevControl"]["y"] = FIELD_SIZE_Y - waypoint["prevControl"]["y"]
     if not waypoint["nextControl"] is None:
-      waypoint["nextControl"]["y"] = 8 - waypoint["nextControl"]["y"]
+      waypoint["nextControl"]["y"] = FIELD_SIZE_Y - waypoint["nextControl"]["y"]
   
   for rotationTarget in doc["rotationTargets"]:
     rotationTarget["rotationDegrees"] = -rotationTarget["rotationDegrees"]
