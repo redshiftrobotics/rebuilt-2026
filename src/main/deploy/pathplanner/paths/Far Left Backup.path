@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 3.6,
-        "y": 3.0
+        "y": 6.0
       },
       "prevControl": null,
       "nextControl": {
         "x": 2.2846643294910245,
-        "y": 3.0
+        "y": 6.0
       },
       "isLocked": false,
       "linkedName": null
@@ -17,15 +17,15 @@
     {
       "anchor": {
         "x": 2.0,
-        "y": 3.0
+        "y": 6.0
       },
       "prevControl": {
         "x": 3.0,
-        "y": 3.0
+        "y": 6.0
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "South Bump Backup Endpoint"
+      "linkedName": "North Trench Backup Endpoint"
     }
   ],
   "rotationTargets": [],
@@ -45,7 +45,7 @@
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Primary",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0

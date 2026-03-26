@@ -88,12 +88,13 @@ public class LaunchCalculator extends VirtualSubsystem {
         putTableDataTapeMeasure(124, 425 + wheelRadPerSecOffsetSetup + 35, 0.35 + hoodPositionOffsetSetup);
         putTableDataTapeMeasure(139, 425 + wheelRadPerSecOffsetSetup + 35, 0.4 + hoodPositionOffsetSetup);
 
-        timeOfFlightMap.put(3.60, 1.88 - 0.5);
-        timeOfFlightMap.put(3.40, 1.57 - 0.5);
-        timeOfFlightMap.put(3.15, 1.53 - 0.5);
-        timeOfFlightMap.put(2.89, 1.44 - 0.5);
-        timeOfFlightMap.put(1.49, 1.23 - 0.5);
-        timeOfFlightMap.put(2.57, 1.48 - 0.5);
+        timeOfFlightMap.put(0.0, 0.0);
+        // timeOfFlightMap.put(3.60, 1.88 - 0.5);
+        // timeOfFlightMap.put(3.40, 1.57 - 0.5);
+        // timeOfFlightMap.put(3.15, 1.53 - 0.5);
+        // timeOfFlightMap.put(2.89, 1.44 - 0.5);
+        // timeOfFlightMap.put(1.49, 1.23 - 0.5);
+        // timeOfFlightMap.put(2.57, 1.48 - 0.5);
     }
 
     /**

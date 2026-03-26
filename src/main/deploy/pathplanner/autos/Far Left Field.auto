@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "North Trench Backup"
+            "pathName": "Far Left Backup"
           }
         },
         {
@@ -23,7 +23,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "North Trench To Field"
+                  "pathName": "Far Left To Field"
                 }
               },
               {
@@ -96,6 +96,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "Field",
+  "folder": "Preload & Sweep",
   "choreoAuto": false
 }

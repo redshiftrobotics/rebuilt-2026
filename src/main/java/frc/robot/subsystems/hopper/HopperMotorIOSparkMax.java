@@ -56,7 +56,6 @@ public class HopperMotorIOSparkMax implements HopperMotorIO {
 
     @Override
     public void updateInputs(HopperMotorIOInputs inputs) {
-
         SparkUtil.clearError();
         ifOk(motor, relativeEncoder::getPosition, value -> inputs.positionRad = Units.rotationsToRadians(value));
         ifOk(

@@ -10,7 +10,8 @@ public enum IntakeRunMode {
     POST_INTAKE_TRANSITION(Rotation2d.fromDegrees(88), 1.0),
     AGITATE_1_UP(Rotation2d.fromDegrees(88), 1.0),
     AGITATE_2(Rotation2d.fromDegrees(60), 0.3),
-    UP(Rotation2d.fromDegrees(90), 0.0);
+    UP(Rotation2d.fromDegrees(90), 0.0),
+    AGITATE_CUSTOM(Rotation2d.kZero, 1.0);
 
     private final Rotation2d setpoint;
     private Rotation2d shift;
@@ -33,6 +34,10 @@ public enum IntakeRunMode {
 
     public Rotation2d getSetpoint() {
         return setpoint.plus(shift);
+    }
+
+    public double getIntakeDutyCycle() {
+        return intakeDutyCycle;
     }
 
     @Override

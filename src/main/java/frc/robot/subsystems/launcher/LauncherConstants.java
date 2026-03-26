@@ -25,7 +25,7 @@ import frc.robot.utility.tunable.TunableNumber;
 public class LauncherConstants {
 
     public static final Transform3d ROBOT_TO_LAUNCHER = new Transform3d(
-            Units.inchesToMeters(-9.937105),
+            Units.inchesToMeters(0.0),
             0.0,
             Units.inchesToMeters(17.731846 + (4.0 / 2.0)),
             Rotation3d.kZero); // From CAD

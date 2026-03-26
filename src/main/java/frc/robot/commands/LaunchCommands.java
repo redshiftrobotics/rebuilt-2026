@@ -14,6 +14,7 @@ import frc.robot.FieldConstants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.hopper.HopperConstants.HopperRunMode;
+import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.launcher.LaunchCalculator;
 import frc.robot.subsystems.launcher.LaunchCalculator.LaunchingParameters;
 import frc.robot.subsystems.launcher.Launcher;
@@ -54,7 +55,8 @@ public class LaunchCommands {
                 }));
     }
 
-    public static Command launchInPlace(Drive drive, AprilTagVision vision, Launcher launcher, Hopper hopper) {
+    public static Command launchInPlace(
+            Drive drive, AprilTagVision vision, Launcher launcher, Hopper hopper, double withExtraTime) {
         Debouncer alignedWithHubDebouncer = new Debouncer(1);
         BooleanSupplier isAligned = () -> alignedWithHubDebouncer.calculate((MathUtil.isNear(
                 LaunchCalculator.getInstance()
@@ -74,13 +76,24 @@ public class LaunchCommands {
                         Commands.waitUntil(launcher::isReadyDebounced).withTimeout(1),
                         hopper.runOnce(() -> hopper.setMode(HopperRunMode.FIRING))));
 
-        return Commands.parallel(launchFuel, autoAlign, Commands.waitSeconds(3))
+        return Commands.parallel(launchFuel, autoAlign, Commands.waitSeconds(3 + withExtraTime))
                 .finallyDo((interrupted) -> {
                     hopper.setMode(HopperRunMode.STOPPED);
                     launcher.stop();
                 })
                 .andThen(Commands.waitSeconds(2.05)) // Measured hood retract time
                 .withName("Launching in place");
+    }
+
+    public static Command launchInPlaceAgitate(
+            Drive drivetrain,
+            AprilTagVision vision,
+            Launcher launcher,
+            Hopper hopper,
+            Intake intake,
+            double withExtraTime) {
+        return new StagedAgitateFeed(intake)
+                .withDeadline(LaunchCommands.launchInPlace(drivetrain, vision, launcher, hopper, withExtraTime));
     }
 
     public static Command driveWhileLaunching(
@@ -166,8 +179,12 @@ public class LaunchCommands {
                             LauncherConstants.LAUNCHER_TO_ROBOT.times(1.0 - corScalar),
                             measuredRobotAngle);
 
-                    drive.setRobotSpeeds(
-                            ChassisSpeeds.fromFieldRelativeSpeeds(fieldRelativeSpeedsWithOffset, measuredRobotAngle));
+                    if (fieldRelativeSpeedsWithOffset.equals(ZERO_CHASSIS_SPEEDS)) {
+                        drive.stopUsingBrakeArrangement();
+                    } else {
+                        drive.setRobotSpeeds(ChassisSpeeds.fromFieldRelativeSpeeds(
+                                fieldRelativeSpeedsWithOffset, measuredRobotAngle));
+                    }
 
                     // Override robot setpoint speeds published by drive. We run our calculations
                     // using the

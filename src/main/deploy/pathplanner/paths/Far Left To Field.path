@@ -4,65 +4,69 @@
     {
       "anchor": {
         "x": 2.0,
-        "y": 3.0
+        "y": 6.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.1768826273415547,
-        "y": 3.1766706997347005
+        "x": 2.2092010036864833,
+        "y": 6.1368756371914595
       },
       "isLocked": false,
-      "linkedName": "South Bump Backup Endpoint"
+      "linkedName": "North Trench Backup Endpoint"
     },
     {
       "anchor": {
-        "x": 3.2239229671897287,
-        "y": 0.6386019971469341
+        "x": 3.2498002853067045,
+        "y": 7.444336661911555
       },
       "prevControl": {
-        "x": 2.772856792856188,
-        "y": 0.780352559571222
+        "x": 2.6863024864328056,
+        "y": 7.2398752331014755
       },
       "nextControl": {
-        "x": 3.6278647212361292,
-        "y": 0.5116605990087741
+        "x": 3.6561756596060198,
+        "y": 7.591787263898844
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.1480599144079875,
-        "y": 0.7550499286733237
+        "x": 7.118459343794578,
+        "y": 7.030299572039943
       },
       "prevControl": {
-        "x": 5.730283595795684,
-        "y": 0.46325040037454296
+        "x": 6.414346027063269,
+        "y": 7.720095381196559
       },
       "nextControl": {
-        "x": 6.777939243280171,
-        "y": 1.194994661923321
+        "x": 7.615462622325387,
+        "y": 6.543402405744088
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 7.002011412268189,
-        "y": 2.0
+        "x": 7.610128388017117,
+        "y": 4.947175463623396
       },
       "prevControl": {
-        "x": 6.760798899458075,
-        "y": 2.0657002561930398
+        "x": 7.551475261352851,
+        "y": 5.190197706910931
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Left Field"
     }
   ],
   "rotationTargets": [
     {
       "waypointRelativePos": 1.0,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 1.65,
       "rotationDegrees": 0.0
     }
   ],
@@ -79,10 +83,10 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -87.61405596961086
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Primary",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0

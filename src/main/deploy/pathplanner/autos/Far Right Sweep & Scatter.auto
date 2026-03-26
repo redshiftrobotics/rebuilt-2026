@@ -5,27 +5,33 @@
     "data": {
       "commands": [
         {
+          "type": "path",
+          "data": {
+            "pathName": "Right Sweep & Scatter"
+          }
+        },
+        {
           "type": "named",
           "data": {
-            "name": "WaitVariable"
+            "name": "LaunchInPlaceAgitate"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Near Right Backup"
+            "pathName": "Right Sweep Reset"
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "LaunchInPlace"
+            "pathName": "Right Sweep & Scatter"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Preload Only",
+  "folder": "Sweep Only",
   "choreoAuto": false
 }
