@@ -35,9 +35,10 @@ def mirror(inPath):
   
   return doc 
   
-try:
-  outfile = open(out_path, "x")
-except:
-  raise SystemExit("Specified out path already exists")
+outfile = open(out_path, "w")
+# try:
+  # outfile = open(out_path, "x")
+# except:
+#   raise SystemExit("Specified out path already exists")
 
 json.dump(mirror(in_path), outfile, indent=2)
