@@ -43,7 +43,7 @@ public class VisionConstants {
     // https://drive.google.com/file/d/17MvlNgLyPRM-VlGa2aJv98TVtX5DwhYD/view?usp=sharing
 
     public static final CameraConfig LAUNCHER_RIGHT_CAMERA = new CameraConfig(
-            "spencercam", CameraPositionName.LAUNCHER_RIGHT, fromOnshape(-10.470732, 2.344, 16.864 + 3.710392, -20, 0));
+            "connorcam", CameraPositionName.LAUNCHER_RIGHT, fromOnshape(-10.470732, 2.344, 16.864 + 3.710392, -20, 0));
 
     public static final CameraConfig BACK_SWERVE_LEFT_CAMERA = new CameraConfig(
             "geraldcam",
