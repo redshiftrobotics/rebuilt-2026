@@ -258,8 +258,8 @@
           },
           {
             "title": "Active First?",
-            "x": 896.0,
-            "y": 256.0,
+            "x": 832.0,
+            "y": 512.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Boolean Box",
@@ -386,8 +386,8 @@
           },
           {
             "title": "HoodPositionOffset",
-            "x": 512.0,
-            "y": 576.0,
+            "x": 1024.0,
+            "y": 256.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
@@ -400,8 +400,8 @@
           },
           {
             "title": "WheelRadPerSecOffset",
-            "x": 384.0,
-            "y": 576.0,
+            "x": 896.0,
+            "y": 256.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
@@ -499,6 +499,27 @@
                   "data_type": "double",
                   "show_submit_button": false
                 }
+              },
+              {
+                "title": "Field",
+                "x": 320.0,
+                "y": 64.0,
+                "width": 512.0,
+                "height": 256.0,
+                "type": "Field",
+                "properties": {
+                  "topic": "/SmartDashboard/Field",
+                  "period": 0.06,
+                  "field_game": "Rebuilt",
+                  "robot_width": 0.85,
+                  "robot_length": 0.85,
+                  "show_other_objects": true,
+                  "show_trajectories": true,
+                  "field_rotation": 0.0,
+                  "robot_color": 4294198070,
+                  "trajectory_color": 4294967295,
+                  "show_robot_outside_widget": true
+                }
               }
             ]
           }
@@ -514,27 +535,6 @@
             "properties": {
               "topic": "/SmartDashboard/Alerts",
               "period": 0.06
-            }
-          },
-          {
-            "title": "Field",
-            "x": 384.0,
-            "y": 0.0,
-            "width": 512.0,
-            "height": 256.0,
-            "type": "Field",
-            "properties": {
-              "topic": "/SmartDashboard/Field",
-              "period": 0.06,
-              "field_game": "Rebuilt",
-              "robot_width": 0.85,
-              "robot_length": 0.85,
-              "show_other_objects": true,
-              "show_trajectories": true,
-              "field_rotation": 0.0,
-              "robot_color": 4294198070,
-              "trajectory_color": 4294967295,
-              "show_robot_outside_widget": true
             }
           },
           {
@@ -605,9 +605,9 @@
           },
           {
             "title": "Has Vision",
-            "x": 192.0,
+            "x": 0.0,
             "y": 128.0,
-            "width": 192.0,
+            "width": 384.0,
             "height": 128.0,
             "type": "Boolean Box",
             "properties": {
@@ -696,20 +696,6 @@
             }
           },
           {
-            "title": "Auto Delay (Second)",
-            "x": 0.0,
-            "y": 128.0,
-            "width": 192.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/Auto Delay (Second)",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
             "title": "BatteryVoltage",
             "x": 1024.0,
             "y": 256.0,
@@ -776,6 +762,27 @@
               "false_color": 4294198070,
               "true_icon": "None",
               "false_icon": "None"
+            }
+          },
+          {
+            "title": "Field",
+            "x": 384.0,
+            "y": 0.0,
+            "width": 512.0,
+            "height": 256.0,
+            "type": "Field",
+            "properties": {
+              "topic": "/SmartDashboard/Field",
+              "period": 0.06,
+              "field_game": "Rebuilt (No Fuel)",
+              "robot_width": 0.85,
+              "robot_length": 0.85,
+              "show_other_objects": true,
+              "show_trajectories": true,
+              "field_rotation": 0.0,
+              "robot_color": 4294198070,
+              "trajectory_color": 4294967295,
+              "show_robot_outside_widget": true
             }
           }
         ]
