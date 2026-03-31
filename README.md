@@ -1,3 +1,5 @@
+
+![IMG_6840](https://github.com/user-attachments/assets/72154bac-7747-4da2-9ac1-de469ef2d17b)
 # REBUILT 2026
 ![CI Badge](https://github.com/redshiftrobotics/rebuilt-2026/actions/workflows/build.yml/badge.svg) ![CI Badge](https://github.com/redshiftrobotics/rebuilt-2026/actions/workflows/format.yml/badge.svg)
 * [Progress Tracker](https://github.com/orgs/redshiftrobotics/projects/5)
