@@ -71,7 +71,8 @@ public class RobotContainer {
 
     // Controller
     private final CommandXboxController driverController = new CommandXboxController(0);
-    private final CommandXboxController operatorController = new CommandXboxController(1);
+    private final CommandXboxController operatorController =
+            Constants.isDemoModeOneController() ? null : new CommandXboxController(1);
 
     // Alerts
     private final Alert driverDisconnected = new Alert(
@@ -82,8 +83,9 @@ public class RobotContainer {
     private final Alert operatorDisconnected = new Alert(
             String.format(
                     "Operator xbox controller disconnected (port %s).",
-                    operatorController.getHID().getPort()),
+                    operatorController != null ? operatorController.getHID().getPort() : "N/A"),
             AlertType.kWarning);
+
     private final Alert notPrimaryBotAlert = new Alert("Robot type is not the primary robot type.", AlertType.kInfo);
     private final Alert developmentModeActiveAlert =
             new Alert("Development mode active, do not use in competition.", AlertType.kWarning);
@@ -110,8 +112,8 @@ public class RobotContainer {
         // Vision setup
         if (Constants.isOnPlayingField()) {
             vision.setAprilTagFieldLayout(FieldConstants.apriltagLayout);
-            setupInitPose();
         }
+        setupInitPose();
 
         vision.setVisionPoseConsumer((estimate) -> {
             if (estimate.status().isSuccess() && Constants.getMode() != Mode.SIM) {
@@ -138,10 +140,19 @@ public class RobotContainer {
         initDashboard();
 
         // Configure the button bindings
-        configureDriverControllerBindings(driverController);
-        configureOperatorControllerBindings(operatorController);
         configureAlertTriggers();
-        configureLEDs();
+        if (Constants.isDemoMode()) {
+            configureDemoLEDs();
+        } else {
+            configureLEDs();
+        }
+
+        if (Constants.isDemoModeOneController()) {
+            configureDemoControllerBindings(driverController);
+        } else {
+            configureDriverControllerBindings(driverController);
+            configureOperatorControllerBindings(operatorController);
+        }
 
         System.out.println(robotType + " ready.");
     }
@@ -178,9 +189,143 @@ public class RobotContainer {
         driverDisconnected.set(!DriverStation.isJoystickConnected(
                         driverController.getHID().getPort())
                 || !DriverStation.getJoystickIsXbox(driverController.getHID().getPort()));
-        operatorDisconnected.set(!DriverStation.isJoystickConnected(
-                        operatorController.getHID().getPort())
-                || !DriverStation.getJoystickIsXbox(operatorController.getHID().getPort()));
+        if (operatorController != null) {
+            operatorDisconnected.set(!DriverStation.isJoystickConnected(
+                            operatorController.getHID().getPort())
+                    || !DriverStation.getJoystickIsXbox(
+                            operatorController.getHID().getPort()));
+        }
+    }
+    /**
+     * Configures the bindings for the demo controller.
+     *
+     * This is a single controller configuration used for robot demonstrations.
+     *
+     * @param xbox The driver controller
+     */
+    private void configureDemoControllerBindings(CommandXboxController xbox) {
+
+        // --- Drive Control ---
+
+        Supplier<DriveInput> baseDrive = () -> new DriveInput()
+                .linearVelocityStick(-xbox.getLeftY(), -xbox.getLeftX(), drive.getMaxLinearSpeedMetersPerSec())
+                .angularVelocityStick(-xbox.getRightX(), drive.getMaxAngularSpeedRadPerSec())
+                .fieldRelativeEnabled();
+
+        final DriveInputPipeline pipeline = new DriveInputPipeline(drive, baseDrive);
+
+        // Default command, normal joystick drive
+        drive.setDefaultCommand(drive.run(() -> drive.setRobotSpeeds(pipeline.getChassisSpeeds()))
+                .finallyDo(drive::stop)
+                .withName("Pipeline Drive"));
+
+        DriverDashboard.currentDriveModeName = () -> {
+            Command current = drive.getCurrentCommand();
+            if (current == drive.getDefaultCommand()) {
+                return "[" + pipeline.getLayerInfo() + "]";
+            } else if (current != null) {
+                return current.getName();
+            } else if (DriverStation.isDisabled()) {
+                return "Disabled";
+            }
+            return "Idle";
+        };
+
+        // Toggle robot relative mode, used as backup if gyro fails
+        xbox.back().debounce(0.1).toggleOnTrue(pipeline.runLayer("Robot Relative", DriveInput::fieldRelativeDisabled));
+
+        // Slow mode, reduce translation and rotation speeds for fine control
+        xbox.leftBumper().whileTrue(pipeline.runLayer("Slow", input -> input.linearCoefficient(0.3)
+                .angularCoefficient(0.3)));
+
+        // Secondary drive command, right stick will be used to control target angular
+        // position instead of angular velocity
+        xbox.rightBumper()
+                .whileTrue(pipeline.runLayer(
+                        "Heading", input -> input.headingStick(-xbox.getRightY(), -xbox.getRightX())));
+
+        // Cause the robot to resist movement by forming an X shape with the swerve
+        // modules. Helps prevent getting pushed around, and is good quick brake
+        xbox.x()
+                .onTrue(Commands.runOnce(drive::stop).withName("Stop"))
+                .whileTrue(drive.run(drive::stopUsingBrakeArrangement).withName("Hold Position"))
+                .onTrue(rumbleControllers(0.0, RumbleType.kBothRumble).withTimeout(0.02))
+                .whileTrue(leds.runColor(BlinkinLEDPattern.OFF));
+
+        // Reset the gyro heading
+        xbox.start()
+                .debounce(0.3)
+                .onTrue(drive.runOnce(() ->
+                                drive.resetPose(new Pose2d(drive.getRobotPose().getTranslation(), Rotation2d.kZero)))
+                        .andThen(rumbleController(xbox, 0.3, RumbleType.kLeftRumble)
+                                .withTimeout(0.25))
+                        .ignoringDisable(true)
+                        .withName("Reset Gyro Heading"));
+
+        // --- Launcher Shooting Control ---
+
+        // Spin up flywheels
+        xbox.leftTrigger()
+                .whileTrue(launcher.startEnd(launcher::start, launcher::stop).withName("Spin up"));
+
+        // Spin up flywheels for shooting
+        xbox.rightTrigger()
+                .whileTrue(launcher.startEnd(launcher::start, launcher::stop)
+                        .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
+                        .withName("Spin up for shoot"));
+
+        // Shoot when ready
+        xbox.rightTrigger()
+                .and(launcher::isReadyDebounced)
+                .or(xbox.rightTrigger(0.01).and(xbox.leftTrigger()))
+                .onTrue(hopper.runEnd(
+                                () -> hopper.setMode(HopperRunMode.FIRING), () -> hopper.setMode(HopperRunMode.STOPPED))
+                        .alongWith(new StagedAgitateFeed(intake))
+                        .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
+                        .onlyWhile(launcher::isRunning)
+                        .withName("Hopper firing when ready"));
+
+        // --- Launcher Shot Parameters Control ---
+
+        final LauncherControlManual manualLaunchControl = new LauncherControlManual(ManualLaunchMode.MEDIUM);
+        launcher.setManualModeState(manualLaunchControl);
+
+        final LauncherRunMode DEFAULT_LAUNCH = LauncherRunMode.MANUAL;
+        launcher.setMode(DEFAULT_LAUNCH);
+
+        final Trigger manualButton = xbox.b();
+        manualButton.onTrue(manualLaunchControl.resetCommand()).onFalse(manualLaunchControl.resetCommand());
+
+        // Manual mode preset buttons
+        xbox.povRight().and(manualButton).onTrue(manualLaunchControl.setModeCommand(ManualLaunchMode.FAR));
+        xbox.povLeft().and(manualButton).onTrue(manualLaunchControl.setModeCommand(ManualLaunchMode.MEDIUM));
+        xbox.povUp().and(manualButton).onTrue(manualLaunchControl.setModeCommand(ManualLaunchMode.UP));
+        xbox.povDown().and(manualButton).onTrue(manualLaunchControl.setModeCommand(ManualLaunchMode.LOW));
+
+        // Manual mode preset adjustment buttons
+        xbox.povRight().and(manualButton.negate()).onTrue(manualLaunchControl.incrementHoodCommand(+0.1));
+        xbox.povLeft().and(manualButton.negate()).onTrue(manualLaunchControl.incrementHoodCommand(-0.1));
+        xbox.povUp().and(manualButton.negate()).onTrue(manualLaunchControl.incrementVelocityCommand(+10));
+        xbox.povDown().and(manualButton.negate()).onTrue(manualLaunchControl.incrementVelocityCommand(-10));
+
+        // --- Intake Control ---
+
+        xbox.a()
+                .toggleOnTrue(intake.runEnd(
+                                () -> intake.setMode(IntakeRunMode.INTAKING),
+                                () -> intake.setMode(IntakeRunMode.INTAKING_NO_WHEELS))
+                        .withName("Intake"));
+
+        new Trigger(() -> intake.getMode() == IntakeRunMode.INTAKING)
+                .whileTrue(hopper.runEnd(
+                                () -> hopper.setMode(HopperRunMode.IDLE), () -> hopper.setMode(HopperRunMode.STOPPED))
+                        .withName("Hopper Intake"));
+
+        xbox.y()
+                .onTrue(intake.runOnce(() -> intake.setMode(IntakeRunMode.POST_INTAKE_TRANSITION))
+                        .andThen(Commands.waitSeconds(0.3))
+                        .onlyIf(() -> intake.getMode() == IntakeRunMode.INTAKING)
+                        .finallyDo(() -> intake.setMode(IntakeRunMode.UP)));
     }
 
     /**
@@ -523,6 +668,9 @@ public class RobotContainer {
     }
 
     private Command rumbleControllers(double rumbleIntensity, RumbleType type) {
+        if (operatorController == null) {
+            return rumbleController(driverController, rumbleIntensity, type);
+        }
         return Commands.parallel(
                         rumbleController(driverController, rumbleIntensity, type),
                         rumbleController(operatorController, rumbleIntensity, type))
@@ -544,6 +692,10 @@ public class RobotContainer {
                         .withName("Launcher Ready Rumble"));
 
         Trigger isMatch = new Trigger(() -> DriverStation.getMatchTime() != -1);
+
+        if (Constants.isDemoMode()) {
+            Elastic.selectTab("Demo");
+        }
 
         RobotModeTriggers.teleop().and(isMatch).onTrue(Commands.runOnce(() -> Elastic.selectTab("Teleoperated")));
 
@@ -601,7 +753,44 @@ public class RobotContainer {
 
                     return ledFallbackPatternChooser.get();
                 })
-                .withName("LED"));
+                .withName("LED Default Supplied Color"));
+    }
+
+    /** Configures the LED commands. */
+    private void configureDemoLEDs() {
+        LoggedDashboardChooser<BlinkinLEDPattern> ledFallbackPatternChooser =
+                new LoggedDashboardChooser<>("LED Pattern Chooser", new SendableChooser<BlinkinLEDPattern>());
+
+        final BlinkinLEDPattern defaultPattern = BlinkinLEDPattern.GOLD;
+
+        SmartDashboard.putData("LED Default Pattern Chooser", ledFallbackPatternChooser.getSendableChooser());
+
+        ledFallbackPatternChooser.addDefaultOption(String.format("Default (%s)", defaultPattern), defaultPattern);
+
+        for (BlinkinLEDPattern pattern : BlinkinLEDPattern.values()) {
+            ledFallbackPatternChooser.addOption(pattern.toString(), pattern);
+        }
+
+        leds.setDefaultCommand(leds.runColor(() -> {
+                    if (DriverStation.isAutonomous()) {
+                        return BlinkinLEDPattern.RED;
+                    }
+
+                    if (launcher.isRunning()) {
+                        if (hopper.getCurrentRunMode() == HopperRunMode.FIRING) {
+                            return BlinkinLEDPattern.FIRE_LARGE;
+                        } else {
+                            return BlinkinLEDPattern.ORANGE;
+                        }
+                    }
+
+                    if (intake.getMode() == IntakeRunMode.INTAKING) {
+                        return BlinkinLEDPattern.GREEN;
+                    }
+
+                    return ledFallbackPatternChooser.get();
+                })
+                .withName("LED Default Supplied Color"));
     }
 
     /** Make commands accessible to PathPlanner autos. */

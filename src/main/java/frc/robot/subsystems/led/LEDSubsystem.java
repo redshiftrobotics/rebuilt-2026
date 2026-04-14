@@ -59,11 +59,11 @@ public class LEDSubsystem extends SubsystemBase {
     }
 
     public Command runColor(BlinkinLEDPattern color) {
-        return run(() -> set(color));
+        return run(() -> set(color)).withName("LED " + color);
     }
 
     public Command runColor(Supplier<BlinkinLEDPattern> color) {
-        return run(() -> set(color.get()));
+        return run(() -> set(color.get())).withName("LED Supplied Color");
     }
 
     public Command runColor(
@@ -81,6 +81,7 @@ public class LEDSubsystem extends SubsystemBase {
         for (int i = 0; i < strips.length; i++) {
             set(i, pattern);
         }
+        Logger.recordOutput("LED/setPattern", pattern.toString());
     }
 
     public void set(int stripIndex, BlinkinLEDPattern pattern) {

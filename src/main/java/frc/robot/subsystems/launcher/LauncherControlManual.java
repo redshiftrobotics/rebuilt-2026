@@ -12,7 +12,12 @@ public class LauncherControlManual implements Supplier<LauncherState> {
     public enum ManualLaunchMode {
         Y(450.0, 0.4), // Pass?
         B(425.0, 0.2),
-        A(400.0, 0.1);
+        A(400.0, 0.1),
+
+        UP(450.0, 0.1),
+        FAR(450.0, 0.6),
+        MEDIUM(400.0, 0.3),
+        LOW(300.0, 0.3);
 
         final LauncherState base;
 

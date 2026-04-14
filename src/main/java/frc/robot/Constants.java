@@ -30,16 +30,18 @@ public final class Constants {
      *   <li>Verbose logging in AdvantageScope
      *   <li>Enables SysId, Diagnostic, Test Plans, and other debug autos
      */
-    public static final boolean DEVELOPMENT_MODE = true;
+    public static final boolean DEVELOPMENT_MODE = false;
 
     /**
      * If true, robot is considered to be on the playing field. Vision will look for field tags, and
      * auto alignment should become active.
      */
-    private static final boolean IS_ON_PLAYING_FIELD = true;
+    private static final boolean IS_ON_PLAYING_FIELD = false;
 
     /** If true, enables demo mode features throughout the codebase. */
-    private static final boolean DEMO_MODE = false;
+    private static final boolean DEMO_MODE = true;
+
+    private static final boolean DEMO_MODE_ONE_CONTROLLER = true;
 
     /** Talon noises */
     public static final boolean TALON_BEEP_ON_CONFIG = false;
@@ -83,6 +85,10 @@ public final class Constants {
     @SuppressWarnings("unused")
     public static boolean isDemoMode() {
         return DEMO_MODE && !DriverStation.isFMSAttached();
+    }
+
+    public static boolean isDemoModeOneController() {
+        return DEMO_MODE_ONE_CONTROLLER && isDemoMode();
     }
 
     public enum Mode {
@@ -143,11 +149,9 @@ public final class Constants {
                     PRIMARY_ROBOT_TYPE.toString()),
             AlertType.kInfo);
 
-    private static final Alert notOnField =
-            new Alert("Robot is not on playing field according to Constants.java", AlertType.kInfo);
+    private static final Alert notOnField = new Alert("Robot is not on playing field", AlertType.kInfo);
 
-    private static final Alert demoMode =
-            new Alert("Robot is in demo mode according to Constants.java", AlertType.kInfo);
+    private static final Alert demoMode = new Alert("Robot is in demo mode", AlertType.kInfo);
 
     private static final Alert unrecognizedRobotType =
             new Alert("RoboRIO serial number unrecognized!", AlertType.kWarning);
