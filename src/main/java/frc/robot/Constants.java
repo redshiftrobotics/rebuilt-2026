@@ -41,7 +41,7 @@ public final class Constants {
     /** If true, enables demo mode features throughout the codebase. */
     private static final boolean DEMO_MODE = true;
 
-    private static final boolean DEMO_MODE_ONE_CONTROLLER = true;
+    private static final boolean DEMO_MODE_ONE_CONTROLLER = false;
 
     /** Talon noises */
     public static final boolean TALON_BEEP_ON_CONFIG = false;
